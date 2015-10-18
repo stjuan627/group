@@ -1,0 +1,6 @@
+services:
+  access_check.group.add:
+    class: Drupal\group\Access\GroupAddAccessCheck
+    arguments: ['@entity.manager']
+    tags:
+      - { name: access_check, applies_to: _group_add_access }

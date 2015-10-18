@@ -1,0 +1,11 @@
+entity.group.collection:
+  title: 'Group: Contacts Listing'
+  route_name: entity.group.collection
+  description: 'List Groups'
+  weight: 10
+
+group.admin.structure.settings:
+  title: Group Settings
+  description: 'Configure Group entity'
+  route_name:  group.group_settings
+  parent: system.admin_structure

@@ -1,0 +1,95 @@
+entity.group.canonical:
+  path: '/group/{group}'
+  defaults:
+    _entity_view: 'group'
+    _title: 'Group Content'
+  requirements:
+    _entity_access: 'group.view'
+
+entity.group.collection:
+  path: '/group/list'
+  defaults:
+    _entity_list: 'group'
+    _title: 'Group List'
+  options:
+    _group_operation_route: TRUE
+  requirements:
+    _permission: 'administer group'
+
+group.group_add:
+  path: '/group/add'
+  defaults:
+    _title: 'Add group'
+    _controller: '\Drupal\group\Entity\Controller\GroupController::addPage'
+  options:
+    _group_operation_route: TRUE
+  requirements:
+    _group_add_access: 'group'
+
+group.add:
+  path: '/group/add/{group_type}'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupController::add'
+    _title_callback: '\Drupal\group\Entity\Controller\GroupController::addPageTitle'
+  requirements:
+    _group_add_access: 'group:{group_type}'
+  options:
+    _group_operation_route: TRUE
+    parameters:
+      group_type:
+        with_config_overrides: TRUE
+
+entity.group.edit_form:
+  path: '/group/{group}/edit'
+  defaults:
+    _entity_form: group.edit
+    _title: 'Edit Group'
+  requirements:
+    _entity_access: 'group.edit'
+
+entity.group.delete_form:
+  path: '/group/{group}/delete'
+  defaults:
+    _entity_form: group.delete
+    _title: 'Delete Group'
+  requirements:
+    _entity_access: 'group.delete'
+
+group.group_settings:
+  path: 'admin/group/settings'
+  defaults:
+    _form: '\Drupal\group\Form\GroupSettingsForm'
+    _title: 'Group Settings'
+  requirements:
+    _permission: 'administer group'
+
+entity.group_type.collection:
+  path: '/admin/group/types'
+  defaults:
+    _entity_list: 'group_type'
+    _title: 'Group types'
+  requirements:
+    _permission: 'administer group'
+
+group.type_add:
+  path: '/admin/group/types/add'
+  defaults:
+    _entity_form: 'group_type.add'
+    _title: 'Add group type'
+  requirements:
+    _permission: 'administer group'
+
+entity.group_type.edit_form:
+  path: '/admin/group/types/manage/{group_type}'
+  defaults:
+    _entity_form: 'group_type.edit'
+  requirements:
+    _permission: 'administer group'
+
+entity.group_type.delete_form:
+  path: '/admin/group/types/manage/{group_type}/delete'
+  defaults:
+    _entity_form: 'group_type.delete'
+    _title: 'Delete'
+  requirements:
+    _entity_access: 'group_type.delete'
