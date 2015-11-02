@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\EventSubscriber\GroupAdminRouteSubscriber.
+ * Contains \Drupal\group\Routing\GroupAdminRouteSubscriber.
  */
 
-namespace Drupal\group\EventSubscriber;
+namespace Drupal\group\Routing;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Routing\RouteSubscriberBase;
