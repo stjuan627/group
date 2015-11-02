@@ -126,7 +126,7 @@ class Group extends ContentEntityBase implements GroupInterface {
 
     return \Drupal::entityManager()
       ->getAccessControlHandler($this->entityTypeId)
-      ->access($this, $operation, $this->prepareLangcode(), $account, $return_as_object);
+      ->access($this, $operation, $account, $return_as_object);
   }
 
   /**

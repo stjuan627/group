@@ -22,17 +22,17 @@ class GroupTypeAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
-  protected function checkAccess(EntityInterface $entity, $operation, $langcode, AccountInterface $account) {
+  protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /* @var $entity \Drupal\group\Entity\GroupType */
     if ($operation == 'delete') {
       if ($entity->isLocked()) {
         return AccessResult::forbidden()->addCacheableDependency($entity);
       }
       else {
-        return parent::checkAccess($entity, $operation, $langcode, $account)->addCacheableDependency($entity);
+        return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
       }
     }
-    return parent::checkAccess($entity, $operation, $langcode, $account);
+    return parent::checkAccess($entity, $operation, $account);
   }
 
 }
