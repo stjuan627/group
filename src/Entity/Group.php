@@ -28,7 +28,7 @@ use Drupal\Core\Session\AccountInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupListBuilder",
  *     "route_provider" = {
- *       "html" = "Drupal\group\Entity\GroupRouteProvider",
+ *       "html" = "Drupal\group\Entity\Routing\GroupRouteProvider",
  *     },
  *     "form" = {
  *       "add" = "Drupal\group\Form\GroupForm",

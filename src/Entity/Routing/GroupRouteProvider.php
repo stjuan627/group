@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\Entity\GroupRouteProvider.
+ * Contains \Drupal\group\Entity\Routing\GroupRouteProvider.
  */
 
-namespace Drupal\group\Entity;
+namespace Drupal\group\Entity\Routing;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
