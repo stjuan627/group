@@ -1,11 +1,3 @@
-entity.group.canonical:
-  path: '/group/{group}'
-  defaults:
-    _entity_view: 'group'
-    _title: 'Group Content'
-  requirements:
-    _entity_access: 'group.view'
-
 entity.group.collection:
   path: '/group/list'
   defaults:
@@ -38,22 +30,6 @@ group.add:
     parameters:
       group_type:
         with_config_overrides: TRUE
-
-entity.group.edit_form:
-  path: '/group/{group}/edit'
-  defaults:
-    _entity_form: group.edit
-    _title: 'Edit Group'
-  requirements:
-    _entity_access: 'group.edit'
-
-entity.group.delete_form:
-  path: '/group/{group}/delete'
-  defaults:
-    _entity_form: group.delete
-    _title: 'Delete Group'
-  requirements:
-    _entity_access: 'group.delete'
 
 group.group_settings:
   path: 'admin/group/settings'

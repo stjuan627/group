@@ -28,6 +28,9 @@ use Drupal\Core\Session\AccountInterface;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupListBuilder",
+ *     "route_provider" = {
+ *       "html" = "Drupal\group\Entity\GroupRouteProvider",
+ *     },
  *     "form" = {
  *       "add" = "Drupal\group\Form\GroupForm",
  *       "edit" = "Drupal\group\Form\GroupForm",
