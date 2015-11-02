@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\content_entity_example\Entity\ContentEntityExample.
+ * Contains \Drupal\group\Entity\Group.
  */
 
 namespace Drupal\group\Entity;
@@ -14,7 +14,6 @@ use Drupal\user\UserInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Session\AccountInterface;
-
 
 /**
  * Defines the Group entity.
