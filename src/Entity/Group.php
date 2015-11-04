@@ -131,6 +131,13 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function hasPermission($permission, AccountInterface $account) {
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function prepareLangcode() {
     $langcode = $this->language()->getId();
 

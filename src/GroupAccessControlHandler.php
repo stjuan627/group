@@ -7,6 +7,7 @@
 
 namespace Drupal\group;
 
+use Drupal\group\Access\GroupAccessResult;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
@@ -23,15 +24,20 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
+    if (!$entity instanceof GroupInterface) {
+      return AccessResult::neutral();
+    }
+
+    //return AccessResult::allowedIfHasPermission($account, 'bypass group access');
     switch ($operation) {
       case 'view':
-        return AccessResult::allowedIfHasPermission($account, 'administer group');
+        return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'view group');
 
       case 'edit':
-        return AccessResult::allowedIfHasPermission($account, 'administer group');
+        return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'edit group');
 
       case 'delete':
-        return AccessResult::allowedIfHasPermission($account, 'administer group');
+        return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'delete group');
     }
     return AccessResult::allowed();
   }
