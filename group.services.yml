@@ -1,18 +1,18 @@
 services:
   group.admin_path.route_subscriber:
-    class: Drupal\group\Routing\GroupAdminRouteSubscriber
+    class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
     tags:
-      - { name: event_subscriber }
+      - { name: 'event_subscriber' }
   access_check.group.add:
-    class: Drupal\group\Access\GroupAddAccessCheck
+    class: 'Drupal\group\Access\GroupAddAccessCheck'
     arguments: ['@entity.manager']
     tags:
-      - { name: access_check, applies_to: _group_add_access }
+      - { name: 'access_check', applies_to: '_group_add_access' }
   access_check.group.permission:
-    class: Drupal\group\Access\GroupPermissionAccessCheck
+    class: 'Drupal\group\Access\GroupPermissionAccessCheck'
     tags:
-      - { name: access_check, applies_to: _group_permission }
+      - { name: 'access_check', applies_to: '_group_permission' }
 #  cache_context.group.permissions:
 #    class: Drupal\group\Cache\Context\GroupPermissionsCacheContext
 #    arguments: ['@request_stack', '@current_user', '@user_permissions_hash_generator']

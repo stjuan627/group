@@ -1,11 +1,11 @@
 group.group_add:
-  route_name: group.group_add
+  route_name: 'group.group_add'
   title: 'Add group'
   appears_on:
-    - entity.group.collection
+    - 'entity.group.collection'
 
 group.group_type_add:
-  route_name: group.type_add
+  route_name: 'group.type_add'
   title: 'Add group type'
   appears_on:
-    - entity.group_type.collection
+    - 'entity.group_type.collection'
