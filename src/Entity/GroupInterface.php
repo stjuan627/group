@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Contains \Drupal\group\GroupInterface.
+ * Contains \Drupal\group\Entity\GroupInterface.
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;

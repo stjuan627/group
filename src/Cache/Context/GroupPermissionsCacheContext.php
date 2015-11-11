@@ -9,7 +9,7 @@
 
 namespace Drupal\group\Cache\Context;
 
-use Drupal\group\GroupInterface;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -33,7 +33,7 @@ class GroupPermissionsCacheContext implements CacheContextInterface {
   /**
    * The group object.
    *
-   * @var \Drupal\group\GroupInterface
+   * @var \Drupal\group\Entity\GroupInterface
    */
   protected $group;
 
@@ -55,7 +55,7 @@ class GroupPermissionsCacheContext implements CacheContextInterface {
   /**
    * Constructs a new GroupPermissionsCacheContext class.
    *
-   * @param \Drupal\group\GroupInterface $group
+   * @param \Drupal\group\Entity\GroupInterface $group
    *   The group the permission was checked on.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.

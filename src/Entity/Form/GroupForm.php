@@ -1,13 +1,12 @@
 <?php
 /**
  * @file
- * Contains Drupal\group\Form\GroupForm.
+ * Contains Drupal\group\Entity\Form\GroupForm.
  */
 
-namespace Drupal\group\Form;
+namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Language\Language;
 use Drupal\Core\Form\FormStateInterface;
 
 /**

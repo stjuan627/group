@@ -11,7 +11,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\group\GroupTypeInterface;
+use Drupal\group\Entity\GroupTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -92,7 +92,7 @@ class GroupController extends ControllerBase implements ContainerInjectionInterf
   /**
    * Provides the group submission form.
    *
-   * @param \Drupal\group\GroupTypeInterface $group_type
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type entity for the group.
    *
    * @return array
@@ -111,7 +111,7 @@ class GroupController extends ControllerBase implements ContainerInjectionInterf
   /**
    * The _title_callback for the group.add route.
    *
-   * @param \Drupal\group\GroupTypeInterface $group_type
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The current group.
    *
    * @return string

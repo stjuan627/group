@@ -9,7 +9,6 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\group\GroupTypeInterface;
 
 /**
  * Defines the Node type configuration entity.
@@ -18,11 +17,11 @@ use Drupal\group\GroupTypeInterface;
  *   id = "group_type",
  *   label = @Translation("Group type"),
  *   handlers = {
- *     "access" = "Drupal\group\GroupTypeAccessControlHandler",
+ *     "access" = "Drupal\group\Entity\Access\GroupTypeAccessControlHandler",
  *     "form" = {
- *       "add" = "Drupal\group\Form\GroupTypeForm",
- *       "edit" = "Drupal\group\Form\GroupTypeForm",
- *       "delete" = "Drupal\group\Form\GroupTypeDeleteForm"
+ *       "add" = "Drupal\group\Entity\Form\GroupTypeForm",
+ *       "edit" = "Drupal\group\Entity\Form\GroupTypeForm",
+ *       "delete" = "Drupal\group\Entity\Form\GroupTypeDeleteForm"
  *     },
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupTypeListBuilder",
  *   },

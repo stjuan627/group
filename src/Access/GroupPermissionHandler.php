@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Access\PermissionHandler.
+ * Contains \Drupal\group\Access\GroupPermissionHandler.
  */
 
 namespace Drupal\group\Access;
@@ -47,7 +47,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
  * @see group.group.permissions.yml
  * @see \Drupal\group\GroupPermissions
  */
-class PermissionHandler implements PermissionHandlerInterface {
+class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
   use StringTranslationTrait;
 

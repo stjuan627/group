@@ -7,7 +7,7 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\GroupInterface;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
 
@@ -21,7 +21,7 @@ abstract class GroupAccessResult extends AccessResult {
    *
    * Checks the permission and adds a 'group.permissions' cache context.
    *
-   * @param \Drupal\group\GroupInterface $group
+   * @param \Drupal\group\Entity\GroupInterface $group
    *   The group for which to check a permission.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The account for which to check a permission.
@@ -42,7 +42,7 @@ abstract class GroupAccessResult extends AccessResult {
    *
    * Checks the permission and adds a 'group.permissions' cache contexts.
    *
-   * @param \Drupal\group\GroupInterface $group
+   * @param \Drupal\group\Entity\GroupInterface $group
    *   The group for which to check permissions.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The account for which to check permissions.

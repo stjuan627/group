@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupPermissions.
+ * Contains \Drupal\group\Access\GroupPermissions.
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Access;
 
 use Drupal\Core\Routing\UrlGeneratorTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;

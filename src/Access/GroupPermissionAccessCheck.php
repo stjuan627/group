@@ -7,7 +7,7 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\GroupInterface;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;

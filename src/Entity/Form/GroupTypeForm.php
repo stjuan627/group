@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupTypeForm.
+ * Contains \Drupal\group\Entity\Form\GroupTypeForm.
  */
 
-namespace Drupal\group\Form;
+namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;

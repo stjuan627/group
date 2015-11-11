@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\Form\GroupDeleteForm.
+ * Contains \Drupal\group\Entity\Form\GroupDeleteForm.
  */
 
-namespace Drupal\group\Form;
+namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupTypeInterface.
+ * Contains \Drupal\group\Entity\GroupTypeInterface.
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 

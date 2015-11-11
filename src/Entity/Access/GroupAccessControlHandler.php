@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupAccessControlHandler
+ * Contains \Drupal\group\Entity\Access\GroupAccessControlHandler
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Entity\Access;
 
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\Core\Access\AccessResult;
@@ -24,11 +24,8 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    if (!$entity instanceof GroupInterface) {
-      return AccessResult::neutral();
-    }
-
     //return AccessResult::allowedIfHasPermission($account, 'bypass group access');
+
     switch ($operation) {
       case 'view':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'view group');

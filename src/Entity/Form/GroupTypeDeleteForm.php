@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\Form\GroupTypeDeleteForm.
+ * Contains \Drupal\group\Entity\Form\GroupTypeDeleteForm.
  */
 
-namespace Drupal\group\Form;
+namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\EntityDeleteForm;

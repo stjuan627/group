@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupTypeAccessControlHandler.
+ * Contains \Drupal\group\Entity\Access\GroupTypeAccessControlHandler.
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Entity\Access;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;

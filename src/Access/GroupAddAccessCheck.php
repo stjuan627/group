@@ -11,7 +11,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\GroupTypeInterface;
+use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Determines access to for group add pages.
@@ -42,7 +42,7 @@ class GroupAddAccessCheck implements AccessInterface {
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The currently logged in account.
-   * @param \Drupal\group\GroupTypeInterface $group_type
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   (optional) The group type. If not specified, access is allowed if there
    *   exists at least one group type for which the user may create a group.
    *

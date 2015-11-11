@@ -9,7 +9,6 @@ namespace Drupal\group\Entity;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\group\GroupInterface;
 use Drupal\user\UserInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Language\LanguageInterface;
@@ -31,11 +30,11 @@ use Drupal\Core\Session\AccountInterface;
  *       "html" = "Drupal\group\Entity\Routing\GroupRouteProvider",
  *     },
  *     "form" = {
- *       "add" = "Drupal\group\Form\GroupForm",
- *       "edit" = "Drupal\group\Form\GroupForm",
- *       "delete" = "Drupal\group\Form\GroupDeleteForm",
+ *       "add" = "Drupal\group\Entity\Form\GroupForm",
+ *       "edit" = "Drupal\group\Entity\Form\GroupForm",
+ *       "delete" = "Drupal\group\Entity\Form\GroupDeleteForm",
  *     },
- *     "access" = "Drupal\group\GroupAccessControlHandler",
+ *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
  *   },
  *   list_cache_contexts = { "user" },
  *   base_table = "groups",

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Access\PermissionHandlerInterface.
+ * Contains \Drupal\group\Access\GroupPermissionHandlerInterface.
  */
 
 namespace Drupal\group\Access;
@@ -10,7 +10,7 @@ namespace Drupal\group\Access;
 /**
  * Defines an interface to list available permissions.
  */
-interface PermissionHandlerInterface {
+interface GroupPermissionHandlerInterface {
 
   /**
    * Gets all available permissions.
