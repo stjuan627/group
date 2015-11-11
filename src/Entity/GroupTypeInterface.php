@@ -29,4 +29,5 @@ interface GroupTypeInterface extends ConfigEntityInterface {
    *   The description of this group type.
    */
   public function getDescription();
+
 }

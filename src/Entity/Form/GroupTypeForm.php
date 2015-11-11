@@ -87,7 +87,7 @@ class GroupTypeForm extends EntityForm {
     $id = trim($form_state->getValue('id'));
     // '0' is invalid, since elsewhere we check it using empty().
     if ($id == '0') {
-      $form_state->setErrorByName('type', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
+      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
     }
   }
 

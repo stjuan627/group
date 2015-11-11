@@ -33,14 +33,14 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label" = "label"
  *   },
  *   links = {
- *     "edit-form" = "/admin/structure/types/manage/{group_type}",
- *     "delete-form" = "/admin/structure/types/manage/{group_type}/delete",
- *     "collection" = "/admin/structure/types",
+ *     "edit-form" = "/admin/group/types/manage/{group_type}",
+ *     "delete-form" = "/admin/group/types/manage/{group_type}/delete",
+ *     "collection" = "/admin/group/types"
  *   },
  *   config_export = {
  *     "id",
  *     "label",
- *     "description",
+ *     "description"
  *   }
  * )
  */
@@ -94,6 +94,8 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
+
+    // @todo Update all references to the group type. Should only be groups.
 
     /*if ($update && $this->getOriginalId() != $this->id()) {
       $update_count = node_type_update_nodes($this->getOriginalId(), $this->id());
