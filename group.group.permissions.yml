@@ -1,0 +1,47 @@
+administer group:
+  title: 'Administer group'
+  description: 'Administer the group, its content and members'
+  restrict access: TRUE
+administer members:
+  title: 'Administer group members'
+  description: 'Administer the group members'
+  restrict access: TRUE
+access member overview:
+  title: 'Access the member overview page'
+access member pages:
+  title: 'View the individual member pages'
+access member metadata:
+  title: 'View the individual member metadata: Join date, invited by, ...'
+edit own membership:
+  title: 'Edit own membership'
+  description: 'Edit own membership information'
+  limit to: ['member']
+edit group:
+  title: 'Edit group'
+  description: 'Edit the group information'
+delete group:
+  title: 'Delete group'
+  description: 'Delete the group'
+join group:
+  title: 'Join group'
+  description: 'Join with the click of a button<br />Enabling multiple means of joining a group may result in a weird user experience'
+  limit to: ['outsider']
+join group form:
+  title: 'Join group (form)'
+  description: 'Join by filling out the member form<br />Enabling multiple means of joining a group may result in a weird user experience'
+  limit to: ['outsider']
+request membership:
+  title: 'Request group membership'
+  description: 'Request to join the group with the click of a button<br />Enabling multiple means of joining a group may result in a weird user experience'
+  limit to: ['outsider']
+request membership form:
+  title: 'Request group membership (form)'
+  description: 'Request to join the group by filling out a member form<br />Enabling multiple means of joining a group may result in a weird user experience'
+  limit to: ['outsider']
+leave group:
+  title: 'Leave group'
+  limit to: ['member']
+view group:
+  title: 'View group'
+view members:
+  title: 'View group members'

@@ -1,4 +1,7 @@
 services:
+  group.permissions:
+    class: Drupal\group\Access\PermissionHandler
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver']
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
