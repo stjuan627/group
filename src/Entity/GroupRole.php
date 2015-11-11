@@ -3,19 +3,19 @@
 /**
  * @file
  * Contains \Drupal\group\Entity\GroupRole.
+ *
+ * @todo Other edit/delete paths, perhaps use a route provider?
  */
 
 namespace Drupal\group\Entity;
 
-use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
- * Defines the Node type configuration entity.
+ * Defines the Group role configuration entity.
  *
- * @todo Other edit/delete paths, perhaps use a route provider?
- *
- * @ConfigEntityRole(
+ * @ConfigEntityType(
  *   id = "group_role",
  *   label = @Translation("Group role"),
  *   handlers = {
@@ -34,8 +34,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label" = "label"
  *   },
  *   links = {
- *     "edit-form" = "/admin/group/types/manage/{group_type}",
- *     "delete-form" = "/admin/group/types/manage/{group_role}/delete",
+ *     "edit-form" = "/admin/group/roles/manage/{group_role}",
+ *     "delete-form" = "/admin/group/roles/manage/{group_role}/delete",
  *     "collection" = "/admin/group/roles"
  *   },
  *   config_export = {
@@ -44,7 +44,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   }
  * )
  */
-class GroupRole extends ConfigEntityBundleBase implements GroupRoleInterface {
+class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
 
   /**
    * The machine name of this group role.

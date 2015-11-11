@@ -11,7 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
- * Defines the Node type configuration entity.
+ * Defines the Group type configuration entity.
  *
  * @ConfigEntityType(
  *   id = "group_type",

@@ -113,7 +113,6 @@ class Group extends ContentEntityBase implements GroupInterface {
     return $this;
   }
 
-
   /**
    * {@inheritdoc}
    */
