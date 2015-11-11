@@ -215,11 +215,6 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setSetting('handler', 'default')
       ->setDefaultValueCallback('Drupal\group\Entity\Group::getCurrentUserId')
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
-        'label' => 'hidden',
-        'type' => 'author',
-        'weight' => 0,
-      ))
       ->setDisplayOptions('form', array(
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,
@@ -229,6 +224,7 @@ class Group extends ContentEntityBase implements GroupInterface {
           'placeholder' => '',
         ),
       ))
+      ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
