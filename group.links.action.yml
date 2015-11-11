@@ -9,3 +9,9 @@ group.group_type_add:
   title: 'Add group type'
   appears_on:
     - 'entity.group_type.collection'
+
+group.group_role_add:
+  route_name: 'group.role_add'
+  title: 'Add group role'
+  appears_on:
+    - 'entity.group_role.collection'

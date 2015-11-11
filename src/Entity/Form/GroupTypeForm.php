@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Entity\Form;
 
+use Drupal\group\Entity\GroupRole;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -65,6 +66,19 @@ class GroupTypeForm extends EntityForm {
       )),
     );
 
+    $options = [];
+    $group_roles = GroupRole::loadMultiple();
+    foreach ($group_roles as $role_name => $group_role) {
+      $options[$role_name] = $group_role->label();
+    }
+
+    $form['roles'] = array(
+      '#title' => t('Group roles'),
+      '#type' => 'checkboxes',
+      '#options' => $options,
+      '#default_value' => $type->getRoleIds(),
+    );
+
     return $form;
   }
 
@@ -99,6 +113,7 @@ class GroupTypeForm extends EntityForm {
     $type = $this->entity;
     $type->set('id', trim($type->id()));
     $type->set('label', trim($type->label()));
+    $type->set('roles', array_values(array_filter($type->getRoleIds())));
 
     $status = $type->save();
     $t_args = array('%label' => $type->label());

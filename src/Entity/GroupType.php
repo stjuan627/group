@@ -40,7 +40,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "description"
+ *     "description",
+ *     "roles"
  *   }
  * )
  */
@@ -68,6 +69,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   protected $description;
 
   /**
+   * A list of group roles this group type uses.
+   *
+   * @var \Drupal\group\Entity\GroupRoleInterface[]
+   */
+  protected $roles = [];
+
+  /**
    * {@inheritdoc}
    */
   public function id() {
@@ -87,6 +95,29 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function getDescription() {
     return $this->description;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoles() {
+    return GroupRole::loadMultiple($this->roles);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoleIds() {
+    return $this->roles;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    foreach ($this->getRoles() as $group_role) {
+      $this->addDependency('config', $group_role->getConfigDependencyName());
+    }
   }
 
   /**

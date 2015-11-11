@@ -21,3 +21,20 @@ group.type.*:
     description:
       type: 'text'
       label: 'Description'
+    roles:
+      type: 'sequence'
+      label: 'Group role ids'
+      sequence:
+        type: 'string'
+        label: 'Group role id'
+
+group.role.*:
+  type: 'config_entity'
+  label: 'Group role'
+  mapping:
+    id:
+      type: 'string'
+      label: 'Machine-readable name'
+    label:
+      type: 'label'
+      label: 'Label'

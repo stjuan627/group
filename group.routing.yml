@@ -70,6 +70,22 @@ entity.group_type.delete_form:
   requirements:
     _entity_access: 'group_type.delete'
 
+entity.group_role.collection:
+  path: '/admin/group/roles'
+  defaults:
+    _entity_list: 'group_role'
+    _title: 'Group roles'
+  requirements:
+    _permission: 'administer group'
+
+group.role_add:
+  path: '/admin/group/roles/add'
+  defaults:
+    _entity_form: 'group_role.add'
+    _title: 'Add group role'
+  requirements:
+    _permission: 'administer group'
+
 entity.group_role.edit_form:
   path: '/admin/group/roles/manage/{group_role}'
   defaults:

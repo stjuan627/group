@@ -30,4 +30,20 @@ interface GroupTypeInterface extends ConfigEntityInterface {
    */
   public function getDescription();
 
+  /**
+   * Gets the group roles.
+   *
+   * @return \Drupal\group\Entity\GroupRoleInterface[]
+   *   The group roles this group type uses.
+   */
+  public function getRoles();
+
+  /**
+   * Gets the role ids.
+   *
+   * @return string[]
+   *   The ids of the group roles this group type uses.
+   */
+  public function getRoleIds();
+
 }
