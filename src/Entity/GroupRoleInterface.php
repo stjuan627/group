@@ -14,12 +14,4 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface GroupRoleInterface extends ConfigEntityInterface {
 
-  /**
-   * Determines whether the group role is locked.
-   *
-   * @return string|false
-   *   The module name that locks the role or FALSE.
-   */
-  public function isLocked();
-
 }

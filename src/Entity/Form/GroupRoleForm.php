@@ -46,7 +46,6 @@ class GroupRoleForm extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $role->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
-      '#disabled' => $role->isLocked(),
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupRole', 'load'],
         'source' => array('label'),

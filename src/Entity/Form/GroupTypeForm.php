@@ -47,7 +47,6 @@ class GroupTypeForm extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $type->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
-      '#disabled' => $type->isLocked(),
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
         'source' => array('label'),

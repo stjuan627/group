@@ -15,14 +15,6 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface GroupTypeInterface extends ConfigEntityInterface {
 
   /**
-   * Determines whether the group type is locked.
-   *
-   * @return string|false
-   *   The module name that locks the type or FALSE.
-   */
-  public function isLocked();
-
-  /**
    * Gets the description.
    *
    * @return string

@@ -25,12 +25,7 @@ class GroupTypeAccessControlHandler extends EntityAccessControlHandler {
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /* @var $entity \Drupal\group\Entity\GroupType */
     if ($operation == 'delete') {
-      if ($entity->isLocked()) {
-        return AccessResult::forbidden()->addCacheableDependency($entity);
-      }
-      else {
-        return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
-      }
+      return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
     }
     return parent::checkAccess($entity, $operation, $account);
   }

@@ -85,14 +85,6 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function isLocked() {
-    $locked = \Drupal::state()->get('group.type.locked');
-    return isset($locked[$this->id()]) ? $locked[$this->id()] : FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getDescription() {
     return $this->description;
   }
