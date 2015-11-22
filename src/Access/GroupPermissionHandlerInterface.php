@@ -40,7 +40,10 @@ interface GroupPermissionHandlerInterface {
    *     membership types can use this permission. Possible values are:
    *     'anonymous', 'outsider', 'member'. Will default to all three when left
    *     empty.
-   *   - provider: (optional) The provider name of the permission.
+   *   - provider: (optional) The provider name of the permission. Defaults to
+   *     the module providing the permission. You may set this to another
+   *     module's name to make it appear as if the permission was provided by
+   *     that module.
    */
   public function getPermissions();
 

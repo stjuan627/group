@@ -155,8 +155,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
               $callback_permission += array(
                 'description' => NULL,
+                'provider' => $provider,
               );
-              $callback_permission['provider'] = $provider;
 
               $all_callback_permissions[$name] = $callback_permission;
             }
@@ -174,7 +174,9 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
         }
         $permission['title'] = $this->t($permission['title']);
         $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : NULL;
-        $permission['provider'] = $provider;
+        $permission += array(
+          'provider' => $provider,
+        );
       }
 
       $all_permissions += $permissions;
