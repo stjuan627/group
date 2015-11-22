@@ -32,7 +32,7 @@ class GroupListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\group\Entity\Group */
+    /* @var $entity \Drupal\group\Entity\GroupInterface */
     $row['id'] = $entity->id();
     $row['name'] = $entity->link();
     $row['type'] = $entity->type->entity->label();

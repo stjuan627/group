@@ -21,7 +21,7 @@ class GroupTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /* @var $type \Drupal\group\Entity\GroupType */
+    /* @var $type \Drupal\group\Entity\GroupTypeInterface */
     $form = parent::form($form, $form_state);
     $type = $this->entity;
 
@@ -108,7 +108,7 @@ class GroupTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /* @var $type \Drupal\group\Entity\GroupType */
+    /* @var $type \Drupal\group\Entity\GroupTypeInterface */
     $type = $this->entity;
     $type->set('label', trim($type->label()));
     $type->set('roles', array_values(array_filter($type->getRoleIds())));

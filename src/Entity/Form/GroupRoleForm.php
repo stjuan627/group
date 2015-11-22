@@ -20,7 +20,7 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /* @var $group_role \Drupal\group\Entity\GroupRole */
+    /* @var $group_role \Drupal\group\Entity\GroupRoleInterface */
     $form = parent::form($form, $form_state);
     $group_role = $this->entity;
 
@@ -86,7 +86,7 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /* @var $group_role \Drupal\group\Entity\GroupRole */
+    /* @var $group_role \Drupal\group\Entity\GroupRoleInterface */
     $group_role = $this->entity;
     $group_role->set('label', trim($group_role->label()));
 

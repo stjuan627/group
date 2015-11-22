@@ -23,7 +23,7 @@ class GroupRoleAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /* @var $entity \Drupal\group\Entity\GroupRole */
+    /* @var $entity \Drupal\group\Entity\GroupRoleInterface */
     if ($operation == 'delete') {
       return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
     }
