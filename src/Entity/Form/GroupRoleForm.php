@@ -13,8 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Form controller for group role forms.
- *
- * @todo Global vs Type.
  */
 class GroupRoleForm extends EntityForm {
 
@@ -22,21 +20,21 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /* @var $role \Drupal\group\Entity\GroupRole */
+    /* @var $group_role \Drupal\group\Entity\GroupRole */
     $form = parent::form($form, $form_state);
-    $role = $this->entity;
+    $group_role = $this->entity;
 
     if ($this->operation == 'add') {
       $form['#title'] = $this->t('Add group role');
     }
     else {
-      $form['#title'] = $this->t('Edit %label group role', array('%label' => $role->label()));
+      $form['#title'] = $this->t('Edit %label group role', array('%label' => $group_role->label()));
     }
 
     $form['label'] = array(
       '#title' => t('Name'),
       '#type' => 'textfield',
-      '#default_value' => $role->label(),
+      '#default_value' => $group_role->label(),
       '#description' => t('The human-readable name of this group role. This text will be displayed on the group permissions page.'),
       '#required' => TRUE,
       '#size' => 30,
@@ -44,13 +42,18 @@ class GroupRoleForm extends EntityForm {
 
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $role->id(),
+      '#default_value' => $group_role->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupRole', 'load'],
         'source' => array('label'),
       ),
       '#description' => t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
+    );
+
+    $form['weight'] = array(
+      '#type' => 'value',
+      '#value' => $group_role->getWeight(),
     );
     
     return $form;
@@ -83,13 +86,12 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /* @var $role \Drupal\group\Entity\GroupRole */
-    $role = $this->entity;
-    $role->set('id', trim($role->id()));
-    $role->set('label', trim($role->label()));
+    /* @var $group_role \Drupal\group\Entity\GroupRole */
+    $group_role = $this->entity;
+    $group_role->set('label', trim($group_role->label()));
 
-    $status = $role->save();
-    $t_args = array('%label' => $role->label());
+    $status = $group_role->save();
+    $t_args = array('%label' => $group_role->label());
 
     if ($status == SAVED_UPDATED) {
       drupal_set_message(t('The group role %label has been updated.', $t_args));
@@ -97,13 +99,11 @@ class GroupRoleForm extends EntityForm {
     elseif ($status == SAVED_NEW) {
       drupal_set_message(t('The group role %label has been added.', $t_args));
 
-      // @todo Exact link.
-      $context = array_merge($t_args, array('link' => $role->link($this->t('View'), 'collection')));
+      $context = array_merge($t_args, array('link' => $group_role->link($this->t('View'), 'collection')));
       $this->logger('group')->notice('Added group role %label.', $context);
     }
 
-    // @todo Exact link.
-    $form_state->setRedirectUrl($role->urlInfo('collection'));
+    $form_state->setRedirectUrl($group_role->urlInfo('collection'));
   }
 
 }

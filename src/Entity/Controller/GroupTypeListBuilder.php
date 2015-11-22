@@ -48,11 +48,20 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function getDefaultOperations(EntityInterface $entity) {
     $operations = parent::getDefaultOperations($entity);
-    // Place the edit operation after the operations added by field_ui.module
-    // which have the weights 15, 20, 25.
-    if (isset($operations['edit'])) {
-      $operations['edit']['weight'] = 30;
+    // Place the edit and edit permissions operation after the operations added
+    // by field_ui.module which have the weights 15, 20, 25.
+    if ($entity->hasLinkTemplate('permissions-form')) {
+      $operations['permissions'] = array(
+        'title' => t('Edit permissions'),
+        'weight' => 30,
+        'url' => $entity->urlInfo('permissions-form'),
+      );
     }
+
+    if (isset($operations['edit'])) {
+      $operations['edit']['weight'] = 35;
+    }
+
     return $operations;
   }
 

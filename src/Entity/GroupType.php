@@ -34,9 +34,10 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label" = "label"
  *   },
  *   links = {
+ *     "collection" = "/admin/group/types",
  *     "edit-form" = "/admin/group/types/manage/{group_type}",
  *     "delete-form" = "/admin/group/types/manage/{group_type}/delete",
- *     "collection" = "/admin/group/types"
+ *     "permissions-form" = "/admin/group/types/manage/{group_type}/permissions"
  *   },
  *   config_export = {
  *     "id",
