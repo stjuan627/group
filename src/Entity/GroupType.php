@@ -50,7 +50,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
   /**
-   * The machine name of this group type.
+   * The machine name of the group type.
    *
    * @var string
    */
@@ -64,14 +64,14 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   protected $label;
 
   /**
-   * A brief description of this node type.
+   * A brief description of the group type.
    *
    * @var string
    */
   protected $description;
 
   /**
-   * A list of group roles this group type uses.
+   * A list of group roles the group type uses.
    *
    * @var \Drupal\group\Entity\GroupRoleInterface[]
    */

@@ -53,7 +53,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
 
   /**
-   * The machine name of this group role.
+   * The machine name of the group role.
    *
    * @var string
    */
