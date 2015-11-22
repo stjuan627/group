@@ -38,3 +38,12 @@ group.role.*:
     label:
       type: 'label'
       label: 'Label'
+    weight:
+      type: 'integer'
+      label: 'Weight'
+    permissions:
+      type: 'sequence'
+      label: 'Permissions'
+      sequence:
+        type: 'string'
+        label: 'Group permission'
