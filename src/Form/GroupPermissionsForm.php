@@ -49,7 +49,6 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   public function __construct(GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface $module_handler) {
     $this->groupPermissionHandler = $permission_handler;
-    $this->groupRoleStorage = $group_role_storage;
     $this->moduleHandler = $module_handler;
   }
 
@@ -86,7 +85,12 @@ abstract class GroupPermissionsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $role_names = $role_permissions = [];
 
-    foreach ($this->getRoles() as $role_name => $group_role) {
+    // Sort the group roles using the static sort() method.
+    // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
+    $group_roles = $this->getRoles();
+    uasort($group_roles, '\Drupal\group\Entity\GroupRole::sort');
+
+    foreach ($group_roles as $role_name => $group_role) {
       // Retrieve group role names for columns.
       $role_names[$role_name] = $group_role->label();
 

@@ -38,6 +38,9 @@ group.role.*:
     label:
       type: 'label'
       label: 'Label'
+    internal:
+      type: 'boolean'
+      label: 'Group role is directly tied to a group type'
     weight:
       type: 'integer'
       label: 'Weight'

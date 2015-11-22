@@ -45,6 +45,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   config_export = {
  *     "id",
  *     "label",
+ *     "internal",
  *     "weight",
  *     "permissions"
  *   }
@@ -65,6 +66,13 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * @var string
    */
   protected $label;
+
+  /**
+   * Whether the group role is directly tied to a group type.
+   *
+   * @var bool
+   */
+  protected $internal = FALSE;
 
   /**
    * The weight of the group role in administrative listings.
@@ -90,13 +98,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPermissions() {
-    return $this->permissions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getWeight() {
     return $this->get('weight');
   }
@@ -108,6 +109,21 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     $this->set('weight', $weight);
     return $this;
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isInternal() {
+    return $this->internal;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPermissions() {
+    return $this->permissions;
+  }
+
 
   /**
    * {@inheritdoc}

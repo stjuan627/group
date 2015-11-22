@@ -21,6 +21,22 @@ class GroupRoleListBuilder extends DraggableListBuilder {
   /**
    * {@inheritdoc}
    */
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery()
+      ->condition('internal', 0, '=')
+      ->sort($this->entityType->getKey('id'));
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $query->pager($this->limit);
+    }
+
+    return array_values($query->execute());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getFormId() {
     return 'group_admin_roles';
   }

@@ -15,6 +15,33 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface GroupRoleInterface extends ConfigEntityInterface {
 
   /**
+   * Returns the weight.
+   *
+   * @return int
+   *   The weight of this role.
+   */
+  public function getWeight();
+
+  /**
+   * Sets the weight to the given value.
+   *
+   * @param int $weight
+   *   The desired weight.
+   *
+   * @return \Drupal\group\Entity\GroupRoleInterface
+   *   The group role this was called on.
+   */
+  public function setWeight($weight);
+
+  /**
+   * Returns whether the role is tied to a group type.
+   *
+   * @return bool
+   *   Whether the role is tied to a group type.
+   */
+  public function isInternal();
+
+  /**
    * Returns a list of permissions assigned to the role.
    *
    * @return array
@@ -106,24 +133,5 @@ interface GroupRoleInterface extends ConfigEntityInterface {
    *   The group role this was called on.
    */
   public function changePermissions(array $permissions = []);
-
-  /**
-   * Returns the weight.
-   *
-   * @return int
-   *   The weight of this role.
-   */
-  public function getWeight();
-
-  /**
-   * Sets the weight to the given value.
-   *
-   * @param int $weight
-   *   The desired weight.
-   *
-   * @return \Drupal\group\Entity\GroupRoleInterface
-   *   The group role this was called on.
-   */
-  public function setWeight($weight);
 
 }

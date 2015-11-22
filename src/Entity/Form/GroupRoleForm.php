@@ -24,6 +24,13 @@ class GroupRoleForm extends EntityForm {
     $form = parent::form($form, $form_state);
     $group_role = $this->entity;
 
+    if ($group_role->isInternal()) {
+      return [
+        '#title' => t('Error'),
+        'description' => ['#markup' => '<p>' . t('Cannot edit an internal group role directly.') . '</p>'],
+      ];
+    }
+
     if ($this->operation == 'add') {
       $form['#title'] = $this->t('Add group role');
     }
@@ -63,6 +70,11 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   protected function actions(array $form, FormStateInterface $form_state) {
+    // Do not show action buttons for an internal group role.
+    if ($this->entity->isInternal()) {
+      return [];
+    }
+
     $actions = parent::actions($form, $form_state);
     $actions['submit']['#value'] = t('Save group role');
     $actions['delete']['#value'] = t('Delete group role');
@@ -76,9 +88,14 @@ class GroupRoleForm extends EntityForm {
     parent::validateForm($form, $form_state);
 
     $id = trim($form_state->getValue('id'));
-    // '0' is invalid, since elsewhere we check it using empty().
+    // '0' is invalid, since elsewhere we might check it using empty().
     if ($id == '0') {
       $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
+    }
+
+    // Do not allow reserved prefixes.
+    if (preg_match('/^(a|o|m)_/i', $id)) {
+      $form_state->setErrorByName('id', $this->t("Group role machine names may not start with 'a_', 'o_' or 'm_'."));
     }
   }
 

@@ -117,25 +117,49 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
-    parent::postSave($storage, $update);
+  public function preSave(EntityStorageInterface $storage) {
+    // Store the id in a short variable for readability.
+    $id = $this->id();
 
-    // @todo Update all references to the group type. Should only be groups.
-
-    /*
-    if ($update && $this->getOriginalId() != $this->id()) {
-      $update_count = node_type_update_nodes($this->getOriginalId(), $this->id());
-      if ($update_count) {
-        drupal_set_message(\Drupal::translation()->formatPlural($update_count,
-          'Changed the content type of 1 post from %old-type to %type.',
-          'Changed the content type of @count posts from %old-type to %type.',
-          array(
-            '%old-type' => $this->getOriginalId(),
-            '%type' => $this->id(),
-          )));
-      }
+    // Create three internal group roles for the group type.
+    if ($this->isNew()) {
+      $replace = ['%group_type' => $this->label()];
+      GroupRole::create([
+        'id' => "a_$id",
+        'label' => t('Anonymous (%group_type)', $replace),
+        'internal' => TRUE,
+        'weight' => -102
+      ])->save();
+      GroupRole::create([
+        'id' => "o_$id",
+        'label' => t('Outsider (%group_type)', $replace),
+        'internal' => TRUE,
+        'weight' => -101,
+      ])->save();
+      GroupRole::create([
+        'id' => "m_$id",
+        'label' => t('Member (%group_type)', $replace),
+        'internal' => TRUE,
+        'weight' => -100,
+      ])->save();
     }
-    */
+
+    // Assign the three internal roles to the group type.
+    array_push($this->roles, "a_$id", "o_$id", "m_$id");
+    $this->roles = array_unique($this->roles);
+
+    parent::preSave($storage);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+    // Delete the internal group roles along with the group type.
+    foreach ($entities as $entity) {
+      $id = $entity->id();
+      entity_delete_multiple('group_role', ["a_$id", "o_$id", "m_$id"]);
+    }
   }
 
 }

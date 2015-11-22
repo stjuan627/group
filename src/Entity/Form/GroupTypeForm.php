@@ -8,14 +8,14 @@
 namespace Drupal\group\Entity\Form;
 
 use Drupal\group\Entity\GroupRole;
-use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Form controller for group type forms.
  */
-class GroupTypeForm extends EntityForm {
+class GroupTypeForm extends BundleEntityFormBase {
 
   /**
    * {@inheritdoc}
@@ -46,6 +46,8 @@ class GroupTypeForm extends EntityForm {
     $form['id'] = array(
       '#type' => 'machine_name',
       '#default_value' => $type->id(),
+      // We reduce the maximum length by 2 so we can create 3 special group
+      // roles with this machine name including a 2-character prefix.
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
@@ -68,7 +70,9 @@ class GroupTypeForm extends EntityForm {
     $options = [];
     $group_roles = GroupRole::loadMultiple();
     foreach ($group_roles as $role_name => $group_role) {
-      $options[$role_name] = $group_role->label();
+      if (!$group_role->isInternal()) {
+        $options[$role_name] = $group_role->label();
+      }
     }
 
     $form['roles'] = array(
@@ -78,7 +82,7 @@ class GroupTypeForm extends EntityForm {
       '#default_value' => $type->getRoleIds(),
     );
 
-    return $form;
+    return $this->protectBundleIdElement($form);
   }
 
   /**
@@ -98,7 +102,7 @@ class GroupTypeForm extends EntityForm {
     parent::validateForm($form, $form_state);
 
     $id = trim($form_state->getValue('id'));
-    // '0' is invalid, since elsewhere we check it using empty().
+    // '0' is invalid, since elsewhere we might check it using empty().
     if ($id == '0') {
       $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
     }
