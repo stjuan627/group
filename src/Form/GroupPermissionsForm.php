@@ -8,7 +8,6 @@
 namespace Drupal\group\Form;
 
 use Drupal\group\Access\GroupPermissionHandlerInterface;
-use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -45,12 +44,10 @@ abstract class GroupPermissionsForm extends FormBase {
    *
    * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
    *   The permission handler.
-   * @param \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage
-   *   The group role storage.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface
    *   The module handler.
    */
-  public function __construct(GroupPermissionHandlerInterface $permission_handler, GroupRoleStorageInterface $group_role_storage, ModuleHandlerInterface $module_handler) {
+  public function __construct(GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface $module_handler) {
     $this->groupPermissionHandler = $permission_handler;
     $this->groupRoleStorage = $group_role_storage;
     $this->moduleHandler = $module_handler;
@@ -62,7 +59,6 @@ abstract class GroupPermissionsForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('group.permissions'),
-      $container->get('entity.manager')->getStorage('group_role'),
       $container->get('module_handler')
     );
   }
@@ -81,7 +77,7 @@ abstract class GroupPermissionsForm extends FormBase {
    *   An array of group role objects.
    */
   protected function getRoles() {
-    return $this->groupRoleStorage->loadMultiple();
+    return [];
   }
 
   /**
