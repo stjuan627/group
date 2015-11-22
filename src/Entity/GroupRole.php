@@ -29,6 +29,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   },
  *   admin_permission = "administer group",
  *   config_prefix = "role",
+ *   static_cache = TRUE,
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label"
@@ -81,10 +82,12 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
 
-    // @todo Update all references to the group role. Should only be group types
-    //       and group memberships.
+    // @todo
+    // Update all references to the group role. Should only be group types and
+    // group memberships.
 
-    /*if ($update && $this->getOriginalId() != $this->id()) {
+    /*
+    if ($update && $this->getOriginalId() != $this->id()) {
       $update_count = node_type_update_nodes($this->getOriginalId(), $this->id());
       if ($update_count) {
         drupal_set_message(\Drupal::translation()->formatPlural($update_count,
@@ -96,21 +99,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
           )));
       }
     }
-    if ($update) {
-      // Clear the cached field definitions as some settings affect the field
-      // definitions.
-      $this->entityManager()->clearCachedFieldDefinitions();
-    }*/
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
-    parent::postDelete($storage, $entities);
-
-    // Clear the group role cache to reflect the removal.
-    $storage->resetCache(array_keys($entities));
+    */
   }
 
 }

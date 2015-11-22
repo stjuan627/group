@@ -28,6 +28,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   admin_permission = "administer group",
  *   config_prefix = "type",
  *   bundle_of = "group",
+ *   static_cache = TRUE,
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label"
@@ -120,7 +121,8 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
     // @todo Update all references to the group type. Should only be groups.
 
-    /*if ($update && $this->getOriginalId() != $this->id()) {
+    /*
+    if ($update && $this->getOriginalId() != $this->id()) {
       $update_count = node_type_update_nodes($this->getOriginalId(), $this->id());
       if ($update_count) {
         drupal_set_message(\Drupal::translation()->formatPlural($update_count,
@@ -132,21 +134,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
           )));
       }
     }
-    if ($update) {
-      // Clear the cached field definitions as some settings affect the field
-      // definitions.
-      $this->entityManager()->clearCachedFieldDefinitions();
-    }*/
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
-    parent::postDelete($storage, $entities);
-
-    // Clear the group type cache to reflect the removal.
-    $storage->resetCache(array_keys($entities));
+    */
   }
 
 }
