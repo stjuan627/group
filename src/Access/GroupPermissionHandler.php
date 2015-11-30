@@ -33,8 +33,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
  * leave group:
  *   # (required) Human readable name of the permission used in the UI.
  *   title: 'Leave group'
- *   # (optional) Boolean, when set to true a warning about site security will
- *   # be displayed on the Permissions page. Defaults to false.
+ *   # (optional) Define which roles can be assigned this permission.
  *   allowed for: ['member']
  *
  * # An array of callables used to generate dynamic permissions.
@@ -144,8 +143,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
         foreach ($permissions['permission_callbacks'] as $permission_callback) {
           $callback = $this->controllerResolver->getControllerFromDefinition($permission_callback);
           if ($callback_permissions = call_user_func($callback)) {
-            // Add any callback permissions to the array of permissions. Any
-            // defaults can then get processed below.
+            // Add any callback permissions to the array of permissions. In case
+            // of any conflict, the YAML ones will take precedence.
             foreach ($callback_permissions as $name => $callback_permission) {
               if (!is_array($callback_permission)) {
                 $callback_permission = array(
@@ -153,10 +152,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
                 );
               }
 
-              $callback_permission += array(
-                'description' => NULL,
-                'provider' => $provider,
-              );
+              // Set the provider if none was specified.
+              $callback_permission += ['provider' => $provider];
 
               $all_callback_permissions[$name] = $callback_permission;
             }
@@ -172,17 +169,27 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
             'title' => $permission,
           );
         }
-        $permission['title'] = $this->t($permission['title']);
-        $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : NULL;
-        $permission += array(
-          'provider' => $provider,
-        );
+
+        // Set the provider if none was specified.
+        $permission += ['provider' => $provider];
       }
 
       $all_permissions += $permissions;
     }
 
-    return $all_permissions + $all_callback_permissions;
+    // Combine all defined permissions and set the rest of the defaults.
+    $full_permissions = $all_permissions + $all_callback_permissions;
+    foreach ($full_permissions as &$permission) {
+      $permission['title'] = $this->t($permission['title']);
+      $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : '';
+      $permission += [
+        'restrict access' => FALSE,
+        'warning' => !empty($permission['restrict access']) ? $this->t('Warning: Give to trusted roles only; this permission has security implications.') : '',
+        'allowed for' => ['anonymous', 'outsider', 'member'],
+      ];
+    }
+
+    return $full_permissions;
   }
 
   /**

@@ -142,14 +142,6 @@ abstract class GroupPermissionsForm extends FormBase {
 
       // Then list all of the permissions for that provider.
       foreach ($permissions as $perm => $perm_item) {
-        // Fill in default values for the permission.
-        $perm_item += [
-          'description' => '',
-          'restrict access' => FALSE,
-          'warning' => !empty($perm_item['restrict access']) ? $this->t('Warning: Give to trusted roles only; this permission has security implications.') : '',
-          'allowed for' => ['anonymous', 'outsider', 'member'],
-        ];
-
         // Create a row for the permission, starting with the description cell.
         $form['permissions'][$perm]['description'] = array(
           '#type' => 'inline_template',
