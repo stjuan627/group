@@ -15,7 +15,7 @@ access member metadata:
 edit own membership:
   title: 'Edit own membership'
   description: 'Edit own membership information'
-  limit to: ['member']
+  allowed for: ['member']
 edit group:
   title: 'Edit group'
   description: 'Edit the group information'
@@ -26,25 +26,25 @@ join group:
   title: 'Join group'
   description: 'Join with the click of a button'
   warning: 'Warning: Enabling multiple means of joining a group may result in a weird user experience'
-  limit to: ['outsider']
+  allowed for: ['outsider']
 join group form:
   title: 'Join group (form)'
   description: 'Join by filling out the member form'
   warning: 'Warning: Enabling multiple means of joining a group may result in a weird user experience'
-  limit to: ['outsider']
+  allowed for: ['outsider']
 request membership:
   title: 'Request group membership'
   description: 'Request to join the group with the click of a button'
   warning: 'Warning: Enabling multiple means of joining a group may result in a weird user experience'
-  limit to: ['outsider']
+  allowed for: ['outsider']
 request membership form:
   title: 'Request group membership (form)'
   description: 'Request to join the group by filling out a member form'
   warning: 'Warning: Enabling multiple means of joining a group may result in a weird user experience'
-  limit to: ['outsider']
+  allowed for: ['outsider']
 leave group:
   title: 'Leave group'
-  limit to: ['member']
+  allowed for: ['member']
 view group:
   title: 'View group'
 view members:
