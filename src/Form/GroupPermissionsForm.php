@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Form;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
@@ -70,6 +71,17 @@ abstract class GroupPermissionsForm extends FormBase {
   }
 
   /**
+   * Gets a few basic instructions to show the user.
+   *
+   * @return string
+   *   A translated string to display atop the form.
+   */
+  protected function getInfo() {
+    $red_x = new FormattableMarkup('<span style="color: #ff0000;">x</span>', []);
+    return '<p>' . $this->t('Cells with an @red_x indicate that the permission is not available for that role.', ['@red_x' => $red_x]) . '</p>';
+  }
+
+  /**
    * Gets the group roles to display in this form.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
@@ -101,6 +113,11 @@ abstract class GroupPermissionsForm extends FormBase {
         'is_member' => $group_role->isMember(),
       ];
     }
+
+    // Render the general information.
+    $form['info'] = [
+      '#markup' => new FormattableMarkup($this->getInfo(), []),
+    ];
 
     // Render the link for hiding descriptions.
     $form['system_compact_link'] = [

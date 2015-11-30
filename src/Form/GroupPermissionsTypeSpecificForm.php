@@ -25,6 +25,23 @@ class GroupPermissionsTypeSpecificForm extends GroupPermissionsForm {
   /**
    * {@inheritdoc}
    */
+  protected function getInfo() {
+    $render = [
+      '#prefix' => '<p>' . $this->t('Group types use three special roles:') . '</p>',
+      '#theme' => 'item_list',
+      '#items' => [
+        ['#markup' => $this->t('<strong>Anonymous:</strong> This is the same as the global Anonymous role, meaning the user has no account.')],
+        ['#markup' => $this->t('<strong>Outsider:</strong> This means the user has an account on the site, but is not a member of the group.')],
+        ['#markup' => $this->t('<strong>Member:</strong> The default role for anyone in the group. Behaves like the "Authenticated user" role does globally.')],
+      ],
+    ];
+    $markup = \Drupal::service('renderer')->render($render)->__toString();
+    return $markup . parent::getInfo();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function getRoles() {
     return $this->groupType->getRoles();
   }
