@@ -120,6 +120,27 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
+  public function isAnonymous() {
+    return $this->internal && strpos($this->id(), 'a_') === 0;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isOutsider() {
+    return $this->internal && strpos($this->id(), 'o_') === 0;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isMember() {
+    return !$this->isAnonymous() && !$this->isOutsider();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermissions() {
     return $this->permissions;
   }

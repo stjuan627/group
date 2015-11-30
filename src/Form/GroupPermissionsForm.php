@@ -83,19 +83,23 @@ abstract class GroupPermissionsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $role_names = $role_permissions = [];
+    $role_info = [];
 
     // Sort the group roles using the static sort() method.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
     $group_roles = $this->getRoles();
     uasort($group_roles, '\Drupal\group\Entity\GroupRole::sort');
 
+    // Retrieve information for every role to user further down. We do this to
+    // prevent the same methods from being fired (rows * permissions) times.
     foreach ($group_roles as $role_name => $group_role) {
-      // Retrieve group role names for columns.
-      $role_names[$role_name] = $group_role->label();
-
-      // Fetch permissions for the group roles.
-      $role_permissions[$role_name] = $group_role->getPermissions();
+      $role_info[$role_name] = [
+        'label' => $group_role->label(),
+        'permissions' => $group_role->getPermissions(),
+        'is_anonymous' => $group_role->isAnonymous(),
+        'is_outsider' => $group_role->isOutsider(),
+        'is_member' => $group_role->isMember(),
+      ];
     }
 
     // Render the link for hiding descriptions.
@@ -114,9 +118,9 @@ abstract class GroupPermissionsForm extends FormBase {
     ];
 
     // Create a column with header for every group role.
-    foreach ($role_names as $name) {
+    foreach ($role_info as $info) {
       $form['permissions']['#header'][] = [
-        'data' => $name,
+        'data' => $info['label'],
         'class' => array('checkbox'),
       ];
     }
@@ -133,7 +137,7 @@ abstract class GroupPermissionsForm extends FormBase {
       // Start each section with a full width row containing the provider name.
       $form['permissions'][$provider] = [[
         '#wrapper_attributes' => [
-          'colspan' => count($role_names) + 1,
+          'colspan' => count($group_roles) + 1,
           'class' => ['module'],
           'id' => 'module-' . $provider,
         ],
@@ -157,19 +161,39 @@ abstract class GroupPermissionsForm extends FormBase {
           $form['permissions'][$perm]['description']['#context']['warning'] = $perm_item['warning'];
         }
 
-        // Finally build a checkbox cells for every group role.
-        foreach ($role_names as $rid => $name) {
-          $form['permissions'][$perm][$rid] = array(
-            '#title' => $name . ': ' . $perm_item['title'],
-            '#title_display' => 'invisible',
-            '#wrapper_attributes' => array(
-              'class' => array('checkbox'),
-            ),
-            '#type' => 'checkbox',
-            '#default_value' => in_array($perm, $role_permissions[$rid]) ? 1 : 0,
-            '#attributes' => array('class' => array('rid-' . $rid, 'js-rid-' . $rid)),
-            '#parents' => array($rid, $perm),
-          );
+        // Finally build a checkbox cell for every group role.
+        foreach ($role_info as $role_name => $info) {
+          // Determine whether the permission is available for this role.
+          $na = $info['is_anonymous'] && !in_array('anonymous', $perm_item['allowed for']);
+          $na = $na || ($info['is_outsider'] && !in_array('outsider', $perm_item['allowed for']));
+          $na = $na || ($info['is_member'] && !in_array('member', $perm_item['allowed for']));
+
+          // Show a red 'x' if the permission is unavailable.
+          if ($na) {
+            $form['permissions'][$perm][$role_name] = array(
+              '#title' => $info['label'] . ': ' . $perm_item['title'],
+              '#title_display' => 'invisible',
+              '#wrapper_attributes' => array(
+                'class' => array('checkbox'),
+                'style' => 'color: #ff0000;',
+              ),
+              '#markup' => 'x',
+            );
+          }
+          // Show a checkbox if the permissions is available.
+          else {
+            $form['permissions'][$perm][$role_name] = array(
+              '#title' => $info['label'] . ': ' . $perm_item['title'],
+              '#title_display' => 'invisible',
+              '#wrapper_attributes' => array(
+                'class' => array('checkbox'),
+              ),
+              '#type' => 'checkbox',
+              '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
+              '#attributes' => array('class' => array('rid-' . $role_name, 'js-rid-' . $role_name)),
+              '#parents' => array($role_name, $perm),
+            );
+          }
         }
       }
     }

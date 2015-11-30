@@ -42,6 +42,30 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function isInternal();
 
   /**
+   * Returns whether the role is for an anonymous user.
+   *
+   * @return bool
+   *   Whether the role is for an anonymous user.
+   */
+  public function isAnonymous();
+
+  /**
+   * Returns whether the role is for an outsider.
+   *
+   * @return bool
+   *   Whether the role is for an outsider.
+   */
+  public function isOutsider();
+
+  /**
+   * Returns whether the role is for a member.
+   *
+   * @return bool
+   *   Whether the role is for a member.
+   */
+  public function isMember();
+
+  /**
    * Returns a list of permissions assigned to the role.
    *
    * @return array
