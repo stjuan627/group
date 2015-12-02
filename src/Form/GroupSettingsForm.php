@@ -49,7 +49,7 @@ class GroupSettingsForm extends FormBase {
    *   Form definition array.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['group_settings']['#markup'] = 'Settings form for Group. Manage field settings here.';
+    $form['group_settings']['#markup'] = 'Settings form for Group. Nothing to see here yet.';
     return $form;
   }
 }

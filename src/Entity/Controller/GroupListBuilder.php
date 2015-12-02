@@ -40,4 +40,13 @@ class GroupListBuilder extends EntityListBuilder {
     return $row + parent::buildRow($entity);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function render() {
+    $build = parent::render();
+    $build['table']['#empty'] = $this->t('There are no groups yet.');
+    return $build;
+  }
+
 }

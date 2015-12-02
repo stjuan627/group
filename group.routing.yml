@@ -35,7 +35,7 @@ entity.group.collection:
   path: '/group/list'
   defaults:
     _entity_list: 'group'
-    _title: 'Group List'
+    _title: 'Groups'
   options:
     _group_operation_route: TRUE
   requirements:
