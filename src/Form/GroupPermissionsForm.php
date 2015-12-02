@@ -115,9 +115,11 @@ abstract class GroupPermissionsForm extends FormBase {
     }
 
     // Render the general information.
-    $form['info'] = [
-      '#markup' => new FormattableMarkup($this->getInfo(), []),
-    ];
+    if ($info = $this->getInfo()) {
+      $form['info'] = [
+        '#markup' => new FormattableMarkup($info, []),
+      ];
+    }
 
     // Render the link for hiding descriptions.
     $form['system_compact_link'] = [
