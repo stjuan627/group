@@ -35,6 +35,8 @@ class GroupListBuilder extends EntityListBuilder {
     /* @var $entity \Drupal\group\Entity\GroupInterface */
     $row['id'] = $entity->id();
     $row['name'] = $entity->link();
+    // TODO try this instead:
+    // $row['name'] = $entity->toLink()->toRenderable();
     $row['type'] = $entity->type->entity->label();
     $row['uid'] = $entity->uid->entity->label();
     return $row + parent::buildRow($entity);
