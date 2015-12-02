@@ -98,6 +98,20 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
+  public function prettyLabel() {
+    $label = $this->label();
+
+    // Strip the internal info off of the label.
+    if ($this->isInternal()) {
+      $label = preg_replace('/ \([^)]+\)$/i', '', $label);
+    }
+
+    return $label;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getWeight() {
     return $this->get('weight');
   }

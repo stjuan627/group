@@ -15,6 +15,17 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface GroupRoleInterface extends ConfigEntityInterface {
 
   /**
+   * Returns the label for use on administrative pages.
+   *
+   * Internal roles tend to list some information in their label that isn't
+   * always useful in admin interfaces. Use this method to get a prettier label.
+   *
+   * @return string
+   *   The pretty label of the group role.
+   */
+  public function prettyLabel();
+
+  /**
    * Returns the weight.
    *
    * @return int
