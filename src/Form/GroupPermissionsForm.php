@@ -117,6 +117,8 @@ abstract class GroupPermissionsForm extends FormBase {
     // Render the general information.
     if ($info = $this->getInfo()) {
       $form['info'] = [
+        // We use FormattableMarkup because the 'style' attribute gets escaped
+        // otherwise and we use it to display the red x.
         '#markup' => new FormattableMarkup($info, []),
       ];
     }
