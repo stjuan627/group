@@ -34,7 +34,9 @@ class GroupListBuilder extends EntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\group\Entity\GroupInterface */
     $row['id'] = $entity->id();
-    $row['name'] = \Drupal::service('renderer')->render($entity->toLink()->toRenderable());
+    // EntityListBuilder sets the table rows using the #rows property, so we
+    // need to add the render array using the 'data' key.
+    $row['name']['data'] = $entity->toLink()->toRenderable();
     $row['type'] = $entity->type->entity->label();
     $row['uid'] = $entity->uid->entity->label();
     return $row + parent::buildRow($entity);
