@@ -73,12 +73,16 @@ abstract class GroupPermissionsForm extends FormBase {
   /**
    * Gets a few basic instructions to show the user.
    *
-   * @return string
-   *   A translated string to display atop the form.
+   * @return array
+   *   A render array to display atop the form.
    */
   protected function getInfo() {
-    $red_x = new FormattableMarkup('<span style="color: #ff0000;">x</span>', []);
-    return '<p>' . $this->t('Cells with an @red_x indicate that the permission is not available for that role.', ['@red_x' => $red_x]) . '</p>';
+    // Format a message explaining the cells with a red x inside them.
+    $replace = ['@red_x' => new FormattableMarkup('<span style="color: #ff0000;">x</span>', [])];
+    $message =  $this->t('Cells with an @red_x indicate that the permission is not available for that role.', $replace);
+
+    // We use FormattableMarkup so the 'style' attribute doesn't get escaped.
+    return ['red_x_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
   }
 
   /**
@@ -116,11 +120,7 @@ abstract class GroupPermissionsForm extends FormBase {
 
     // Render the general information.
     if ($info = $this->getInfo()) {
-      $form['info'] = [
-        // We use FormattableMarkup because the 'style' attribute gets escaped
-        // otherwise and we use it to display the red x.
-        '#markup' => new FormattableMarkup($info, []),
-      ];
+      $form['info'] = $info;
     }
 
     // Render the link for hiding descriptions.
