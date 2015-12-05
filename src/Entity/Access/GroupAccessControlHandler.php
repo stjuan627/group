@@ -36,7 +36,8 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
       case 'delete':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'delete group');
     }
-    return AccessResult::allowed();
+
+    return AccessResult::neutral();
   }
 
   /**

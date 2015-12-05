@@ -11,7 +11,6 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -36,9 +35,7 @@ use Drupal\Core\Session\AccountInterface;
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
  *   },
- *   list_cache_contexts = { "user" },
  *   base_table = "groups",
- *   admin_permission = "administer group",
  *   fieldable = TRUE,
  *   entity_keys = {
  *     "id" = "id",
@@ -116,41 +113,8 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
-    if ($operation == 'create') {
-      return parent::access($operation, $account, $return_as_object);
-    }
-
-    return \Drupal::entityManager()
-      ->getAccessControlHandler($this->entityTypeId)
-      ->access($this, $operation, $account, $return_as_object);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function hasPermission($permission, AccountInterface $account) {
     return TRUE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function prepareLangcode() {
-    $langcode = $this->language()->getId();
-
-    // Try to show Groups in the content language if it's set.
-    if (\Drupal::moduleHandler()->moduleExists('language')) {
-      $group_translations = $this->getTranslationLanguages();
-      $content_negotiation_langcode = \Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId();
-
-      // If there is a translation available, use it.
-      if (isset($group_translations[$content_negotiation_langcode])) {
-        $langcode = $content_negotiation_langcode;
-      }
-    }
-
-    return $langcode;
   }
 
   /**
@@ -176,7 +140,7 @@ class Group extends ContentEntityBase implements GroupInterface {
 
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language'))
-      ->setDescription(t('The node language code.'))
+      ->setDescription(t('The group language code.'))
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', array(
         'type' => 'hidden',
@@ -191,11 +155,6 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setSetting('max_length', 255)
-      /*->setSettings(array(
-        'default_value' => '',
-        'max_length' => 255,
-        'text_processing' => 0,
-      ))*/
       ->setDisplayOptions('view', array(
         'label' => 'hidden',
         'type' => 'string',
