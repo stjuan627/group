@@ -21,3 +21,14 @@ services:
 #    arguments: ['@request_stack', '@current_user', '@user_permissions_hash_generator']
 #    tags:
 #      - { name: cache.context}
+  plugin.manager.group_content:
+    class: Drupal\group\GroupContentPluginManager
+    parent: default_plugin_manager
+# TODO Implement this (look at filter module).
+# Prevent modules providing group content from being uninstalled.
+#  group.uninstall_validator:
+#    class: Drupal\group\GroupContentUninstallValidator
+#    tags:
+#      - { name: module_install.uninstall_validator }
+#    arguments: ['@plugin.manager.group_content', '@entity.manager', '@string_translation']
+#    lazy: true
