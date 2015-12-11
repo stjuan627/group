@@ -10,7 +10,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Form controller for the group entity edit forms.
+ * Form controller for the group edit forms.
  *
  * @ingroup group
  */
@@ -23,4 +23,5 @@ class GroupForm extends ContentEntityForm {
     $form_state->setRedirect('entity.group.collection');
     return parent::save($form, $form_state);
   }
+
 }
