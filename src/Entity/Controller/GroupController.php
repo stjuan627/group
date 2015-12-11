@@ -9,7 +9,6 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatter;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Returns responses for Group routes.
  */
-class GroupController extends ControllerBase implements ContainerInjectionInterface {
+class GroupController extends ControllerBase {
 
   /**
    * The date formatter service.
