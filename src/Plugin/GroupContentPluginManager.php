@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\group\GroupContentPluginManager.
+ * Contains \Drupal\group\Plugin\GroupContentPluginManager.
  */
 
-namespace Drupal\group;
+namespace Drupal\group\Plugin;
 
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;

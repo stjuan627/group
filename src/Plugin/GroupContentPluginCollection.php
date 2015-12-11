@@ -10,7 +10,7 @@ namespace Drupal\group\Plugin;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
- * A collection of image effects.
+ * A collection of group content plugins.
  */
 class GroupContentPluginCollection extends DefaultLazyPluginCollection {
 

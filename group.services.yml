@@ -22,7 +22,7 @@ services:
 #    tags:
 #      - { name: cache.context}
   plugin.manager.group_content:
-    class: Drupal\group\GroupContentPluginManager
+    class: Drupal\group\Plugin\GroupContentPluginManager
     parent: default_plugin_manager
 # TODO Implement this (look at filter module).
 # Prevent modules providing group content from being uninstalled.
