@@ -18,6 +18,13 @@ namespace Drupal\group\Plugin;
 interface GroupContentInterface {
 
   /**
+   * Returns the plugin provider.
+   *
+   * @return string
+   */
+  public function getProvider();
+
+  /**
    * Returns the administrative label for this filter plugin.
    *
    * @return string

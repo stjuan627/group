@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\group\Plugin\GroupContentPluginCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
@@ -43,7 +44,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "id",
  *     "label",
  *     "description",
- *     "roles"
+ *     "roles",
+ *     "content"
  *   }
  * )
  */
@@ -76,6 +78,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * @var \Drupal\group\Entity\GroupRoleInterface[]
    */
   protected $roles = [];
+
+  /**
+   * The enabled group content plugin IDs for the group type.
+   *
+   * @var string[]
+   */
+  protected $content = [];
+
+  /**
+   * Holds the collection of group content plugins the group type uses.
+   *
+   * @var \Drupal\group\Plugin\GroupContentPluginCollection
+   */
+  protected $contentCollection;
 
   /**
    * {@inheritdoc}
@@ -160,6 +176,41 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       $id = $entity->id();
       entity_delete_multiple('group_role', ["a_$id", "o_$id", "m_$id"]);
     }
+  }
+
+  /**
+   * Returns the group content plugin manager.
+   *
+   * @return \Drupal\Component\Plugin\PluginManagerInterface
+   *   The group content plugin manager.
+   */
+  protected function getContentPluginManager() {
+    return \Drupal::service('plugin.manager.group_content');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentIds() {
+    return $this->content;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContent() {
+    if (!$this->contentCollection) {
+      $this->contentCollection = new GroupContentPluginCollection($this->getContentPluginManager(), $this->content);
+      $this->contentCollection->sort();
+    }
+    return $this->contentCollection;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginCollections() {
+    return array('content' => $this->getContent());
   }
 
 }

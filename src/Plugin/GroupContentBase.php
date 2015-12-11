@@ -22,6 +22,13 @@ abstract class GroupContentBase extends PluginBase implements GroupContentInterf
   /**
    * {@inheritdoc}
    */
+  public function getProvider() {
+    return $this->pluginDefinition['provider'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getLabel() {
     return $this->pluginDefinition['label'];
   }

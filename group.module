@@ -6,6 +6,17 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function group_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'entity.group_type.content_form':
+      return '<p>' . t('Entities that can be added to this group type.') . '</p>';
+  }
+}
 
 /**
  * Implements hook_theme().
