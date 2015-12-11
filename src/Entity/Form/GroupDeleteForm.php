@@ -12,9 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 /**
- * Provides a form for deleting a content_entity_example entity.
- *
- * @ingroup content_entity_example
+ * Provides a form for deleting a group.
  */
 class GroupDeleteForm extends ContentEntityConfirmFormBase {
 
