@@ -69,7 +69,7 @@ class GroupTypeController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_content'),
+      $container->get('plugin.manager.group_content_enabler'),
       $container->get('module_handler'),
       $container->get('entity_type.manager')
     );
@@ -85,7 +85,10 @@ class GroupTypeController extends ControllerBase {
     $this->groupType = $group_type;
 
     $plugins = $this->pluginManager->getDefinitions();
-    $enabled = $this->groupType->getContentIds();
+    $enabled = [];
+    foreach ($this->groupType->enabledContent() as $plugin_id => $instance) {
+      $enabled[] = $plugin_id;
+    }
 
     // Build the list of enabled group content effects for this group type.
     $page['content'] = [
@@ -145,10 +148,13 @@ class GroupTypeController extends ControllerBase {
    *   self::getOperations().
    */
   protected function getDefaultOperations($plugin_id) {
-    $enabled = in_array($plugin_id, $this->groupType->getContentIds());
+    $enabled = [];
+    foreach ($this->groupType->enabledContent() as $plugin_id => $instance) {
+      $enabled[] = $plugin_id;
+    }
 
     $operations['toggle'] = [
-      'title' => $enabled ? $this->t('Disable') : $this->t('Enable'),
+      'title' => in_array($plugin_id, $enabled) ? $this->t('Disable') : $this->t('Enable'),
       'weight' => 99,
       'url' => new Url('group_type.content', ['group_type' => $this->groupType->id()]),
     ];

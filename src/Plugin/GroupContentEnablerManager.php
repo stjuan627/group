@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Plugin\GroupContentPluginManager.
+ * Contains \Drupal\group\Plugin\GroupContentEnablerManager.
  */
 
 namespace Drupal\group\Plugin;
@@ -12,18 +12,18 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
 /**
- * Manages GroupContent plugin implementations.
+ * Manages GroupContentEnabler plugin implementations.
  *
  * @see hook_group_content_info_alter()
- * @see \Drupal\group\Annotation\GroupContent
- * @see \Drupal\group\Plugin\GroupContentInterface
- * @see \Drupal\group\Plugin\GroupContentBase
+ * @see \Drupal\group\Annotation\GroupContentEnabler
+ * @see \Drupal\group\Plugin\GroupContentEnablerInterface
+ * @see \Drupal\group\Plugin\GroupContentEnablerBase
  * @see plugin_api
  */
-class GroupContentPluginManager extends DefaultPluginManager {
+class GroupContentEnablerManager extends DefaultPluginManager {
 
   /**
-   * Constructs a GroupContentPluginManager object.
+   * Constructs a GroupContentEnablerManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -34,9 +34,9 @@ class GroupContentPluginManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/GroupContent', $namespaces, $module_handler, 'Drupal\group\Plugin\GroupContentInterface', 'Drupal\group\Annotation\GroupContent');
+    parent::__construct('Plugin/GroupContentEnabler', $namespaces, $module_handler, 'Drupal\group\Plugin\GroupContentEnablerInterface', 'Drupal\group\Annotation\GroupContentEnabler');
     $this->alterInfo('group_content_info');
-    $this->setCacheBackend($cache_backend, 'group_content_plugins');
+    $this->setCacheBackend($cache_backend, 'group_content_enablers');
   }
 
 }

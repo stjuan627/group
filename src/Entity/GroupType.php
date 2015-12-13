@@ -7,7 +7,8 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\group\Plugin\GroupContentPluginCollection;
+use Drupal\group\Plugin\GroupContentEnablerInterface;
+use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
@@ -80,16 +81,16 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   protected $roles = [];
 
   /**
-   * The enabled group content plugin IDs for the group type.
+   * The content enabler plugin configuration for the group type.
    *
    * @var string[]
    */
   protected $content = [];
 
   /**
-   * Holds the collection of group content plugins the group type uses.
+   * Holds the collection of content enabler plugins the group type uses.
    *
-   * @var \Drupal\group\Plugin\GroupContentPluginCollection
+   * @var \Drupal\group\Plugin\GroupContentEnablerCollection
    */
   protected $contentCollection;
 
@@ -179,28 +180,21 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   }
 
   /**
-   * Returns the group content plugin manager.
+   * Returns the content enabler plugin manager.
    *
    * @return \Drupal\Component\Plugin\PluginManagerInterface
    *   The group content plugin manager.
    */
-  protected function getContentPluginManager() {
-    return \Drupal::service('plugin.manager.group_content');
+  protected function getContentEnablerManager() {
+    return \Drupal::service('plugin.manager.group_content_enabler');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentIds() {
-    return $this->content;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getContent() {
+  public function enabledContent() {
     if (!$this->contentCollection) {
-      $this->contentCollection = new GroupContentPluginCollection($this->getContentPluginManager(), $this->content);
+      $this->contentCollection = new GroupContentEnablerCollection($this->getContentEnablerManager(), $this->content);
       $this->contentCollection->sort();
     }
     return $this->contentCollection;
@@ -210,7 +204,25 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function getPluginCollections() {
-    return array('content' => $this->getContent());
+    return array('content' => $this->enabledContent());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function enableContent(array $configuration) {
+    $configuration['uuid'] = $this->uuidGenerator()->generate();
+    $this->getContent()->addInstanceId($configuration['uuid'], $configuration);
+    return $configuration['uuid'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function disableContent(GroupContentEnablerInterface $content) {
+    $this->enabledContent()->removeInstanceId($content->getUuid());
+    $this->save();
+    return $this;
   }
 
 }
