@@ -46,8 +46,7 @@ class GroupAddAccessCheck implements AccessInterface {
    *   (optional) The group type. If not specified, access is allowed if there
    *   exists at least one group type for which the user may create a group.
    *
-   * @return string
-   *   A \Drupal\Core\Access\AccessInterface constant value.
+   * @return \Drupal\Core\Access\AccessResultInterface
    */
   public function access(AccountInterface $account, GroupTypeInterface $group_type = NULL) {
     $access_control_handler = $this->entityManager->getAccessControlHandler('group');
