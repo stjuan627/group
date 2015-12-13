@@ -57,6 +57,20 @@ group_type.content:
     _title: 'Configure available content'
   requirements:
     _permission: 'administer group'
+group_type.content_enable:
+  path: '/admin/group/types/manage/{group_type}/content/enable/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::enableContent'
+    _title: 'Enable plugin'
+  requirements:
+    _permission: 'administer group'
+group_type.content_disable:
+  path: '/admin/group/types/manage/{group_type}/content/disable/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::disableContent'
+    _title: 'Disable plugin'
+  requirements:
+    _permission: 'administer group'
 
 entity.group_type.collection:
   path: '/admin/group/types'

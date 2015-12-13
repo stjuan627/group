@@ -29,6 +29,18 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    // We run ::setConfiguration to populate the configuration key with the
+    // actual configuration stored in $configuration['data'] and to map the
+    // other configuration keys such as the UUID to the right properties.
+    $this->setConfiguration($configuration);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getProvider() {
     return $this->pluginDefinition['provider'];
   }
@@ -66,6 +78,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getConfiguration() {
     return array(
+      'id' => $this->getPluginId(),
       'uuid' => $this->getUuid(),
       'data' => $this->configuration,
     );
@@ -76,8 +89,8 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function setConfiguration(array $configuration) {
     $configuration += array(
-      'data' => array(),
       'uuid' => '',
+      'data' => array(),
     );
     $this->configuration = $configuration['data'] + $this->defaultConfiguration();
     $this->uuid = $configuration['uuid'];

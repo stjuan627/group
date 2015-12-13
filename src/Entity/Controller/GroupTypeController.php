@@ -86,8 +86,8 @@ class GroupTypeController extends ControllerBase {
 
     $plugins = $this->pluginManager->getDefinitions();
     $enabled = [];
-    foreach ($this->groupType->enabledContent() as $plugin_id => $instance) {
-      $enabled[] = $plugin_id;
+    foreach ($this->groupType->enabledContent() as $plugin) {
+      $enabled[] = $plugin->getPluginId();
     }
 
     // Build the list of enabled group content effects for this group type.
@@ -148,16 +148,25 @@ class GroupTypeController extends ControllerBase {
    *   self::getOperations().
    */
   protected function getDefaultOperations($plugin_id) {
-    $enabled = [];
-    foreach ($this->groupType->enabledContent() as $plugin_id => $instance) {
-      $enabled[] = $plugin_id;
+    $enabled = $operations = [];
+    foreach ($this->groupType->enabledContent() as $plugin) {
+      $enabled[] = $plugin->getPluginId();
     }
 
-    $operations['toggle'] = [
-      'title' => in_array($plugin_id, $enabled) ? $this->t('Disable') : $this->t('Enable'),
-      'weight' => 99,
-      'url' => new Url('group_type.content', ['group_type' => $this->groupType->id()]),
-    ];
+    $route_params = ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id];
+    if (in_array($plugin_id, $enabled)) {
+      $operations['disable'] = [
+        'title' => $this->t('Disable'),
+        'weight' => 99,
+        'url' => new Url('group_type.content_disable', $route_params),
+      ];
+    }
+    else {
+      $operations['enable'] = [
+        'title' => $this->t('Enable'),
+        'url' => new Url('group_type.content_enable', $route_params),
+      ];
+    }
 
     return $operations;
   }
@@ -178,6 +187,41 @@ class GroupTypeController extends ControllerBase {
     );
 
     return $build;
+  }
+
+  /**
+   * Adds an unconfigured content enabler plugin to the group type.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   * @param string $plugin_id
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   */
+  public function enableContent(GroupTypeInterface $group_type, $plugin_id) {
+    // @todo validation here.
+
+    $enabler_id = $group_type->enableContent(['id' => $plugin_id]);
+    $group_type->save();
+
+    if (!empty($enabler_id)) {
+      drupal_set_message($this->t('The content was successfully enabled for the group type.'));
+    }
+
+    return $this->redirect('group_type.content', array('group_type' => $group_type->id()));
+  }
+
+  /**
+   * Removes a content enabler plugin from the group type.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   * @param string $plugin_id
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   */
+  public function disableContent(GroupTypeInterface $group_type, $plugin_id) {
+    // @todo validation here.
+    // @todo disabling here.
+    return $this->redirect('group_type.content', array('group_type' => $group_type->id()));
   }
 
 }

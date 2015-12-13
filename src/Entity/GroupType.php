@@ -212,7 +212,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function enableContent(array $configuration) {
     $configuration['uuid'] = $this->uuidGenerator()->generate();
-    $this->getContent()->addInstanceId($configuration['uuid'], $configuration);
+    $this->enabledContent()->addInstanceId($configuration['uuid'], $configuration);
     return $configuration['uuid'];
   }
 
