@@ -28,6 +28,13 @@ class GroupTypeController extends ControllerBase {
   protected $groupType;
 
   /**
+   * The IDs of the content enabler plugins the group type uses.
+   *
+   * @var string[]
+   */
+  protected $enabledPluginIds;
+
+  /**
    * The group content plugin manager.
    *
    * @var \Drupal\Component\Plugin\PluginManagerInterface
@@ -85,21 +92,16 @@ class GroupTypeController extends ControllerBase {
     $this->groupType = $group_type;
 
     $plugins = $this->pluginManager->getDefinitions();
-    $enabled = [];
     foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
-      $enabled[] = $plugin_id;
+      $this->enabledPluginIds[] = $plugin_id;
     }
 
-    // Get the description toggle setting.
-    $hide_descriptions = system_admin_compact_mode();
-
-    // Render the link for hiding descriptions.
+    // Render the table of available content enablers.
     $page['system_compact_link'] = [
       '#id' => FALSE,
       '#type' => 'system_compact_link',
     ];
 
-    // Build the list of enabled group content effects for this group type.
     $page['content'] = [
       '#type' => 'table',
       '#header' => [
@@ -112,35 +114,50 @@ class GroupTypeController extends ControllerBase {
     ];
 
     foreach ($plugins as $plugin_id => $plugin_info) {
-      $is_enabled = in_array($plugin_id, $enabled);
-
-      $page['content'][$plugin_id] = [
-        'info' => [
-          '#type' => 'inline_template',
-          '#template' => '<div class="description"><span class="label">{{ label }}</span>{% if description %}<br/>{{ description }}{% endif %}</div>',
-          '#context' => [
-            'label' => $plugin_info['label'],
-          ],
-        ],
-        'provider' => [
-          '#markup' => $this->moduleHandler->getName($plugin_info['provider'])
-        ],
-        'entity_type_id' => [
-          '#markup' => $this->entityTypeManager->getDefinition($plugin_info['entity_type_id'])->getLabel()
-        ],
-        'status' => [
-          '#markup' => $is_enabled ? $this->t('Enabled') : $this->t('Disabled')
-        ],
-        'operations' => $this->buildOperations($plugin_id),
-      ];
-
-      // Show the content enabler description if toggled on.
-      if (!$hide_descriptions) {
-        $page['content'][$plugin_id]['info']['#context']['description'] = $plugin_info['description'];
-      }
+      $page['content'][$plugin_id] = $this->buildRow($plugin_info);
     }
 
     return $page;
+  }
+
+  /**
+   * Builds a row for a content enabler plugin.
+   *
+   * @param array $plugin_info
+   *   The plugin info as retrieved by the plugin manager's ::getDefinitions().
+   *
+   * @return array
+   *   A render array to use as a table row.
+   */
+  public function buildRow($plugin_info) {
+    $row = [
+      'info' => [
+        '#type' => 'inline_template',
+        '#template' => '<div class="description"><span class="label">{{ label }}</span>{% if description %}<br/>{{ description }}{% endif %}</div>',
+        '#context' => [
+          'label' => $plugin_info['label'],
+        ],
+      ],
+      'provider' => [
+        '#markup' => $this->moduleHandler->getName($plugin_info['provider'])
+      ],
+      'entity_type_id' => [
+        '#markup' => $this->entityTypeManager->getDefinition($plugin_info['entity_type_id'])->getLabel()
+      ],
+      'status' => [
+        '#markup' => in_array($plugin_info['id'], $this->enabledPluginIds)
+          ? $this->t('Enabled')
+          : $this->t('Disabled'),
+      ],
+      'operations' => $this->buildOperations($plugin_info['id']),
+    ];
+
+    // Show the content enabler description if toggled on.
+    if (!system_admin_compact_mode()) {
+      $row['info']['#context']['description'] = $plugin_info['description'];
+    }
+
+    return $row;
   }
 
   /**
@@ -173,13 +190,12 @@ class GroupTypeController extends ControllerBase {
    *   self::getOperations().
    */
   protected function getDefaultOperations($plugin_id) {
-    $enabled = $operations = [];
-    foreach ($this->groupType->enabledContent() as $id => $plugin) {
-      $enabled[] = $id;
-    }
-
-    $route_params = ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id];
-    if (in_array($plugin_id, $enabled)) {
+    $route_params = [
+      'group_type' => $this->groupType->id(),
+      'plugin_id' => $plugin_id,
+    ];
+    
+    if (in_array($plugin_id, $this->enabledPluginIds)) {
       $operations['disable'] = [
         'title' => $this->t('Disable'),
         'weight' => 99,
