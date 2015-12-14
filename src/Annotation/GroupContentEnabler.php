@@ -57,4 +57,11 @@ class GroupContentEnabler extends Plugin {
    */
   public $entity_type_id;
 
+  /**
+   * (optional) Whether this plugin is always on.
+   *
+   * @var bool
+   */
+  public $always_on = FALSE;
+
 }

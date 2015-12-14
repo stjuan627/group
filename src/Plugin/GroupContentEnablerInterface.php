@@ -48,4 +48,13 @@ interface GroupContentEnablerInterface extends ConfigurablePluginInterface {
    */
   public function getEntityTypeId();
 
+
+  /**
+   * Returns whether this plugin is always on.
+   *
+   * @return bool
+   *   The 'always on' status.
+   */
+  public function isPermanent();
+
 }
