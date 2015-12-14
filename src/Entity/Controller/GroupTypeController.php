@@ -174,8 +174,8 @@ class GroupTypeController extends ControllerBase {
    */
   protected function getDefaultOperations($plugin_id) {
     $enabled = $operations = [];
-    foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
-      $enabled[] = $plugin_id;
+    foreach ($this->groupType->enabledContent() as $id => $plugin) {
+      $enabled[] = $id;
     }
 
     $route_params = ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id];
