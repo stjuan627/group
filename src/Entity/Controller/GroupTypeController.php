@@ -8,6 +8,7 @@
 namespace Drupal\group\Entity\Controller;
 
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Plugin\GroupContentEnablerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -90,8 +91,6 @@ class GroupTypeController extends ControllerBase {
    */
   public function content(GroupTypeInterface $group_type) {
     $this->groupType = $group_type;
-
-    $plugins = $this->pluginManager->getDefinitions();
     foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
       $this->enabledPluginIds[] = $plugin_id;
     }
@@ -113,8 +112,9 @@ class GroupTypeController extends ControllerBase {
       ],
     ];
 
-    foreach ($plugins as $plugin_id => $plugin_info) {
-      $page['content'][$plugin_id] = $this->buildRow($plugin_info);
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $plugin_info) {
+      $plugin = $this->pluginManager->createInstance($plugin_id);
+      $page['content'][$plugin_id] = $this->buildRow($plugin);
     }
 
     return $page;
@@ -123,38 +123,38 @@ class GroupTypeController extends ControllerBase {
   /**
    * Builds a row for a content enabler plugin.
    *
-   * @param array $plugin_info
-   *   The plugin info as retrieved by the plugin manager's ::getDefinitions().
+   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   *   The content enabler plugin to build operation links for.
    *
    * @return array
    *   A render array to use as a table row.
    */
-  public function buildRow($plugin_info) {
+  public function buildRow(GroupContentEnablerInterface $plugin) {
     $row = [
       'info' => [
         '#type' => 'inline_template',
         '#template' => '<div class="description"><span class="label">{{ label }}</span>{% if description %}<br/>{{ description }}{% endif %}</div>',
         '#context' => [
-          'label' => $plugin_info['label'],
+          'label' => $plugin->getLabel(),
         ],
       ],
       'provider' => [
-        '#markup' => $this->moduleHandler->getName($plugin_info['provider'])
+        '#markup' => $this->moduleHandler->getName($plugin->getProvider())
       ],
       'entity_type_id' => [
-        '#markup' => $this->entityTypeManager->getDefinition($plugin_info['entity_type_id'])->getLabel()
+        '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel()
       ],
       'status' => [
-        '#markup' => in_array($plugin_info['id'], $this->enabledPluginIds)
+        '#markup' => in_array($plugin->getPluginId(), $this->enabledPluginIds)
           ? $this->t('Enabled')
           : $this->t('Disabled'),
       ],
-      'operations' => $this->buildOperations($plugin_info['id']),
+      'operations' => $this->buildOperations($plugin),
     ];
 
     // Show the content enabler description if toggled on.
     if (!system_admin_compact_mode()) {
-      $row['info']['#context']['description'] = $plugin_info['description'];
+      $row['info']['#context']['description'] = $plugin->getDescription();
     }
 
     return $row;
@@ -163,8 +163,8 @@ class GroupTypeController extends ControllerBase {
   /**
    * Provides an array of information to build a list of operation links.
    *
-   * @param string $plugin_id
-   *   The ID of the group content plugin to build operation links for.
+   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   *   The content enabler plugin to build operation links for.
    *
    * @return array
    *   An associative array of operation links for the group type's content
@@ -173,8 +173,8 @@ class GroupTypeController extends ControllerBase {
    *   - url: An instance of \Drupal\Core\Url for the operation URL.
    *   - weight: The weight of this operation.
    */
-  public function getOperations($plugin_id) {
-    $operations = $this->getDefaultOperations($plugin_id);
+  public function getOperations($plugin) {
+    $operations = $this->getDefaultOperations($plugin);
     // @todo Allow plugin to add operations.
     return $operations;
   }
@@ -182,14 +182,15 @@ class GroupTypeController extends ControllerBase {
   /**
    * Gets the group type's content plugin's default operation links.
    *
-   * @param string $plugin_id
-   *   The ID of the group content plugin to build operation links for.
+   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   *   The content enabler plugin to build operation links for.
    *
    * @return array
    *   The array structure is identical to the return value of
    *   self::getOperations().
    */
-  protected function getDefaultOperations($plugin_id) {
+  protected function getDefaultOperations($plugin) {
+    $plugin_id = $plugin->getPluginId();
     $route_params = [
       'group_type' => $this->groupType->id(),
       'plugin_id' => $plugin_id,
@@ -215,16 +216,16 @@ class GroupTypeController extends ControllerBase {
   /**
    * Builds operation links for the group type's content plugins.
    *
-   * @param string $plugin_id
-   *   The ID of the group content plugin to build operation links for.
+   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   *   The content enabler plugin to build operation links for.
    *
    * @return array
    *   A render array of operation links.
    */
-  public function buildOperations($plugin_id) {
+  public function buildOperations($plugin) {
     $build = array(
       '#type' => 'operations',
-      '#links' => $this->getOperations($plugin_id),
+      '#links' => $this->getOperations($plugin),
     );
 
     return $build;
