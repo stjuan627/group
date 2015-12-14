@@ -27,14 +27,6 @@ interface GroupContentEnablerInterface extends ConfigurablePluginInterface {
   public function getProvider();
 
   /**
-   * Returns the unique ID representing the plugin instance.
-   *
-   * @return string
-   *   The image effect ID.
-   */
-  public function getUuid();
-
-  /**
    * Returns the administrative label for the plugin.
    *
    * @return string

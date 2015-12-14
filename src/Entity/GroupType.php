@@ -7,7 +7,6 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\group\Plugin\GroupContentEnablerInterface;
 use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -210,17 +209,18 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function enableContent(array $configuration) {
-    $configuration['uuid'] = $this->uuidGenerator()->generate();
-    $this->enabledContent()->addInstanceId($configuration['uuid'], $configuration);
-    return $configuration['uuid'];
+  public function enableContent($plugin_id, array $configuration = []) {
+    $configuration['id'] = $plugin_id;
+    $this->enabledContent()->addInstanceId($plugin_id, $configuration);
+    $this->save();
+    return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function disableContent(GroupContentEnablerInterface $content) {
-    $this->enabledContent()->removeInstanceId($content->getUuid());
+  public function disableContent($plugin_id) {
+    $this->enabledContent()->removeInstanceId($plugin_id);
     $this->save();
     return $this;
   }

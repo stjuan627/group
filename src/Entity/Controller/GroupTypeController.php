@@ -86,8 +86,8 @@ class GroupTypeController extends ControllerBase {
 
     $plugins = $this->pluginManager->getDefinitions();
     $enabled = [];
-    foreach ($this->groupType->enabledContent() as $plugin) {
-      $enabled[] = $plugin->getPluginId();
+    foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
+      $enabled[] = $plugin_id;
     }
 
     // Build the list of enabled group content effects for this group type.
@@ -149,8 +149,8 @@ class GroupTypeController extends ControllerBase {
    */
   protected function getDefaultOperations($plugin_id) {
     $enabled = $operations = [];
-    foreach ($this->groupType->enabledContent() as $plugin) {
-      $enabled[] = $plugin->getPluginId();
+    foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
+      $enabled[] = $plugin_id;
     }
 
     $route_params = ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id];
@@ -200,14 +200,9 @@ class GroupTypeController extends ControllerBase {
   public function enableContent(GroupTypeInterface $group_type, $plugin_id) {
     // @todo validation here.
 
-    $enabler_id = $group_type->enableContent(['id' => $plugin_id]);
-    $group_type->save();
-
-    if (!empty($enabler_id)) {
-      drupal_set_message($this->t('The content was successfully enabled for the group type.'));
-    }
-
-    return $this->redirect('group_type.content', array('group_type' => $group_type->id()));
+    $group_type->enableContent($plugin_id);
+    drupal_set_message($this->t('The content was enabled for the group type.'));
+    return $this->redirect('group_type.content', ['group_type' => $group_type->id()]);
   }
 
   /**
@@ -220,8 +215,10 @@ class GroupTypeController extends ControllerBase {
    */
   public function disableContent(GroupTypeInterface $group_type, $plugin_id) {
     // @todo validation here.
-    // @todo disabling here.
-    return $this->redirect('group_type.content', array('group_type' => $group_type->id()));
+
+    $group_type->disableContent($plugin_id);
+    drupal_set_message($this->t('The content was disabled for the group type.'));
+    return $this->redirect('group_type.content', ['group_type' => $group_type->id()]);
   }
 
 }
