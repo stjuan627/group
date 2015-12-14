@@ -10,7 +10,7 @@ namespace Drupal\group\Plugin\GroupContentEnabler;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 
 /**
- * Provides a filter to align elements.
+ * Provides a content enabler for users.
  *
  * @GroupContentEnabler(
  *   id = "group_membership",
