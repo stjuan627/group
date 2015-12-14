@@ -62,6 +62,6 @@ class GroupContentEnabler extends Plugin {
    *
    * @var bool
    */
-  public $always_on = FALSE;
+  public $enforced = FALSE;
 
 }

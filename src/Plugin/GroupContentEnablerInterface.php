@@ -49,13 +49,12 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    */
   public function getEntityTypeId();
 
-
   /**
    * Returns whether this plugin is always on.
    *
    * @return bool
-   *   The 'always on' status.
+   *   The 'enforced' status.
    */
-  public function isPermanent();
+  public function isEnforced();
 
 }

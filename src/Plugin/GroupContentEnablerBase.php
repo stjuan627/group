@@ -50,8 +50,8 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function isPermanent() {
-    return $this->pluginDefinition['always_on'];
+  public function isEnforced() {
+    return $this->pluginDefinition['enforced'];
   }
 
   /**

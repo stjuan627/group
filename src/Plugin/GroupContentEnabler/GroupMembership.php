@@ -17,7 +17,7 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
- *   always_on = TRUE
+ *   enforced = TRUE
  * )
  */
 class GroupMembership extends GroupContentEnablerBase {
