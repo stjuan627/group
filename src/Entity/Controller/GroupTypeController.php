@@ -90,12 +90,20 @@ class GroupTypeController extends ControllerBase {
       $enabled[] = $plugin_id;
     }
 
+    // Get the description toggle setting.
+    $hide_descriptions = system_admin_compact_mode();
+
+    // Render the link for hiding descriptions.
+    $page['system_compact_link'] = [
+      '#id' => FALSE,
+      '#type' => 'system_compact_link',
+    ];
+
     // Build the list of enabled group content effects for this group type.
     $page['content'] = [
       '#type' => 'table',
       '#header' => [
-        'label' => $this->t('Label'),
-        'description' => $this->t('Description'),
+        'info' => $this->t('Plugin information'),
         'provider' => $this->t('Provided by'),
         'entity_type_id' => $this->t('Applies to'),
         'status' => $this->t('Status'),
@@ -105,14 +113,31 @@ class GroupTypeController extends ControllerBase {
 
     foreach ($plugins as $plugin_id => $plugin_info) {
       $is_enabled = in_array($plugin_id, $enabled);
+
       $page['content'][$plugin_id] = [
-        'label' => ['#markup' => $plugin_info['label']],
-        'description' => ['#markup' => $plugin_info['description']],
-        'provider' => ['#markup' => $this->moduleHandler->getName($plugin_info['provider'])],
-        'entity_type_id' => ['#markup' => $this->entityTypeManager->getDefinition($plugin_info['entity_type_id'])->getLabel()],
-        'status' => ['#markup' => $is_enabled ? $this->t('Enabled') : $this->t('Disabled')],
+        'info' => [
+          '#type' => 'inline_template',
+          '#template' => '<div class="description"><span class="label">{{ label }}</span>{% if description %}<br/>{{ description }}{% endif %}</div>',
+          '#context' => [
+            'label' => $plugin_info['label'],
+          ],
+        ],
+        'provider' => [
+          '#markup' => $this->moduleHandler->getName($plugin_info['provider'])
+        ],
+        'entity_type_id' => [
+          '#markup' => $this->entityTypeManager->getDefinition($plugin_info['entity_type_id'])->getLabel()
+        ],
+        'status' => [
+          '#markup' => $is_enabled ? $this->t('Enabled') : $this->t('Disabled')
+        ],
         'operations' => $this->buildOperations($plugin_id),
       ];
+
+      // Show the content enabler description if toggled on.
+      if (!$hide_descriptions) {
+        $page['content'][$plugin_id]['info']['#context']['description'] = $plugin_info['description'];
+      }
     }
 
     return $page;
