@@ -57,4 +57,17 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    */
   public function isEnforced();
 
+  /**
+   * Provides an array of information to build a list of operation links.
+   *
+   * @return array
+   *   An associative array of operation links to show on the group type content
+   *   administration UI, keyed by operation name, containing the following
+   *   key-value pairs:
+   *   - title: The localized title of the operation.
+   *   - url: An instance of \Drupal\Core\Url for the operation URL.
+   *   - weight: The weight of this operation.
+   */
+  public function getOperations();
+
 }

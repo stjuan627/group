@@ -204,9 +204,7 @@ class GroupTypeController extends ControllerBase {
    *   - weight: The weight of this operation.
    */
   public function getOperations($plugin) {
-    $operations = $this->getDefaultOperations($plugin);
-    // @todo Allow plugin to add operations.
-    return $operations;
+    return $plugin->getOperations() + $this->getDefaultOperations($plugin);
   }
 
   /**
