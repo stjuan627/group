@@ -9,6 +9,7 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerInterface;
+use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -112,12 +113,34 @@ class GroupTypeController extends ControllerBase {
       ],
     ];
 
-    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $plugin_info) {
-      $plugin = $this->pluginManager->createInstance($plugin_id);
+    foreach ($this->getAllContentEnablers() as $plugin_id => $plugin) {
       $page['content'][$plugin_id] = $this->buildRow($plugin);
     }
 
     return $page;
+  }
+
+  /**
+   * Returns a plugin collection of all available content enablers.
+   *
+   * We add all known plugins to one big collection so we can sort them using
+   * the sorting logic available on the collection and so we're sure we're not
+   * instantiating our vanilla plugins more than once.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   *   The content enabler plugin collection.
+   */
+  public function getAllContentEnablers() {
+    $manager = \Drupal::service('plugin.manager.group_content_enabler');
+    $collection = new GroupContentEnablerCollection($manager, []);
+
+    // Add every known plugin to the collection with a vanilla configuration.
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $plugin_info) {
+      $collection->setInstanceConfiguration($plugin_id, ['id' => $plugin_id]);
+    }
+
+    // Sort and return the plugin collection.
+    return $collection->sort();
   }
 
   /**
@@ -130,6 +153,17 @@ class GroupTypeController extends ControllerBase {
    *   A render array to use as a table row.
    */
   public function buildRow(GroupContentEnablerInterface $plugin) {
+    // Get the plugin status.
+    if ($plugin->isEnforced()) {
+      $status = $this->t('Enforced');
+    }
+    elseif (in_array($plugin->getPluginId(), $this->enabledPluginIds)) {
+      $status = $this->t('Enabled');
+    }
+    else {
+      $status = $this->t('Disabled');
+    }
+
     $row = [
       'info' => [
         '#type' => 'inline_template',
@@ -144,11 +178,7 @@ class GroupTypeController extends ControllerBase {
       'entity_type_id' => [
         '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel()
       ],
-      'status' => [
-        '#markup' => in_array($plugin->getPluginId(), $this->enabledPluginIds)
-          ? $this->t('Enabled')
-          : $this->t('Disabled'),
-      ],
+      'status' => ['#markup' => $status],
       'operations' => $this->buildOperations($plugin),
     ];
 
@@ -168,7 +198,7 @@ class GroupTypeController extends ControllerBase {
    *
    * @return array
    *   An associative array of operation links for the group type's content
-   *  plugin, keyed by operation name, containing the following key-value pairs:
+   *   plugin, keyed by operation name, containing the following key-value pairs:
    *   - title: The localized title of the operation.
    *   - url: An instance of \Drupal\Core\Url for the operation URL.
    *   - weight: The weight of this operation.
@@ -190,24 +220,28 @@ class GroupTypeController extends ControllerBase {
    *   self::getOperations().
    */
   protected function getDefaultOperations($plugin) {
+    $operations = [];
+
     $plugin_id = $plugin->getPluginId();
     $route_params = [
       'group_type' => $this->groupType->id(),
       'plugin_id' => $plugin_id,
     ];
-    
-    if (in_array($plugin_id, $this->enabledPluginIds)) {
-      $operations['disable'] = [
-        'title' => $this->t('Disable'),
-        'weight' => 99,
-        'url' => new Url('group_type.content_disable', $route_params),
-      ];
-    }
-    else {
-      $operations['enable'] = [
-        'title' => $this->t('Enable'),
-        'url' => new Url('group_type.content_enable', $route_params),
-      ];
+
+    if (!$plugin->isEnforced()) {
+      if (in_array($plugin_id, $this->enabledPluginIds)) {
+        $operations['disable'] = [
+          'title' => $this->t('Disable'),
+          'weight' => 99,
+          'url' => new Url('group_type.content_disable', $route_params),
+        ];
+      }
+      else {
+        $operations['enable'] = [
+          'title' => $this->t('Enable'),
+          'url' => new Url('group_type.content_enable', $route_params),
+        ];
+      }
     }
 
     return $operations;
