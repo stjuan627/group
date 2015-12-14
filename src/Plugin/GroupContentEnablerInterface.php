@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 
 /**
@@ -17,7 +18,7 @@ use Drupal\Component\Plugin\ConfigurablePluginInterface;
  * @see \Drupal\group\Plugin\GroupContentEnablerBase
  * @see plugin_api
  */
-interface GroupContentEnablerInterface extends ConfigurablePluginInterface {
+interface GroupContentEnablerInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
 
   /**
    * Returns the plugin provider.
