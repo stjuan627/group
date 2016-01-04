@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 
@@ -56,6 +57,47 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    *   The 'enforced' status.
    */
   public function isEnforced();
+
+  /**
+   * Returns a safe, unique configuration ID for a group content type.
+   *
+   * By default we use GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID, but feel free to
+   * use any other means of identifying group content types. Make sure you also
+   * provide a configuration schema should you diverge from the default
+   * group.content_type.*.* or group_content_type.*.*.* schema.
+   *
+   * Please do not return any invalid characters in the ID as it will crash the
+   * website. Refer to ConfigBase::validateName() for valid characters.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   *   The group type this plugin will be enabled on.
+   *
+   * @return string
+   *   The safe ID to use as the configuration name.
+   *
+   * @see \Drupal\Core\Config\ConfigBase::validateName()
+   */
+  public function getContentTypeConfigId(GroupTypeInterface $group_type);
+
+  /**
+   * Returns the administrative label for a group content type.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   *   The group type this plugin will be enabled on.
+   *
+   * @return string
+   */
+  public function getContentTypeLabel(GroupTypeInterface $group_type);
+
+  /**
+   * Returns the administrative description for a group content type.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   *   The group type this plugin will be enabled on.
+   *
+   * @return string
+   */
+  public function getContentTypeDescription(GroupTypeInterface $group_type);
 
   /**
    * Provides an array of information to build a list of operation links.

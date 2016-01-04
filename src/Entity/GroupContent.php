@@ -36,6 +36,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "langcode" = "langcode",
  *     "uuid" = "uuid",
  *   },
+ *   bundle_entity_type = "group_content_type",
  *   permission_granularity = "bundle"
  * )
  */

@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 
 /**
@@ -52,6 +53,27 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function isEnforced() {
     return $this->pluginDefinition['enforced'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentTypeConfigId(GroupTypeInterface $group_type) {
+    return $group_type->id() . '.' . str_replace(':', '.', $this->getPluginId());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentTypeLabel(GroupTypeInterface $group_type) {
+    return $group_type->label() . ': ' . $this->getLabel();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentTypeDescription(GroupTypeInterface $group_type) {
+    return $this->getDescription();
   }
 
   /**

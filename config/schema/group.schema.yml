@@ -23,10 +23,23 @@ group.type.*:
       label: 'Description'
     roles:
       type: 'sequence'
-      label: 'Group role ids'
+      label: 'Group role IDs'
       sequence:
         type: 'string'
-        label: 'Group role id'
+        label: 'Group role ID'
+    content:
+      type: 'sequence'
+      label: 'Group content enabler plugins'
+      sequence:
+        type: 'mapping'
+        label: 'Group content plugin configuration'
+        mapping:
+          id:
+            type: 'string'
+            label: 'Plugin ID'
+          data:
+            type: 'sequence'
+            label: 'Plugin configuration'
 
 group.role.*:
   type: 'config_entity'
@@ -50,3 +63,34 @@ group.role.*:
       sequence:
         type: 'string'
         label: 'Group permission'
+
+
+group_content_type:
+  type: 'config_entity'
+  label: 'Group content type'
+  mapping:
+    id:
+      type: 'string'
+      label: 'Machine-readable name'
+    label:
+      type: 'label'
+      label: 'Label'
+    description:
+      type: 'text'
+      label: 'Description'
+    group_type:
+      type: 'text'
+      label: 'Group type ID'
+    content_plugin:
+      type: 'text'
+      label: 'Group content plugin ID'
+
+# Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.
+group.content_type.*.*:
+  type: group_content_type
+  label: 'Group content type'
+
+# Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID.
+group.content_type.*.*.*:
+  type: group_content_type
+  label: 'Group content type (derivative)'
