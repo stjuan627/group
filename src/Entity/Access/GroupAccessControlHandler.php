@@ -30,7 +30,7 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
       case 'view':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'view group');
 
-      case 'edit':
+      case 'update':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'edit group');
 
       case 'delete':

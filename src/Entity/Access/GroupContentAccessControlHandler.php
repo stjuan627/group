@@ -29,7 +29,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler {
       case 'view':
         return AccessResult::allowedIf(TRUE);
 
-      case 'edit':
+      case 'update':
         return AccessResult::allowedIf(TRUE);
 
       case 'delete':
