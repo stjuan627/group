@@ -82,6 +82,8 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * The content enabler plugin configuration for the group type.
    *
+   * @todo Auto-enable fixed plugins so they can be configured.
+   *
    * @var string[]
    */
   protected $content = [];

@@ -57,20 +57,6 @@ group_type.content:
     _title: 'Configure available content'
   requirements:
     _permission: 'administer group'
-group_type.content_enable:
-  path: '/admin/group/types/manage/{group_type}/content/enable/{plugin_id}'
-  defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::enableContent'
-    _title: 'Enable plugin'
-  requirements:
-    _permission: 'administer group'
-group_type.content_disable:
-  path: '/admin/group/types/manage/{group_type}/content/disable/{plugin_id}'
-  defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::disableContent'
-    _title: 'Disable plugin'
-  requirements:
-    _permission: 'administer group'
 
 entity.group_type.collection:
   path: '/admin/group/types'
@@ -140,5 +126,31 @@ entity.group_role.permissions_form:
   defaults:
     _form: '\Drupal\group\Form\GroupPermissionsRoleSpecificForm'
     _title: 'Edit group role permissions'
+  requirements:
+    _permission: 'administer group'
+
+# Group content type entity routes.
+group_content_type.install:
+  path: '/admin/group/content/install/{group_type}/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::enableContent'
+    _title: 'Enable plugin'
+  requirements:
+    _permission: 'administer group'
+
+# todo rename to delete_form, trigger plugin removal, show confirm form, add 'entity.' in front of route?
+group_content_type.uninstall:
+  path: '/admin/group/content/manage/{group_content_type}/uninstall'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::disableContent'
+    _title: 'Disable plugin'
+  requirements:
+    _permission: 'administer group'
+
+entity.group_content_type.configure_form:
+  path: '/admin/group/content/manage/{group_content_type}'
+  defaults:
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::configureContent'
+    _title: 'Configure plugin'
   requirements:
     _permission: 'administer group'

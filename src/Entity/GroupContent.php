@@ -37,6 +37,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *     "uuid" = "uuid",
  *   },
  *   bundle_entity_type = "group_content_type",
+ *   field_ui_base_route = "entity.group_content_type.configure_form",
  *   permission_granularity = "bundle"
  * )
  */

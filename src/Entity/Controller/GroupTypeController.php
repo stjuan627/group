@@ -8,6 +8,8 @@
 namespace Drupal\group\Entity\Controller;
 
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\GroupContentType;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerInterface;
 use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Url;
@@ -34,7 +36,7 @@ class GroupTypeController extends ControllerBase {
    *
    * @var string[]
    */
-  protected $enabledPluginIds;
+  protected $installedPluginIds;
 
   /**
    * The group content plugin manager.
@@ -93,7 +95,7 @@ class GroupTypeController extends ControllerBase {
   public function content(GroupTypeInterface $group_type) {
     $this->groupType = $group_type;
     foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
-      $this->enabledPluginIds[] = $plugin_id;
+      $this->installedPluginIds[] = $plugin_id;
     }
 
     // Render the table of available content enablers.
@@ -154,14 +156,15 @@ class GroupTypeController extends ControllerBase {
    */
   public function buildRow(GroupContentEnablerInterface $plugin) {
     // Get the plugin status.
+    // @todo Remove when enforced are also installed.
     if ($plugin->isEnforced()) {
       $status = $this->t('Enforced');
     }
-    elseif (in_array($plugin->getPluginId(), $this->enabledPluginIds)) {
-      $status = $this->t('Enabled');
+    elseif (in_array($plugin->getPluginId(), $this->installedPluginIds)) {
+      $status = $this->t('Installed');
     }
     else {
-      $status = $this->t('Disabled');
+      $status = $this->t('Uninstalled');
     }
 
     $row = [
@@ -220,24 +223,37 @@ class GroupTypeController extends ControllerBase {
   protected function getDefaultOperations($plugin) {
     $operations = [];
 
+    $group_content_type_id = $plugin->getContentTypeConfigId($this->groupType);
+    $group_content_type = GroupContentType::load($group_content_type_id);
+
     $plugin_id = $plugin->getPluginId();
+    $installed = in_array($plugin_id, $this->installedPluginIds);
     $route_params = [
-      'group_type' => $this->groupType->id(),
-      'plugin_id' => $plugin_id,
+      'group_content_type' => $group_content_type_id,
     ];
 
+    if ($installed) {
+      $operations['configure'] = [
+        'title' => $this->t('Configure'),
+        'url' => new Url('entity.group_content_type.configure_form', $route_params),
+      ];
+
+      /* @var $group_content_type \Drupal\group\Entity\GroupContentTypeInterface */
+      $operations += field_ui_entity_operation($group_content_type);
+    }
+
     if (!$plugin->isEnforced()) {
-      if (in_array($plugin_id, $this->enabledPluginIds)) {
-        $operations['disable'] = [
-          'title' => $this->t('Disable'),
+      if ($installed) {
+        $operations['uninstall'] = [
+          'title' => $this->t('Uninstall'),
           'weight' => 99,
-          'url' => new Url('group_type.content_disable', $route_params),
+          'url' => new Url('group_content_type.uninstall', $route_params),
         ];
       }
       else {
-        $operations['enable'] = [
-          'title' => $this->t('Enable'),
-          'url' => new Url('group_type.content_enable', $route_params),
+        $operations['install'] = [
+          'title' => $this->t('Install'),
+          'url' => new Url('group_content_type.install', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
         ];
       }
     }
@@ -264,6 +280,18 @@ class GroupTypeController extends ControllerBase {
   }
 
   /**
+   * Builds a configuration form for a group type's content enabler plugin.
+   *
+   * @param \Drupal\group\Entity\GroupContentTypeInterface $group_content_type
+   *
+   * @return array
+   *   The form structure.
+   */
+  public function configureContent(GroupContentTypeInterface $group_content_type) {
+    return ['info' => ['#markup' => 'Nothing to see here yet.']];
+  }
+
+  /**
    * Adds an unconfigured content enabler plugin to the group type.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
@@ -272,7 +300,7 @@ class GroupTypeController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
   public function enableContent(GroupTypeInterface $group_type, $plugin_id) {
-    // @todo validation here.
+    // @todo validation here, do not allow just any ID.
 
     $group_type->enableContent($plugin_id);
     drupal_set_message($this->t('The content was enabled for the group type.'));
@@ -282,15 +310,15 @@ class GroupTypeController extends ControllerBase {
   /**
    * Removes a content enabler plugin from the group type.
    *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   * @param string $plugin_id
+   * @param \Drupal\group\Entity\GroupContentTypeInterface $group_content_type
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function disableContent(GroupTypeInterface $group_type, $plugin_id) {
-    // @todo validation here.
+  public function disableContent(GroupContentTypeInterface $group_content_type) {
+    // @todo Figure out where to disable this: GCT::uninstall(), GT:disableContent(), here, ...
 
-    $group_type->disableContent($plugin_id);
+    $group_type = $group_content_type->getGroupType();
+    $group_type->disableContent($group_content_type->getContentPlugin()->getPluginId());
     drupal_set_message($this->t('The content was disabled for the group type.'));
     return $this->redirect('group_type.content', ['group_type' => $group_type->id()]);
   }

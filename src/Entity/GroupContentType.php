@@ -3,6 +3,8 @@
 /**
  * @file
  * Contains \Drupal\group\Entity\GroupContentType.
+ *
+ * @todo Create these automatically for fixed plugins!
  */
 
 namespace Drupal\group\Entity;
@@ -104,7 +106,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    // @todo add module defining plugin.
+    // @todo add module defining plugin when fixed, group type when not fixed.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
   }
 
