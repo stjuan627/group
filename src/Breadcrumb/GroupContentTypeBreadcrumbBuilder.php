@@ -41,6 +41,7 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $breadcrumb = new Breadcrumb();
     $breadcrumb->addLink(Link::createFromRoute($this->t('Home'), '<front>'));
     $breadcrumb->addLink(Link::createFromRoute($this->t('Administration'), 'system.admin'));
+    $breadcrumb->addLink(Link::createFromRoute($this->t('Groups'), 'entity.group.collection'));
     $breadcrumb->addLink(Link::createFromRoute($this->t('Group types'), 'entity.group_type.collection'));
     $breadcrumb->addLink(Link::createFromRoute($group_type->label(), 'entity.group_type.edit_form', ['group_type' => $group_type->id()]));
     $breadcrumb->addLink(Link::createFromRoute($this->t('Content'), 'group_type.content', ['group_type' => $group_type->id()]));

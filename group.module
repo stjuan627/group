@@ -19,6 +19,16 @@ function group_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
+ * Implements hook_element_info_alter().
+ */
+function group_element_info_alter(array &$types) {
+  // Attach our extra CSS for toolbar icons.
+  if (isset($types['toolbar'])) {
+    $types['toolbar']['#attached']['library'][] = 'group/toolbar';
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function group_theme() {

@@ -1,33 +1,43 @@
-group.settings_tab:
-  route_name: 'group.group_settings'
+group.list:
+  title: 'List'
+  base_route: 'entity.group.collection'
+  route_name: 'entity.group.collection'
+
+group.types:
+  title: 'Group types'
+  base_route: 'entity.group.collection'
+  route_name: 'entity.group_type.collection'
+
+group.settings:
   title: 'Settings'
-  base_route: 'group.group_settings'
+  base_route: 'entity.group.collection'
+  route_name: 'group.group_settings'
 
 group.view:
-  route_name: 'entity.group.canonical'
-  base_route: 'entity.group.canonical'
   title: 'View'
+  base_route: 'entity.group.canonical'
+  route_name: 'entity.group.canonical'
 
 group.page_edit:
-  route_name: 'entity.group.edit_form'
-  base_route: 'entity.group.canonical'
   title: 'Edit'
+  base_route: 'entity.group.canonical'
+  route_name: 'entity.group.edit_form'
 
 group.delete_confirm:
-  route_name: 'entity.group.delete_form'
-  base_route: 'entity.group.canonical'
   title: 'Delete'
+  base_route: 'entity.group.canonical'
+  route_name: 'entity.group.delete_form'
   weight: 10
 
 group_type.edit_form:
   title: 'Edit'
-  route_name: 'entity.group_type.edit_form'
   base_route: 'entity.group_type.edit_form'
+  route_name: 'entity.group_type.edit_form'
 
 group_type.content:
   title: 'Content'
-  route_name: 'group_type.content'
   base_route: 'entity.group_type.edit_form'
+  route_name: 'group_type.content'
   weight: 10
 
 group_type.permissions_form:
@@ -38,7 +48,7 @@ group_type.permissions_form:
 
 group_content_type.configure_form:
   title: 'Configure'
-  route_name: 'entity.group_content_type.configure_form'
   base_route: 'entity.group_content_type.configure_form'
+  route_name: 'entity.group_content_type.configure_form'
 
 #todo look into group_role tasks?

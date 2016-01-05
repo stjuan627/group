@@ -3,7 +3,7 @@ group.group_settings:
   path: 'admin/group/settings'
   defaults:
     _form: '\Drupal\group\Form\GroupSettingsForm'
-    _title: 'Group Settings'
+    _title: 'Group settings'
   requirements:
     _permission: 'administer group'
 
@@ -32,12 +32,10 @@ group.add:
         with_config_overrides: TRUE
 
 entity.group.collection:
-  path: '/group/list'
+  path: '/admin/group'
   defaults:
     _entity_list: 'group'
     _title: 'Groups'
-  options:
-    _group_operation_route: TRUE
   requirements:
     _permission: 'administer group'
 
