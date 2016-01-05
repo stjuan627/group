@@ -151,6 +151,6 @@ entity.group_content_type.configure_form:
   path: '/admin/group/content/manage/{group_content_type}'
   defaults:
     _controller: '\Drupal\group\Entity\Controller\GroupTypeController::configureContent'
-    _title: 'Configure plugin'
+    _title: 'Configure content plugin'
   requirements:
     _permission: 'administer group'

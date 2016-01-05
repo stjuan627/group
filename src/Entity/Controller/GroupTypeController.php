@@ -223,6 +223,7 @@ class GroupTypeController extends ControllerBase {
   protected function getDefaultOperations($plugin) {
     $operations = [];
 
+    /* @var $group_content_type \Drupal\group\Entity\GroupContentTypeInterface */
     $group_content_type_id = $plugin->getContentTypeConfigId($this->groupType);
     $group_content_type = GroupContentType::load($group_content_type_id);
 
@@ -238,7 +239,6 @@ class GroupTypeController extends ControllerBase {
         'url' => new Url('entity.group_content_type.configure_form', $route_params),
       ];
 
-      /* @var $group_content_type \Drupal\group\Entity\GroupContentTypeInterface */
       $operations += field_ui_entity_operation($group_content_type);
     }
 

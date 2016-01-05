@@ -1,12 +1,16 @@
 services:
   group.permissions:
-    class: Drupal\group\Access\GroupPermissionHandler
+    class: 'Drupal\group\Access\GroupPermissionHandler'
     arguments: ['@module_handler', '@string_translation', '@controller_resolver']
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
     tags:
       - { name: 'event_subscriber' }
+  group_content_type.breadcrumb:
+    class: 'Drupal\group\Breadcrumb\GroupContentTypeBreadcrumbBuilder'
+    tags:
+      - { name: 'breadcrumb_builder', priority: 100 }
   access_check.group.add:
     class: 'Drupal\group\Access\GroupAddAccessCheck'
     arguments: ['@entity.manager']
@@ -22,8 +26,8 @@ services:
 #    tags:
 #      - { name: cache.context}
   plugin.manager.group_content_enabler:
-    class: Drupal\group\Plugin\GroupContentEnablerManager
-    parent: default_plugin_manager
+    class: 'Drupal\group\Plugin\GroupContentEnablerManager'
+    parent: 'default_plugin_manager'
 # TODO Implement this (look at filter module).
 # Prevent modules providing group content from being uninstalled.
 #  group.uninstall_validator:
