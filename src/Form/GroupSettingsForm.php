@@ -6,49 +6,60 @@
 
 namespace Drupal\group\Form;
 
-use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Class GroupSettingsForm.
  */
-class GroupSettingsForm extends FormBase {
+class GroupSettingsForm extends ConfigFormBase {
 
   /**
-   * Returns a unique string identifying the form.
-   *
-   * @return string
-   *   The unique string identifying the form.
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'group_settings';
   }
 
   /**
-   * Form submission handler.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
+   * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Empty implementation of the abstract submit class.
+  protected function getEditableConfigNames() {
+    return ['group.settings'];
   }
 
   /**
-   * Define the form used for Group settings.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param FormStateInterface $form_state
-   *   An associative array containing the current state of the form.
-   *
-   * @return array
-   *   Form definition array.
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+
+    $config = $this->config('group.settings');
+    $form['use_admin_theme'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use admin theme'),
+      '#description' => $this->t("Enables the administration theme for editing groups, members, etc."),
+      '#default_value' => $config->get('use_admin_theme'),
+    );
+
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $config = $this->config('group.settings');
+    $conf_admin_theme = $config->get('use_admin_theme');
+    $form_admin_theme = $form_state->getValue('use_admin_theme');
+
+    // Only rebuild the routes if the admin theme switch has changed.
+    if ($conf_admin_theme != $form_admin_theme) {
+      $config->set('use_admin_theme', $form_admin_theme)->save();
+      \Drupal::service('router.builder')->setRebuildNeeded();
+    }
+
+    parent::submitForm($form, $form_state);
   }
 
 }
