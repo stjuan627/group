@@ -223,7 +223,7 @@ class GroupTypeController extends ControllerBase {
   protected function getDefaultOperations($plugin) {
     $operations = [];
 
-    /* @var $group_content_type \Drupal\group\Entity\GroupContentTypeInterface */
+    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type_id = $plugin->getContentTypeConfigId($this->groupType);
     $group_content_type = GroupContentType::load($group_content_type_id);
 

@@ -22,7 +22,7 @@ class GroupContentTypeAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /* @var $entity \Drupal\group\Entity\GroupContentTypeInterface */
+    /** @var \Drupal\group\Entity\GroupContentTypeInterface $entity */
     if ($operation == 'delete') {
       return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
     }

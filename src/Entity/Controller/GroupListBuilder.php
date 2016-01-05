@@ -32,7 +32,7 @@ class GroupListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\group\Entity\GroupInterface */
+    /** @var \Drupal\group\Entity\GroupInterface $entity */
     $row['id'] = $entity->id();
     // EntityListBuilder sets the table rows using the #rows property, so we
     // need to add the render array using the 'data' key.

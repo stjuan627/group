@@ -237,7 +237,7 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getRoles() as $role_name => $group_role) {
-      /* @var $group_role \Drupal\group\Entity\GroupRoleInterface */
+      /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
       $permissions = $form_state->getValue($role_name);
       $group_role->changePermissions($permissions)->trustData()->save();
     }

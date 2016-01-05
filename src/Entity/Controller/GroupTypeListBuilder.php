@@ -34,7 +34,7 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\group\Entity\GroupTypeInterface */
+    /** @var \Drupal\group\Entity\GroupTypeInterface $entity */
     $row['label'] = array(
       'data' => $entity->label(),
       'class' => array('menu-label'),

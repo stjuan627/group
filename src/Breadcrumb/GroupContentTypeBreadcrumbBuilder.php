@@ -34,7 +34,7 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * @inheritdoc
    */
   public function build(RouteMatchInterface $route_match) {
-    /* @var $group_content_type \Drupal\group\Entity\GroupContentTypeInterface */
+    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $route_match->getParameter('group_content_type');
     $group_type = $group_content_type->getGroupType();
 
