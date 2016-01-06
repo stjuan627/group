@@ -179,6 +179,8 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
     // Enable enforced content plugins for new group types.
     if (!$update) {
+      // @todo Remove this line when https://www.drupal.org/node/2645202 lands.
+      $this->setOriginalId($this->id());
       GroupContentEnablerHelper::installEnforcedPlugins($this);
     }
   }
