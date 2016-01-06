@@ -13,7 +13,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
  */
 function group_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
-    case 'group_type.content':
+    case 'entity.group_type.content_plugins':
       return '<p>' . t('Entities that can be added to this group type.') . '</p>';
   }
 }

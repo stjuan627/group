@@ -278,7 +278,7 @@ class GroupTypeController extends ControllerBase {
 
     $group_type->enableContent($plugin_id);
     drupal_set_message($this->t('The content was enabled for the group type.'));
-    return $this->redirect('group_type.content', ['group_type' => $group_type->id()]);
+    return $this->redirect('entity.group_type.content_plugins', ['group_type' => $group_type->id()]);
   }
 
   /**
@@ -294,7 +294,7 @@ class GroupTypeController extends ControllerBase {
     $group_type = $group_content_type->getGroupType();
     $group_type->disableContent($group_content_type->getContentPlugin()->getPluginId());
     drupal_set_message($this->t('The content was disabled for the group type.'));
-    return $this->redirect('group_type.content', ['group_type' => $group_type->id()]);
+    return $this->redirect('entity.group_type.content_plugins', ['group_type' => $group_type->id()]);
   }
 
 }

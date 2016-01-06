@@ -48,7 +48,7 @@ group.type_add:
   requirements:
     _permission: 'administer group'
 
-group_type.content:
+entity.group_type.content_plugins:
   path: '/admin/group/types/manage/{group_type}/content'
   defaults:
     _controller: '\Drupal\group\Entity\Controller\GroupTypeController::content'

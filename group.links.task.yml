@@ -34,10 +34,10 @@ group_type.edit_form:
   base_route: 'entity.group_type.edit_form'
   route_name: 'entity.group_type.edit_form'
 
-group_type.content:
+entity.group_type.content_plugins:
   title: 'Content'
   base_route: 'entity.group_type.edit_form'
-  route_name: 'group_type.content'
+  route_name: 'entity.group_type.content_plugins'
   weight: 10
 
 group_type.permissions_form:

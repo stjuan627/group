@@ -38,6 +38,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "collection" = "/admin/group/types",
  *     "edit-form" = "/admin/group/types/manage/{group_type}",
  *     "delete-form" = "/admin/group/types/manage/{group_type}/delete",
+ *     "content-plugins" = "/admin/group/types/manage/{group_type}/content",
  *     "permissions-form" = "/admin/group/types/manage/{group_type}/permissions"
  *   },
  *   config_export = {
