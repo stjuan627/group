@@ -22,6 +22,21 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Consider doing configuration like BlockBase so we can remove this.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    // We call ::setConfiguration at construction to hide all non-configurable
+    // keys such as 'id'. This causes the $configuration property to only list
+    // that which is in fact configurable. However, ::getConfiguration still
+    // returns the full configuration array.
+    $this->setConfiguration($configuration);
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getProvider() {
     return $this->pluginDefinition['provider'];
