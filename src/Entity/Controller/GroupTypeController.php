@@ -35,7 +35,7 @@ class GroupTypeController extends ControllerBase {
    *
    * @var string[]
    */
-  protected $installedPluginIds;
+  protected $installedPluginIds = [];
 
   /**
    * The group content plugin manager.
