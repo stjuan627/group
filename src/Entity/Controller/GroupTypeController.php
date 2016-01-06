@@ -108,7 +108,7 @@ class GroupTypeController extends ControllerBase {
         'status' => $this->t('Status'),
         'operations' => $this->t('Operations'),
       ],
-      '#suffix' =>  $this->t('<em>* These plugins are set to be always on by the providing module.</em>'),
+      '#suffix' =>  $this->t('<em>* These plugins are set to be always on by their providing module.</em>'),
     ];
 
     foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
