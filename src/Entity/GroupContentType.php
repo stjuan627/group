@@ -106,8 +106,10 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    // @todo add module defining plugin when fixed, group type when not fixed.
+    // By adding the group type and module as dependencies, we ensure the group
+    // content type is deleted as well when the module or group type is deleted.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
+    $this->addDependency('module', $this->getContentPlugin()->getProvider());
   }
 
 }
