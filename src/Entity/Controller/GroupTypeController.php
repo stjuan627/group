@@ -138,7 +138,7 @@ class GroupTypeController extends ControllerBase {
       }
     }
     else {
-      $status = $this->t('Uninstalled');
+      $status = $this->t('Not installed');
     }
 
     $row = [
