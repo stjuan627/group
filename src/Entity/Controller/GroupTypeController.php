@@ -210,7 +210,7 @@ class GroupTypeController extends ControllerBase {
     if ($installed) {
       $operations['configure'] = [
         'title' => $this->t('Configure'),
-        'url' => new Url('entity.group_content_type.configure_form', $route_params),
+        'url' => new Url('entity.group_content_type.edit_form', $route_params),
       ];
 
       $operations += field_ui_entity_operation($group_content_type);
@@ -221,13 +221,13 @@ class GroupTypeController extends ControllerBase {
         $operations['uninstall'] = [
           'title' => $this->t('Uninstall'),
           'weight' => 99,
-          'url' => new Url('group_content_type.uninstall', $route_params),
+          'url' => new Url('entity.group_content_type.delete_form', $route_params),
         ];
       }
       else {
         $operations['install'] = [
           'title' => $this->t('Install'),
-          'url' => new Url('group_content_type.install', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
+          'url' => new Url('entity.group_content_type.add_form', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
         ];
       }
     }

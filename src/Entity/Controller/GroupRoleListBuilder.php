@@ -80,7 +80,7 @@ class GroupRoleListBuilder extends DraggableListBuilder {
   public function render() {
     $build = parent::render();
     $build['table']['#empty'] = $this->t('No group roles available. <a href="@link">Add group role</a>.', [
-      '@link' => Url::fromRoute('group.role_add')->toString()
+      '@link' => Url::fromRoute('entity.group_role.add_form')->toString()
     ]);
     return $build;
   }

@@ -11,19 +11,19 @@ group.types:
 group.settings:
   title: 'Settings'
   base_route: 'entity.group.collection'
-  route_name: 'group.group_settings'
+  route_name: 'group.settings'
 
 group.view:
   title: 'View'
   base_route: 'entity.group.canonical'
   route_name: 'entity.group.canonical'
 
-group.page_edit:
+group.edit_form:
   title: 'Edit'
   base_route: 'entity.group.canonical'
   route_name: 'entity.group.edit_form'
 
-group.delete_confirm:
+group.delete_form:
   title: 'Delete'
   base_route: 'entity.group.canonical'
   route_name: 'entity.group.delete_form'
@@ -34,7 +34,7 @@ group_type.edit_form:
   base_route: 'entity.group_type.edit_form'
   route_name: 'entity.group_type.edit_form'
 
-entity.group_type.content_plugins:
+group_type.content_plugins:
   title: 'Content'
   base_route: 'entity.group_type.edit_form'
   route_name: 'entity.group_type.content_plugins'
@@ -46,9 +46,9 @@ group_type.permissions_form:
   base_route: 'entity.group_type.edit_form'
   weight: 20
 
-group_content_type.configure_form:
+group_content_type.edit_form:
   title: 'Configure'
-  base_route: 'entity.group_content_type.configure_form'
-  route_name: 'entity.group_content_type.configure_form'
+  base_route: 'entity.group_content_type.edit_form'
+  route_name: 'entity.group_content_type.edit_form'
 
 #todo look into group_role tasks?

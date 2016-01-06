@@ -60,7 +60,7 @@ function template_preprocess_group_add_list(&$variables) {
     foreach ($variables['group_types'] as $type) {
       $variables['types'][$type->id()] = array(
         'type' => $type->id(),
-        'add_link' => \Drupal::l($type->label(), new Url('group.add', array('group_type' => $type->id()))),
+        'add_link' => \Drupal::l($type->label(), new Url('entity.group.add_form', array('group_type' => $type->id()))),
         'description' => array(
           '#markup' => $type->getDescription(),
         ),

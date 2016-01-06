@@ -47,8 +47,8 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $breadcrumb->addLink(Link::createFromRoute($this->t('Content'), 'entity.group_type.content_plugins', ['group_type' => $group_type->id()]));
 
     // Add a link to the Configure page for any non-default tab.
-    if ($route_match->getRouteName() != 'entity.group_content_type.configure_form') {
-      $breadcrumb->addLink(Link::createFromRoute($this->t('Configure'), 'entity.group_content_type.configure_form', ['group_content_type' => $group_content_type->id()]));
+    if ($route_match->getRouteName() != 'entity.group_content_type.edit_form') {
+      $breadcrumb->addLink(Link::createFromRoute($this->t('Configure'), 'entity.group_content_type.edit_form', ['group_content_type' => $group_content_type->id()]));
     }
 
     // Breadcrumb needs to have the group type and group content type as

@@ -79,7 +79,7 @@ class GroupController extends ControllerBase {
     // Bypass the group/add listing if only one content type is available.
     if (count($group_types) == 1) {
       $type = array_shift($group_types);
-      return $this->redirect('group.add', array('group_type' => $type->id()));
+      return $this->redirect('entity.group.add_form', array('group_type' => $type->id()));
     }
 
     return array(
@@ -108,7 +108,7 @@ class GroupController extends ControllerBase {
   }
 
   /**
-   * The _title_callback for the group.add route.
+   * The _title_callback for the entity.group.add_form route.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The current group.
