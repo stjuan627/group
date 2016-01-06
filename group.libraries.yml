@@ -1,7 +1,7 @@
 toolbar:
-  version: VERSION
+  version: 'VERSION'
   css:
     theme:
       css/toolbar.icons.theme.css: {}
   dependencies:
-    - toolbar/toolbar
+    - 'toolbar/toolbar'
