@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -168,6 +169,18 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     $this->roles = array_unique($this->roles);
 
     parent::preSave($storage);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    // Enable enforced content plugins for new group types.
+    if (!$update) {
+      GroupContentEnablerHelper::installEnforcedPlugins($this);
+    }
   }
 
   /**
