@@ -10,6 +10,7 @@
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * Defines the Group content type configuration entity.
@@ -100,6 +101,22 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    */
   public function getContentPlugin() {
     return $this->getGroupType()->enabledContent()->get($this->content_plugin);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+    // In case the group content type got deleted by uninstalling the providing
+    // module, we still need to uninstall it on the group type.
+    foreach ($entities as $entity) {
+      /** @var \Drupal\group\Entity\GroupContentType $entity */
+      if ($entity->isUninstalling()) {
+        $group_type = $entity->getGroupType();
+        $group_type->enabledContent()->removeInstanceId($entity->getContentPlugin()->getPluginId());
+        $group_type->save();
+      }
+    }
   }
 
   /**
