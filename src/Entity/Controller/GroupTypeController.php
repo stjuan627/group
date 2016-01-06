@@ -10,13 +10,12 @@ namespace Drupal\group\Entity\Controller;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupContentTypeInterface;
+use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\group\Plugin\GroupContentEnablerInterface;
-use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -62,15 +61,12 @@ class GroupTypeController extends ControllerBase {
   /**
    * Constructs a new GroupSettingsForm.
    *
-   * @param \Drupal\Component\Plugin\PluginManagerInterface $plugin_manager
-   *   The group content plugin manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(PluginManagerInterface $plugin_manager, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
-    $this->pluginManager = $plugin_manager;
+  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
     $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
   }
@@ -80,7 +76,6 @@ class GroupTypeController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_content_enabler'),
       $container->get('module_handler'),
       $container->get('entity_type.manager')
     );
@@ -113,36 +108,14 @@ class GroupTypeController extends ControllerBase {
         'status' => $this->t('Status'),
         'operations' => $this->t('Operations'),
       ],
+      '#suffix' =>  $this->t('<em>* These plugins are set to be always on by the providing module.</em>'),
     ];
 
-    foreach ($this->getAllContentEnablers() as $plugin_id => $plugin) {
+    foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
       $page['content'][$plugin_id] = $this->buildRow($plugin);
     }
 
     return $page;
-  }
-
-  /**
-   * Returns a plugin collection of all available content enablers.
-   *
-   * We add all known plugins to one big collection so we can sort them using
-   * the sorting logic available on the collection and so we're sure we're not
-   * instantiating our vanilla plugins more than once.
-   *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
-   *   The content enabler plugin collection.
-   */
-  public function getAllContentEnablers() {
-    $manager = \Drupal::service('plugin.manager.group_content_enabler');
-    $collection = new GroupContentEnablerCollection($manager, []);
-
-    // Add every known plugin to the collection with a vanilla configuration.
-    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $plugin_info) {
-      $collection->setInstanceConfiguration($plugin_id, ['id' => $plugin_id]);
-    }
-
-    // Sort and return the plugin collection.
-    return $collection->sort();
   }
 
   /**
@@ -156,12 +129,13 @@ class GroupTypeController extends ControllerBase {
    */
   public function buildRow(GroupContentEnablerInterface $plugin) {
     // Get the plugin status.
-    // @todo Remove when enforced are also installed.
-    if ($plugin->isEnforced()) {
-      $status = $this->t('Enforced');
-    }
-    elseif (in_array($plugin->getPluginId(), $this->installedPluginIds)) {
+    if (in_array($plugin->getPluginId(), $this->installedPluginIds)) {
       $status = $this->t('Installed');
+
+      // Mark enforced plugins with an asterisk.
+      if ($plugin->isEnforced()) {
+        $status .= '*';
+      }
     }
     else {
       $status = $this->t('Uninstalled');
