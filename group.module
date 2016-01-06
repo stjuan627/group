@@ -5,6 +5,7 @@
  * Contains Drupal\group\group.module
  */
 
+use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Url;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -67,4 +68,12 @@ function template_preprocess_group_add_list(&$variables) {
       );
     }
   }
+}
+
+/**
+ * Implements hook_rebuild().
+ */
+function group_rebuild() {
+  // Checks if there are any new enforced plugins to install.
+  GroupContentEnablerHelper::installEnforcedPlugins();
 }
