@@ -292,7 +292,7 @@ class GroupTypeController extends ControllerBase {
     // @todo Figure out where to disable this: GCT::uninstall(), GT:disableContent(), here, ...
 
     $group_type = $group_content_type->getGroupType();
-    $group_type->disableContent($group_content_type->getContentPlugin()->getPluginId());
+    $group_type->disableContent($group_content_type->getContentPluginId());
     drupal_set_message($this->t('The content was disabled for the group type.'));
     return $this->redirect('entity.group_type.content_plugins', ['group_type' => $group_type->id()]);
   }

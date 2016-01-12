@@ -31,11 +31,27 @@ interface GroupContentTypeInterface extends ConfigEntityInterface {
   public function getGroupType();
 
   /**
+   * Gets the group type ID the content type was created for.
+   *
+   * @return string
+   *   The group type ID for which the content type was created.
+   */
+  public function getGroupTypeId();
+
+  /**
    * Gets the content enabler plugin the content type uses.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
    *   The content enabler plugin the content type uses.
    */
   public function getContentPlugin();
+
+  /**
+   * Gets the content enabler plugin ID the content type uses.
+   *
+   * @return string
+   *   The content enabler plugin ID the content type uses.
+   */
+  public function getContentPluginId();
 
 }
