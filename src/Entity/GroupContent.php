@@ -92,6 +92,13 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setSetting('target_type', 'group')
       ->setReadOnly(TRUE);
 
+    // Borrowed this logic from the Comment module.
+    // Warning! May change in the future: https://www.drupal.org/node/2346347
+    $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Content'))
+      ->setDescription(t('The entity to add to the group.'))
+      ->setReadOnly(TRUE);
+
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language'))
       ->setDescription(t('The group content language code.'))
@@ -121,6 +128,21 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setTranslatable(TRUE);
 
     return $fields;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+    // Borrowed this logic from the Comment module.
+    // Warning! May change in the future: https://www.drupal.org/node/2346347
+    if ($group_content_type = GroupContentType::load($bundle)) {
+      $fields['entity_id'] = clone $base_field_definitions['entity_id'];
+      $fields['entity_id']->setSetting('target_type', $group_content_type->getGroupTypeId());
+      return $fields;
+    }
+
+    return [];
   }
 
 }
