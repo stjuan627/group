@@ -87,10 +87,10 @@ group_content_type:
 
 # Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.
 group.content_type.*.*:
-  type: group_content_type
+  type: 'group_content_type'
   label: 'Group content type'
 
 # Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID.
 group.content_type.*.*.*:
-  type: group_content_type
+  type: 'group_content_type'
   label: 'Group content type (derivative)'

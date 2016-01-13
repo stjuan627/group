@@ -8,4 +8,4 @@ administer group:
   restrict access: TRUE
 
 permission_callbacks:
-  - \Drupal\group\Access\GroupPermissions::groupTypePermissions
+  - '\Drupal\group\Access\GroupPermissions::groupTypePermissions'
