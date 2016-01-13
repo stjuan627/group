@@ -64,7 +64,6 @@ group.role.*:
         type: 'string'
         label: 'Group permission'
 
-
 group_content_type:
   type: 'config_entity'
   label: 'Group content type'
@@ -94,3 +93,22 @@ group.content_type.*.*:
 group.content_type.*.*.*:
   type: 'group_content_type'
   label: 'Group content type (derivative)'
+
+# Extends field.field.*.*.* to account for group content IDs containing periods.
+# Follows the pattern field.field.group_content.GROUP_TYPE_ID.PLUGIN_ID.FIELD_ID.
+field.field.group_content.*.*.*:
+  type: 'field_config_base'
+  label: 'Field'
+
+# Extends field.field.*.*.* to account for group content IDs containing periods.
+# Follows the pattern field.field.group_content.GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID.FIELD_ID.
+field.field.group_content.*.*.*.*:
+  type: 'field_config_base'
+  label: 'Field'
+
+entity_reference_selection.group_membership_role:
+  type: 'entity_reference_selection'
+  mapping:
+    group_type_id:
+      type: 'string'
+      label: 'The group type to check for available roles.'
