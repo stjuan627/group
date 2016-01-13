@@ -133,4 +133,10 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     return array();
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function postInstall(GroupTypeInterface $group_type) {
+  }
+
 }

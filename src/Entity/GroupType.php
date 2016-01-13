@@ -244,6 +244,9 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     ];
     GroupContentType::create($values)->save();
 
+    // Run the post install tasks on the plugin.
+    $this->enabledContent()->get($plugin_id)->postInstall($this);
+
     return $this;
   }
 

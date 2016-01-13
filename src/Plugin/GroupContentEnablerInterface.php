@@ -112,4 +112,16 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    */
   public function getOperations();
 
+  /**
+   * Run tasks after the group content type for this plugin has been created.
+   *
+   * A good example of what you might want to do here, is the installation of
+   * extra locked fields on the group content type. You can find an example in
+   * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership::postInstall().
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   *   The group type this plugin was installed on.
+   */
+  public function postInstall(GroupTypeInterface $group_type);
+
 }
