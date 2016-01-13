@@ -7,53 +7,15 @@
 
 namespace Drupal\group\Entity\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Datetime\DateFormatter;
-use Drupal\Core\Render\RendererInterface;
+use Drupal\group\Entity\Group;
+use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupTypeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Controller\ControllerBase;
 
 /**
  * Returns responses for Group routes.
  */
 class GroupController extends ControllerBase {
-
-  /**
-   * The date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatter
-   */
-  protected $dateFormatter;
-
-  /**
-   * The renderer service.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
-   * Constructs a GroupController object.
-   *
-   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
-   *   The date formatter service.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer service.
-   */
-  public function __construct(DateFormatter $date_formatter, RendererInterface $renderer) {
-    $this->dateFormatter = $date_formatter;
-    $this->renderer = $renderer;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('date.formatter'),
-      $container->get('renderer')
-    );
-  }
 
   /**
    * Displays add content links for available group types.
@@ -70,16 +32,16 @@ class GroupController extends ControllerBase {
     $group_types = array();
 
     // Only use group types the user has access to.
-    foreach ($this->entityManager()->getStorage('group_type')->loadMultiple() as $type) {
-      if ($this->entityManager()->getAccessControlHandler('group')->createAccess($type->id())) {
-        $group_types[$type->id()] = $type;
+    foreach (GroupType::loadMultiple() as $group_type) {
+      if ($this->entityTypeManager()->getAccessControlHandler('group')->createAccess($group_type->id())) {
+        $group_types[$group_type->id()] = $group_type;
       }
     }
 
     // Bypass the group/add listing if only one content type is available.
     if (count($group_types) == 1) {
-      $type = array_shift($group_types);
-      return $this->redirect('entity.group.add_form', array('group_type' => $type->id()));
+      $group_type = array_shift($group_types);
+      return $this->redirect('entity.group.add_form', array('group_type' => $group_type->id()));
     }
 
     return array(
@@ -92,18 +54,14 @@ class GroupController extends ControllerBase {
    * Provides the group submission form.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type entity for the group.
+   *   The group type of the group to add.
    *
    * @return array
    *   A group submission form.
    */
   public function add(GroupTypeInterface $group_type) {
-    $group = $this->entityManager()->getStorage('group')->create(array(
-      'type' => $group_type->id(),
-    ));
-
+    $group = Group::create(['type' => $group_type->id()]);
     $form = $this->entityFormBuilder()->getForm($group, 'add');
-
     return $form;
   }
 
@@ -111,7 +69,7 @@ class GroupController extends ControllerBase {
    * The _title_callback for the entity.group.add_form route.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The current group.
+   *   The group type to base the title on.
    *
    * @return string
    *   The page title.
