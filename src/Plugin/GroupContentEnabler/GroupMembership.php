@@ -34,15 +34,15 @@ class GroupMembership extends GroupContentEnablerBase {
     $group_content_type_id = $this->getContentTypeConfigId($group_type);
 
     // Add the group_roles field to the newly added group content type. The
-    // field storage for this is defined in the config/install folder; the
+    // field storage for this is defined in the config/install folder. The
     // default handler for 'group_role' target entities in the 'group_type'
-    // handler group is GroupMembershipRoleSelection.
+    // handler group is GroupTypeRoleSelection.
     FieldConfig::create([
       'field_storage' => FieldStorageConfig::loadByName('group_content', 'group_roles'),
       'bundle' => $group_content_type_id,
       'label' => $this->t('Roles'),
       'settings' => [
-        'handler' => 'group_type',
+        'handler' => 'group_type:group_role',
         'handler_settings' => [
           'group_type_id' => $group_type->id(),
         ],
