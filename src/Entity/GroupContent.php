@@ -138,7 +138,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     // Warning! May change in the future: https://www.drupal.org/node/2346347
     if ($group_content_type = GroupContentType::load($bundle)) {
       $fields['entity_id'] = clone $base_field_definitions['entity_id'];
-      $fields['entity_id']->setSetting('target_type', $group_content_type->getGroupTypeId());
+      $fields['entity_id']->setSetting('target_type', $group_content_type->getContentPlugin()->getEntityTypeId());
       return $fields;
     }
 
