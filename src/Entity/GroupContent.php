@@ -81,9 +81,10 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setDescription(t('The UUID of the Group content entity.'))
       ->setReadOnly(TRUE);
 
-    $fields['type'] = BaseFieldDefinition::create('string')
+    $fields['type'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Type'))
       ->setDescription(t('The group content type.'))
+      ->setSetting('target_type', 'group_content_type')
       ->setReadOnly(TRUE);
 
     $fields['gid'] = BaseFieldDefinition::create('entity_reference')
