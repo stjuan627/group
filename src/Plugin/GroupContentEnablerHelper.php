@@ -15,6 +15,11 @@ use Drupal\group\Entity\GroupTypeInterface;
  */
 class GroupContentEnablerHelper {
 
+  /**
+   * A collection of instances of all content enabler plugins.
+   *
+   * @var \Drupal\group\Plugin\GroupContentEnablerCollection
+   */
   protected static $pluginCollection;
 
   /**

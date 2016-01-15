@@ -159,7 +159,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     return $this->permissions;
   }
 
-
   /**
    * {@inheritdoc}
    */

@@ -24,5 +24,5 @@ use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
  * )
  */
 class GroupTypeRoleSelection extends DefaultSelection {
-
+// @todo Implement this.
 }
