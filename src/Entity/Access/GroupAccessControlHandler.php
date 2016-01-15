@@ -24,8 +24,6 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    //return AccessResult::allowedIfHasPermission($account, 'bypass group access');
-
     switch ($operation) {
       case 'view':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'view group');

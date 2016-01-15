@@ -6,10 +6,11 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\group\GroupMembership;
+use Drupal\user\UserInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\UserInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Session\AccountInterface;
 
@@ -142,9 +143,35 @@ class Group extends ContentEntityBase implements GroupInterface {
   }
 
   /**
+   * Helper function to retrieve group memberships.
+   *
+   * @param string|array $roles
+   *   (optional) A group role machine name or a list of group role machine
+   *   names to filter on. Results only need to match on one role (IN query).
+   *
+   * @return \Drupal\group\GroupMembership[]
+   *   A list of GroupMembership objects representing the memberships.
+   */
+  public function getMembers($roles = NULL) {
+    return GroupMembership::loadByGroup($this, $roles);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function hasPermission($permission, AccountInterface $account) {
+    // If the account can bypass all group access, return immediately.
+    if ($account->hasPermission('bypass group access')) {
+      return TRUE;
+    }
+
+    // If the user has a membership, check for the permission there.
+    if ($group_membership = GroupMembership::load($this, $account)) {
+      return $group_membership->hasPermission($permission);
+    }
+
+    // @todo: Check for anonymous / outsiders.
+
     return TRUE;
   }
 
