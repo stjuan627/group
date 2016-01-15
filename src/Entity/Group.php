@@ -113,6 +113,37 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function getContent($content_enabler = NULL, $filters = []) {
+    $properties = ['gid' => $this->id()] + $filters;
+
+    // If a plugin ID was provided, set the group content type ID for it.
+    if (isset($content_enabler)) {
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      $plugin = $this->type->entity->enabledContent()->get($content_enabler);
+      $properties['type'] = $plugin->getContentTypeConfigId($this->type->entity);
+    }
+
+    return \Drupal::entityTypeManager()->getStorage('group_content')->loadByProperties($properties);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentEntities($content_enabler = NULL, $filters = []) {
+    $entities = [];
+
+    foreach ($this->getContent($content_enabler, $filters) as $group_content) {
+      /** @var \Drupal\Core\Entity\EntityInterface $entity */
+      $entity = $group_content->entity_id->entity;
+      $entities[$entity->id()] = $entity;
+    }
+
+    return $entities;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function hasPermission($permission, AccountInterface $account) {
     return TRUE;
   }
