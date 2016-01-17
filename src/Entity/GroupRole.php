@@ -37,10 +37,10 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label" = "label"
  *   },
  *   links = {
- *     "collection" = "/admin/group/roles",
- *     "edit-form" = "/admin/group/roles/manage/{group_role}",
- *     "delete-form" = "/admin/group/roles/manage/{group_role}/delete",
- *     "permissions-form" = "/admin/group/roles/manage/{group_role}/permissions"
+ *     "collection" = "/admin/group/types/manage/{group_type}/roles",
+ *     "edit-form" = "/admin/group/types/manage/{group_type}/roles/{group_role}",
+ *     "delete-form" = "/admin/group/types/manage/{group_type}/roles/{group_role}/delete",
+ *     "permissions-form" = "/admin/group/types/manage/{group_type}/roles/{group_role}/permissions"
  *   },
  *   config_export = {
  *     "id",
