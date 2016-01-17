@@ -12,6 +12,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -267,6 +268,18 @@ class Group extends ContentEntityBase implements GroupInterface {
    */
   public static function getCurrentUserId() {
     return array(\Drupal::currentUser()->id());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+    // Remove all group content from these groups as well.
+    foreach ($entities as $group) {
+      foreach ($group->getContent() as $group_content) {
+        $group_content->delete();
+      }
+    }
   }
 
 }
