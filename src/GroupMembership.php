@@ -188,8 +188,7 @@ class GroupMembership {
    */
   public function getRoles() {
     $roles = $this->groupContent->group_roles->referencedEntities();
-    // @todo refactor when roles get refactored.
-    $roles[] = GroupRole::load('m_' . $this->getGroup()->type->entity->id());
+    $roles[] = GroupRole::load($this->getGroup()->type->entity->id() . '.member');
     return $roles;
   }
 

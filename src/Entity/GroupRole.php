@@ -45,8 +45,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "internal",
  *     "weight",
+ *     "internal",
+ *     "group_type",
  *     "permissions"
  *   }
  * )
@@ -68,18 +69,28 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   protected $label;
 
   /**
-   * Whether the group role is directly tied to a group type.
+   * The weight of the group role in administrative listings.
+   *
+   * @var int
+   */
+  protected $weight;
+
+  /**
+   * Whether the group role is used internally.
+   *
+   * Examples of these are the special group roles 'anonymous', 'outsider' and
+   * 'member'.
    *
    * @var bool
    */
   protected $internal = FALSE;
 
   /**
-   * The weight of the group role in administrative listings.
+   * The ID of the group type this role belongs to.
    *
-   * @var int
+   * @var string
    */
-  protected $weight;
+  protected $group_type;
 
   /**
    * The permissions belonging to the group role.
@@ -93,20 +104,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function id() {
     return $this->id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function prettyLabel() {
-    $label = $this->label();
-
-    // Strip the internal info off of the label.
-    if ($this->isInternal()) {
-      $label = preg_replace('/ \([^)]+\)$/i', '', $label);
-    }
-
-    return $label;
   }
 
   /**
@@ -135,21 +132,38 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function isAnonymous() {
-    return $this->internal && strpos($this->id(), 'a_') === 0;
+    list($group_type, $group_role) = explode('.', $this->id(), 2);
+    return $group_role == 'anonymous';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isOutsider() {
-    return $this->internal && strpos($this->id(), 'o_') === 0;
+    list($group_type, $group_role) = explode('.', $this->id(), 2);
+    return $group_role == 'outsider';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMember() {
-    return !$this->isAnonymous() && !$this->isOutsider();
+    list($group_type, $group_role) = explode('.', $this->id(), 2);
+    return $group_role == 'member';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupType() {
+    return GroupType::load($this->group_type);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupTypeId() {
+    return $this->group_type;
   }
 
   /**
@@ -218,6 +232,22 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
+  protected function urlRouteParameters($rel) {
+    $uri_route_parameters = parent::urlRouteParameters($rel);
+    $uri_route_parameters['group_type'] = $this->getGroupTypeId();
+    return $uri_route_parameters;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function postLoad(EntityStorageInterface $storage, array &$entities) {
     parent::postLoad($storage, $entities);
     // Sort the queried roles by their weight.
@@ -239,32 +269,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
 
       $this->weight = $max + 1;
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
-    parent::postSave($storage, $update);
-
-    // @todo
-    // Update all references to the group role. Should only be group types and
-    // group memberships.
-
-    /*
-    if ($update && $this->getOriginalId() != $this->id()) {
-      $update_count = node_type_update_nodes($this->getOriginalId(), $this->id());
-      if ($update_count) {
-        drupal_set_message(\Drupal::translation()->formatPlural($update_count,
-          'Changed the content type of 1 post from %old-type to %type.',
-          'Changed the content type of @count posts from %old-type to %type.',
-          array(
-            '%old-type' => $this->getOriginalId(),
-            '%type' => $this->id(),
-          )));
-      }
-    }
-    */
   }
 
 }

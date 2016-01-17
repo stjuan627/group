@@ -46,6 +46,12 @@ group_type.permissions_form:
   base_route: 'entity.group_type.edit_form'
   weight: 20
 
+group_type.roles_list:
+  title: 'Roles'
+  route_name: 'entity.group_role.collection'
+  base_route: 'entity.group_type.edit_form'
+  weight: 25
+
 group_content_type.edit_form:
   title: 'Configure'
   base_route: 'entity.group_content_type.edit_form'

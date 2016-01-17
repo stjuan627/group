@@ -46,8 +46,6 @@ class GroupTypeForm extends BundleEntityFormBase {
     $form['id'] = array(
       '#type' => 'machine_name',
       '#default_value' => $type->id(),
-      // We reduce the maximum length by 2 so we can create 3 special group
-      // roles with this machine name including a 2-character prefix.
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
@@ -65,21 +63,6 @@ class GroupTypeForm extends BundleEntityFormBase {
       '#description' => t('Describe this group type. The text will be displayed on the %group-add page.', array(
         '%group-add' => t('Add group'),
       )),
-    );
-
-    $options = [];
-    $group_roles = GroupRole::loadMultiple();
-    foreach ($group_roles as $role_name => $group_role) {
-      if (!$group_role->isInternal()) {
-        $options[$role_name] = $group_role->label();
-      }
-    }
-
-    $form['roles'] = array(
-      '#title' => t('Group roles'),
-      '#type' => 'checkboxes',
-      '#options' => $options,
-      '#default_value' => $type->getRoleIds(),
     );
 
     return $this->protectBundleIdElement($form);
@@ -115,7 +98,6 @@ class GroupTypeForm extends BundleEntityFormBase {
     /** @var \Drupal\group\Entity\GroupTypeInterface $type */
     $type = $this->entity;
     $type->set('label', trim($type->label()));
-    $type->set('roles', array_values(array_filter($type->getRoleIds())));
 
     $status = $type->save();
     $t_args = array('%label' => $type->label());
@@ -125,11 +107,11 @@ class GroupTypeForm extends BundleEntityFormBase {
     }
     elseif ($status == SAVED_NEW) {
       drupal_set_message(t('The group type %label has been added.', $t_args));
-      $context = array_merge($t_args, array('link' => $type->link($this->t('View'), 'collection')));
+      $context = array_merge($t_args, array('link' => $type->toLink($this->t('View'), 'collection')->toString()));
       $this->logger('group')->notice('Added group type %label.', $context);
     }
 
-    $form_state->setRedirectUrl($type->urlInfo('collection'));
+    $form_state->setRedirectUrl($type->toUrl('collection'));
   }
 
 }

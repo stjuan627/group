@@ -110,7 +110,7 @@ abstract class GroupPermissionsForm extends FormBase {
     // prevent the same methods from being fired (rows * permissions) times.
     foreach ($group_roles as $role_name => $group_role) {
       $role_info[$role_name] = [
-        'label' => $group_role->prettyLabel(),
+        'label' => $group_role->label(),
         'permissions' => $group_role->getPermissions(),
         'is_anonymous' => $group_role->isAnonymous(),
         'is_outsider' => $group_role->isOutsider(),

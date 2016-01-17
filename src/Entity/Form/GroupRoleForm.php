@@ -47,15 +47,24 @@ class GroupRoleForm extends EntityForm {
       '#size' => 30,
     );
 
+    // Since group role IDs are prefixed by the group type's ID followed by a
+    // period, we need to save some space for that.
+    $subtract = strlen($group_role->getGroupTypeId()) + 1;
+
+    // Since machine names with periods in it are technically not allowed, we
+    // strip the group type ID prefix when editing a group role.
+    list($group_type_id, $group_role_id) =  explode('.', $group_role->id(), 2);
+
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $group_role->id(),
-      '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+      '#default_value' => $group_role_id,
+      '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH - $subtract,
       '#machine_name' => array(
         'exists' => ['Drupal\group\Entity\GroupRole', 'load'],
         'source' => array('label'),
       ),
       '#description' => t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
+      '#disabled' => !$group_role->isNew(),
     );
 
     $form['weight'] = array(
@@ -92,11 +101,6 @@ class GroupRoleForm extends EntityForm {
     if ($id == '0') {
       $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
     }
-
-    // Do not allow reserved prefixes.
-    if (preg_match('/^(a|o|m)_/i', $id)) {
-      $form_state->setErrorByName('id', $this->t("Group role machine names may not start with 'a_', 'o_' or 'm_'."));
-    }
   }
 
   /**
@@ -105,6 +109,7 @@ class GroupRoleForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $group_role = $this->entity;
+    $group_role->set('id', $group_role->getGroupTypeId() . '.' . $group_role->id());
     $group_role->set('label', trim($group_role->label()));
 
     $status = $group_role->save();
@@ -116,11 +121,11 @@ class GroupRoleForm extends EntityForm {
     elseif ($status == SAVED_NEW) {
       drupal_set_message(t('The group role %label has been added.', $t_args));
 
-      $context = array_merge($t_args, array('link' => $group_role->link($this->t('View'), 'collection')));
+      $context = array_merge($t_args, array('link' => $group_role->toLink($this->t('View'), 'collection')->toString()));
       $this->logger('group')->notice('Added group role %label.', $context);
     }
 
-    $form_state->setRedirectUrl($group_role->urlInfo('collection'));
+    $form_state->setRedirectUrl($group_role->toUrl('collection'));
   }
 
 }

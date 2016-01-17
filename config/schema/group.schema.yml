@@ -21,12 +21,6 @@ group.type.*:
     description:
       type: 'text'
       label: 'Description'
-    roles:
-      type: 'sequence'
-      label: 'Group role IDs'
-      sequence:
-        type: 'string'
-        label: 'Group role ID'
     content:
       type: 'sequence'
       label: 'Group content enabler plugins'
@@ -41,7 +35,8 @@ group.type.*:
             type: 'sequence'
             label: 'Plugin configuration'
 
-group.role.*:
+# Follows the pattern group.role.GROUP_TYPE_ID.GROUP_ROLE_ID.
+group.role.*.*:
   type: 'config_entity'
   label: 'Group role'
   mapping:
@@ -51,12 +46,15 @@ group.role.*:
     label:
       type: 'label'
       label: 'Label'
-    internal:
-      type: 'boolean'
-      label: 'Group role is directly tied to a group type'
     weight:
       type: 'integer'
       label: 'Weight'
+    internal:
+      type: 'boolean'
+      label: 'Group role is used internally'
+    group_type:
+      type: 'string'
+      label: 'Group type ID'
     permissions:
       type: 'sequence'
       label: 'Permissions'

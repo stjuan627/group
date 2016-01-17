@@ -46,7 +46,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "id",
  *     "label",
  *     "description",
- *     "roles",
  *     "content"
  *   }
  * )
@@ -75,16 +74,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   protected $description;
 
   /**
-   * A list of group roles the group type uses.
-   *
-   * @var \Drupal\group\Entity\GroupRoleInterface[]
-   */
-  protected $roles = [];
-
-  /**
    * The content enabler plugin configuration for the group type.
-   *
-   * @todo Auto-enable fixed plugins so they can be configured.
    *
    * @var string[]
    */
@@ -115,60 +105,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function getRoles() {
-    return GroupRole::loadMultiple($this->roles);
+    return $this->entityTypeManager()
+      ->getStorage('group_role')
+      ->loadByProperties(['group_type' => $this->id()]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getRoleIds() {
-    return $this->roles;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
+    $role_ids = [];
     foreach ($this->getRoles() as $group_role) {
-      $this->addDependency('config', $group_role->getConfigDependencyName());
+      $role_ids[] = $group_role->id();
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function preSave(EntityStorageInterface $storage) {
-    // Store the id in a short variable for readability.
-    $id = $this->id();
-
-    // Create three internal group roles for the group type.
-    if ($this->isNew()) {
-      $replace = ['%group_type' => $this->label()];
-      GroupRole::create([
-        'id' => "a_$id",
-        'label' => t('Anonymous (%group_type)', $replace),
-        'internal' => TRUE,
-        'weight' => -102
-      ])->save();
-      GroupRole::create([
-        'id' => "o_$id",
-        'label' => t('Outsider (%group_type)', $replace),
-        'internal' => TRUE,
-        'weight' => -101,
-      ])->save();
-      GroupRole::create([
-        'id' => "m_$id",
-        'label' => t('Member (%group_type)', $replace),
-        'internal' => TRUE,
-        'weight' => -100,
-      ])->save();
-    }
-
-    // Assign the three internal roles to the group type.
-    array_push($this->roles, "a_$id", "o_$id", "m_$id");
-    $this->roles = array_unique($this->roles);
-
-    parent::preSave($storage);
+    return $role_ids;
   }
 
   /**
@@ -177,22 +127,38 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
 
-    // Enable enforced content plugins for new group types.
     if (!$update) {
+      // Store the id in a short variable for readability.
+      $id = $this->id();
+
       // @todo Remove this line when https://www.drupal.org/node/2645202 lands.
       $this->setOriginalId($this->id());
-      GroupContentEnablerHelper::installEnforcedPlugins($this);
-    }
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
-    // Delete the internal group roles along with the group type.
-    foreach ($entities as $entity) {
-      $id = $entity->id();
-      entity_delete_multiple('group_role', ["a_$id", "o_$id", "m_$id"]);
+      // Create the three special roles for the group type.
+      GroupRole::create([
+        'id' => "$id.anonymous",
+        'label' => t('Anonymous'),
+        'weight' => -102,
+        'internal' => TRUE,
+        'group_type' => $id,
+      ])->save();
+      GroupRole::create([
+        'id' => "$id.outsider",
+        'label' => t('Outsider'),
+        'weight' => -101,
+        'internal' => TRUE,
+        'group_type' => $id,
+      ])->save();
+      GroupRole::create([
+        'id' => "$id.member",
+        'label' => t('Member'),
+        'weight' => -100,
+        'internal' => TRUE,
+        'group_type' => $id,
+      ])->save();
+
+      // Enable enforced content plugins for new group types.
+      GroupContentEnablerHelper::installEnforcedPlugins($this);
     }
   }
 
