@@ -34,22 +34,22 @@ group_type.edit_form:
   base_route: 'entity.group_type.edit_form'
   route_name: 'entity.group_type.edit_form'
 
-group_type.content_plugins:
-  title: 'Content'
-  base_route: 'entity.group_type.edit_form'
-  route_name: 'entity.group_type.content_plugins'
-  weight: 10
-
 group_type.permissions_form:
   title: 'Permissions'
   route_name: 'entity.group_type.permissions_form'
   base_route: 'entity.group_type.edit_form'
-  weight: 20
+  weight: 15
 
 group_type.roles_list:
   title: 'Roles'
   route_name: 'entity.group_role.collection'
   base_route: 'entity.group_type.edit_form'
+  weight: 20
+
+group_type.content_plugins:
+  title: 'Content'
+  base_route: 'entity.group_type.edit_form'
+  route_name: 'entity.group_type.content_plugins'
   weight: 25
 
 group_content_type.edit_form:

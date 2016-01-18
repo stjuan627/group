@@ -62,10 +62,18 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
       );
     }
 
+    // Can't use a link template because the group roles route doesn't start
+    // with entity.group_type, see: https://www.drupal.org/node/2645136.
+    $operations['group_roles'] = array(
+      'title' => t('Edit group roles'),
+      'weight' => 40,
+      'url' => Url::fromRoute('entity.group_role.collection', ['group_type' => $entity->id()]),
+    );
+
     if ($entity->hasLinkTemplate('content-plugins')) {
       $operations['content'] = array(
         'title' => t('Set available content'),
-        'weight' => 40,
+        'weight' => 45,
         'url' => $entity->toUrl('content-plugins'),
       );
     }
