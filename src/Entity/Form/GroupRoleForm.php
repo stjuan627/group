@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Entity\Form;
 
+use Drupal\group\Entity\GroupRole;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -23,6 +24,7 @@ class GroupRoleForm extends EntityForm {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $form = parent::form($form, $form_state);
     $group_role = $this->entity;
+    $group_role_id = '';
 
     if ($group_role->isInternal()) {
       return [
@@ -53,18 +55,21 @@ class GroupRoleForm extends EntityForm {
 
     // Since machine names with periods in it are technically not allowed, we
     // strip the group type ID prefix when editing a group role.
-    list($group_type_id, $group_role_id) =  explode('.', $group_role->id(), 2);
+    if ($group_role->id()) {
+      list(, $group_role_id) = explode('.', $group_role->id(), 2);
+    }
 
     $form['id'] = array(
       '#type' => 'machine_name',
       '#default_value' => $group_role_id,
       '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH - $subtract,
       '#machine_name' => array(
-        'exists' => ['Drupal\group\Entity\GroupRole', 'load'],
+        'exists' => [$this, 'exists'],
         'source' => array('label'),
       ),
       '#description' => t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$group_role->isNew(),
+      '#field_prefix' => $group_role->getGroupTypeId() . '.',
     );
 
     $form['weight'] = array(
@@ -126,6 +131,20 @@ class GroupRoleForm extends EntityForm {
     }
 
     $form_state->setRedirectUrl($group_role->toUrl('collection'));
+  }
+
+  /**
+   * Checks whether a group role ID exists already.
+   *
+   * @param string $id
+   *
+   * @return bool
+   *   Whether the ID is taken.
+   */
+  public function exists($id) {
+    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+    $group_role = $this->entity;
+    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '.' .$id);
   }
 
 }
