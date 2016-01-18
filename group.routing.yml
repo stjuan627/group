@@ -148,6 +148,9 @@ entity.group_role.permissions_form:
           type: 'entity:group_type'
 
 # Group content type entity routes.
+# todo Move to group type path when https://www.drupal.org/node/2651974 lands.
+# todo When moved, remove the breadcrumb generator.
+
 # todo Turn into confirmation form.
 entity.group_content_type.add_form:
   path: '/admin/group/content/install/{group_type}/{plugin_id}'
