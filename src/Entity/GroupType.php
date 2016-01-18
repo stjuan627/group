@@ -213,6 +213,11 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     // Run the post install tasks on the plugin.
     $this->enabledContent()->get($plugin_id)->postInstall($this);
 
+    // Plugins may define routes, so a rebuild may be needed.
+    if (!empty($this->enabledContent()->get($plugin_id)->getRoutes())) {
+      \Drupal::service('router.builder')->setRebuildNeeded();
+    }
+
     return $this;
   }
 

@@ -20,6 +20,11 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   id = "group_content",
  *   label = @Translation("Group content entity"),
  *   handlers = {
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "route_provider" = {
+ *       "html" = "Drupal\group\Entity\Routing\GroupContentRouteProvider",
+ *     },
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupContentForm",
  *       "edit" = "Drupal\group\Entity\Form\GroupContentForm",
@@ -98,7 +103,18 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Content'))
       ->setDescription(t('The entity to add to the group.'))
-      ->setReadOnly(TRUE);
+      ->setSetting('handler', 'default')
+      ->setDisplayOptions('form', array(
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 5,
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ),
+      ))
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
 
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language'))

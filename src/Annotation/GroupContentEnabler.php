@@ -58,6 +58,24 @@ class GroupContentEnabler extends Plugin {
   public $entity_type_id;
 
   /**
+   * An associative array of paths to generate routes for.
+   *
+   * Each entry is a path containing at least a {group} parameter and optionally
+   * a {group_content} parameter if it needs one. Keys that are supported by the
+   * base plugin: collection, canonical, add-form, edit-form and delete-form.
+   *
+   * Feel free to add your own keys to them and implement a route for it in
+   * your GroupContentEnablerInterface::getRoutes() implementation.
+   *
+   * Refer to GroupMembership for an example.
+   *
+   * @var string
+   *
+   * @see \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
+   */
+  public $paths = [];
+
+  /**
    * (optional) Whether this plugin is always on.
    *
    * @var bool

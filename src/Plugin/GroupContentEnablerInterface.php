@@ -113,6 +113,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getOperations();
 
   /**
+   * Provides routes for GroupContent entities.
+   *
+   * @return \Symfony\Component\Routing\Route[]
+   *   An array of routes keyed by name.
+   */
+  public function getRoutes();
+
+  /**
    * Run tasks after the group content type for this plugin has been created.
    *
    * A good example of what you might want to do here, is the installation of

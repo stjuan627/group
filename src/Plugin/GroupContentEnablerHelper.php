@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupTypeInterface;
 
@@ -21,6 +22,13 @@ class GroupContentEnablerHelper {
    * @var \Drupal\group\Plugin\GroupContentEnablerCollection
    */
   protected static $pluginCollection;
+
+  /**
+   * The ID of every installed content enabler plugin.
+   *
+   * @var string[]
+   */
+  protected static $installedPluginIds;
 
   /**
    * Prevents this class from being instantiated.
@@ -52,6 +60,29 @@ class GroupContentEnablerHelper {
     }
 
     return self::$pluginCollection;
+  }
+
+  /**
+   * Returns the plugin ID of all content enablers in use.
+   *
+   * @return string[]
+   *   A list of content enabler plugin IDs.
+   */
+  public static function getInstalledContentEnablerIDs() {
+    if (!isset(self::$installedPluginIds)) {
+      $plugin_ids = [];
+
+      // Group content types can only exist if a plugin was installed for them.
+      // By asking all of the existing content types for their plugin ID, we are
+      // sure to have built a list of only installed plugins.
+      foreach (GroupContentType::loadMultiple() as $group_content_type) {
+        $plugin_ids[] = $group_content_type->getContentPluginId();
+      }
+
+      self::$installedPluginIds = array_unique($plugin_ids);
+    }
+
+    return self::$installedPluginIds;
   }
 
   /**
@@ -89,6 +120,7 @@ class GroupContentEnablerHelper {
    */
   public static function reset() {
     self::$pluginCollection = NULL;
+    self::$installedPluginIds = [];
   }
 
 }

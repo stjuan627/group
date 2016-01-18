@@ -9,6 +9,7 @@ namespace Drupal\group\Plugin;
 
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Symfony\Component\Routing\Route;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
@@ -131,6 +132,165 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function calculateDependencies() {
     return array();
+  }
+
+  /**
+   * Gets the collection route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getCollectionRoute() {
+    if ($path = $this->pluginDefinition['paths']['collection']) {
+      $plugin_id = $this->getPluginId();
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_entity_list' => 'group_content',
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
+        ])
+        ->setRequirement('_group_permission', "view $plugin_id content")
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the canonical route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getCanonicalRoute() {
+    if ($path = $this->pluginDefinition['paths']['canonical']) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_entity_view' => 'group_content.full',
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
+        ])
+        ->setRequirement('_entity_access', 'group_content.view')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the add form route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getAddFormRoute() {
+    if ($path = $this->pluginDefinition['paths']['add-form']) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentController::add',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::addPageTitle',
+          'plugin_id' => $this->getPluginId(),
+        ])
+        ->setRequirement('_entity_create_access', 'group_content')
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the edit form route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getEditFormRoute() {
+    if ($path = $this->pluginDefinition['paths']['edit-form']) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_entity_form' => 'group_content.edit',
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::editTitle',
+        ])
+        ->setRequirement('_entity_access', 'group_content.update')
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the delete form route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getDeleteFormRoute() {
+    if ($path = $this->pluginDefinition['paths']['delete-form']) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_entity_form' => 'group_content.delete',
+          '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::deleteTitle',
+        ])
+        ->setRequirement('_entity_access', 'group_content.delete')
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoutes() {
+    $routes = [];
+    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPluginId());
+
+    if ($collection_route = $this->getCollectionRoute()) {
+      $routes["$route_prefix.collection"] = $collection_route;
+    }
+
+    if ($add_route = $this->getAddFormRoute()) {
+      $routes["$route_prefix.add_form"] = $add_route;
+    }
+
+    if ($canonical_route = $this->getCanonicalRoute()) {
+      $routes["$route_prefix.canonical"] = $canonical_route;
+    }
+
+    if ($edit_route = $this->getEditFormRoute()) {
+      $routes["$route_prefix.edit_form"] = $edit_route;
+    }
+
+    if ($delete_route = $this->getDeleteFormRoute()) {
+      $routes["$route_prefix.delete_form"] = $delete_route;
+    }
+
+    return $routes;
   }
 
   /**

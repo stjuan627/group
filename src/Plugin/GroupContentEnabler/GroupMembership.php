@@ -22,6 +22,13 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
+ *   paths = {
+ *     "collection" = "/group/{group}/members",
+ *     "add-form" = "/group/{group}/members/add",
+ *     "canonical" = "/group/{group}/members/{group_content}",
+ *     "edit-form" = "/group/{group}/members/{group_content}/edit",
+ *     "delete-form" = "/group/{group}/members/{group_content}/delete"
+ *   },
  *   enforced = TRUE
  * )
  */
