@@ -19,7 +19,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   id = "group_role",
  *   label = @Translation("Group role"),
  *   handlers = {
- *     "storage" = "Drupal\group\Entity\Storage\GroupRoleStorage",
  *     "access" = "Drupal\group\Entity\Access\GroupRoleAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupRoleForm",

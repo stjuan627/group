@@ -27,13 +27,6 @@ abstract class GroupPermissionsForm extends FormBase {
   protected $groupPermissionHandler;
 
   /**
-   * The group role storage.
-   *
-   * @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface
-   */
-  protected $groupRoleStorage;
-
-  /**
    * The module handler.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
