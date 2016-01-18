@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Entity\Controller\GroupListBuilder.
+ * Contains \Drupal\group\Entity\Controller\GroupContentListBuilder.
  */
 
 namespace Drupal\group\Entity\Controller;
@@ -11,20 +11,18 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 
 /**
- * Provides a list controller for group entities.
+ * Provides a list controller for group content entities.
  *
  * @ingroup group
  */
-class GroupListBuilder extends EntityListBuilder {
+class GroupContentListBuilder extends EntityListBuilder {
 
   /**
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['gid'] = $this->t('Group ID');
-    $header['name'] = $this->t('Name');
-    $header['type'] = $this->t('Type');
-    $header['uid'] = $this->t('Owner');
+    $header['id'] = $this->t('Content ID');
+    $header['label'] = $this->t('Label');
     return $header + parent::buildHeader();
   }
 
@@ -36,9 +34,7 @@ class GroupListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     // EntityListBuilder sets the table rows using the #rows property, so we
     // need to add the render array using the 'data' key.
-    $row['name']['data'] = $entity->toLink()->toRenderable();
-    $row['type'] = $entity->type->entity->label();
-    $row['uid'] = $entity->uid->entity->label();
+    $row['name']['data'] = $entity->entity_id->entity->toLink()->toRenderable();
     return $row + parent::buildRow($entity);
   }
 
@@ -47,7 +43,7 @@ class GroupListBuilder extends EntityListBuilder {
    */
   public function render() {
     $build = parent::render();
-    $build['table']['#empty'] = $this->t('There are no groups yet.');
+    $build['table']['#empty'] = $this->t('There is no group content yet.');
     return $build;
   }
 

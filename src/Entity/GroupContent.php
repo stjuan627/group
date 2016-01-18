@@ -21,7 +21,7 @@ use Drupal\Core\Entity\EntityChangedTrait;
  *   label = @Translation("Group content entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+ *     "list_builder" = "Drupal\group\Entity\Controller\GroupContentListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\group\Entity\Routing\GroupContentRouteProvider",
  *     },

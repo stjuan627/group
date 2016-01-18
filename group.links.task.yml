@@ -29,6 +29,12 @@ group.delete_form:
   route_name: 'entity.group.delete_form'
   weight: 10
 
+group.members:
+  title: 'Members'
+  base_route: 'entity.group.canonical'
+  route_name: 'entity.group_content.group_membership.collection'
+  weight: 15
+
 group_type.edit_form:
   title: 'Edit'
   base_route: 'entity.group_type.edit_form'
