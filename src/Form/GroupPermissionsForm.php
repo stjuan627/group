@@ -71,11 +71,11 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   protected function getInfo() {
     // Format a message explaining the cells with a red x inside them.
-    $replace = ['@red_x' => new FormattableMarkup('<span style="color: #ff0000;">x</span>', [])];
-    $message =  $this->t('Cells with an @red_x indicate that the permission is not available for that role.', $replace);
+    $replace = ['@red_dash' => new FormattableMarkup('<span style="color: #ff0000;">-</span>', [])];
+    $message =  $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
 
     // We use FormattableMarkup so the 'style' attribute doesn't get escaped.
-    return ['red_x_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
+    return ['red_dash_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
   }
 
   /**
@@ -191,7 +191,7 @@ abstract class GroupPermissionsForm extends FormBase {
                 'class' => array('checkbox'),
                 'style' => 'color: #ff0000;',
               ),
-              '#markup' => 'x',
+              '#markup' => '-',
             );
           }
           // Show a checkbox if the permissions is available.

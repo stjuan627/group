@@ -3,4 +3,4 @@ system.admin_group:
   description: 'Find and manage groups, group types and group settings.'
   route_name: 'entity.group.collection'
   parent: 'system.admin'
-  weight: -9
+  weight: 3

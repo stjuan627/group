@@ -37,6 +37,7 @@ function group_theme() {
     /*'group' => array(
       'render element' => 'elements',
     ),*/
+    // @todo Try to polyfill this for core's themes (especially Seven).
     'group_add_list' => array(
       'variables' => array('group_types' => NULL),
     ),
