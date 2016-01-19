@@ -122,7 +122,7 @@ abstract class GroupPermissionsForm extends FormBase {
       '#type' => 'system_compact_link',
     ];
 
-    // Render the role/permissions table.
+    // Render the roles and permissions table.
     $form['permissions'] = [
       '#type' => 'table',
       '#header' => array($this->t('Permission')),
@@ -177,12 +177,17 @@ abstract class GroupPermissionsForm extends FormBase {
 
         // Finally build a checkbox cell for every group role.
         foreach ($role_info as $role_name => $info) {
+          // PHP converts every period in incoming POST data into an underscore.
+          // To prevent this from happening, we convert the role machine name to
+          // something more safe to use.
+          $role_name = str_replace('.', '__', $role_name);
+
           // Determine whether the permission is available for this role.
           $na = $info['is_anonymous'] && !in_array('anonymous', $perm_item['allowed for']);
           $na = $na || ($info['is_outsider'] && !in_array('outsider', $perm_item['allowed for']));
           $na = $na || ($info['is_member'] && !in_array('member', $perm_item['allowed for']));
 
-          // Show a red 'x' if the permission is unavailable.
+          // Show a red '-' if the permission is unavailable.
           if ($na) {
             $form['permissions'][$perm][$role_name] = array(
               '#title' => $info['label'] . ': ' . $perm_item['title'],
@@ -230,6 +235,11 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getRoles() as $role_name => $group_role) {
+      // PHP converts every period in incoming POST data into an underscore. To
+      // prevent this from happening, we convert the role machine name to
+      // something more safe to use.
+      $role_name = str_replace('.', '__', $role_name);
+
       /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
       $permissions = $form_state->getValue($role_name);
       $group_role->changePermissions($permissions)->trustData()->save();
