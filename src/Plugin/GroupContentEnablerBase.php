@@ -67,6 +67,14 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getPath($name) {
+    $paths = $this->pluginDefinition['paths'];
+    return isset($paths[$name]) ? $paths[$name] : '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isEnforced() {
     return $this->pluginDefinition['enforced'];
   }
@@ -141,7 +149,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   The generated route, if available.
    */
   protected function getCollectionRoute() {
-    if ($path = $this->pluginDefinition['paths']['collection']) {
+    if ($path = $this->getPath('collection')) {
       $plugin_id = $this->getPluginId();
       $route = new Route($path);
 
@@ -167,7 +175,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   The generated route, if available.
    */
   protected function getCanonicalRoute() {
-    if ($path = $this->pluginDefinition['paths']['canonical']) {
+    if ($path = $this->getPath('canonical')) {
       $route = new Route($path);
 
       $route
@@ -192,7 +200,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   The generated route, if available.
    */
   protected function getAddFormRoute() {
-    if ($path = $this->pluginDefinition['paths']['add-form']) {
+    if ($path = $this->getPath('add-form')) {
       $route = new Route($path);
 
       $route
@@ -218,7 +226,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   The generated route, if available.
    */
   protected function getEditFormRoute() {
-    if ($path = $this->pluginDefinition['paths']['edit-form']) {
+    if ($path = $this->getPath('edit-form')) {
       $route = new Route($path);
 
       $route
@@ -244,7 +252,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   The generated route, if available.
    */
   protected function getDeleteFormRoute() {
-    if ($path = $this->pluginDefinition['paths']['delete-form']) {
+    if ($path = $this->getPath('delete-form')) {
       $route = new Route($path);
 
       $route
