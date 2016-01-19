@@ -31,6 +31,9 @@ group.type.*:
           id:
             type: 'string'
             label: 'Plugin ID'
+          group_type:
+            type: 'string'
+            label: 'Group type ID'
           data:
             type: 'sequence'
             label: 'Plugin configuration'

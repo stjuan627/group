@@ -7,7 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
-use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\GroupType;
 use Drupal\Core\Plugin\PluginBase;
 use Symfony\Component\Routing\Route;
 
@@ -20,6 +20,13 @@ use Symfony\Component\Routing\Route;
  * @see plugin_api
  */
 abstract class GroupContentEnablerBase extends PluginBase implements GroupContentEnablerInterface {
+
+  /**
+   * The ID of group type this plugin was instantiated for.
+   *
+   * @var string
+   */
+  protected $groupTypeId;
 
   /**
    * {@inheritdoc}
@@ -75,6 +82,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getGroupTypeId() {
+    return $this->groupTypeId;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isEnforced() {
     return $this->pluginDefinition['enforced'];
   }
@@ -82,21 +96,22 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function getContentTypeConfigId(GroupTypeInterface $group_type) {
-    return $group_type->id() . '.' . str_replace(':', '.', $this->getPluginId());
+  public function getContentTypeConfigId() {
+    return $this->getGroupTypeId() . '.' . str_replace(':', '.', $this->getPluginId());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentTypeLabel(GroupTypeInterface $group_type) {
+  public function getContentTypeLabel() {
+    $group_type = GroupType::load($this->getGroupTypeId());
     return $group_type->label() . ': ' . $this->getLabel();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentTypeDescription(GroupTypeInterface $group_type) {
+  public function getContentTypeDescription() {
     return $this->getDescription();
   }
 
@@ -105,41 +120,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getOperations() {
     return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfiguration() {
-    return array(
-      'id' => $this->getPluginId(),
-      'data' => $this->configuration,
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setConfiguration(array $configuration) {
-    $configuration += array(
-      'data' => array(),
-    );
-    $this->configuration = $configuration['data'] + $this->defaultConfiguration();
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
-    return array();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return array();
   }
 
   /**
@@ -304,7 +284,45 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function postInstall(GroupTypeInterface $group_type) {
+  public function postInstall() {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfiguration() {
+    return array(
+      'id' => $this->getPluginId(),
+      'group_type' => $this->getGroupTypeId(),
+      'data' => $this->configuration,
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    $configuration += array(
+      'data' => array(),
+      'group_type' => NULL,
+    );
+    $this->configuration = $configuration['data'] + $this->defaultConfiguration();
+    $this->groupTypeId = $configuration['group_type'];
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    return array();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    return array();
   }
 
 }

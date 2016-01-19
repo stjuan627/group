@@ -37,8 +37,8 @@ class GroupMembership extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
-  public function postInstall(GroupTypeInterface $group_type) {
-    $group_content_type_id = $this->getContentTypeConfigId($group_type);
+  public function postInstall() {
+    $group_content_type_id = $this->getContentTypeConfigId();
 
     // Add the group_roles field to the newly added group content type. The
     // field storage for this is defined in the config/install folder. The
@@ -51,7 +51,7 @@ class GroupMembership extends GroupContentEnablerBase {
       'settings' => [
         'handler' => 'group_type:group_role',
         'handler_settings' => [
-          'group_type_id' => $group_type->id(),
+          'group_type_id' => $this->getGroupTypeId(),
         ],
       ],
     ])->save();

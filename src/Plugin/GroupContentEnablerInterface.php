@@ -7,7 +7,6 @@
 
 namespace Drupal\group\Plugin;
 
-use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 
@@ -61,6 +60,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getPath($name);
 
   /**
+   * Returns the ID of the group type the plugin was instantiated for.
+   *
+   * @return string|null
+   *   The group type ID, if set in the plugin configuration.
+   */
+  public function getGroupTypeId();
+
+  /**
    * Returns whether this plugin is always on.
    *
    * @return bool
@@ -78,36 +85,27 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    *
    * Please do not return any invalid characters in the ID as it will crash the
    * website. Refer to ConfigBase::validateName() for valid characters.
-   *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type this plugin will be enabled on.
-   *
+
    * @return string
    *   The safe ID to use as the configuration name.
    *
    * @see \Drupal\Core\Config\ConfigBase::validateName()
    */
-  public function getContentTypeConfigId(GroupTypeInterface $group_type);
+  public function getContentTypeConfigId();
 
   /**
    * Returns the administrative label for a group content type.
    *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type this plugin will be enabled on.
-   *
    * @return string
    */
-  public function getContentTypeLabel(GroupTypeInterface $group_type);
+  public function getContentTypeLabel();
 
   /**
    * Returns the administrative description for a group content type.
    *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type this plugin will be enabled on.
-   *
    * @return string
    */
-  public function getContentTypeDescription(GroupTypeInterface $group_type);
+  public function getContentTypeDescription();
 
   /**
    * Provides an array of information to build a list of operation links.
@@ -136,10 +134,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    * A good example of what you might want to do here, is the installation of
    * extra locked fields on the group content type. You can find an example in
    * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership::postInstall().
-   *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type this plugin was installed on.
    */
-  public function postInstall(GroupTypeInterface $group_type);
+  public function postInstall();
 
 }

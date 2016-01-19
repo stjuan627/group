@@ -42,6 +42,11 @@ class GroupContentEnablerHelper {
    * the sorting logic available on the collection and so we're sure we're not
    * instantiating our vanilla plugins more than once.
    *
+   * This collection will not have any group type set in the individual plugins'
+   * configuration. Do not use any methods on the plugin that require a group
+   * type to be set or you may encounter unexpected behavior. Instead, use
+   * GroupTypeInterface::enabledContent()->get($plugin_id).
+   *
    * @return \Drupal\group\Plugin\GroupContentEnablerCollection
    *   The content enabler plugin collection.
    */

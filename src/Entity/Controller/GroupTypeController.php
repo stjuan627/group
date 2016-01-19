@@ -112,6 +112,12 @@ class GroupTypeController extends ControllerBase {
     ];
 
     foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
+      // If the plugin is installed on the group type, use that one instead of
+      // an 'empty' version so that we may use methods on it which expect to
+      // have a group type configured.
+      if (in_array($plugin_id, $this->installedPluginIds)) {
+        $plugin = $this->groupType->enabledContent()->get($plugin_id);
+      }
       $page['content'][$plugin_id] = $this->buildRow($plugin);
     }
 
@@ -197,39 +203,38 @@ class GroupTypeController extends ControllerBase {
   protected function getDefaultOperations($plugin) {
     $operations = [];
 
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
-    $group_content_type_id = $plugin->getContentTypeConfigId($this->groupType);
-    $group_content_type = GroupContentType::load($group_content_type_id);
-
     $plugin_id = $plugin->getPluginId();
     $installed = in_array($plugin_id, $this->installedPluginIds);
-    $route_params = [
-      'group_content_type' => $group_content_type_id,
-    ];
 
     if ($installed) {
+      /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
+      $group_content_type_id = $plugin->getContentTypeConfigId();
+      $group_content_type = GroupContentType::load($group_content_type_id);
+
+      $route_params = [
+        'group_content_type' => $group_content_type_id,
+      ];
+
       $operations['configure'] = [
         'title' => $this->t('Configure'),
         'url' => new Url('entity.group_content_type.edit_form', $route_params),
       ];
 
-      $operations += field_ui_entity_operation($group_content_type);
-    }
-
-    if (!$plugin->isEnforced()) {
-      if ($installed) {
+      if (!$plugin->isEnforced()) {
         $operations['uninstall'] = [
           'title' => $this->t('Uninstall'),
           'weight' => 99,
           'url' => new Url('entity.group_content_type.delete_form', $route_params),
         ];
       }
-      else {
-        $operations['install'] = [
-          'title' => $this->t('Install'),
-          'url' => new Url('entity.group_content_type.add_form', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
-        ];
-      }
+
+      $operations += field_ui_entity_operation($group_content_type);
+    }
+    elseif (!$plugin->isEnforced()) {
+      $operations['install'] = [
+        'title' => $this->t('Install'),
+        'url' => new Url('entity.group_content_type.add_form', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
+      ];
     }
 
     return $operations;

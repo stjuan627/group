@@ -79,8 +79,8 @@ class GroupMembership {
     $entity_manager = \Drupal::entityTypeManager();
 
     // Retrieve the group content type ID for the provided group's type.
-    $plugin = GroupContentEnablerHelper::getAllContentEnablers()->get('group_membership');
-    $group_content_type_id = $plugin->getContentTypeConfigId($group->type->entity);
+    $plugin = $group->type->entity->enabledContent()->get('group_membership');
+    $group_content_type_id = $plugin->getContentTypeConfigId();
 
     // Try to load all possible membership group content for the group.
     $properties = ['type' => $group_content_type_id, 'gid' => $group->id()];

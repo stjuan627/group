@@ -122,7 +122,7 @@ class Group extends ContentEntityBase implements GroupInterface {
     if (isset($content_enabler)) {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
       $plugin = $this->type->entity->enabledContent()->get($content_enabler);
-      $properties['type'] = $plugin->getContentTypeConfigId($this->type->entity);
+      $properties['type'] = $plugin->getContentTypeConfigId();
     }
 
     return \Drupal::entityTypeManager()->getStorage('group_content')->loadByProperties($properties);

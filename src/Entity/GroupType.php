@@ -196,22 +196,23 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   public function enableContent($plugin_id, array $configuration = []) {
     // Save the plugin to the group type.
     $configuration['id'] = $plugin_id;
+    $configuration['group_type'] = $this->id();
     $this->enabledContent()->addInstanceId($plugin_id, $configuration);
     $this->save();
 
     // Save the group content type config entity.
     $plugin = $this->enabledContent()->get($plugin_id);
     $values = [
-      'id' => $plugin->getContentTypeConfigId($this),
-      'label' => $plugin->getContentTypeLabel($this),
-      'description' => $plugin->getContentTypeDescription($this),
+      'id' => $plugin->getContentTypeConfigId(),
+      'label' => $plugin->getContentTypeLabel(),
+      'description' => $plugin->getContentTypeDescription(),
       'group_type' => $this->id(),
       'content_plugin' => $plugin_id,
     ];
     GroupContentType::create($values)->save();
 
     // Run the post install tasks on the plugin.
-    $this->enabledContent()->get($plugin_id)->postInstall($this);
+    $this->enabledContent()->get($plugin_id)->postInstall();
 
     // Plugins may define routes, so a rebuild may be needed.
     if (!empty($this->enabledContent()->get($plugin_id)->getRoutes())) {
@@ -227,7 +228,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   public function disableContent($plugin_id) {
     // Get the content type ID from the plugin instance before we delete it.
     $plugin = $this->enabledContent()->get($plugin_id);
-    $content_type_id = $plugin->getContentTypeConfigId($this);
+    $content_type_id = $plugin->getContentTypeConfigId();
 
     // Remove the plugin from the group type.
     $this->enabledContent()->removeInstanceId($plugin_id);
