@@ -34,7 +34,7 @@ class GroupContentListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     // EntityListBuilder sets the table rows using the #rows property, so we
     // need to add the render array using the 'data' key.
-    $row['name']['data'] = $entity->entity_id->entity->toLink()->toRenderable();
+    $row['name']['data'] = $entity->toLink()->toRenderable();
     return $row + parent::buildRow($entity);
   }
 

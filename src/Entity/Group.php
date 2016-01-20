@@ -64,13 +64,6 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function getType() {
-    return $this->bundle();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getCreatedTime() {
     return $this->get('created')->value;
   }
@@ -178,8 +171,8 @@ class Group extends ContentEntityBase implements GroupInterface {
 
     // Otherwise, check the outsider or anonymous role.
     return $account->isAuthenticated()
-      ? GroupRole::load($this->getType() . '.outsider')->hasPermission($permission)
-      : GroupRole::load($this->getType() . '.anonymous')->hasPermission($permission);
+      ? GroupRole::load($this->bundle() . '.outsider')->hasPermission($permission)
+      : GroupRole::load($this->bundle() . '.anonymous')->hasPermission($permission);
   }
 
   /**

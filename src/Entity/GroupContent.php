@@ -11,6 +11,13 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 
+// @todo Remove the below https://www.drupal.org/node/2645136 lands.
+use Drupal\Core\Url;
+use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Entity\EntityMalformedException;
+use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
+
+
 /**
  * Defines the Group content entity.
  *
@@ -53,8 +60,114 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public function getType() {
-    return $this->bundle();
+  public function getPlugin() {
+    return $this->type->entity->getContentPlugin();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function label() {
+    return $this->getPlugin()->getContentLabel($this);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Exact copy of Entity::toUrl() with the exception of one line until the
+   * patch in https://www.drupal.org/node/2645136 lands.
+   *
+   * @todo Remove this if the issue above gets resolved.
+   */
+  public function toUrl($rel = 'canonical', array $options = []) {
+    if ($this->id() === NULL) {
+      throw new EntityMalformedException(sprintf('The "%s" entity cannot have a URI as it does not have an ID', $this->getEntityTypeId()));
+    }
+
+    // The links array might contain URI templates set in annotations.
+    $link_templates = $this->linkTemplates();
+
+    // Links pointing to the current revision point to the actual entity. So
+    // instead of using the 'revision' link, use the 'canonical' link.
+    if ($rel === 'revision' && $this instanceof RevisionableInterface && $this->isDefaultRevision()) {
+      $rel = 'canonical';
+    }
+
+    if (isset($link_templates[$rel])) {
+      $route_parameters = $this->urlRouteParameters($rel);
+      $route_name = $this->urlRoute($rel);
+      $uri = new Url($route_name, $route_parameters);
+    }
+    else {
+      $bundle = $this->bundle();
+      // A bundle-specific callback takes precedence over the generic one for
+      // the entity type.
+      $bundles = $this->entityManager()->getBundleInfo($this->getEntityTypeId());
+      if (isset($bundles[$bundle]['uri_callback'])) {
+        $uri_callback = $bundles[$bundle]['uri_callback'];
+      }
+      elseif ($entity_uri_callback = $this->getEntityType()->getUriCallback()) {
+        $uri_callback = $entity_uri_callback;
+      }
+
+      // Invoke the callback to get the URI. If there is no callback, use the
+      // default URI format.
+      if (isset($uri_callback) && is_callable($uri_callback)) {
+        $uri = call_user_func($uri_callback, $this);
+      }
+      else {
+        throw new UndefinedLinkTemplateException("No link template '$rel' found for the '{$this->getEntityTypeId()}' entity type");
+      }
+    }
+
+    // Pass the entity data through as options, so that alter functions do not
+    // need to look up this entity again.
+    $uri
+      ->setOption('entity_type', $this->getEntityTypeId())
+      ->setOption('entity', $this);
+
+    // Display links by default based on the current language.
+    if ($rel !== 'collection') {
+      $options += ['language' => $this->language()];
+    }
+
+    $uri_options = $uri->getOptions();
+    $uri_options += $options;
+
+    return $uri->setOptions($uri_options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function linkTemplates() {
+    // @todo Look into this: What with custom templates? Plugin ::getPaths()?
+    return [
+      'collection' => $this->getPlugin()->getPath('collection'),
+      'canonical' => $this->getPlugin()->getPath('canonical'),
+      'add-form' => $this->getPlugin()->getPath('add-form'),
+      'edit-form' => $this->getPlugin()->getPath('edit-form'),
+      'delete-form' => $this->getPlugin()->getPath('delete-form'),
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @todo Will inherit docs once https://www.drupal.org/node/2645136 lands.
+   */
+  protected function urlRoute($rel) {
+    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPlugin()->getPluginId());
+    return $route_prefix . '.' . str_replace(array('-', 'drupal:'), array('_', ''), $rel);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function urlRouteParameters($rel) {
+    $uri_route_parameters = parent::urlRouteParameters($rel);
+    $uri_route_parameters['group'] = $this->gid->entity->id();
+    return $uri_route_parameters;
   }
 
   /**

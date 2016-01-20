@@ -8,6 +8,7 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\group\Entity\GroupType;
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Symfony\Component\Routing\Route;
 
@@ -91,6 +92,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function isEnforced() {
     return $this->pluginDefinition['enforced'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getContentLabel(GroupContentInterface $group_content) {
+    return $group_content->entity_id->entity->label();
   }
 
   /**

@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 
@@ -74,6 +75,16 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    *   The 'enforced' status.
    */
   public function isEnforced();
+
+  /**
+   * Retrieves the label for a piece of group content.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *
+   * @return string
+   *   The label as expected by \Drupal\Core\Entity\EntityInterface::label().
+   */
+  public function getContentLabel(GroupContentInterface $group_content);
 
   /**
    * Returns a safe, unique configuration ID for a group content type.
