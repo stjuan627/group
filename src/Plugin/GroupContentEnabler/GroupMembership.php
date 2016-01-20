@@ -34,6 +34,9 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
  */
 class GroupMembership extends GroupContentEnablerBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getPermissions() {
     $permissions = parent::getPermissions();
 
@@ -69,6 +72,22 @@ class GroupMembership extends GroupContentEnablerBase {
     ];
 
     return $permissions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCollectionRoute() {
+    $route = parent::getCollectionRoute();
+
+    // Reset the default requirement and add our own group permissions. The '+'
+    // signifies that only one permission needs to be set for the user.
+    $route->setRequirements([])->setRequirement('_group_permission', 'administer members+access member overview');
+
+    // Swap out the GroupContent list controller for our own.
+    // @todo Implement this after we've completed the above list controller.
+
+    return $route;
   }
 
   /**

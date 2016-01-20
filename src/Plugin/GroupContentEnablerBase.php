@@ -123,6 +123,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getPermissions() {
+    return [];
+  }
+
+  /**
    * Gets the collection route.
    *
    * @return \Symfony\Component\Routing\Route|null
@@ -249,13 +256,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
       return $route;
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPermissions() {
-    return [];
   }
 
   /**
