@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Access\GroupPermissionAccessCheck.
+ * Contains \Drupal\group\Access\GroupEnabledContentAccessCheck.
  */
 
 namespace Drupal\group\Access;
@@ -16,10 +16,9 @@ use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access to routes based on permissions defined via
- * $module.group_permissions.yml files.
+ * Determines access to routes based on whether a content plugin is installed.
  */
-class GroupPermissionAccessCheck implements AccessInterface {
+class GroupEnabledContentAccessCheck implements AccessInterface {
 
   /**
    * Checks access.
@@ -35,10 +34,10 @@ class GroupPermissionAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
-    $permission = $route->getRequirement('_group_permission');
+    $plugin_id = $route->getRequirement('_group_enabled_content');
 
-    // Don't interfere if no permission was specified.
-    if ($permission === NULL) {
+    // Don't interfere if no plugin ID was specified.
+    if ($plugin_id === NULL) {
       return AccessResult::neutral();
     }
 
@@ -54,15 +53,9 @@ class GroupPermissionAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Allow to conjunct the permissions with OR ('+') or AND (',').
-    $split = explode(',', $permission);
-    if (count($split) > 1) {
-      return GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $split, 'AND');
-    }
-    else {
-      $split = explode('+', $permission);
-      return GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $split, 'OR');
-    }
+    // Deny access if the plugin is not installed on the group's type.
+    $installed_plugins = $group->type->entity->enabledContent()->getIterator();
+    return AccessResult::allowedIf($installed_plugins->offsetExists($plugin_id));
   }
 
 }

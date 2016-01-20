@@ -80,8 +80,10 @@ class GroupMembership extends GroupContentEnablerBase {
   protected function getCollectionRoute() {
     $route = parent::getCollectionRoute();
 
-    // Reset the default requirement and add our own group permissions. The '+'
-    // signifies that only one permission needs to be set for the user.
+    // Reset the default requirements and add our own group permissions. The '+'
+    // signifies that only one permission needs to be set for the user. We also
+    // don't set the _group_enabled_content requirement again because we know
+    // this plugin will always be installed.
     $route->setRequirements([])->setRequirement('_group_permission', 'administer members+access member overview');
 
     // Swap out the GroupContent list controller for our own.

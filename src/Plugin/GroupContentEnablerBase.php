@@ -146,6 +146,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
         ])
         ->setRequirement('_group_permission', "view $plugin_id content")
+        ->setRequirement('_group_enabled_content', $plugin_id)
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
@@ -171,6 +172,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
         ])
         ->setRequirement('_entity_access', 'group_content.view')
+        ->setRequirement('_group_enabled_content', $this->getPluginId())
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
           'group_content' => ['type' => 'entity:group_content'],
@@ -197,6 +199,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           'plugin_id' => $this->getPluginId(),
         ])
         ->setRequirement('_entity_create_access', 'group_content')
+        ->setRequirement('_group_enabled_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
@@ -222,6 +225,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::editTitle',
         ])
         ->setRequirement('_entity_access', 'group_content.update')
+        ->setRequirement('_group_enabled_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
@@ -248,6 +252,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::deleteTitle',
         ])
         ->setRequirement('_entity_access', 'group_content.delete')
+        ->setRequirement('_group_enabled_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],

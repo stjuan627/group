@@ -25,6 +25,10 @@ services:
 #    arguments: ['@request_stack', '@current_user', '@user_permissions_hash_generator']
 #    tags:
 #      - { name: cache.context}
+  access_check.group.enabled_content:
+    class: 'Drupal\group\Access\GroupEnabledContentAccessCheck'
+    tags:
+      - { name: 'access_check', applies_to: '_group_enabled_content' }
   plugin.manager.group_content_enabler:
     class: 'Drupal\group\Plugin\GroupContentEnablerManager'
     parent: 'default_plugin_manager'
