@@ -166,6 +166,11 @@ class Group extends ContentEntityBase implements GroupInterface {
       return TRUE;
     }
 
+    // Before anything else, check if the user can administer the group.
+    if ($permission != 'administer group' && $this->hasPermission('administer group', $account)) {
+      return TRUE;
+    }
+
     // If the user has a membership, check for the permission there.
     if ($group_membership = GroupMembership::load($this, $account)) {
       return $group_membership->hasPermission($permission);
