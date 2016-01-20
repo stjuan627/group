@@ -111,16 +111,15 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   /**
    * {@inheritdoc}
    */
-  public function moduleProvidesPermissions($module_name) {
-    $permissions = $this->getPermissions();
-
-    foreach ($permissions as $permission) {
-      if ($permission['provider'] == $module_name) {
-        return TRUE;
-      }
-    }
-
-    return FALSE;
+  public function completePermission($permission) {
+    $permission['title'] = $this->t($permission['title']);
+    $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : '';
+    $permission += [
+      'restrict access' => FALSE,
+      'warning' => !empty($permission['restrict access']) ? $this->t('Warning: Give to trusted roles only; this permission has security implications.') : '',
+      'allowed for' => ['anonymous', 'outsider', 'member'],
+    ];
+    return $permission;
   }
 
   /**
@@ -163,15 +162,15 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
         unset($permissions['permission_callbacks']);
       }
 
-      foreach ($permissions as &$permission) {
+      foreach ($permissions as $permission_name => $permission) {
         if (!is_array($permission)) {
           $permission = array(
             'title' => $permission,
           );
         }
 
-        // Set the provider if none was specified.
-        $permission += ['provider' => $provider];
+        // Set the provider if none was spec
+        $permissions[$permission_name] = $permission + ['provider' => $provider];
       }
 
       $all_permissions += $permissions;
@@ -179,23 +178,17 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
     // Combine all defined permissions and set the rest of the defaults.
     $full_permissions = $all_permissions + $all_callback_permissions;
-    foreach ($full_permissions as &$permission) {
-      $permission['title'] = $this->t($permission['title']);
-      $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : '';
-      $permission += [
-        'restrict access' => FALSE,
-        'warning' => !empty($permission['restrict access']) ? $this->t('Warning: Give to trusted roles only; this permission has security implications.') : '',
-        'allowed for' => ['anonymous', 'outsider', 'member'],
-      ];
+    foreach ($full_permissions as $permission_name => $permission) {
+      $full_permissions[$permission_name] = $this->completePermission($permission);
     }
 
     return $full_permissions;
   }
 
   /**
-   * Sorts the given permissions by provider name and title.
+   * Sorts the given permissions by provider name first and then by title.
    *
-   * @param array $all_permissions
+   * @param array $permissions
    *   The permissions to be sorted.
    *
    * @return array[]
@@ -203,11 +196,11 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *
    * @see \Drupal\group\Access\PermissionHandlerInterface::getPermissions()
    */
-  protected function sortPermissions(array $all_permissions = array()) {
+  protected function sortPermissions(array $permissions = []) {
     $modules = $this->getModuleNames();
 
-    // Sort all permissions by their providing module's display name.
-    uasort($all_permissions, function (array $permission_a, array $permission_b) use ($modules) {
+    // Sort all permissions by provider name first and then by title.
+    uasort($permissions, function (array $permission_a, array $permission_b) use ($modules) {
       if ($modules[$permission_a['provider']] == $modules[$permission_b['provider']]) {
         return $permission_a['title'] > $permission_b['title'];
       }
@@ -216,7 +209,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
       }
     });
 
-    return $all_permissions;
+    return $permissions;
   }
 
   /**

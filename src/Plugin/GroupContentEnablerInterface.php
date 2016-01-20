@@ -121,6 +121,21 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getOperations();
 
   /**
+   * Provides a list of group permissions the plugin exposes.
+   *
+   * If you have some group permissions that would only make sense when your
+   * plugin is installed, you may define those here. They will not be shown on
+   * the permission configuration form unless the plugin is installed.
+   *
+   * @return array
+   *   An array of group permissions, see GroupPermissionHandlerInterface for
+   *   the structure of a group permission.
+   *
+   * @see GroupPermissionHandlerInterface::getPermissions()
+   */
+  public function getPermissions();
+
+  /**
    * Provides routes for GroupContent entities.
    *
    * @return \Symfony\Component\Routing\Route[]

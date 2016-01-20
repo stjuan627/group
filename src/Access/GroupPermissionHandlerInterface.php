@@ -48,15 +48,20 @@ interface GroupPermissionHandlerInterface {
   public function getPermissions();
 
   /**
-   * Determines whether a module provides some permissions.
+   * Completes a permission by adding in defaults and translating its strings.
    *
-   * @param string $module_name
-   *   The module name.
+   * Warning: This does not set the 'provider' key! This should be taken care of
+   * by the permission provider or the implementation of this interface. Outside
+   * of discovery or custom implementations, it's almost impossible to guess who
+   * provided a specific permission.
    *
-   * @return bool
-   *   Returns TRUE if the module provides some permissions, otherwise FALSE.
+   * @param array $permission
+   *   The raw permission to complete.
+   *
+   * @return array
+   *   A permission which is guaranteed to have all the required keys set.
    */
-  public function moduleProvidesPermissions($module_name);
+  public function completePermission($permission);
 
 }
 

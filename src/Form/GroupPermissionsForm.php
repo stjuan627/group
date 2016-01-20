@@ -79,6 +79,14 @@ abstract class GroupPermissionsForm extends FormBase {
   }
 
   /**
+   * Gets the group type to build the form for.
+   *
+   * @return \Drupal\group\Entity\GroupTypeInterface
+   *   The group type some or more roles belong to.
+   */
+  abstract protected function getType();
+
+  /**
    * Gets the group roles to display in this form.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
@@ -86,6 +94,36 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   protected function getRoles() {
     return [];
+  }
+
+  /**
+   * Gets the permissions to display in this form.
+   *
+   * @return array
+   *   An multidimensional associative array of permissions, keyed by the
+   *   providing module first and then by permission name.
+   */
+  protected function getPermissions() {
+    $permissions_by_provider = [];
+
+    // Create a list of group permissions ordered by their provider.
+    foreach ($this->groupPermissionHandler->getPermissions() as $permission_name => $permission) {
+      $permissions_by_provider[$permission['provider']][$permission_name] = $permission;
+    }
+
+    // Merge in the permissions defined by the installed content plugins.
+    foreach ($this->getType()->enabledContent() as $plugin) {
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      foreach ($plugin->getPermissions() as $permission_name => $permission) {
+        $permission += ['provider' => $plugin->getProvider()];
+        $permission = $this->groupPermissionHandler->completePermission($permission);
+        $permissions_by_provider[$permission['provider']][$permission_name] = $permission;
+      }
+    }
+
+    // @todo Re-sort this, or change GroupPermissionHandler::sortPermissions()?
+
+    return $permissions_by_provider;
   }
 
   /**
@@ -139,15 +177,9 @@ abstract class GroupPermissionsForm extends FormBase {
       ];
     }
 
-    // Create a list of group permissions ordered by their provider.
-    $permissions_by_provider = [];
-    foreach ($this->groupPermissionHandler->getPermissions() as $permission_name => $permission) {
-      $permissions_by_provider[$permission['provider']][$permission_name] = $permission;
-    }
-
     // Render the permission as sections of rows.
     $hide_descriptions = system_admin_compact_mode();
-    foreach ($permissions_by_provider as $provider => $permissions) {
+    foreach ($this->getPermissions() as $provider => $permissions) {
       // Start each section with a full width row containing the provider name.
       $form['permissions'][$provider] = [[
         '#wrapper_attributes' => [

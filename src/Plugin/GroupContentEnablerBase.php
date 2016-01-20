@@ -254,6 +254,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getPermissions() {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getRoutes() {
     $routes = [];
     $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPluginId());

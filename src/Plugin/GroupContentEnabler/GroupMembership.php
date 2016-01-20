@@ -34,6 +34,43 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
  */
 class GroupMembership extends GroupContentEnablerBase {
 
+  public function getPermissions() {
+    $permissions = parent::getPermissions();
+
+    $permissions['administer members'] = [
+      'title' => 'Administer group members',
+      'description' => 'Administer the group members',
+      'restrict access' => TRUE,
+    ];
+
+    $permissions['access member overview'] = [
+      'title' => 'Access the member overview page',
+    ];
+
+    $permissions['view members'] = [
+      'title' => 'View group members',
+    ];
+
+    $permissions['join group'] = [
+      'title' => 'Join group',
+      'description' => 'Join a group by filling out the configured fields',
+      'allowed for' => ['outsider'],
+    ];
+
+    $permissions['edit own membership'] = [
+      'title' => 'Edit own membership',
+      'description' => 'Edit own membership information',
+      'allowed for' => ['member'],
+    ];
+
+    $permissions['leave group'] = [
+      'title' => 'Leave group',
+      'allowed for' => ['member'],
+    ];
+
+    return $permissions;
+  }
+
   /**
    * {@inheritdoc}
    */
