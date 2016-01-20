@@ -24,5 +24,18 @@ use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
  * )
  */
 class GroupTypeRoleSelection extends DefaultSelection {
-// @todo Implement this.
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function buildEntityQuery($match = NULL, $match_operator = 'CONTAINS') {
+    $group_type_id = $this->configuration['handler_settings']['group_type_id'];
+
+    $query = parent::buildEntityQuery($match, $match_operator);
+    $query->condition('group_type', $group_type_id, '=');
+    $query->condition('internal', 0, '=');
+
+    return $query;
+  }
+
 }
