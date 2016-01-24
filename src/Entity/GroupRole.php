@@ -99,10 +99,31 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   protected $permissions = [];
 
   /**
+   * The part of the group role ID after the period.
+   *
+   * @var string
+   */
+  protected $strippedId;
+
+  /**
    * {@inheritdoc}
    */
   public function id() {
     return $this->id;
+  }
+
+  /**
+   * Returns just the part of the ID pertaining to the group role.
+   *
+   * @return string
+   *   The part of the group role ID after the period.
+   */
+  protected function strippedId() {
+    if (!isset($this->strippedId)) {
+      list(, $group_role) = explode('.', $this->id(), 2);
+      $this->strippedId = $group_role;
+    }
+    return $this->strippedId;
   }
 
   /**
@@ -131,24 +152,21 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function isAnonymous() {
-    list($group_type, $group_role) = explode('.', $this->id(), 2);
-    return $group_role == 'anonymous';
+    return $this->strippedId() == 'anonymous';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isOutsider() {
-    list($group_type, $group_role) = explode('.', $this->id(), 2);
-    return $group_role == 'outsider';
+    return $this->strippedId() == 'outsider';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMember() {
-    list($group_type, $group_role) = explode('.', $this->id(), 2);
-    return $group_role == 'member';
+    return !$this->isAnonymous() && !$this->isOutsider();
   }
 
   /**
