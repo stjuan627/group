@@ -38,8 +38,6 @@ class GroupMembership extends GroupContentEnablerBase {
    * {@inheritdoc}
    */
   public function getPermissions() {
-    $permissions = parent::getPermissions();
-
     $permissions['administer members'] = [
       'title' => 'Administer group members',
       'description' => 'Administer the group members',
