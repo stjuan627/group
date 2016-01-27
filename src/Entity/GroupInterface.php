@@ -19,6 +19,13 @@ use Drupal\Core\Session\AccountInterface;
 interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
+   * Returns the group type entity the group uses.
+   *
+   * @return \Drupal\group\Entity\GroupTypeInterface
+   */
+  public function getGroupType();
+
+  /**
    * Retrieves all GroupContent entities for the group.
    *
    * @param string $content_enabler

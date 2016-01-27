@@ -108,13 +108,20 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function getGroupType() {
+    return $this->type->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContent($content_enabler = NULL, $filters = []) {
     $properties = ['gid' => $this->id()] + $filters;
 
     // If a plugin ID was provided, set the group content type ID for it.
     if (isset($content_enabler)) {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      $plugin = $this->type->entity->enabledContent()->get($content_enabler);
+      $plugin = $this->getGroupType()->enabledContent()->get($content_enabler);
       $properties['type'] = $plugin->getContentTypeConfigId();
     }
 

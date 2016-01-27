@@ -17,6 +17,20 @@ use Drupal\Core\Entity\EntityChangedInterface;
 interface GroupContentInterface extends ContentEntityInterface, EntityChangedInterface {
 
   /**
+   * Returns the group content type entity the group content uses.
+   *
+   * @return \Drupal\group\Entity\GroupContentTypeInterface
+   */
+  public function getGroupContentType();
+
+  /**
+   * Returns the group the group content belongs to.
+   *
+   * @return \Drupal\group\Entity\GroupInterface
+   */
+  public function getGroup();
+
+  /**
    * Returns the content enabler plugin that handles the group content.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface

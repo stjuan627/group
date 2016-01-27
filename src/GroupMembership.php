@@ -37,7 +37,7 @@ class GroupMembership {
    *   enabler plugin.
    */
   public function __construct(GroupContentInterface $group_content) {
-    if ($group_content->type->entity->getContentPluginId() == 'group_membership') {
+    if ($group_content->getGroupContentType()->getContentPluginId() == 'group_membership') {
       $this->groupContent = $group_content;
     }
     else {
@@ -79,7 +79,7 @@ class GroupMembership {
     $entity_manager = \Drupal::entityTypeManager();
 
     // Retrieve the group content type ID for the provided group's type.
-    $plugin = $group->type->entity->enabledContent()->get('group_membership');
+    $plugin = $group->getGroupType()->enabledContent()->get('group_membership');
     $group_content_type_id = $plugin->getContentTypeConfigId();
 
     // Try to load all possible membership group content for the group.
@@ -188,7 +188,7 @@ class GroupMembership {
    */
   public function getRoles() {
     $roles = $this->groupContent->group_roles->referencedEntities();
-    $roles[] = GroupRole::load($this->getGroup()->type->entity->id() . '.member');
+    $roles[] = GroupRole::load($this->getGroup()->bundle() . '.member');
     return $roles;
   }
 
