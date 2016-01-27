@@ -27,24 +27,26 @@ use Drupal\Core\StringTranslation\TranslationInterface;
  * permissions, keyed by machine name. Each item in the array can contain the
  * same keys as an entry in $module.group.permissions.yml.
  *
+ * To find a list of supported permission keys, have a look at the documentation
+ * of GroupPermissionHandlerInterface::getPermissions().
+ *
  * Here is an example from the group module itself (comments have been added):
  * @code
  * # The key is the permission machine name, and is required.
- * leave group:
+ * edit group:
  *   # (required) Human readable name of the permission used in the UI.
- *   title: 'Leave group'
- *   # (optional) Define which roles can be assigned this permission.
- *   allowed for: ['member']
+ *   title: 'Edit group'
+ *   description: 'Edit the group information'
  *
  * # An array of callables used to generate dynamic permissions.
  * permission_callbacks:
  *   # Each item in the array should return an associative array with one or
  *   # more permissions following the same keys as the permission defined above.
- *   - Drupal\group\GroupPermissions::permissions
+ *   - Drupal\my_module\MyModuleGroupPermissions::permissions
  * @endcode
  *
  * @see group.group.permissions.yml
- * @see \Drupal\group\GroupPermissions
+ * @see \Drupal\group\Access\GroupPermissionHandlerInterface::getPermissions()
  */
 class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
@@ -112,13 +114,25 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    * {@inheritdoc}
    */
   public function completePermission($permission) {
-    $permission['title'] = $this->t($permission['title']);
-    $permission['description'] = isset($permission['description']) ? $this->t($permission['description']) : '';
     $permission += [
+      'title_args' => [],
+      'description' => '',
+      'description_args' => [],
       'restrict access' => FALSE,
-      'warning' => !empty($permission['restrict access']) ? $this->t('Warning: Give to trusted roles only; this permission has security implications.') : '',
+      'warning' => !empty($permission['restrict access']) ? 'Warning: Give to trusted roles only; this permission has security implications.' : '',
+      'warning_args' => [],
       'allowed for' => ['anonymous', 'outsider', 'member'],
     ];
+
+    // Translate the title and optionally the description and warning.
+    $permission['title'] = $this->t($permission['title'], $permission['title_args']);
+    if (!empty($permission['description'])) {
+      $permission['description'] = $this->t($permission['description'], $permission['description_args']);
+    }
+    if (!empty($permission['warning'])) {
+      $permission['warning'] = $this->t($permission['warning'], $permission['warning_args']);
+    }
+
     return $permission;
   }
 
