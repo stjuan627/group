@@ -7,11 +7,11 @@
 
 namespace Drupal\group\Access;
 
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Determines access to for group add pages.
@@ -23,18 +23,18 @@ class GroupAddAccessCheck implements AccessInterface {
   /**
    * The entity manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * Constructs a EntityCreateAccessCheck object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity manager.
    */
-  public function __construct(EntityManagerInterface $entity_manager) {
-    $this->entityManager = $entity_manager;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -49,18 +49,21 @@ class GroupAddAccessCheck implements AccessInterface {
    * @return \Drupal\Core\Access\AccessResultInterface
    */
   public function access(AccountInterface $account, GroupTypeInterface $group_type = NULL) {
-    $access_control_handler = $this->entityManager->getAccessControlHandler('group');
-    // If checking whether a group of a particular type may be created.
-    if ($account->hasPermission('administer group')) {
+    // If the user can bypass group access, return immediately.
+    if ($account->hasPermission('bypass group access')) {
       return AccessResult::allowed()->cachePerPermissions();
     }
+
+    // Check whether the user can create a group of the provided type.
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group');
     if ($group_type) {
       return $access_control_handler->createAccess($group_type->id(), $account, [], TRUE);
     }
-    // If checking whether a group of any type may be created.
-    foreach ($this->entityManager->getStorage('group_type')->loadMultiple() as $group_type) {
-      if (($access = $access_control_handler->createAccess($group_type->id(), $account, [], TRUE)) && $access->isAllowed()) {
-        return $access;
+
+    // Check whether the user can create a group of any type.
+    foreach ($this->entityTypeManager->getStorage('group_type')->loadMultiple() as $group_type) {
+      if ($access_control_handler->createAccess($group_type->id(), $account)) {
+        return AccessResult::allowed();
       }
     }
 
