@@ -48,6 +48,17 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function enabledContent();
 
   /**
+   * Checks whether a content enabler plugin is installed for this group type.
+   *
+   * @param string $plugin_id
+   *   The ID of the content enabler plugin to check for.
+   *
+   * @return bool
+   *   Whether the content enabler plugin is installed.
+   */
+  public function hasContentEnabled($plugin_id);
+
+  /**
    * Adds a content enabler plugin to this group type.
    *
    * @param string $plugin_id

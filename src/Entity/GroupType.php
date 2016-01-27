@@ -186,6 +186,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
+  public function hasContentEnabled($plugin_id) {
+    return isset($this->content[$plugin_id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPluginCollections() {
     return array('content' => $this->enabledContent());
   }

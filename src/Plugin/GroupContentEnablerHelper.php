@@ -108,12 +108,9 @@ class GroupContentEnablerHelper {
 
     $group_types = empty($group_type) ? GroupType::loadMultiple() : [$group_type];
     foreach ($group_types as $group_type) {
-      // Retrieve all the installed plugins from the group type.
-      $installed_plugins = $group_type->enabledContent()->getIterator();
-
       // Search through all the enforced plugins and install new ones.
       foreach ($enforced as $plugin_id) {
-        if (!$installed_plugins->offsetExists($plugin_id)) {
+        if (!$group_type->hasContentEnabled($plugin_id)) {
           $group_type->enableContent($plugin_id);
         }
       }

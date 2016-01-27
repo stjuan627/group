@@ -54,8 +54,7 @@ class GroupEnabledContentAccessCheck implements AccessInterface {
     }
 
     // Deny access if the plugin is not installed on the group's type.
-    $installed_plugins = $group->getGroupType()->enabledContent()->getIterator();
-    return AccessResult::allowedIf($installed_plugins->offsetExists($plugin_id));
+    return AccessResult::allowedIf($group->getGroupType()->hasContentEnabled($plugin_id));
   }
 
 }
