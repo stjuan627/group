@@ -7,9 +7,11 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Defines an interface for pluggable GroupContentEnabler back-ends.
@@ -153,6 +155,41 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    *   An array of routes keyed by name.
    */
   public function getRoutes();
+
+  /**
+   * Performs access check for the create operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group to check for content creation access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function createAccess(GroupInterface $group, AccountInterface $account);
+
+  /**
+   * Checks access to an operation on a given group content entity.
+   *
+   * Use \Drupal\group\Plugin\GroupContentEnablerInterface::createAccess() to
+   * check access to create a group content entity.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param string $operation
+   *   The operation access should be checked for. Usually one of "view",
+   *   "update" or "delete".
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user session for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account);
 
   /**
    * Run tasks after the group content type for this plugin has been created.

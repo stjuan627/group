@@ -7,7 +7,7 @@
 
 namespace Drupal\group\Entity\Access;
 
-use Drupal\Core\Access\AccessResult;
+use Drupal\group\Entity\GroupContentType;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -23,28 +23,16 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    // @todo Implement this on the plugin.
-
-    switch ($operation) {
-      case 'view':
-        return AccessResult::allowedIf(TRUE);
-
-      case 'update':
-        return AccessResult::allowedIf(TRUE);
-
-      case 'delete':
-        return AccessResult::allowedIf(TRUE);
-    }
-
-    return AccessResult::neutral();
+    /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+    return $entity->getPlugin()->checkAccess($entity, $operation, $account);
   }
 
   /**
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    // @todo Implement this on the plugin.
-    return AccessResult::allowedIf(TRUE);
+    $group_content_type = GroupContentType::load($entity_bundle);
+    return $group_content_type->getContentPlugin()->createAccess($context['group'], $account);
   }
 
 }

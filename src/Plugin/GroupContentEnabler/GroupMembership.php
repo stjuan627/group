@@ -7,7 +7,6 @@
 
 namespace Drupal\group\Plugin\GroupContentEnabler;
 
-use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -36,6 +35,8 @@ class GroupMembership extends GroupContentEnablerBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Implement these on the corresponding routes.
    */
   public function getPermissions() {
     $permissions['administer members'] = [

@@ -8,8 +8,11 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\group\Entity\GroupType;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Core\Plugin\PluginBase;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -239,7 +242,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::addPageTitle',
           'plugin_id' => $this->getPluginId(),
         ])
-        ->setRequirement('_entity_create_access', 'group_content')
+        ->setRequirement('_group_content_add_access', $this->getPluginId())
         ->setRequirement('_group_enabled_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
@@ -332,6 +335,98 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     }
 
     return $routes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createAccess(GroupInterface $group, AccountInterface $account) {
+    $plugin_id = $this->getPluginId();
+    return AccessResult::allowedIf($group->hasPermission("create $plugin_id content", $account));
+  }
+
+  /**
+   * Performs access check for the view operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function viewAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $plugin_id = $this->getPluginId();
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission("view $plugin_id content", $account));
+  }
+
+  /**
+   * Performs access check for the update operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function updateAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $plugin_id = $this->getPluginId();
+
+    // @todo Check for own content when we support setting an author.
+
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission("edit any $plugin_id content", $account));
+  }
+
+  /**
+   * Performs access check for the delete operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function deleteAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $plugin_id = $this->getPluginId();
+
+    // @todo Check for own content when we support setting an author.
+
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission("delete any $plugin_id content", $account));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account) {
+    switch ($operation) {
+      case 'view':
+        $result = $this->viewAccess($group_content, $account);
+        break;
+      case 'update':
+        $result = $this->updateAccess($group_content, $account);
+        break;
+      case 'delete':
+        $result = $this->deleteAccess($group_content, $account);
+        break;
+      default:
+        $result = AccessResult::neutral();
+    }
+
+    return $result;
   }
 
   /**
