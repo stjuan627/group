@@ -238,6 +238,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setLabel(t('Content'))
       ->setDescription(t('The entity to add to the group.'))
       ->setSetting('handler', 'default')
+      ->addConstraint('GroupContentCardinality')
       ->setDisplayOptions('form', array(
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,

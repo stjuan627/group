@@ -53,6 +53,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getEntityTypeId();
 
   /**
+   * Returns the amount of times the same content can be added to a group.
+   *
+   * @return int
+   *   The group content cardinality.
+   */
+  public function getCardinality();
+
+  /**
    * Returns a path defined by the plugin.
    *
    * @var string $name

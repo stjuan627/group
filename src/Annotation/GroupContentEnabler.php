@@ -58,7 +58,7 @@ class GroupContentEnabler extends Plugin {
   public $entity_type_id;
 
   /**
-   * An associative array of paths to generate routes for.
+   * (optional) An associative array of paths to generate routes for.
    *
    * Each entry is a path containing at least a {group} parameter and optionally
    * a {group_content} parameter if it needs one. Keys that are supported by the
@@ -74,6 +74,15 @@ class GroupContentEnabler extends Plugin {
    * @see \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
    */
   public $paths = [];
+
+  /**
+   * (optional) The amount of times the same content may be added to a group.
+   *
+   * Defaults to 0, which means unlimited.
+   *
+   * @var int
+   */
+  public $cardinality = 0;
 
   /**
    * (optional) Whether this plugin is always on.

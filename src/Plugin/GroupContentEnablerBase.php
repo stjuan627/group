@@ -78,6 +78,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getCardinality() {
+    return $this->pluginDefinition['cardinality'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPath($name) {
     $paths = $this->pluginDefinition['paths'];
     return isset($paths[$name]) ? $paths[$name] : '';
