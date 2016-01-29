@@ -200,7 +200,22 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account);
 
   /**
-   * Run tasks after the group content type for this plugin has been created.
+   * Returns a list of entity reference field settings.
+   *
+   * This allows you to provide some handler settings for the entity reference
+   * field referencing the entity that is to become group content. You could
+   * even change the handler being used, all without having to alter the bundle
+   * field settings yourself through an alter hook.
+   *
+   * @return array
+   *   An associative array where the keys are valid entity reference field
+   *   setting names and the values are the corresponding setting for each key.
+   *   Often used keys are 'target_type', 'handler' and 'handler_settings'.
+   */
+  public function getEntityReferenceSettings();
+
+  /**
+   * Runs tasks after the group content type for this plugin has been created.
    *
    * A good example of what you might want to do here, is the installation of
    * extra locked fields on the group content type. You can find an example in

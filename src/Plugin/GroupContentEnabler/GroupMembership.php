@@ -95,6 +95,15 @@ class GroupMembership extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
+  public function getEntityReferenceSettings() {
+    $settings = parent::getEntityReferenceSettings();
+    $settings['handler_settings'] = ['include_anonymous' => FALSE];
+    return $settings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function postInstall() {
     $group_content_type_id = $this->getContentTypeConfigId();
 
