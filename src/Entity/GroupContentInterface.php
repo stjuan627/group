@@ -31,6 +31,13 @@ interface GroupContentInterface extends ContentEntityInterface, EntityChangedInt
   public function getGroup();
 
   /**
+   * Returns the entity that was added as group content.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   */
+  public function getEntity();
+
+  /**
    * Returns the content enabler plugin that handles the group content.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface

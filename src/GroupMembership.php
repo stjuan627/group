@@ -178,7 +178,7 @@ class GroupMembership {
    * @return \Drupal\Core\Session\AccountInterface
    */
   public function getUser() {
-    return $this->groupContent->entity_id->entity;
+    return $this->groupContent->getEntity();
   }
 
   /**

@@ -74,6 +74,13 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public function getEntity() {
+    return $this->entity_id->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPlugin() {
     return $this->getGroupContentType()->getContentPlugin();
   }

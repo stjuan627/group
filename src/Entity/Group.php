@@ -135,8 +135,7 @@ class Group extends ContentEntityBase implements GroupInterface {
     $entities = [];
 
     foreach ($this->getContent($content_enabler, $filters) as $group_content) {
-      /** @var \Drupal\Core\Entity\EntityInterface $entity */
-      $entity = $group_content->entity_id->entity;
+      $entity = $group_content->getEntity();
       $entities[$entity->id()] = $entity;
     }
 
