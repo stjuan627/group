@@ -40,6 +40,19 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getContent($content_enabler = NULL, $filters = []);
 
   /**
+   * Retrieves all GroupContent entities for a specific entity.
+   *
+   * @param string $content_enabler
+   *   A content enabler plugin ID to filter on.
+   * @param int $id
+   *   The ID of the entity to retrieve the GroupContent entities for.
+   *
+   * @return \Drupal\group\Entity\GroupContentInterface[]
+   *   A list of GroupContent entities matching the criteria.
+   */
+  public function getContentByEntityId($content_enabler, $id);
+
+  /**
    * Retrieves all group content for the group.
    *
    * Unlike GroupInterface::getContent(), this function actually returns the

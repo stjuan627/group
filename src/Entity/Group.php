@@ -131,6 +131,13 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function getContentByEntityId($content_enabler, $id) {
+    return $this->getContent($content_enabler, ['entity_id' => $id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContentEntities($content_enabler = NULL, $filters = []) {
     $entities = [];
 
