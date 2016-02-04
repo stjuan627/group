@@ -143,6 +143,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getEntityForms() {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermissions() {
     $plugin_id = $this->getPluginId();
     $plugin_params = ['%plugin_name' => $this->getLabel()];

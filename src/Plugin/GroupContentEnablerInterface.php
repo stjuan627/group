@@ -142,6 +142,29 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getOperations();
 
   /**
+   * Provides a list of additional forms to enable for group content entities.
+   *
+   * Usually, entity types only specify three forms in their annotation: 'add',
+   * 'edit' and 'delete'. In case you want to extend one of these forms to work
+   * some magic on them, you may need to define an extra key by altering the
+   * GroupContent entity type definition.
+   *
+   * To avoid multiple modules messing with the entity type definition, Group
+   * allows content enabler plugins to define extra forms on the plugin. A good
+   * example is \Drupal\group\Plugin\GroupContentEnabler\GroupMembership.
+   *
+   * Please prefix your form names with your module's name to avoid collisions
+   * with other modules' forms. E.g.: group-join, group-leave, ... instead of
+   * join, leave, ...
+   *
+   * @return array
+   *   An associative array as seen in the 'form' section of the 'handlers' key
+   *   in an entity annotation. I.e.: An array where the keys represent form
+   *   names and the values are class names.
+   */
+  public function getEntityForms();
+
+  /**
    * Provides a list of group permissions the plugin exposes.
    *
    * If you have some group permissions that would only make sense when your

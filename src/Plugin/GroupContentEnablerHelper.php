@@ -91,6 +91,32 @@ class GroupContentEnablerHelper {
   }
 
   /**
+   * Returns a list of additional forms to enable for group content entities.
+   *
+   * @return array
+   *   An associative array with form names as keys and class names as values.
+   */
+  public static function getAdditionalEntityForms() {
+    $forms = [];
+
+    // Retrieve all installed content enabler plugins.
+    $installed = self::getInstalledContentEnablerIDs();
+
+    // Retrieve all possible forms from all installed plugins.
+    foreach (self::getAllContentEnablers() as $plugin_id => $plugin) {
+      // Skip plugins that have not been installed anywhere.
+      if (!in_array($plugin_id, $installed)) {
+        continue;
+      }
+
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      $forms = array_merge($forms, $plugin->getEntityForms());
+    }
+
+    return $forms;
+  }
+
+  /**
    * Installs all plugins which are marked as enforced.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
