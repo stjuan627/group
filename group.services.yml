@@ -26,6 +26,10 @@ services:
 #    arguments: ['@request_stack', '@current_user', '@user_permissions_hash_generator']
 #    tags:
 #      - { name: cache.context}
+  access_check.group.member:
+    class: 'Drupal\group\Access\GroupMemberAccessCheck'
+    tags:
+      - { name: 'access_check', applies_to: '_group_member' }
   access_check.group.enabled_content:
     class: 'Drupal\group\Access\GroupEnabledContentAccessCheck'
     tags:

@@ -122,6 +122,7 @@ class GroupMembership extends GroupContentEnablerBase {
           'plugin_id' => $this->getPluginId(),
         ])
         ->setRequirement('_group_permission', 'join group')
+        ->setRequirement('_group_member', 'FALSE')
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
         ]);
@@ -146,6 +147,7 @@ class GroupMembership extends GroupContentEnablerBase {
           'plugin_id' => $this->getPluginId(),
         ])
         ->setRequirement('_group_permission', 'leave group')
+        ->setRequirement('_group_member', 'TRUE')
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
         ]);
