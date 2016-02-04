@@ -12,6 +12,7 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Symfony\Component\Routing\Route;
 
 /**
  * Provides a content enabler for users.
@@ -27,12 +28,24 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
  *     "add-form" = "/group/{group}/members/add",
  *     "canonical" = "/group/{group}/members/{group_content}",
  *     "edit-form" = "/group/{group}/members/{group_content}/edit",
- *     "delete-form" = "/group/{group}/members/{group_content}/delete"
+ *     "delete-form" = "/group/{group}/members/{group_content}/delete",
+ *     "join-form" = "/group/{group}/join",
+ *     "leave-form" = "/group/{group}/leave"
  *   },
  *   enforced = TRUE
  * )
  */
 class GroupMembership extends GroupContentEnablerBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityForms() {
+    return [
+      'group-join' => 'Drupal\group\Form\GroupJoinForm',
+      'group-leave' => 'Drupal\group\Form\GroupLeaveForm',
+    ];
+  }
 
   /**
    * {@inheritdoc}
@@ -90,6 +103,73 @@ class GroupMembership extends GroupContentEnablerBase {
     // @todo Implement this after we've completed the above list controller.
 
     return $route;
+  }
+
+  /**
+   * Gets the join form route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getJoinFormRoute() {
+    if ($path = $this->getPath('join-form')) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_controller' => '\Drupal\group\Controller\GroupMembershipController::join',
+          '_title_callback' => '\Drupal\group\Controller\GroupMembershipController::joinTitle',
+          'plugin_id' => $this->getPluginId(),
+        ])
+        ->setRequirement('_group_permission', 'join group')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the leave form route.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getLeaveFormRoute() {
+    if ($path = $this->getPath('leave-form')) {
+      $route = new Route($path);
+
+      $route
+        ->setDefaults([
+          '_controller' => '\Drupal\group\Controller\GroupMembershipController::leave',
+          'plugin_id' => $this->getPluginId(),
+        ])
+        ->setRequirement('_group_permission', 'leave group')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoutes() {
+    $routes = parent::getRoutes();
+    $route_prefix = 'entity.group_content.group_membership';
+
+    if ($join_route = $this->getJoinFormRoute()) {
+      $routes["$route_prefix.join_form"] = $join_route;
+    }
+
+    if ($leave_route = $this->getLeaveFormRoute()) {
+      $routes["$route_prefix.leave_form"] = $leave_route;
+    }
+
+    return $routes;
   }
 
   /**
