@@ -17,6 +17,18 @@ use Drupal\Core\Form\FormStateInterface;
 class GroupContentForm extends ContentEntityForm {
 
   /**
+   * Returns the plugin responsible for this piece of group content.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   *   The responsible group content enabler plugin.
+   */
+  protected function getPlugin() {
+    /** @var \Drupal\group\Entity\GroupContent $group_content */
+    $group_content = $this->getEntity();
+    return $group_content->getPlugin();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {

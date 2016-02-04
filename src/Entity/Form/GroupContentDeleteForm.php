@@ -17,6 +17,18 @@ use Drupal\Core\Url;
 class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
 
   /**
+   * Returns the plugin responsible for this piece of group content.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   *   The responsible group content enabler plugin.
+   */
+  protected function getPlugin() {
+    /** @var \Drupal\group\Entity\GroupContent $group_content */
+    $group_content = $this->getEntity();
+    return $group_content->getPlugin();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getQuestion() {
@@ -45,7 +57,7 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
     $entity = $this->getEntity();
     $entity->delete();
 
-    \Drupal::logger('group')->notice('@type: deleted %title.',
+    \Drupal::logger('group_content')->notice('@type: deleted %title.',
       array(
         '@type' => $this->entity->bundle(),
         '%title' => $this->entity->label(),
