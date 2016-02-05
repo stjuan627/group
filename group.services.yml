@@ -50,3 +50,8 @@ services:
 #      - { name: module_install.uninstall_validator }
 #    arguments: ['@plugin.manager.group_content_enabler', '@entity.manager', '@string_translation']
 #    lazy: true
+  group.group_route_context:
+    class: 'Drupal\group\Context\GroupRouteContext'
+    arguments: ['@current_route_match']
+    tags:
+      - { name: 'context_provider' }
