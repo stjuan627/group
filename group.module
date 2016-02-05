@@ -7,6 +7,7 @@
 
 use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -109,5 +110,22 @@ function group_entity_type_alter(array &$entity_types) {
     }
 
     $mute_self = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param array $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param string $form_id
+ */
+function group_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['visibility']['group_type'])) {
+    $form['visibility_tabs']['#attached']['library'][] = 'group/block';
+    $form['visibility']['group_type']['#title'] = t('Group types');
+    $form['visibility']['group_type']['negate']['#type'] = 'value';
+    $form['visibility']['group_type']['negate']['#title_display'] = 'invisible';
+    $form['visibility']['group_type']['negate']['#value'] = $form['visibility']['group_type']['negate']['#default_value'];
   }
 }
