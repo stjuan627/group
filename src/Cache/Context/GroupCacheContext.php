@@ -35,7 +35,16 @@ class GroupCacheContext extends GroupCacheContextBase implements CacheContextInt
    * {@inheritdoc}
    */
   public function getCacheableMetadata() {
-    return new CacheableMetadata();
+    $cacheable_metadata = new CacheableMetadata();
+
+    // This needs to be invalidated when either the group or the group type is
+    // updated. We can't set cache tags for a non-existent group, however.
+    if (!empty($this->group)) {
+      $tags = ['group:' . $this->group->id(), 'group_type:' . $this->group->bundle()];
+      return $cacheable_metadata->setCacheTags($tags);
+    }
+
+    return $cacheable_metadata;
   }
 
 }
