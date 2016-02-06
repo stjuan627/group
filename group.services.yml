@@ -20,12 +20,6 @@ services:
     class: 'Drupal\group\Access\GroupPermissionAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_permission' }
-# TODO
-#  cache_context.group.permissions:
-#    class: Drupal\group\Cache\Context\GroupPermissionsCacheContext
-#    arguments: ['@request_stack', '@current_user', '@user_permissions_hash_generator']
-#    tags:
-#      - { name: cache.context}
   access_check.group.member:
     class: 'Drupal\group\Access\GroupMemberAccessCheck'
     tags:
@@ -39,6 +33,17 @@ services:
     arguments: ['@entity.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_add_access' }
+  cache_context.group:
+    class: 'Drupal\group\Cache\Context\GroupCacheContext'
+    arguments: ['@group.group_route_context']
+    tags:
+      - { name: 'cache.context'}
+# TODO
+#  cache_context.group.permissions:
+#    class: Drupal\group\Cache\Context\GroupPermissionsCacheContext
+#    arguments: ['@group.group_route_context', '@current_user', '@user_permissions_hash_generator']
+#    tags:
+#      - { name: cache.context}
   plugin.manager.group_content_enabler:
     class: 'Drupal\group\Plugin\GroupContentEnablerManager'
     parent: 'default_plugin_manager'
