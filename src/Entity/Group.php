@@ -191,7 +191,7 @@ class Group extends ContentEntityBase implements GroupInterface {
     }
 
     // If the user has a membership, check for the permission there.
-    if ($group_membership = GroupMembership::load($this, $account)) {
+    if ($group_membership = $this->getMember($account)) {
       return $group_membership->hasPermission($permission);
     }
 
