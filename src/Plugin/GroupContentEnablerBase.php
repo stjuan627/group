@@ -136,6 +136,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getGroupOperations(GroupInterface $group) {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOperations() {
     return [];
   }

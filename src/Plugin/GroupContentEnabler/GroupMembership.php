@@ -7,9 +7,11 @@
 
 namespace Drupal\group\Plugin\GroupContentEnabler;
 
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Core\Url;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Symfony\Component\Routing\Route;
@@ -36,6 +38,33 @@ use Symfony\Component\Routing\Route;
  * )
  */
 class GroupMembership extends GroupContentEnablerBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupOperations(GroupInterface $group) {
+    $account = \Drupal::currentUser();
+    $operations = [];
+
+    if ($group->getMember($account)) {
+      if ($group->hasPermission('leave group', $account)) {
+        $operations['group-leave'] = [
+          'title' => $this->t('Leave group'),
+          'url' => new Url('entity.group_content.group_membership.leave_form', ['group' => $group->id()]),
+          'weight' => 99,
+        ];
+      }
+    }
+    elseif ($group->hasPermission('join group', $account)) {
+      $operations['group-join'] = [
+        'title' => $this->t('Join group'),
+        'url' => new Url('entity.group_content.group_membership.join_form', ['group' => $group->id()]),
+        'weight' => 0,
+      ];
+    }
+
+    return $operations;
+  }
 
   /**
    * {@inheritdoc}

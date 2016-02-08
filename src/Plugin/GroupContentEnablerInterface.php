@@ -129,7 +129,29 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getContentTypeDescription();
 
   /**
-   * Provides an array of information to build a list of operation links.
+   * Provides an list of operations for a group.
+   *
+   * These operations can be implemented in numerous ways by extending modules.
+   * Out of the box, Group provides a block that shows the available operations
+   * to a user visiting a route with a group in its URL.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group to generate the operations for.
+   *
+   * @return array
+   *   An associative array of operation links to show when in a group context,
+   *   keyed by operation name, containing the following key-value pairs:
+   *   - title: The localized title of the operation.
+   *   - url: An instance of \Drupal\Core\Url for the operation URL.
+   *   - weight: The weight of the operation.
+   */
+  public function getGroupOperations(GroupInterface $group);
+
+  /**
+   * Provides an list of operations for the content enabler plugin.
+   *
+   * These operations will be merged with the ones already available on the
+   * group type content configuration page: (un)install, manage fields, etc.
    *
    * @return array
    *   An associative array of operation links to show on the group type content
