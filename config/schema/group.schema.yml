@@ -107,7 +107,7 @@ field.field.group_content.*.*.*.*:
   type: 'field_config_base'
   label: 'Field'
 
-entity_reference_selection.group_membership_role:
+entity_reference_selection.group_type:group_role:
   type: 'entity_reference_selection'
   mapping:
     group_type_id:
