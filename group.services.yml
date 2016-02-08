@@ -38,6 +38,11 @@ services:
     arguments: ['@group.group_route_context']
     tags:
       - { name: 'cache.context'}
+  cache_context.group.type:
+    class: 'Drupal\group\Cache\Context\GroupTypeCacheContext'
+    arguments: ['@group.group_route_context']
+    tags:
+      - { name: 'cache.context'}
 # TODO
 #  cache_context.group.permissions:
 #    class: Drupal\group\Cache\Context\GroupPermissionsCacheContext
