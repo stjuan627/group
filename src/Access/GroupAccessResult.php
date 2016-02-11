@@ -17,9 +17,9 @@ use Drupal\Core\Session\AccountInterface;
 abstract class GroupAccessResult extends AccessResult {
 
   /**
-   * Creates an allowed access result if the permission is present, neutral otherwise.
+   * Allows access if the permission is present, neutral otherwise.
    *
-   * Checks the permission and adds a 'group.permissions' cache context.
+   * @todo Potentially cache this based on https://www.drupal.org/node/2667018.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group for which to check a permission.
@@ -34,13 +34,12 @@ abstract class GroupAccessResult extends AccessResult {
    */
   public static function allowedIfHasGroupPermission(GroupInterface $group, AccountInterface $account, $permission) {
     return static::allowedIf($group->hasPermission($permission, $account));
-    //return static::allowedIf($group->hasPermission($permission, $account))->addCacheContexts(['group.permissions']);
   }
 
   /**
-   * Creates an allowed access result if the permissions are present, neutral otherwise.
+   * Allows access if the permissions are present, neutral otherwise.
    *
-   * Checks the permission and adds a 'group.permissions' cache contexts.
+   * @todo Potentially cache this based on https://www.drupal.org/node/2667018.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group for which to check permissions.
@@ -78,7 +77,6 @@ abstract class GroupAccessResult extends AccessResult {
     }
 
     return static::allowedIf($access);
-    //return static::allowedIf($access)->addCacheContexts(empty($permissions) ? [] : ['group.permissions']);
   }
 
 }
