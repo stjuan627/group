@@ -150,27 +150,14 @@ class Group extends ContentEntityBase implements GroupInterface {
   }
 
   /**
-   * Helper function to retrieve a user's group membership.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user to load the membership for.
-   *
-   * @return \Drupal\group\GroupMembership|false
-   *   The loaded GroupMembership or FALSE if none was found.
+   * {@inheritdoc}
    */
   public function getMember(AccountInterface $account) {
     return GroupMembership::load($this, $account);
   }
 
   /**
-   * Helper function to retrieve group memberships.
-   *
-   * @param string|array $roles
-   *   (optional) A group role machine name or a list of group role machine
-   *   names to filter on. Results only need to match on one role (IN query).
-   *
-   * @return \Drupal\group\GroupMembership[]
-   *   A list of GroupMembership objects representing the memberships.
+   * {@inheritdoc}
    */
   public function getMembers($roles = NULL) {
     return GroupMembership::loadByGroup($this, $roles);

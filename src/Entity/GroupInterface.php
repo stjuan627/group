@@ -72,6 +72,29 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getContentEntities($content_enabler = NULL, $filters = []);
 
   /**
+   * Retrieves a user's membership for the group.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user to load the membership for.
+   *
+   * @return \Drupal\group\GroupMembership|false
+   *   The loaded GroupMembership or FALSE if none was found.
+   */
+  public function getMember(AccountInterface $account);
+
+  /**
+   * Retrieves all group memberships for the group.
+   *
+   * @param string|array $roles
+   *   (optional) A group role machine name or a list of group role machine
+   *   names to filter on. Results only need to match on one role (IN query).
+   *
+   * @return \Drupal\group\GroupMembership[]
+   *   A list of GroupMembership objects representing the memberships.
+   */
+  public function getMembers($roles = NULL);
+
+  /**
    * Checks whether a user has the requested permission.
    *
    * @param string $permission
