@@ -219,11 +219,16 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     GroupContentType::create($values)->save();
 
     // Run the post install tasks on the plugin.
-    $this->enabledContent()->get($plugin_id)->postInstall();
+    $plugin->postInstall();
 
-    // Plugins may define routes, so a rebuild may be needed.
-    if (!empty($this->enabledContent()->get($plugin_id)->getRoutes())) {
+    // Rebuild the routes if the plugin defines any.
+    if (!empty($plugin->getRoutes())) {
       \Drupal::service('router.builder')->setRebuildNeeded();
+    }
+
+    // Clear the entity type cache if the plugin adds to the GroupContent info.
+    if (!empty($plugin->getEntityForms())) {
+      $this->entityTypeManager()->clearCachedDefinitions();
     }
 
     return $this;
