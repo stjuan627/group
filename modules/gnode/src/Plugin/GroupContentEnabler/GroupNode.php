@@ -17,7 +17,7 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
  *   label = @Translation("Group node"),
  *   description = @Translation("Adds nodes to groups both publicly and privately."),
  *   entity_type_id = "node",
- *   cardinality = 1,
+ *   entity_cardinality = 1,
  *   deriver = "Drupal\gnode\Plugin\GroupNodeDerivatives"
  * )
  */

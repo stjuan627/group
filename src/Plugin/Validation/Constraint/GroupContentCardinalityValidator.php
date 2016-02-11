@@ -29,6 +29,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator {
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint) {
+    /** @var \Drupal\group\Plugin\Validation\Constraint\GroupContentCardinality $constraint */
     /** @var \Drupal\Core\Field\FieldItemListInterface $value */
     if (!isset($value)) {
       return;
@@ -36,31 +37,71 @@ class GroupContentCardinalityValidator extends ConstraintValidator {
 
     /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $value->getEntity();
-    $cardinality = $group_content->getContentPlugin()->getCardinality();
+    $group_cardinality = $group_content->getContentPlugin()->getGroupCardinality();
+    $entity_cardinality = $group_content->getContentPlugin()->getEntityCardinality();
 
-    // Exit early if the cardinality is set to unlimited.
-    if ($cardinality <= 0) {
+    // Exit early if both cardinalities are set to unlimited.
+    if ($group_cardinality <= 0 && $entity_cardinality <= 0) {
       return;
     }
 
+    // Only run our checks if an entity was referenced.
     if (!empty($value->target_id)) {
-      // Get the current instances of this content entity in the group.
-      $group = $group_content->getGroup();
-      $plugin_id = $group_content->getContentPlugin()->getPluginId();
-      $instances = $group->getContentByEntityId($plugin_id, $value->target_id);
+      $entity = $group_content->getEntity();
+      $plugin = $group_content->getContentPlugin();
+      $plugin_id = $plugin->getPluginId();
+      $field_name = $group_content->getFieldDefinition('entity_id')->getLabel();
 
-      // Raise a violation if the content has reached the cardinality limit.
-      if (count($instances) >= $cardinality) {
-        /** @var \Drupal\group\Plugin\Validation\Constraint\GroupContentCardinality $constraint */
-        $this->context->buildViolation($constraint->message)
-          ->setParameter('@field', $group_content->getFieldDefinition('entity_id')->getLabel())
-          ->setParameter('%content', $group_content->getEntity()->label())
-          ->setParameter('%group', $group->label())
-          // We need to manually set the path to the first element because we
-          // expect this contraint to be set on the EntityReferenceItem level
-          // and therefore receive a FieldItemListInterface as the value.
-          ->atPath('0')
-          ->addViolation();
+      // Enforce the group cardinality if it's not set to unlimited.
+      if ($group_cardinality > 0) {
+        // Get the group content entities for this piece of content.
+        $properties = ['type' => $plugin->getContentTypeConfigId(), 'entity_id' => $entity->id()];
+        $group_instances = \Drupal::entityTypeManager()
+          ->getStorage('group_content')
+          ->loadByProperties($properties);
+
+        // Get the groups this content entity already belongs to, not counting
+        // the current group towards the limit.
+        $group_ids = [];
+        foreach ($group_instances as $instance) {
+          /** @var \Drupal\group\Entity\GroupContentInterface $instance */
+          if ($instance->getGroup()->id() != $group_content->getGroup()->id()) {
+            $group_ids[] = $instance->getGroup()->id();
+          }
+        }
+        $group_count = count(array_unique($group_ids));
+
+        // Raise a violation if the content has reached the cardinality limit.
+        if ($group_count >= $group_cardinality) {
+          $this->context->buildViolation($constraint->groupMessage)
+            ->setParameter('@field', $field_name)
+            ->setParameter('%content', $entity->label())
+            // We need to manually set the path to the first element because we
+            // expect this contraint to be set on the EntityReferenceItem level
+            // and therefore receive a FieldItemListInterface as the value.
+            ->atPath('0')
+            ->addViolation();
+        }
+      }
+
+      // Enforce the entity cardinality if it's not set to unlimited.
+      if ($entity_cardinality > 0) {
+        // Get the current instances of this content entity in the group.
+        $group = $group_content->getGroup();
+        $entity_instances = $group->getContentByEntityId($plugin_id, $value->target_id);
+
+        // Raise a violation if the content has reached the cardinality limit.
+        if (count($entity_instances) >= $entity_cardinality) {
+          $this->context->buildViolation($constraint->entityMessage)
+            ->setParameter('@field', $field_name)
+            ->setParameter('%content', $entity->label())
+            ->setParameter('%group', $group->label())
+            // We need to manually set the path to the first element because we
+            // expect this contraint to be set on the EntityReferenceItem level
+            // and therefore receive a FieldItemListInterface as the value.
+            ->atPath('0')
+            ->addViolation();
+        }
       }
     }
   }

@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Route;
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
- *   cardinality = 1,
+ *   entity_cardinality = 1,
  *   paths = {
  *     "collection" = "/group/{group}/members",
  *     "add-form" = "/group/{group}/members/add",
