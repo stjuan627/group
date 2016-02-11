@@ -185,10 +185,20 @@ class GroupMembership {
    * Returns the group roles for the membership.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
+   *   An array of group roles, keyed by their ID.
    */
   public function getRoles() {
-    $roles = $this->groupContent->group_roles->referencedEntities();
-    $roles[] = GroupRole::load($this->getGroup()->bundle() . '.member');
+    $roles = [];
+
+    // Retrieve all group roles for the membership.
+    foreach ($this->groupContent->group_roles->referencedEntities() as $group_role) {
+      $roles[$group_role->id()] = $group_role;
+    }
+
+    // Add the special 'member' role to the retrieved roles.
+    $member_role_id = $this->getGroup()->bundle() . '.member';
+    $roles[$member_role_id] = GroupRole::load($member_role_id);
+
     return $roles;
   }
 

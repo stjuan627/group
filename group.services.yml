@@ -2,6 +2,9 @@ services:
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
     arguments: ['@module_handler', '@string_translation', '@controller_resolver']
+  group.permissions_hash_generator:
+    class: 'Drupal\group\Access\GroupPermissionsHashGenerator'
+    arguments: ['@private_key', '@cache.default', '@cache.static']
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
@@ -43,12 +46,16 @@ services:
     arguments: ['@group.group_route_context']
     tags:
       - { name: 'cache.context'}
-# TODO
-#  cache_context.group.permissions:
-#    class: Drupal\group\Cache\Context\GroupPermissionsCacheContext
-#    arguments: ['@group.group_route_context', '@current_user', '@user_permissions_hash_generator']
-#    tags:
-#      - { name: cache.context}
+  cache_context.group_membership:
+    class: 'Drupal\group\Cache\Context\GroupMembershipCacheContext'
+    arguments: ['@group.group_route_context', '@current_user']
+    tags:
+      - { name: 'cache.context'}
+  cache_context.group_membership.permissions:
+    class: 'Drupal\group\Cache\Context\GroupMembershipPermissionsCacheContext'
+    arguments: ['@group.group_route_context', '@current_user', '@group.permissions_hash_generator']
+    tags:
+      - { name: 'cache.context'}
   plugin.manager.group_content_enabler:
     class: 'Drupal\group\Plugin\GroupContentEnablerManager'
     parent: 'default_plugin_manager'

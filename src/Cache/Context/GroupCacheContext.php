@@ -11,7 +11,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 
 /**
- * Defines the GroupCacheContext service, for "per group" caching.
+ * Defines a cache context for "per group" caching.
  *
  * Cache context ID: 'group'.
  */
@@ -38,8 +38,8 @@ class GroupCacheContext extends GroupCacheContextBase implements CacheContextInt
     $cacheable_metadata = new CacheableMetadata();
 
     if (!empty($this->group)) {
-      // This needs to be invalidated whenever the group updated.
-      return $cacheable_metadata->setCacheTags($this->group->getCacheTags());
+      // This needs to be invalidated whenever the group is updated.
+      $cacheable_metadata->setCacheTags($this->group->getCacheTags());
     }
 
     return $cacheable_metadata;
