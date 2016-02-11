@@ -75,7 +75,7 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
 
       // If the user is a member, we need to add the membership's cache tag.
       if ($group_membership = $this->group->getMember($this->user)) {
-        $tags = array_merge($tags, $group_membership->getData()->getCacheTags());
+        $tags = array_merge($tags, $group_membership->getGroupContent()->getCacheTags());
         $group_roles = $group_membership->getRoles();
       }
       else {

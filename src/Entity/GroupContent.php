@@ -81,7 +81,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPlugin() {
+  public function getContentPlugin() {
     return $this->getGroupContentType()->getContentPlugin();
   }
 
@@ -89,7 +89,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function label() {
-    return $this->getPlugin()->getContentLabel($this);
+    return $this->getContentPlugin()->getContentLabel($this);
   }
 
   /**
@@ -164,11 +164,11 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   protected function linkTemplates() {
     // @todo Look into this: What with custom templates? Plugin ::getPaths()?
     return [
-      'collection' => $this->getPlugin()->getPath('collection'),
-      'canonical' => $this->getPlugin()->getPath('canonical'),
-      'add-form' => $this->getPlugin()->getPath('add-form'),
-      'edit-form' => $this->getPlugin()->getPath('edit-form'),
-      'delete-form' => $this->getPlugin()->getPath('delete-form'),
+      'collection' => $this->getContentPlugin()->getPath('collection'),
+      'canonical' => $this->getContentPlugin()->getPath('canonical'),
+      'add-form' => $this->getContentPlugin()->getPath('add-form'),
+      'edit-form' => $this->getContentPlugin()->getPath('edit-form'),
+      'delete-form' => $this->getContentPlugin()->getPath('delete-form'),
     ];
   }
 
@@ -178,7 +178,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * @todo Will inherit docs once https://www.drupal.org/node/2645136 lands.
    */
   protected function urlRoute($rel) {
-    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPlugin()->getPluginId());
+    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getContentPlugin()->getPluginId());
     return $route_prefix . '.' . str_replace(array('-', 'drupal:'), array('_', ''), $rel);
   }
 
@@ -187,7 +187,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-    $uri_route_parameters['group'] = $this->gid->entity->id();
+    $uri_route_parameters['group'] = $this->getGroup()->id();
     return $uri_route_parameters;
   }
 

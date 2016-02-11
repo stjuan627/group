@@ -107,7 +107,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function getContentPlugin() {
-    return $this->getGroupType()->enabledContent()->get($this->content_plugin);
+    return $this->getGroupType()->getInstalledContentPlugins()->get($this->content_plugin);
   }
 
   /**
@@ -127,7 +127,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       /** @var \Drupal\group\Entity\GroupContentType $entity */
       if ($entity->isUninstalling()) {
         $group_type = $entity->getGroupType();
-        $group_type->enabledContent()->removeInstanceId($entity->getContentPluginId());
+        $group_type->getInstalledContentPlugins()->removeInstanceId($entity->getContentPluginId());
         $group_type->save();
       }
     }

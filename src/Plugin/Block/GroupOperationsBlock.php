@@ -63,7 +63,7 @@ class GroupOperationsBlock extends BlockBase {
       $build['#cache']['tags'] = $tags;
 
       $links = [];
-      foreach ($group->getGroupType()->enabledContent() as $plugin) {
+      foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin) {
         $links += $plugin->getGroupOperations($group);
       }
       uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');

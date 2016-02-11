@@ -155,8 +155,8 @@ entity.group_role.permissions_form:
 entity.group_content_type.add_form:
   path: '/admin/group/content/install/{group_type}/{plugin_id}'
   defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::enableContent'
-    _title: 'Enable plugin'
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::installContentPlugin'
+    _title: 'Install content plugin'
   requirements:
     _permission: 'administer group'
 
@@ -172,7 +172,7 @@ entity.group_content_type.edit_form:
 entity.group_content_type.delete_form:
   path: '/admin/group/content/manage/{group_content_type}/uninstall'
   defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::disableContent'
-    _title: 'Disable plugin'
+    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::uninstallContentPlugin'
+    _title: 'Uninstall content plugin'
   requirements:
     _permission: 'administer group'

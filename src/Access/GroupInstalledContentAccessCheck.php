@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\group\Access\GroupEnabledContentAccessCheck.
+ * Contains \Drupal\group\Access\GroupInstalledContentAccessCheck.
  */
 
 namespace Drupal\group\Access;
@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Route;
 /**
  * Determines access to routes based on whether a content plugin is installed.
  */
-class GroupEnabledContentAccessCheck implements AccessInterface {
+class GroupInstalledContentAccessCheck implements AccessInterface {
 
   /**
    * Checks access.
@@ -34,7 +34,7 @@ class GroupEnabledContentAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
-    $plugin_id = $route->getRequirement('_group_enabled_content');
+    $plugin_id = $route->getRequirement('_group_installed_content');
 
     // Don't interfere if no plugin ID was specified.
     if ($plugin_id === NULL) {
@@ -54,7 +54,7 @@ class GroupEnabledContentAccessCheck implements AccessInterface {
     }
 
     // Deny access if the plugin is not installed on the group's type.
-    return AccessResult::allowedIf($group->getGroupType()->hasContentEnabled($plugin_id));
+    return AccessResult::allowedIf($group->getGroupType()->hasContentPlugin($plugin_id));
   }
 
 }

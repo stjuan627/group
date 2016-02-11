@@ -35,7 +35,7 @@ class GroupMembershipCacheContext extends GroupMembershipCacheContextBase implem
 
     // If there is a membership, we return the membership ID.
     if ($group_membership = $this->group->getMember($this->user)) {
-      return $group_membership->getData()->id();
+      return $group_membership->getGroupContent()->id();
     }
 
     // Otherwise, return 'outsider' or 'anonymous' depending on the user.
@@ -50,7 +50,7 @@ class GroupMembershipCacheContext extends GroupMembershipCacheContextBase implem
 
     if (!empty($this->group) && $group_membership = $this->group->getMember($this->user)) {
       // This needs to be invalidated whenever the group membership is updated.
-      $cacheable_metadata->setCacheTags($group_membership->getData()->getCacheTags());
+      $cacheable_metadata->setCacheTags($group_membership->getGroupContent()->getCacheTags());
     }
 
     return $cacheable_metadata;

@@ -175,7 +175,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function enabledContent() {
+  public function getInstalledContentPlugins() {
     if (!$this->contentCollection) {
       $this->contentCollection = new GroupContentEnablerCollection($this->getContentEnablerManager(), $this->content);
       $this->contentCollection->sort();
@@ -186,7 +186,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function hasContentEnabled($plugin_id) {
+  public function hasContentPlugin($plugin_id) {
     return isset($this->content[$plugin_id]);
   }
 
@@ -194,21 +194,21 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function getPluginCollections() {
-    return array('content' => $this->enabledContent());
+    return array('content' => $this->getInstalledContentPlugins());
   }
 
   /**
    * {@inheritdoc}
    */
-  public function enableContent($plugin_id, array $configuration = []) {
+  public function installContentPlugin($plugin_id, array $configuration = []) {
     // Save the plugin to the group type.
     $configuration['id'] = $plugin_id;
     $configuration['group_type'] = $this->id();
-    $this->enabledContent()->addInstanceId($plugin_id, $configuration);
+    $this->getInstalledContentPlugins()->addInstanceId($plugin_id, $configuration);
     $this->save();
 
     // Save the group content type config entity.
-    $plugin = $this->enabledContent()->get($plugin_id);
+    $plugin = $this->getInstalledContentPlugins()->get($plugin_id);
     $values = [
       'id' => $plugin->getContentTypeConfigId(),
       'label' => $plugin->getContentTypeLabel(),
@@ -237,13 +237,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function disableContent($plugin_id) {
+  public function uninstallContentPlugin($plugin_id) {
     // Get the content type ID from the plugin instance before we delete it.
-    $plugin = $this->enabledContent()->get($plugin_id);
+    $plugin = $this->getInstalledContentPlugins()->get($plugin_id);
     $content_type_id = $plugin->getContentTypeConfigId();
 
     // Remove the plugin from the group type.
-    $this->enabledContent()->removeInstanceId($plugin_id);
+    $this->getInstalledContentPlugins()->removeInstanceId($plugin_id);
     $this->save();
 
     // Delete the group content type config entity.

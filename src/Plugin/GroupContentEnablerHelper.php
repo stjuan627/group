@@ -45,7 +45,7 @@ class GroupContentEnablerHelper {
    * This collection will not have any group type set in the individual plugins'
    * configuration. Do not use any methods on the plugin that require a group
    * type to be set or you may encounter unexpected behavior. Instead, use
-   * GroupTypeInterface::enabledContent()->get($plugin_id).
+   * GroupTypeInterface::getInstalledContentPlugins()->get($plugin_id).
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerCollection
    *   The content enabler plugin collection.
@@ -136,8 +136,8 @@ class GroupContentEnablerHelper {
     foreach ($group_types as $group_type) {
       // Search through all the enforced plugins and install new ones.
       foreach ($enforced as $plugin_id) {
-        if (!$group_type->hasContentEnabled($plugin_id)) {
-          $group_type->enableContent($plugin_id);
+        if (!$group_type->hasContentPlugin($plugin_id)) {
+          $group_type->installContentPlugin($plugin_id);
         }
       }
     }

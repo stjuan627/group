@@ -28,9 +28,9 @@ services:
     tags:
       - { name: 'access_check', applies_to: '_group_member' }
   access_check.group.enabled_content:
-    class: 'Drupal\group\Access\GroupEnabledContentAccessCheck'
+    class: 'Drupal\group\Access\GroupInstalledContentAccessCheck'
     tags:
-      - { name: 'access_check', applies_to: '_group_enabled_content' }
+      - { name: 'access_check', applies_to: '_group_installed_content' }
   access_check.group_content.add:
     class: 'Drupal\group\Access\GroupContentAddAccessCheck'
     arguments: ['@entity.manager']

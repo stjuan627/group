@@ -89,7 +89,7 @@ class GroupTypeController extends ControllerBase {
    */
   public function content(GroupTypeInterface $group_type) {
     $this->groupType = $group_type;
-    foreach ($this->groupType->enabledContent() as $plugin_id => $plugin) {
+    foreach ($this->groupType->getInstalledContentPlugins() as $plugin_id => $plugin) {
       $this->installedPluginIds[] = $plugin_id;
     }
 
@@ -116,7 +116,7 @@ class GroupTypeController extends ControllerBase {
       // an 'empty' version so that we may use methods on it which expect to
       // have a group type configured.
       if (in_array($plugin_id, $this->installedPluginIds)) {
-        $plugin = $this->groupType->enabledContent()->get($plugin_id);
+        $plugin = $this->groupType->getInstalledContentPlugins()->get($plugin_id);
       }
       $page['content'][$plugin_id] = $this->buildRow($plugin);
     }
@@ -278,10 +278,10 @@ class GroupTypeController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function enableContent(GroupTypeInterface $group_type, $plugin_id) {
+  public function installContentPlugin(GroupTypeInterface $group_type, $plugin_id) {
     // @todo validation here, do not allow just any ID.
 
-    $group_type->enableContent($plugin_id);
+    $group_type->installContentPlugin($plugin_id);
     drupal_set_message($this->t('The content was enabled for the group type.'));
     return $this->redirect('entity.group_type.content_plugins', ['group_type' => $group_type->id()]);
   }
@@ -293,11 +293,11 @@ class GroupTypeController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    */
-  public function disableContent(GroupContentTypeInterface $group_content_type) {
-    // @todo Figure out where to disable this: GCT::uninstall(), GT:disableContent(), here, ...
+  public function uninstallContentPlugin(GroupContentTypeInterface $group_content_type) {
+    // @todo Figure out where to disable this: GCT::uninstall(), GT:uninstallContentPlugin(), here, ...
 
     $group_type = $group_content_type->getGroupType();
-    $group_type->disableContent($group_content_type->getContentPluginId());
+    $group_type->uninstallContentPlugin($group_content_type->getContentPluginId());
     drupal_set_message($this->t('The content was disabled for the group type.'));
     return $this->redirect('entity.group_type.content_plugins', ['group_type' => $group_type->id()]);
   }

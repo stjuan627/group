@@ -79,7 +79,7 @@ class GroupMembership {
     $entity_manager = \Drupal::entityTypeManager();
 
     // Retrieve the group content type ID for the provided group's type.
-    $plugin = $group->getGroupType()->enabledContent()->get('group_membership');
+    $plugin = $group->getGroupType()->getInstalledContentPlugins()->get('group_membership');
     $group_content_type_id = $plugin->getContentTypeConfigId();
 
     // Try to load all possible membership group content for the group.
@@ -159,7 +159,7 @@ class GroupMembership {
    *
    * @return \Drupal\group\Entity\GroupContentInterface
    */
-  public function getData() {
+  public function getGroupContent() {
     return $this->groupContent;
   }
 
@@ -169,7 +169,7 @@ class GroupMembership {
    * @return \Drupal\group\Entity\GroupInterface
    */
   public function getGroup() {
-    return $this->groupContent->gid->entity;
+    return $this->groupContent->getGroup();
   }
 
   /**

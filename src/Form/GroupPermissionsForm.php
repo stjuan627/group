@@ -112,7 +112,7 @@ abstract class GroupPermissionsForm extends FormBase {
     }
 
     // Merge in the permissions defined by the installed content plugins.
-    foreach ($this->getType()->enabledContent() as $plugin) {
+    foreach ($this->getType()->getInstalledContentPlugins() as $plugin) {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
       foreach ($plugin->getPermissions() as $permission_name => $permission) {
         $permission += ['provider' => $plugin->getProvider()];

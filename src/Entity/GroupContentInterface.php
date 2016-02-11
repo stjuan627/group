@@ -42,6 +42,6 @@ interface GroupContentInterface extends ContentEntityInterface, EntityChangedInt
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
    */
-  public function getPlugin();
+  public function getContentPlugin();
 
 }

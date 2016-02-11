@@ -24,7 +24,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler {
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\group\Entity\GroupContentInterface $entity */
-    return $entity->getPlugin()->checkAccess($entity, $operation, $account);
+    return $entity->getContentPlugin()->checkAccess($entity, $operation, $account);
   }
 
   /**

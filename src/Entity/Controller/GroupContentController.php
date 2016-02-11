@@ -30,7 +30,7 @@ class GroupContentController extends ControllerBase {
    */
   public function add(GroupInterface $group, $plugin_id) {
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-    $plugin = $group->getGroupType()->enabledContent()->get($plugin_id);
+    $plugin = $group->getGroupType()->getInstalledContentPlugins()->get($plugin_id);
 
     $group_content = GroupContent::create([
       'type' => $plugin->getContentTypeConfigId(),
@@ -53,7 +53,7 @@ class GroupContentController extends ControllerBase {
    */
   public function addPageTitle(GroupInterface $group, $plugin_id) {
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-    $plugin = $group->getGroupType()->enabledContent()->get($plugin_id);
+    $plugin = $group->getGroupType()->getInstalledContentPlugins()->get($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Create @name', array('@name' => $group_content_type->label()));
   }

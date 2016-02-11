@@ -22,10 +22,10 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
    *   The responsible group content enabler plugin.
    */
-  protected function getPlugin() {
+  protected function getContentPlugin() {
     /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
-    return $group_content->getPlugin();
+    return $group_content->getContentPlugin();
   }
 
   /**

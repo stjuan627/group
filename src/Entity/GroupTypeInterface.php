@@ -40,12 +40,12 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function getRoleIds();
 
   /**
-   * Returns the content enabler plugins for this group type.
+   * Returns the installed content enabler plugins for this group type.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerCollection
    *   The group content plugin collection.
    */
-  public function enabledContent();
+  public function getInstalledContentPlugins();
 
   /**
    * Checks whether a content enabler plugin is installed for this group type.
@@ -56,7 +56,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    * @return bool
    *   Whether the content enabler plugin is installed.
    */
-  public function hasContentEnabled($plugin_id);
+  public function hasContentPlugin($plugin_id);
 
   /**
    * Adds a content enabler plugin to this group type.
@@ -68,7 +68,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *
    * @return $this
    */
-  public function enableContent($plugin_id, array $configuration = []);
+  public function installContentPlugin($plugin_id, array $configuration = []);
 
   /**
    * Removes a content enabler plugin from this group type.
@@ -78,6 +78,6 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *
    * @return $this
    */
-  public function disableContent($plugin_id);
+  public function uninstallContentPlugin($plugin_id);
 
 }

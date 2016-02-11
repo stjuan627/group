@@ -36,7 +36,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator {
 
     /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $value->getEntity();
-    $cardinality = $group_content->getPlugin()->getCardinality();
+    $cardinality = $group_content->getContentPlugin()->getCardinality();
 
     // Exit early if the cardinality is set to unlimited.
     if ($cardinality <= 0) {
@@ -46,7 +46,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator {
     if (!empty($value->target_id)) {
       // Get the current instances of this content entity in the group.
       $group = $group_content->getGroup();
-      $plugin_id = $group_content->getPlugin()->getPluginId();
+      $plugin_id = $group_content->getContentPlugin()->getPluginId();
       $instances = $group->getContentByEntityId($plugin_id, $value->target_id);
 
       // Raise a violation if the content has reached the cardinality limit.
