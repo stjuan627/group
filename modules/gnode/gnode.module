@@ -4,3 +4,10 @@
  * @file
  * Contains Drupal\gnode\gnode.module
  */
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function gnode_entity_type_alter(array &$entity_types) {
+  $entity_types['node']->setFormClass('gnode-form', 'Drupal\gnode\Form\GroupNodeFormStep1');
+}
