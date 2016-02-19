@@ -26,6 +26,7 @@ use Drupal\Core\Session\AccountInterface;
  *   bundle_label = @Translation("Group type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "views_data" = "Drupal\group\Entity\Views\GroupViewsData",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\group\Entity\Routing\GroupRouteProvider",
