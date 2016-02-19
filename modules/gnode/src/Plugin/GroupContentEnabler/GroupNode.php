@@ -63,29 +63,29 @@ class GroupNode extends GroupContentEnablerBase {
       'description_args' => $type_arg,
     ];
 
-    $permissions["view $type nodes"] = [
+    $permissions["view $type node"] = [
       'title' => '%node_type: View content',
     ] + $defaults;
 
-    $permissions["create $type nodes"] = [
+    $permissions["create $type node"] = [
       'title' => '%node_type: Create new content',
       'description' => 'Allows you to create %node_type nodes that immediately belong to this group.',
       'description_args' => $type_arg,
     ] + $defaults;
 
-    $permissions["edit own $type nodes"] = [
+    $permissions["edit own $type node"] = [
       'title' => '%node_type: Edit own content',
     ] + $defaults;
 
-    $permissions["edit any $type nodes"] = [
+    $permissions["edit any $type node"] = [
       'title' => '%node_type: Edit any content',
     ] + $defaults;
 
-    $permissions["delete own $type nodes"] = [
+    $permissions["delete own $type node"] = [
       'title' => '%node_type: Delete own content',
     ] + $defaults;
 
-    $permissions["delete any $type nodes"] = [
+    $permissions["delete any $type node"] = [
       'title' => '%node_type: Delete any content',
     ] + $defaults;
 
@@ -107,7 +107,7 @@ class GroupNode extends GroupContentEnablerBase {
           '_controller' => '\Drupal\gnode\Controller\GroupNodeController::add',
           '_title_callback' => '\Drupal\gnode\Controller\GroupNodeController::addTitle',
         ])
-        ->setRequirement('_group_permission', 'create ' . $this->getEntityBundle() . ' nodes')
+        ->setRequirement('_group_permission', 'create ' . $this->getEntityBundle() . ' node')
         ->setRequirement('_group_installed_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
