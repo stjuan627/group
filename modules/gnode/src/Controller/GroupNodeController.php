@@ -71,15 +71,13 @@ class GroupNodeController extends ControllerBase {
     }
     // If we are on step two, we need to build a group content form.
     else {
-      if (!$entity = $this->privateTempStore->get('group_content')) {
-        /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-        $plugin = $group->getGroupType()->getInstalledContentPlugins()->get('group_node:' . $node_type->id());
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      $plugin = $group->getGroupType()->getInstalledContentPlugins()->get('group_node:' . $node_type->id());
 
-        $entity = GroupContent::create([
-          'type' => $plugin->getContentTypeConfigId(),
-          'gid' => $group->id(),
-        ]);
-      }
+      $entity = GroupContent::create([
+        'type' => $plugin->getContentTypeConfigId(),
+        'gid' => $group->id(),
+      ]);
     }
 
     return $this->entityFormBuilder()->getForm($entity, 'gnode-form');

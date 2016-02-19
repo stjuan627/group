@@ -63,12 +63,13 @@ class GroupNodeFormStep2 extends GroupContentForm {
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
 
-    // @todo Limit validation errors.
-    $actions['back'] = array(
+    $actions['submit']['#value'] = $this->t('Create node in group');
+    $actions['back'] = [
       '#type' => 'submit',
       '#value' => $this->t('Back'),
       '#submit' => ['::submitForm', '::back'],
-    );
+      '#limit_validation_errors' => [],
+    ];
 
     return $actions;
   }
@@ -107,7 +108,6 @@ class GroupNodeFormStep2 extends GroupContentForm {
    * @see \Drupal\gnode\Form\GroupNodeFormStep1
    */
   public function back(array &$form, FormStateInterface $form_state) {
-    $this->privateTempStore->set('group_content', $this->entity);
     $this->privateTempStore->set('step', 1);
   }
 
