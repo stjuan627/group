@@ -58,6 +58,15 @@ class GroupContentEnabler extends Plugin {
   public $entity_type_id;
 
   /**
+   * (optional) The bundle of the entity type you want to enable as group content.
+   *
+   * Do not specify if your plugin manages all bundles.
+   *
+   * @var string|false
+   */
+  public $entity_bundle = FALSE;
+
+  /**
    * (optional) An associative array of paths to generate routes for.
    *
    * Each entry is a path containing at least a {group} parameter and optionally

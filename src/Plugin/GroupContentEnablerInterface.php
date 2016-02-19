@@ -53,6 +53,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getEntityTypeId();
 
   /**
+   * Returns the entity bundle the plugin supports.
+   *
+   * @return string|false
+   *   The bundle name or FALSE in case it supports all bundles.
+   */
+  public function getEntityBundle();
+
+  /**
    * Returns the amount of groups the same content can be added to.
    *
    * @return int

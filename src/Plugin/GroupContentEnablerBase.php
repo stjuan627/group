@@ -78,6 +78,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getEntityBundle() {
+    return $this->pluginDefinition['entity_bundle'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getGroupCardinality() {
     return $this->pluginDefinition['group_cardinality'];
   }
