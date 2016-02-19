@@ -120,6 +120,15 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
+  public static function loadByContentPluginId($plugin_id) {
+    return \Drupal::entityTypeManager()
+      ->getStorage('group_content_type')
+      ->loadByProperties(['content_plugin' => $plugin_id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
     // In case the group content type got deleted by uninstalling the providing
     // module, we still need to uninstall it on the group type.

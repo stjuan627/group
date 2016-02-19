@@ -54,4 +54,15 @@ interface GroupContentTypeInterface extends ConfigEntityInterface {
    */
   public function getContentPluginId();
 
+  /**
+   * Loads group content type entities by their responsible plugin ID.
+   *
+   * @param string $plugin_id
+   *   The ID of the content enabler plugin.
+   *
+   * @return \Drupal\group\Entity\GroupContentTypeInterface[]
+   *   An array of group content type entities indexed by their IDs.
+   */
+  public static function loadByContentPluginId($plugin_id);
+
 }

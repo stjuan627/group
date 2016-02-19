@@ -88,6 +88,15 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public static function loadByContentPluginId($plugin_id) {
+    return \Drupal::entityTypeManager()
+      ->getStorage('group_content')
+      ->loadByProperties(['type' => array_keys(GroupContentType::loadByContentPluginId($plugin_id))]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function label() {
     return $this->getContentPlugin()->getContentLabel($this);
   }
