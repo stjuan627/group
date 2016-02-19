@@ -129,7 +129,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getContentTypeConfigId() {
-    return $this->getGroupTypeId() . '.' . str_replace(':', '.', $this->getPluginId());
+    return $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getPluginId());
   }
 
   /**

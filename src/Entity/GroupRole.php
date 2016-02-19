@@ -120,7 +120,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   protected function strippedId() {
     if (!isset($this->strippedId)) {
-      list(, $group_role) = explode('.', $this->id(), 2);
+      list(, $group_role) = explode('-', $this->id(), 2);
       $this->strippedId = $group_role;
     }
     return $this->strippedId;

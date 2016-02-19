@@ -38,8 +38,8 @@ group.type.*:
             type: 'sequence'
             label: 'Plugin configuration'
 
-# Follows the pattern group.role.GROUP_TYPE_ID.GROUP_ROLE_ID.
-group.role.*.*:
+# Follows the pattern group.role.GROUP_TYPE_ID-GROUP_ROLE_ID.
+group.role.*:
   type: 'config_entity'
   label: 'Group role'
   mapping:
@@ -85,27 +85,11 @@ group_content_type:
       type: 'text'
       label: 'Group content plugin ID'
 
-# Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.
-group.content_type.*.*:
+# Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID.
+# Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID.
+group.content_type.*:
   type: 'group_content_type'
   label: 'Group content type'
-
-# Follows the pattern group.content_type.GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID.
-group.content_type.*.*.*:
-  type: 'group_content_type'
-  label: 'Group content type (derivative)'
-
-# Extends field.field.*.*.* to account for group content IDs containing periods.
-# Follows the pattern field.field.group_content.GROUP_TYPE_ID.PLUGIN_ID.FIELD_ID.
-field.field.group_content.*.*.*:
-  type: 'field_config_base'
-  label: 'Field'
-
-# Extends field.field.*.*.* to account for group content IDs containing periods.
-# Follows the pattern field.field.group_content.GROUP_TYPE_ID.PLUGIN_ID.DERIVATIVE_ID.FIELD_ID.
-field.field.group_content.*.*.*.*:
-  type: 'field_config_base'
-  label: 'Field'
 
 entity_reference_selection.group_type:group_role:
   type: 'entity_reference_selection'

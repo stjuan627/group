@@ -196,7 +196,7 @@ class GroupMembership {
     }
 
     // Add the special 'member' role to the retrieved roles.
-    $member_role_id = $this->getGroup()->bundle() . '.member';
+    $member_role_id = $this->getGroup()->bundle() . '-member';
     $roles[$member_role_id] = GroupRole::load($member_role_id);
 
     return $roles;

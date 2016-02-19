@@ -56,7 +56,7 @@ class GroupRoleForm extends EntityForm {
     // Since machine names with periods in it are technically not allowed, we
     // strip the group type ID prefix when editing a group role.
     if ($group_role->id()) {
-      list(, $group_role_id) = explode('.', $group_role->id(), 2);
+      list(, $group_role_id) = explode('-', $group_role->id(), 2);
     }
 
     $form['id'] = [
@@ -69,7 +69,7 @@ class GroupRoleForm extends EntityForm {
       ],
       '#description' => t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$group_role->isNew(),
-      '#field_prefix' => $group_role->getGroupTypeId() . '.',
+      '#field_prefix' => $group_role->getGroupTypeId() . '-',
     ];
 
     $form['weight'] = [
@@ -114,7 +114,7 @@ class GroupRoleForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $group_role = $this->entity;
-    $group_role->set('id', $group_role->getGroupTypeId() . '.' . $group_role->id());
+    $group_role->set('id', $group_role->getGroupTypeId() . '-' . $group_role->id());
     $group_role->set('label', trim($group_role->label()));
 
     $status = $group_role->save();
@@ -144,7 +144,7 @@ class GroupRoleForm extends EntityForm {
   public function exists($id) {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $group_role = $this->entity;
-    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '.' .$id);
+    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' .$id);
   }
 
 }

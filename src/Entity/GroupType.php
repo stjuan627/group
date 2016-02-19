@@ -136,21 +136,21 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
       // Create the three special roles for the group type.
       GroupRole::create([
-        'id' => "$id.anonymous",
+        'id' => "$id-anonymous",
         'label' => t('Anonymous'),
         'weight' => -102,
         'internal' => TRUE,
         'group_type' => $id,
       ])->save();
       GroupRole::create([
-        'id' => "$id.outsider",
+        'id' => "$id-outsider",
         'label' => t('Outsider'),
         'weight' => -101,
         'internal' => TRUE,
         'group_type' => $id,
       ])->save();
       GroupRole::create([
-        'id' => "$id.member",
+        'id' => "$id-member",
         'label' => t('Member'),
         'weight' => -100,
         'internal' => TRUE,

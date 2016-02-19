@@ -3,8 +3,6 @@
 /**
  * @file
  * Contains \Drupal\group\Cache\Context\GroupMembershipPermissionsCacheContext.
- *
- * @todo research this, enable the service and use it in GroupAccessResult.
  */
 
 namespace Drupal\group\Cache\Context;
@@ -80,8 +78,8 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
       }
       else {
         $role_name = $this->user->id() == 0
-          ? $this->group->bundle() . '.outsider'
-          : $this->group->bundle() . '.anonymous';
+          ? $this->group->bundle() . '-outsider'
+          : $this->group->bundle() . '-anonymous';
         $group_roles[$role_name] = GroupRole::load($role_name);
       }
 
