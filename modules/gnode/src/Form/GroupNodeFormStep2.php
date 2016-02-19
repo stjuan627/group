@@ -74,8 +74,6 @@ class GroupNodeFormStep2 extends GroupContentForm {
     return $actions;
   }
 
-  // @todo Validate if there is a node in temp store.
-
   /**
    * {@inheritdoc}
    */
