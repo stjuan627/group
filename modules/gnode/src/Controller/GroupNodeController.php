@@ -65,6 +65,7 @@ class GroupNodeController extends ControllerBase {
     if ($this->privateTempStore->get('step') !== 2) {
       $this->privateTempStore->set('step', 1);
 
+      // Only create a new node if we have nothing stored.
       if (!$entity = $this->privateTempStore->get('node')) {
         $entity = Node::create(['type' => $node_type->id()]);
       }
@@ -72,8 +73,7 @@ class GroupNodeController extends ControllerBase {
     // If we are on step two, we need to build a group content form.
     else {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      $plugin = $group->getGroupType()->getInstalledContentPlugins()->get('group_node:' . $node_type->id());
-
+      $plugin = $group->getGroupType()->getContentPlugin('group_node:' . $node_type->id());
       $entity = GroupContent::create([
         'type' => $plugin->getContentTypeConfigId(),
         'gid' => $group->id(),

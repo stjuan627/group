@@ -59,6 +59,21 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function hasContentPlugin($plugin_id);
 
   /**
+   * Gets an installed content enabler plugin for this group type.
+   *
+   * Warning: In places where the plugin may not be installed on the group type,
+   * you should always run ::hasContentPlugin() first or you may risk ending up
+   * with crashes or unreliable data.
+   *
+   * @param string $plugin_id
+   *   The ID of the content enabler plugin.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   *   The installed content enabler plugin for the group type.
+   */
+  public function getContentPlugin($plugin_id);
+
+  /**
    * Adds a content enabler plugin to this group type.
    *
    * @param string $plugin_id

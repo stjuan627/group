@@ -107,7 +107,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function getContentPlugin() {
-    return $this->getGroupType()->getInstalledContentPlugins()->get($this->content_plugin);
+    return $this->getGroupType()->getContentPlugin($this->content_plugin);
   }
 
   /**

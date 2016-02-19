@@ -116,7 +116,7 @@ class GroupTypeController extends ControllerBase {
       // an 'empty' version so that we may use methods on it which expect to
       // have a group type configured.
       if (in_array($plugin_id, $this->installedPluginIds)) {
-        $plugin = $this->groupType->getInstalledContentPlugins()->get($plugin_id);
+        $plugin = $this->groupType->getContentPlugin($plugin_id);
       }
       $page['content'][$plugin_id] = $this->buildRow($plugin);
     }

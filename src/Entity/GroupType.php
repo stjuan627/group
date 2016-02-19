@@ -193,6 +193,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
+  public function getContentPlugin($plugin_id) {
+    return $this->getInstalledContentPlugins()->get($plugin_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPluginCollections() {
     return array('content' => $this->getInstalledContentPlugins());
   }
@@ -208,7 +215,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     $this->save();
 
     // Save the group content type config entity.
-    $plugin = $this->getInstalledContentPlugins()->get($plugin_id);
+    $plugin = $this->getContentPlugin($plugin_id);
     $values = [
       'id' => $plugin->getContentTypeConfigId(),
       'label' => $plugin->getContentTypeLabel(),
@@ -239,7 +246,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function uninstallContentPlugin($plugin_id) {
     // Get the content type ID from the plugin instance before we delete it.
-    $plugin = $this->getInstalledContentPlugins()->get($plugin_id);
+    $plugin = $this->getContentPlugin($plugin_id);
     $content_type_id = $plugin->getContentTypeConfigId();
 
     // Remove the plugin from the group type.

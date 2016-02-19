@@ -58,7 +58,7 @@ class GroupContentAddAccessCheck implements AccessInterface {
 
     // We can only get the group content type ID if the plugin is installed.
     if ($group->getGroupType()->hasContentPlugin($group_content_enabler)) {
-      $group_content_type_id = $group->getGroupType()->getInstalledContentPlugins()->get($group_content_enabler)->getContentTypeConfigId();
+      $group_content_type_id = $group->getGroupType()->getContentPlugin($group_content_enabler)->getContentTypeConfigId();
       $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
       return $access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group], TRUE);
     }
