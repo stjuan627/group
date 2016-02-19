@@ -173,37 +173,33 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getPermissions() {
     $plugin_id = $this->getPluginId();
-    $plugin_params = ['%plugin_name' => $this->getLabel()];
+    $defaults = [
+      'title_args' => ['%plugin_name' => $this->getLabel()],
+    ];
 
     $permissions["view $plugin_id content"] = [
       'title' => '%plugin_name: View content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     $permissions["create $plugin_id content"] = [
       'title' => '%plugin_name: Create new content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     $permissions["edit own $plugin_id content"] = [
       'title' => '%plugin_name: Edit own content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     $permissions["edit any $plugin_id content"] = [
       'title' => '%plugin_name: Edit any content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     $permissions["delete own $plugin_id content"] = [
       'title' => '%plugin_name: Delete own content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     $permissions["delete any $plugin_id content"] = [
       'title' => '%plugin_name: Delete any content',
-      'title_args' => $plugin_params,
-    ];
+    ] + $defaults;
 
     return $permissions;
   }

@@ -5,9 +5,88 @@
  * Contains Drupal\gnode\gnode.module
  */
 
+use Drupal\group\Entity\GroupContentType;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Implements hook_entity_type_alter().
  */
 function gnode_entity_type_alter(array &$entity_types) {
   $entity_types['node']->setFormClass('gnode-form', 'Drupal\gnode\Form\GroupNodeFormStep1');
+}
+
+/**
+ * Implements hook_node_access().
+ *
+ * When trying to view, update or delete a node it suffices to have the right to
+ * do so in only one group the node belongs to. If you wish to prevent any such
+ * action on your own terms, implement hook_node_access() in your module.
+ */
+function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) {
+  // We do not care about create access as we have our own wizard for that. Any
+  // operation aside from 'view', 'update' and 'delete' is also unsupported.
+  if (!in_array($op, ['view', 'update', 'delete'])) {
+    return AccessResult::neutral();
+  }
+
+  $type = $node->bundle();
+
+  // Load all the group content for this node.
+  $group_content_types = GroupContentType::loadByContentPluginId("group_node:$type");
+  $group_contents = \Drupal::entityTypeManager()
+    ->getStorage('group_content')
+    ->loadByProperties(['type' => array_keys($group_content_types), 'entity_id' => $node->id()]);
+
+
+  // If the node does not belong to any group, we have nothing to say.
+  if (!count($group_contents)) {
+    return AccessResult::neutral();
+  }
+
+  /** @var \Drupal\group\Entity\GroupInterface[] $groups */
+  $groups = [];
+  foreach ($group_contents as $group_content) {
+    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+    $group = $group_content->getGroup();
+    $groups[$group->id()] = $group;
+  }
+
+  // From this point on you need group to allow you to perform the requested
+  // operation. If you are not granted access for a node belonging to a group,
+  // you should be denied access instead.
+  switch ($op) {
+    case 'view':
+      foreach ($groups as $group) {
+        if ($group->hasPermission("view $type nodes", $account)) {
+          return AccessResult::allowed();
+        }
+      }
+      break;
+
+    case 'update':
+      foreach ($groups as $group) {
+        if ($group->hasPermission("edit any $type nodes", $account)) {
+          return AccessResult::allowed();
+        }
+        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("edit own $type nodes", $account)) {
+          return AccessResult::allowed();
+        }
+      }
+      break;
+
+    case 'delete':
+      foreach ($groups as $group) {
+        if ($group->hasPermission("delete any $type nodes", $account)) {
+          return AccessResult::allowed();
+        }
+        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("delete own $type nodes", $account)) {
+          return AccessResult::allowed();
+        }
+      }
+      break;
+  }
+
+  return AccessResult::forbidden();
 }

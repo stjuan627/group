@@ -8,6 +8,7 @@
 namespace Drupal\gnode\Plugin\GroupContentEnabler;
 
 use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\node\Entity\NodeType;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -32,10 +33,63 @@ use Symfony\Component\Routing\Route;
 class GroupNode extends GroupContentEnablerBase {
 
   /**
+   * Retrieves the node type this plugin supports.
+   *
+   * @return \Drupal\node\NodeTypeInterface
+   *   The node type this plugin supports.
+   */
+  protected function getNodeType() {
+    return NodeType::load($this->getEntityBundle());
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getEntityForms() {
     return ['gnode-form' => 'Drupal\gnode\Form\GroupNodeFormStep2'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPermissions() {
+    $permissions = parent::getPermissions();
+
+    $type = $this->getEntityBundle();
+    $type_arg = ['%node_type' => $this->getNodeType()->label()];
+    $defaults = [
+      'title_args' => $type_arg,
+      'description' => 'Only applies to %node_type nodes that belong to this group.',
+      'description_args' => $type_arg,
+    ];
+
+    $permissions["view $type nodes"] = [
+      'title' => '%node_type: View content',
+    ] + $defaults;
+
+    $permissions["create $type nodes"] = [
+      'title' => '%node_type: Create new content',
+      'description' => 'Allows you to create %node_type nodes that immediately belong to this group.',
+      'description_args' => $type_arg,
+    ] + $defaults;
+
+    $permissions["edit own $type nodes"] = [
+      'title' => '%node_type: Edit own content',
+    ] + $defaults;
+
+    $permissions["edit any $type nodes"] = [
+      'title' => '%node_type: Edit any content',
+    ] + $defaults;
+
+    $permissions["delete own $type nodes"] = [
+      'title' => '%node_type: Delete own content',
+    ] + $defaults;
+
+    $permissions["delete any $type nodes"] = [
+      'title' => '%node_type: Delete any content',
+    ] + $defaults;
+
+    return $permissions;
   }
 
   /**
@@ -53,7 +107,7 @@ class GroupNode extends GroupContentEnablerBase {
           '_controller' => '\Drupal\gnode\Controller\GroupNodeController::add',
           '_title_callback' => '\Drupal\gnode\Controller\GroupNodeController::addTitle',
         ])
-        //->setRequirement('_group_permission', 'TODO')
+        ->setRequirement('_group_permission', 'create ' . $this->getEntityBundle() . ' nodes')
         ->setRequirement('_group_installed_content', $this->getPluginId())
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
