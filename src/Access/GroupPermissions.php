@@ -27,7 +27,7 @@ class GroupPermissions {
    *   @see \Drupal\user\PermissionHandlerInterface::getPermissions()
    */
   public function groupTypePermissions() {
-    $perms = array();
+    $perms = [];
     
     // Generate group permissions for all group types.
     foreach (GroupType::loadMultiple() as $type) {
@@ -48,13 +48,13 @@ class GroupPermissions {
    */
   protected function buildPermissions(GroupType $type) {
     $type_id = $type->id();
-    $type_params = array('%type_name' => $type->label());
+    $type_params = ['%type_name' => $type->label()];
 
-    return array(
-      "create $type_id group" => array(
+    return [
+      "create $type_id group" => [
         'title' => $this->t('%type_name: Create new group', $type_params),
-      ),
-    );
+      ],
+    ];
   }
 
 }

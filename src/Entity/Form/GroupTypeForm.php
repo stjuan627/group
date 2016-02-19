@@ -29,41 +29,41 @@ class GroupTypeForm extends BundleEntityFormBase {
       $form['#title'] = $this->t('Add group type');
     }
     else {
-      $form['#title'] = $this->t('Edit %label group type', array('%label' => $type->label()));
+      $form['#title'] = $this->t('Edit %label group type', ['%label' => $type->label()]);
     }
 
-    $form['label'] = array(
+    $form['label'] = [
       '#title' => t('Name'),
       '#type' => 'textfield',
       '#default_value' => $type->label(),
-      '#description' => t('The human-readable name of this group type. This text will be displayed as part of the list on the %group-add page. This name must be unique.', array(
+      '#description' => t('The human-readable name of this group type. This text will be displayed as part of the list on the %group-add page. This name must be unique.', [
         '%group-add' => t('Add group'),
-      )),
+      ]),
       '#required' => TRUE,
       '#size' => 30,
-    );
+    ];
 
-    $form['id'] = array(
+    $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $type->id(),
       '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
-      '#machine_name' => array(
+      '#machine_name' => [
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
-        'source' => array('label'),
-      ),
-      '#description' => t('A unique machine-readable name for this group type. It must only contain lowercase letters, numbers, and underscores. This name will be used for constructing the URL of the %group-add page, in which underscores will be converted into hyphens.', array(
+        'source' => ['label'],
+      ],
+      '#description' => t('A unique machine-readable name for this group type. It must only contain lowercase letters, numbers, and underscores. This name will be used for constructing the URL of the %group-add page, in which underscores will be converted into hyphens.', [
         '%group-add' => t('Add group'),
-      )),
-    );
+      ]),
+    ];
 
-    $form['description'] = array(
+    $form['description'] = [
       '#title' => t('Description'),
       '#type' => 'textarea',
       '#default_value' => $type->getDescription(),
-      '#description' => t('Describe this group type. The text will be displayed on the %group-add page.', array(
+      '#description' => t('Describe this group type. The text will be displayed on the %group-add page.', [
         '%group-add' => t('Add group'),
-      )),
-    );
+      ]),
+    ];
 
     return $this->protectBundleIdElement($form);
   }
@@ -87,7 +87,7 @@ class GroupTypeForm extends BundleEntityFormBase {
     $id = trim($form_state->getValue('id'));
     // '0' is invalid, since elsewhere we might check it using empty().
     if ($id == '0') {
-      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
+      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", ['%invalid' => $id]));
     }
   }
 
@@ -100,14 +100,14 @@ class GroupTypeForm extends BundleEntityFormBase {
     $type->set('label', trim($type->label()));
 
     $status = $type->save();
-    $t_args = array('%label' => $type->label());
+    $t_args = ['%label' => $type->label()];
 
     if ($status == SAVED_UPDATED) {
       drupal_set_message(t('The group type %label has been updated.', $t_args));
     }
     elseif ($status == SAVED_NEW) {
       drupal_set_message(t('The group type %label has been added.', $t_args));
-      $context = array_merge($t_args, array('link' => $type->toLink($this->t('View'), 'collection')->toString()));
+      $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group type %label.', $context);
     }
 

@@ -41,7 +41,7 @@ class GroupRoleController extends ControllerBase {
    *   The page title.
    */
   public function addPageTitle(GroupTypeInterface $group_type) {
-    return $this->t('Create group role for @name', array('@name' => $group_type->label()));
+    return $this->t('Create group role for @name', ['@name' => $group_type->label()]);
   }
 
 }

@@ -23,10 +23,10 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function buildHeader() {
     $header['label'] = t('Name');
-    $header['description'] = array(
+    $header['description'] = [
       'data' => t('Description'),
-      'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
-    );
+      'class' => [RESPONSIVE_PRIORITY_MEDIUM],
+    ];
     return $header + parent::buildHeader();
   }
 
@@ -35,10 +35,10 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /** @var \Drupal\group\Entity\GroupTypeInterface $entity */
-    $row['label'] = array(
+    $row['label'] = [
       'data' => $entity->label(),
-      'class' => array('menu-label'),
-    );
+      'class' => ['menu-label'],
+    ];
     $row['description']['data'] = ['#markup' => $entity->getDescription()];
     return $row + parent::buildRow($entity);
   }
@@ -55,27 +55,27 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
     }
 
     if ($entity->hasLinkTemplate('permissions-form')) {
-      $operations['permissions'] = array(
+      $operations['permissions'] = [
         'title' => t('Edit permissions'),
         'weight' => 35,
         'url' => $entity->toUrl('permissions-form'),
-      );
+      ];
     }
 
     // Can't use a link template because the group roles route doesn't start
     // with entity.group_type, see: https://www.drupal.org/node/2645136.
-    $operations['group_roles'] = array(
+    $operations['group_roles'] = [
       'title' => t('Edit group roles'),
       'weight' => 40,
       'url' => Url::fromRoute('entity.group_role.collection', ['group_type' => $entity->id()]),
-    );
+    ];
 
     if ($entity->hasLinkTemplate('content-plugins')) {
-      $operations['content'] = array(
+      $operations['content'] = [
         'title' => t('Set available content'),
         'weight' => 45,
         'url' => $entity->toUrl('content-plugins'),
-      );
+      ];
     }
 
     return $operations;

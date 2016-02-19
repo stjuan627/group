@@ -477,21 +477,21 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getConfiguration() {
-    return array(
+    return [
       'id' => $this->getPluginId(),
       'group_type' => $this->getGroupTypeId(),
       'data' => $this->configuration,
-    );
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    $configuration += array(
-      'data' => array(),
+    $configuration += [
+      'data' => [],
       'group_type' => NULL,
-    );
+    ];
     $this->configuration = $configuration['data'] + $this->defaultConfiguration();
     $this->groupTypeId = $configuration['group_type'];
     return $this;
@@ -501,14 +501,14 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return array();
+    return [];
   }
 
   /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    return array();
+    return [];
   }
 
 }

@@ -250,10 +250,10 @@ class GroupTypeController extends ControllerBase {
    *   A render array of operation links.
    */
   public function buildOperations($plugin) {
-    $build = array(
+    $build = [
       '#type' => 'operations',
       '#links' => $this->getOperations($plugin),
-    );
+    ];
 
     return $build;
   }

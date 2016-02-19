@@ -163,7 +163,7 @@ abstract class GroupPermissionsForm extends FormBase {
     // Render the roles and permissions table.
     $form['permissions'] = [
       '#type' => 'table',
-      '#header' => array($this->t('Permission')),
+      '#header' => [$this->t('Permission')],
       '#id' => 'permissions',
       '#attributes' => ['class' => ['permissions', 'js-permissions']],
       '#sticky' => TRUE,
@@ -173,7 +173,7 @@ abstract class GroupPermissionsForm extends FormBase {
     foreach ($role_info as $info) {
       $form['permissions']['#header'][] = [
         'data' => $info['label'],
-        'class' => array('checkbox'),
+        'class' => ['checkbox'],
       ];
     }
 
@@ -193,13 +193,13 @@ abstract class GroupPermissionsForm extends FormBase {
       // Then list all of the permissions for that provider.
       foreach ($permissions as $perm => $perm_item) {
         // Create a row for the permission, starting with the description cell.
-        $form['permissions'][$perm]['description'] = array(
+        $form['permissions'][$perm]['description'] = [
           '#type' => 'inline_template',
           '#template' => '<div class="permission"><span class="title">{{ title }}</span>{% if description or warning %}<div class="description">{% if warning %}<em class="permission-warning">{{ warning }}</em><br />{% endif %}{{ description }}</div>{% endif %}</div>',
-          '#context' => array(
+          '#context' => [
             'title' => $perm_item['title'],
-          ),
-        );
+          ],
+        ];
 
         // Show the permission description and warning if toggled on.
         if (!$hide_descriptions) {
@@ -221,29 +221,29 @@ abstract class GroupPermissionsForm extends FormBase {
 
           // Show a red '-' if the permission is unavailable.
           if ($na) {
-            $form['permissions'][$perm][$role_name] = array(
+            $form['permissions'][$perm][$role_name] = [
               '#title' => $info['label'] . ': ' . $perm_item['title'],
               '#title_display' => 'invisible',
-              '#wrapper_attributes' => array(
-                'class' => array('checkbox'),
+              '#wrapper_attributes' => [
+                'class' => ['checkbox'],
                 'style' => 'color: #ff0000;',
-              ),
+              ],
               '#markup' => '-',
-            );
+            ];
           }
           // Show a checkbox if the permissions is available.
           else {
-            $form['permissions'][$perm][$role_name] = array(
+            $form['permissions'][$perm][$role_name] = [
               '#title' => $info['label'] . ': ' . $perm_item['title'],
               '#title_display' => 'invisible',
-              '#wrapper_attributes' => array(
-                'class' => array('checkbox'),
-              ),
+              '#wrapper_attributes' => [
+                'class' => ['checkbox'],
+              ],
               '#type' => 'checkbox',
               '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
-              '#attributes' => array('class' => array('rid-' . $role_name, 'js-rid-' . $role_name)),
-              '#parents' => array($role_name, $perm),
-            );
+              '#attributes' => ['class' => ['rid-' . $role_name, 'js-rid-' . $role_name]],
+              '#parents' => [$role_name, $perm],
+            ];
           }
         }
       }

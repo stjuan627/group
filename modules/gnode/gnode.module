@@ -105,7 +105,7 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
  */
 function gnode_node_grants(AccountInterface $account, $op) {
   $database = Database::getConnection('default');
-  $grants = array();
+  $grants = [];
 
   // Gather the machine names of all node types.
   $node_types = array_keys(NodeType::loadMultiple());
@@ -161,7 +161,7 @@ function gnode_node_grants(AccountInterface $account, $op) {
  * @see gnode_node_grants()
  */
 function gnode_node_access_records(NodeInterface $node) {
-  $records = array();
+  $records = [];
   $type = $node->bundle();
 
   // Load all the group content for this node.
@@ -177,25 +177,25 @@ function gnode_node_access_records(NodeInterface $node) {
 
     // Non-author records are only added for published nodes.
     if ($node->isPublished()) {
-      $records[] = array(
+      $records[] = [
         'gid' => $gid,
         'grant_view' => 1,
         'grant_update' => 1,
         'grant_delete' => 1,
         'priority' => 0,
         'realm' => "gnode:$type",
-      );
+      ];
     }
 
     // Add a grant for the node author.
-    $records[] = array(
+    $records[] = [
       'gid' => $node->getOwnerId(),
       'grant_view' => 1,
       'grant_update' => 1,
       'grant_delete' => 1,
       'priority' => 0,
       'realm' => "gnode_author:$gid:$type",
-    );
+    ];
   }
 
   return $records;

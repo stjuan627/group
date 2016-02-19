@@ -57,7 +57,7 @@ class GroupRouteContext implements ContextProviderInterface {
     // Create a new group to use as context if on the group add form.
     elseif ($this->routeMatch->getRouteName() == 'group.add') {
       $group_type = $this->routeMatch->getParameter('group_type');
-      $value = Group::create(array('type' => $group_type->id()));
+      $value = Group::create(['type' => $group_type->id()]);
     }
 
     // Cache this context on the route.

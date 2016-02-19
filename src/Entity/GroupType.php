@@ -201,7 +201,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function getPluginCollections() {
-    return array('content' => $this->getInstalledContentPlugins());
+    return ['content' => $this->getInstalledContentPlugins()];
   }
 
   /**

@@ -188,7 +188,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   protected function urlRoute($rel) {
     $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getContentPlugin()->getPluginId());
-    return $route_prefix . '.' . str_replace(array('-', 'drupal:'), array('_', ''), $rel);
+    return $route_prefix . '.' . str_replace(['-', 'drupal:'], ['_', ''], $rel);
   }
 
   /**
@@ -247,15 +247,15 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setLabel(t('Content'))
       ->setDescription(t('The entity to add to the group.'))
       ->addConstraint('GroupContentCardinality')
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,
-        'settings' => array(
+        'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
           'placeholder' => '',
-        ),
-      ))
+        ],
+      ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE)
       ->setRequired(TRUE);
@@ -264,24 +264,24 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setLabel(t('Language'))
       ->setDescription(t('The group content language code.'))
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'type' => 'hidden',
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'language_select',
         'weight' => 2,
-      ));
+      ]);
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setReadOnly(TRUE)
       ->setTranslatable(TRUE)
       ->setSetting('max_length', 255)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'string',
         'weight' => -5,
-      ));
+      ]);
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed on'))

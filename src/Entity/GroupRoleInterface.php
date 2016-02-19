@@ -159,13 +159,13 @@ interface GroupRoleInterface extends ConfigEntityInterface {
    *   Any value that evaluates to FALSE will cause the permission to be
    *   revoked.
    *   @code
-   *     array(
+   *     [
    *       'administer group' => 0,         // Revoke 'administer group'
    *       'edit group' => FALSE,           // Revoke 'edit group'
    *       'administer members' => 1,       // Grant 'administer members'
    *       'leave group' => TRUE,           // Grant 'leave group'
    *       'join group' => 'join group',    // Grant 'join group'
-   *     )
+   *     ]
    *   @endcode
    *   Existing permissions are not changed, unless specified in $permissions.
    *

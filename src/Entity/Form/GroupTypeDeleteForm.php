@@ -56,12 +56,12 @@ class GroupTypeDeleteForm extends EntityDeleteForm {
       $common = ' You can not remove this group type until you have removed all of the %type groups.';
       $single = '%type is used by 1 group on your site.' . $common;
       $multiple = '%type is used by @count groups on your site.' . $common;
-      $replace = array('%type' => $this->entity->label());
+      $replace = ['%type' => $this->entity->label()];
 
       $form['#title'] = $this->getQuestion();
-      $form['description'] = array(
+      $form['description'] = [
         '#markup' => '<p>' . $this->formatPlural($num_groups, $single, $multiple, $replace) . '</p>'
-      );
+      ];
 
       return $form;
     }

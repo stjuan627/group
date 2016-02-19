@@ -41,11 +41,11 @@ class GroupNodeFormStep1 extends NodeForm {
    * {@inheritdoc}
    */
   protected function actions(array $form, FormStateInterface $form_state) {
-    $actions['submit'] = array(
+    $actions['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Continue to final step'),
-      '#submit' => array('::submitForm', '::saveTemporary'),
-    );
+      '#submit' => ['::submitForm', '::saveTemporary'],
+    ];
 
     $actions['cancel'] = [
       '#type' => 'submit',

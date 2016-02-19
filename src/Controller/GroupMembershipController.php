@@ -80,7 +80,7 @@ class GroupMembershipController extends ControllerBase {
    *   The page title.
    */
   public function joinTitle(GroupInterface $group) {
-    return $this->t('Join group %label', array('%label' => $group->label()));
+    return $this->t('Join group %label', ['%label' => $group->label()]);
   }
 
   /**

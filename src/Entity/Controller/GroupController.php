@@ -29,7 +29,7 @@ class GroupController extends ControllerBase {
    *   type.
    */
   public function addPage() {
-    $group_types = array();
+    $group_types = [];
 
     // Only use group types the user has access to.
     foreach (GroupType::loadMultiple() as $group_type) {
@@ -41,13 +41,13 @@ class GroupController extends ControllerBase {
     // Bypass the group/add listing if only one content type is available.
     if (count($group_types) == 1) {
       $group_type = array_shift($group_types);
-      return $this->redirect('entity.group.add_form', array('group_type' => $group_type->id()));
+      return $this->redirect('entity.group.add_form', ['group_type' => $group_type->id()]);
     }
 
-    return array(
+    return [
       '#theme' => 'group_add_list',
       '#group_types' => $group_types,
-    );
+    ];
   }
 
   /**
@@ -75,7 +75,7 @@ class GroupController extends ControllerBase {
    *   The page title.
    */
   public function addPageTitle(GroupTypeInterface $group_type) {
-    return $this->t('Create @name', array('@name' => $group_type->label()));
+    return $this->t('Create @name', ['@name' => $group_type->label()]);
   }
 
 }

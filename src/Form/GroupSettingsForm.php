@@ -35,12 +35,12 @@ class GroupSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
 
     $config = $this->config('group.settings');
-    $form['use_admin_theme'] = array(
+    $form['use_admin_theme'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use admin theme'),
       '#description' => $this->t("Enables the administration theme for editing groups, members, etc."),
       '#default_value' => $config->get('use_admin_theme'),
-    );
+    ];
 
     return $form;
   }

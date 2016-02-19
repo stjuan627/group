@@ -107,11 +107,11 @@ class GroupRoleListBuilder extends DraggableListBuilder {
     $operations = parent::getDefaultOperations($entity);
 
     if ($entity->hasLinkTemplate('permissions-form')) {
-      $operations['permissions'] = array(
+      $operations['permissions'] = [
         'title' => t('Edit permissions'),
         'weight' => 5,
         'url' => $entity->toUrl('permissions-form'),
-      );
+      ];
     }
 
     return $operations;

@@ -213,28 +213,26 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setLabel(t('Language'))
       ->setDescription(t('The group language code.'))
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
-        'type' => 'hidden',
-      ))
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('view', ['type' => 'hidden'])
+      ->setDisplayOptions('form', [
         'type' => 'language_select',
         'weight' => 2,
-      ));
+      ]);
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setSetting('max_length', 255)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'string',
         'weight' => -5,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => -5,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE);
 
 
@@ -245,15 +243,15 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setSetting('handler', 'default')
       ->setDefaultValueCallback('Drupal\group\Entity\Group::getCurrentUserId')
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,
-        'settings' => array(
+        'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
           'placeholder' => '',
-        ),
-      ))
+        ],
+      ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
@@ -279,7 +277,7 @@ class Group extends ContentEntityBase implements GroupInterface {
    *   An array of default values.
    */
   public static function getCurrentUserId() {
-    return array(\Drupal::currentUser()->id());
+    return [\Drupal::currentUser()->id()];
   }
 
   /**

@@ -201,7 +201,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function grantPermission($permission) {
-    return $this->grantPermissions(array($permission));
+    return $this->grantPermissions([$permission]);
   }
 
   /**
@@ -216,7 +216,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function revokePermission($permission) {
-    return $this->revokePermissions(array($permission));
+    return $this->revokePermissions([$permission]);
   }
 
   /**

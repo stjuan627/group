@@ -145,8 +145,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    * @see \Drupal\group\Access\PermissionHandlerInterface::getPermissions()
    */
   protected function buildPermissionsYaml() {
-    $all_permissions = array();
-    $all_callback_permissions = array();
+    $all_permissions = [];
+    $all_callback_permissions = [];
 
     foreach ($this->getYamlDiscovery()->findAll() as $provider => $permissions) {
       // The top-level 'permissions_callback' is a list of methods in controller
@@ -160,9 +160,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
             // of any conflict, the YAML ones will take precedence.
             foreach ($callback_permissions as $name => $callback_permission) {
               if (!is_array($callback_permission)) {
-                $callback_permission = array(
-                  'title' => $callback_permission,
-                );
+                $callback_permission = ['title' => $callback_permission];
               }
 
               // Set the provider if none was specified.
@@ -178,9 +176,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
       foreach ($permissions as $permission_name => $permission) {
         if (!is_array($permission)) {
-          $permission = array(
-            'title' => $permission,
-          );
+          $permission = ['title' => $permission];
         }
 
         // Set the provider if none was spec
@@ -233,7 +229,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *   Returns the human readable names of all modules keyed by machine name.
    */
   protected function getModuleNames() {
-    $modules = array();
+    $modules = [];
     foreach (array_keys($this->moduleHandler->getModuleList()) as $module) {
       $modules[$module] = $this->moduleHandler->getName($module);
     }

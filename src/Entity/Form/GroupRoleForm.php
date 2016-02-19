@@ -37,17 +37,17 @@ class GroupRoleForm extends EntityForm {
       $form['#title'] = $this->t('Add group role');
     }
     else {
-      $form['#title'] = $this->t('Edit %label group role', array('%label' => $group_role->label()));
+      $form['#title'] = $this->t('Edit %label group role', ['%label' => $group_role->label()]);
     }
 
-    $form['label'] = array(
+    $form['label'] = [
       '#title' => t('Name'),
       '#type' => 'textfield',
       '#default_value' => $group_role->label(),
       '#description' => t('The human-readable name of this group role. This text will be displayed on the group permissions page.'),
       '#required' => TRUE,
       '#size' => 30,
-    );
+    ];
 
     // Since group role IDs are prefixed by the group type's ID followed by a
     // period, we need to save some space for that.
@@ -59,23 +59,23 @@ class GroupRoleForm extends EntityForm {
       list(, $group_role_id) = explode('.', $group_role->id(), 2);
     }
 
-    $form['id'] = array(
+    $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $group_role_id,
       '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH - $subtract,
-      '#machine_name' => array(
+      '#machine_name' => [
         'exists' => [$this, 'exists'],
-        'source' => array('label'),
-      ),
+        'source' => ['label'],
+      ],
       '#description' => t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
       '#disabled' => !$group_role->isNew(),
       '#field_prefix' => $group_role->getGroupTypeId() . '.',
-    );
+    ];
 
-    $form['weight'] = array(
+    $form['weight'] = [
       '#type' => 'value',
       '#value' => $group_role->getWeight(),
-    );
+    ];
     
     return $form;
   }
@@ -104,7 +104,7 @@ class GroupRoleForm extends EntityForm {
     $id = trim($form_state->getValue('id'));
     // '0' is invalid, since elsewhere we might check it using empty().
     if ($id == '0') {
-      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", array('%invalid' => $id)));
+      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", ['%invalid' => $id]));
     }
   }
 
@@ -118,7 +118,7 @@ class GroupRoleForm extends EntityForm {
     $group_role->set('label', trim($group_role->label()));
 
     $status = $group_role->save();
-    $t_args = array('%label' => $group_role->label());
+    $t_args = ['%label' => $group_role->label()];
 
     if ($status == SAVED_UPDATED) {
       drupal_set_message(t('The group role %label has been updated.', $t_args));
@@ -126,7 +126,7 @@ class GroupRoleForm extends EntityForm {
     elseif ($status == SAVED_NEW) {
       drupal_set_message(t('The group role %label has been added.', $t_args));
 
-      $context = array_merge($t_args, array('link' => $group_role->toLink($this->t('View'), 'collection')->toString()));
+      $context = array_merge($t_args, ['link' => $group_role->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group role %label.', $context);
     }
 

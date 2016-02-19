@@ -17,16 +17,16 @@ use Drupal\group\Entity\Group;
  */
 class GroupTest extends GroupTestBase {
 
-  public static $modules = array('group', 'field_ui');
+  public static $modules = ['group', 'field_ui'];
 
   /**
    * Basic tests for Group.
    */
   public function testGroup() {
-    $web_user = $this->drupalCreateUser(array(
+    $web_user = $this->drupalCreateUser([
       'administer group',
       'bypass group access',
-    ));
+    ]);
 
     // Anonymous should not see the link to the listing.
     $this->assertNoText(t('Group: Contacts Listing'));
@@ -49,9 +49,7 @@ class GroupTest extends GroupTestBase {
     $this->assertFieldByName('user_id[0][target_id]', $user_ref, 'User ID reference field points to web_user');
 
     // Post content, save an instance. Go back to list after saving.
-    $edit = array(
-      'title[0][value]' => 'Test Group',
-    );
+    $edit = ['title[0][value]' => 'Test Group'];
     $this->drupalPostForm(NULL, $edit, t('Save'));
 
     // Entity listed.
@@ -71,7 +69,7 @@ class GroupTest extends GroupTestBase {
 
     // Confirm deletion.
     $this->assertLink(t('Cancel'));
-    $this->drupalPostForm(NULL, array(), 'Delete');
+    $this->drupalPostForm(NULL, [], 'Delete');
 
     // Back to list, must be empty.
     $this->assertNoText('Test Group');
@@ -92,11 +90,7 @@ class GroupTest extends GroupTestBase {
    */
   public function testPaths() {
     // Generate a contact so that we can test the paths against it.
-    $group = Group::create(
-      array(
-        'title' => 'Test Group',
-      )
-    );
+    $group = Group::create(['title' => 'Test Group']);
     $group->save();
 
     // Gather the test data.
@@ -105,7 +99,7 @@ class GroupTest extends GroupTestBase {
     // Run the tests.
     foreach ($test_paths as $test_path) {
       if (!empty($test_path[2])) {
-        $user = $this->drupalCreateUser(array($test_path[2]));
+        $user = $this->drupalCreateUser([$test_path[2]]);
         $this->drupalLogin($user);
       }
       else {
@@ -130,18 +124,10 @@ class GroupTest extends GroupTestBase {
    *   - Permission for the user.
    */
   protected function providerTestPaths($gid) {
-    return array(
-      array(
-        200,
-        '/group/list',
-        'administer group',
-      ),
-      array(
-        403,
-        '/group/list',
-        '',
-      ),
-    );
+    return [
+      [200, '/group/list', 'administer group'],
+      [403, '/group/list', ''],
+    ];
   }
 
 }

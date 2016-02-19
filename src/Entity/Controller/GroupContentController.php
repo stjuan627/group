@@ -55,7 +55,7 @@ class GroupContentController extends ControllerBase {
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
-    return $this->t('Create @name', array('@name' => $group_content_type->label()));
+    return $this->t('Create @name', ['@name' => $group_content_type->label()]);
   }
 
 }
