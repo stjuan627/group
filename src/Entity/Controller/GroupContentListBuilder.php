@@ -27,7 +27,7 @@ class GroupContentListBuilder extends EntityListBuilder {
    *
    * @var string[]
    */
-  protected $bundles;
+  protected $bundles = [];
 
   /**
    * {@inheritdoc}
@@ -37,11 +37,16 @@ class GroupContentListBuilder extends EntityListBuilder {
     $parameters = $route_match->getParameters();
 
     // Check if the route had a plugin_id parameter.
-    if ($parameters->has('plugin_id') && $plugin_id = $parameters->get('plugin_id')) {
+    if ($parameters->has('plugin_id') && $plugin_ids = (array) $parameters->get('plugin_id')) {
       // We are then able to retrieve the group content type from the group.
       if ($parameters->has('group') && $group = $parameters->get('group')) {
         if ($group instanceof GroupInterface) {
-          $this->bundles = [$group->getGroupType()->getContentPlugin($plugin_id)->getContentTypeConfigId()];
+          $group_type = $group->getGroupType();
+          foreach ($plugin_ids as $plugin_id) {
+            if ($group_type->hasContentPlugin($plugin_id)) {
+              $this->bundles[] = $group_type->getContentPlugin($plugin_id)->getContentTypeConfigId();
+            }
+          }
         }
       }
     }
