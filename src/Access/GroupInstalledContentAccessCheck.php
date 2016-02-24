@@ -34,10 +34,10 @@ class GroupInstalledContentAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
-    $plugin_id = $route->getRequirement('_group_installed_content');
+    $access_string = $route->getRequirement('_group_installed_content');
 
     // Don't interfere if no plugin ID was specified.
-    if ($plugin_id === NULL) {
+    if ($access_string === NULL) {
       return AccessResult::neutral();
     }
 
@@ -53,8 +53,31 @@ class GroupInstalledContentAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Deny access if the plugin is not installed on the group's type.
-    return AccessResult::allowedIf($group->getGroupType()->hasContentPlugin($plugin_id));
+    // We default to not granting access.
+    $access = FALSE;
+
+    // Allow to conjunct the plugin IDs with OR ('+') or AND (',').
+    $plugin_ids = explode(',', $access_string);
+    if (count($plugin_ids) > 1) {
+      foreach ($plugin_ids as $plugin_id) {
+        $access = TRUE;
+        if (!$group->getGroupType()->hasContentPlugin($plugin_id)) {
+          $access = FALSE;
+          break;
+        }
+      }
+    }
+    else {
+      $plugin_ids = explode('+', $access_string);
+      foreach ($plugin_ids as $plugin_id) {
+        if ($group->getGroupType()->hasContentPlugin($plugin_id)) {
+          $access = TRUE;
+          break;
+        }
+      }
+    }
+
+    return AccessResult::allowedIf($access);
   }
 
 }
