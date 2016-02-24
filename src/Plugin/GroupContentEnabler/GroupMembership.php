@@ -113,8 +113,8 @@ class GroupMembership extends GroupContentEnablerBase {
    */
   public function getPaths() {
     return parent::getPaths() + [
-      "join-form" => "/group/{group}/join",
-      "leave-form" => "/group/{group}/leave",
+      'join-form' => '/group/{group}/join',
+      'leave-form' => '/group/{group}/leave',
     ];
   }
 

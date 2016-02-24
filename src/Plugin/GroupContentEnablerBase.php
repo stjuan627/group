@@ -202,11 +202,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   public function getPaths() {
     $path_key = $this->pluginDefinition['path_key'];
     return empty($path_key) ? [] : [
-      "collection" => "/group/{group}/$path_key",
-      "add-form" => "/group/{group}/$path_key/add",
-      "canonical" => "/group/{group}/$path_key/{group_content}",
-      "edit-form" => "/group/{group}/$path_key/{group_content}/edit",
-      "delete-form" => "/group/{group}/$path_key/{group_content}/delete",
+      'collection' => "/group/{group}/$path_key",
+      'add-form' => "/group/{group}/$path_key/add",
+      'canonical' => "/group/{group}/$path_key/{group_content}",
+      'edit-form' => "/group/{group}/$path_key/{group_content}/edit",
+      'delete-form' => "/group/{group}/$path_key/{group_content}/delete",
     ];
   }
 

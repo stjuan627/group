@@ -91,7 +91,7 @@ class GroupNode extends GroupContentEnablerBase {
    */
   public function getPaths() {
     return parent::getPaths() + [
-      "node-add-form" => "/group/{group}/node/add/{node_type}",
+      'node-add-form' => '/group/{group}/node/add/{node_type}',
     ];
   }
 
