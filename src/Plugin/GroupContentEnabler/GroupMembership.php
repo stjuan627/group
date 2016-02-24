@@ -25,15 +25,7 @@ use Symfony\Component\Routing\Route;
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
  *   entity_cardinality = 1,
- *   paths = {
- *     "collection" = "/group/{group}/members",
- *     "add-form" = "/group/{group}/members/add",
- *     "canonical" = "/group/{group}/members/{group_content}",
- *     "edit-form" = "/group/{group}/members/{group_content}/edit",
- *     "delete-form" = "/group/{group}/members/{group_content}/delete",
- *     "join-form" = "/group/{group}/join",
- *     "leave-form" = "/group/{group}/leave"
- *   },
+ *   path_key = "members",
  *   enforced = TRUE
  * )
  */
@@ -119,6 +111,16 @@ class GroupMembership extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
+  public function getPaths() {
+    return parent::getPaths() + [
+      "join-form" => "/group/{group}/join",
+      "leave-form" => "/group/{group}/leave",
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function getCollectionRoute() {
     $route = parent::getCollectionRoute();
 
@@ -190,14 +192,13 @@ class GroupMembership extends GroupContentEnablerBase {
    */
   public function getRoutes() {
     $routes = parent::getRoutes();
-    $route_prefix = 'entity.group_content.group_membership';
 
-    if ($join_route = $this->getJoinFormRoute()) {
-      $routes["$route_prefix.join_form"] = $join_route;
+    if ($route = $this->getJoinFormRoute()) {
+      $routes[$this->getRouteName('join-form')] = $route;
     }
 
-    if ($leave_route = $this->getLeaveFormRoute()) {
-      $routes["$route_prefix.leave_form"] = $leave_route;
+    if ($route = $this->getLeaveFormRoute()) {
+      $routes[$this->getRouteName('leave-form')] = $route;
     }
 
     return $routes;

@@ -67,22 +67,17 @@ class GroupContentEnabler extends Plugin {
   public $entity_bundle = FALSE;
 
   /**
-   * (optional) An associative array of paths to generate routes for.
+   * (optional) The key to use in automatically generated paths.
    *
-   * Each entry is a path containing at least a {group} parameter and optionally
-   * a {group_content} parameter if it needs one. Keys that are supported by the
-   * base plugin: collection, canonical, add-form, edit-form and delete-form.
-   *
-   * Feel free to add your own keys to them and implement a route for it in
-   * your GroupContentEnablerInterface::getRoutes() implementation.
-   *
-   * Refer to GroupMembership for an example.
+   * This will be used by the base content enabler plugin to generate common
+   * paths with. If left blank, no paths will be generated for you and you have
+   * to specify them yourself in GroupContentEnablerInterface::getPaths().
    *
    * @var string
    *
-   * @see \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
+   * @see \Drupal\group\Plugin\GroupContentEnablerBase::getPaths()
    */
-  public $paths = [];
+  public $pathKey;
 
   /**
    * (optional) The amount of groups the same content may be added to.

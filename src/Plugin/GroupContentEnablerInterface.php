@@ -77,16 +77,6 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getEntityCardinality();
 
   /**
-   * Returns a path defined by the plugin.
-   *
-   * @var string $name
-   *   The name (key) of the path as defined in the plugin annotation.
-   *
-   * @return string
-   */
-  public function getPath($name);
-
-  /**
    * Returns the ID of the group type the plugin was instantiated for.
    *
    * @return string|null
@@ -216,6 +206,37 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    * @see GroupPermissionHandlerInterface::getPermissions()
    */
   public function getPermissions();
+
+  /**
+   * Returns all paths defined by the plugin.
+   *
+   * @return string[]
+   *   An associative array of paths, keyed by their link template name (e.g.:
+   *   canonical, add-form, ...).
+   */
+  public function getPaths();
+
+  /**
+   * Returns a path defined by the plugin.
+   *
+   * @var string $name
+   *   The link template name to retrieve the path for.
+   *
+   * @return string|false
+   *   The path for the provided link template or FALSE if none was found.
+   */
+  public function getPath($name);
+
+  /**
+   * Returns a route name defined by the plugin.
+   *
+   * @var string $name
+   *   The link template name to retrieve the route name for.
+   *
+   * @return string
+   *   The route name for the provided link template.
+   */
+  public function getRouteName($name);
 
   /**
    * Provides routes for GroupContent entities.

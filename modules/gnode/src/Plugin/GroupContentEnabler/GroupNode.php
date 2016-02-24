@@ -20,13 +20,7 @@ use Symfony\Component\Routing\Route;
  *   description = @Translation("Adds nodes to groups both publicly and privately."),
  *   entity_type_id = "node",
  *   entity_cardinality = 1,
- *   paths = {
- *     "collection" = "/group/{group}/node",
- *     "canonical" = "/group/{group}/node/{group_content}",
- *     "edit-form" = "/group/{group}/node/{group_content}/edit",
- *     "delete-form" = "/group/{group}/node/{group_content}/delete",
- *     "node-add-form" = "/group/{group}/node/add/{node_type}"
- *   },
+ *   path_key = "node",
  *   deriver = "Drupal\gnode\Plugin\GroupNodeDerivatives"
  * )
  */
@@ -93,6 +87,15 @@ class GroupNode extends GroupContentEnablerBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getPaths() {
+    return parent::getPaths() + [
+      "node-add-form" => "/group/{group}/node/add/{node_type}",
+    ];
+  }
+
+  /**
    * Gets the join form route.
    *
    * @return \Symfony\Component\Routing\Route|null
@@ -123,10 +126,9 @@ class GroupNode extends GroupContentEnablerBase {
    */
   public function getRoutes() {
     $routes = parent::getRoutes();
-    $route_prefix = 'entity.group_content.group_node';
 
-    if ($node_add_route = $this->getNodeAddFormRoute()) {
-      $routes["$route_prefix.node_add_form"] = $node_add_route;
+    if ($route = $this->getNodeAddFormRoute()) {
+      $routes[$this->getRouteName('node-add-form')] = $route;
     }
 
     return $routes;

@@ -99,14 +99,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function getPath($name) {
-    $paths = $this->pluginDefinition['paths'];
-    return isset($paths[$name]) ? $paths[$name] : '';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getGroupTypeId() {
     return $this->groupTypeId;
   }
@@ -202,6 +194,36 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     ] + $defaults;
 
     return $permissions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPaths() {
+    $path_key = $this->pluginDefinition['path_key'];
+    return empty($path_key) ? [] : [
+      "collection" => "/group/{group}/$path_key",
+      "add-form" => "/group/{group}/$path_key/add",
+      "canonical" => "/group/{group}/$path_key/{group_content}",
+      "edit-form" => "/group/{group}/$path_key/{group_content}/edit",
+      "delete-form" => "/group/{group}/$path_key/{group_content}/delete",
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPath($name) {
+    $paths = $this->getPaths();
+    return isset($paths[$name]) ? $paths[$name] : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRouteName($name) {
+    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPluginId());
+    return $route_prefix . '.' . str_replace(['-', 'drupal:'], ['_', ''], $name);
   }
 
   /**
@@ -343,26 +365,25 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getRoutes() {
     $routes = [];
-    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getPluginId());
 
-    if ($collection_route = $this->getCollectionRoute()) {
-      $routes["$route_prefix.collection"] = $collection_route;
+    if ($route = $this->getCollectionRoute()) {
+      $routes[$this->getRouteName('collection')] = $route;
     }
 
-    if ($add_route = $this->getAddFormRoute()) {
-      $routes["$route_prefix.add_form"] = $add_route;
+    if ($route = $this->getAddFormRoute()) {
+      $routes[$this->getRouteName('add-form')] = $route;
     }
 
-    if ($canonical_route = $this->getCanonicalRoute()) {
-      $routes["$route_prefix.canonical"] = $canonical_route;
+    if ($route = $this->getCanonicalRoute()) {
+      $routes[$this->getRouteName('canonical')] = $route;
     }
 
-    if ($edit_route = $this->getEditFormRoute()) {
-      $routes["$route_prefix.edit_form"] = $edit_route;
+    if ($route = $this->getEditFormRoute()) {
+      $routes[$this->getRouteName('edit-form')] = $route;
     }
 
-    if ($delete_route = $this->getDeleteFormRoute()) {
-      $routes["$route_prefix.delete_form"] = $delete_route;
+    if ($route = $this->getDeleteFormRoute()) {
+      $routes[$this->getRouteName('delete-form')] = $route;
     }
 
     return $routes;

@@ -172,14 +172,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   protected function linkTemplates() {
-    // @todo Look into this: What with custom templates? Plugin ::getPaths()?
-    return [
-      'collection' => $this->getContentPlugin()->getPath('collection'),
-      'canonical' => $this->getContentPlugin()->getPath('canonical'),
-      'add-form' => $this->getContentPlugin()->getPath('add-form'),
-      'edit-form' => $this->getContentPlugin()->getPath('edit-form'),
-      'delete-form' => $this->getContentPlugin()->getPath('delete-form'),
-    ];
+    return $this->getContentPlugin()->getPaths();
   }
 
   /**
@@ -188,8 +181,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * @todo Will inherit docs once https://www.drupal.org/node/2645136 lands.
    */
   protected function urlRoute($rel) {
-    $route_prefix = 'entity.group_content.' . str_replace(':', '__', $this->getContentPlugin()->getPluginId());
-    return $route_prefix . '.' . str_replace(['-', 'drupal:'], ['_', ''], $rel);
+    return $this->getContentPlugin()->getRouteName($rel);
   }
 
   /**
