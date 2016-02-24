@@ -123,6 +123,8 @@ class GroupNode extends GroupContentEnablerBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo Consolidate shared node routes (just collection?).
    */
   public function getRoutes() {
     $routes = parent::getRoutes();

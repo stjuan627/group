@@ -7,8 +7,13 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a list controller for group content entities.
@@ -16,6 +21,53 @@ use Drupal\Core\Entity\EntityListBuilder;
  * @ingroup group
  */
 class GroupContentListBuilder extends EntityListBuilder {
+
+  /**
+   * The group content types to show in the list.
+   *
+   * @var string[]
+   */
+  protected $bundles;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RouteMatchInterface $route_match) {
+    parent::__construct($entity_type, $storage);
+    $parameters = $route_match->getParameters();
+
+    // Check if the route had a plugin_id parameter.
+    if ($parameters->has('plugin_id') && $plugin_id = $parameters->get('plugin_id')) {
+      // We are then able to retrieve the group content type from the group.
+      if ($parameters->has('group') && $group = $parameters->get('group')) {
+        if ($group instanceof GroupInterface) {
+          $this->bundles = [$group->getGroupType()->getContentPlugin($plugin_id)->getContentTypeConfigId()];
+        }
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+      $entity_type,
+      $container->get('entity.manager')->getStorage($entity_type->id()),
+      $container->get('current_route_match')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function load() {
+    $properties = ['id' => $this->getEntityIds()];
+    if (!empty($this->bundles)) {
+      $properties['type'] = $this->bundles;
+    }
+    return $this->storage->loadByProperties($properties);
+  }
 
   /**
    * {@inheritdoc}

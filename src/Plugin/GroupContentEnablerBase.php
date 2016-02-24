@@ -241,6 +241,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
         ->setDefaults([
           '_entity_list' => 'group_content',
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
+          'plugin_id' => $plugin_id,
         ])
         ->setRequirement('_group_permission', "view $plugin_id content")
         ->setRequirement('_group_installed_content', $plugin_id)
