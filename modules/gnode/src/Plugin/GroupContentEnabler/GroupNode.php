@@ -96,6 +96,26 @@ class GroupNode extends GroupContentEnablerBase {
   }
 
   /**
+   * {@inheritdoc}
+   *
+   * @see \Drupal\gnode\Routing\GroupNodeRouteProvider
+   */
+  public function getRouteName($name) {
+    if ($name == 'collection') {
+      return 'entity.group_content.group_node.collection';
+    }
+    return parent::getRouteName($name);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @see \Drupal\gnode\Routing\GroupNodeRouteProvider
+   */
+  protected function getCollectionRoute() {
+  }
+
+  /**
    * Gets the join form route.
    *
    * @return \Symfony\Component\Routing\Route|null
@@ -123,8 +143,6 @@ class GroupNode extends GroupContentEnablerBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @todo Consolidate shared node routes (just collection?).
    */
   public function getRoutes() {
     $routes = parent::getRoutes();
