@@ -59,8 +59,9 @@ class GroupInstalledContentAccessCheck implements AccessInterface {
     // Allow to conjunct the plugin IDs with OR ('+') or AND (',').
     $plugin_ids = explode(',', $access_string);
     if (count($plugin_ids) > 1) {
+      $access = TRUE;
+
       foreach ($plugin_ids as $plugin_id) {
-        $access = TRUE;
         if (!$group->getGroupType()->hasContentPlugin($plugin_id)) {
           $access = FALSE;
           break;
