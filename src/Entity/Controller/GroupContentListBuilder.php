@@ -23,6 +23,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentListBuilder extends EntityListBuilder {
 
   /**
+   * The group to show the content for.
+   *
+   * @var \Drupal\group\Entity\GroupInterface
+   */
+  protected $group;
+
+  /**
    * The group content types to show in the list.
    *
    * @var string[]
@@ -41,6 +48,9 @@ class GroupContentListBuilder extends EntityListBuilder {
       // We are then able to retrieve the group content type from the group.
       if ($parameters->has('group') && $group = $parameters->get('group')) {
         if ($group instanceof GroupInterface) {
+          $this->group = $group;
+
+          // Retrieve the bundles by checking which plugins are enabled.
           $group_type = $group->getGroupType();
           foreach ($plugin_ids as $plugin_id) {
             if ($group_type->hasContentPlugin($plugin_id)) {
@@ -67,7 +77,7 @@ class GroupContentListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function load() {
-    $properties = ['id' => $this->getEntityIds()];
+    $properties = ['id' => $this->getEntityIds(), 'gid' => $this->group->id()];
     if (!empty($this->bundles)) {
       $properties['type'] = $this->bundles;
     }
