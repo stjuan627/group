@@ -371,12 +371,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       $routes[$this->getRouteName('collection')] = $route;
     }
 
-    if ($route = $this->getAddFormRoute()) {
-      $routes[$this->getRouteName('add-form')] = $route;
-    }
-
     if ($route = $this->getCanonicalRoute()) {
       $routes[$this->getRouteName('canonical')] = $route;
+    }
+
+    if ($route = $this->getAddFormRoute()) {
+      $routes[$this->getRouteName('add-form')] = $route;
     }
 
     if ($route = $this->getEditFormRoute()) {
