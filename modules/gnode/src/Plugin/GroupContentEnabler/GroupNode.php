@@ -90,9 +90,13 @@ class GroupNode extends GroupContentEnablerBase {
    * {@inheritdoc}
    */
   public function getPaths() {
-    return parent::getPaths() + [
-      'node-add-form' => '/group/{group}/node/add/{node_type}',
-    ];
+    $paths = parent::getPaths();
+
+    $type = $this->getEntityBundle();
+    $paths['add-form'] = "/group/{group}/node/add/$type";
+    $paths['node-add-form'] = "/group/{group}/node/create/$type";
+
+    return $paths;
   }
 
   /**
@@ -101,9 +105,22 @@ class GroupNode extends GroupContentEnablerBase {
    * @see \Drupal\gnode\Routing\GroupNodeRouteProvider
    */
   public function getRouteName($name) {
-    if ($name == 'collection') {
-      return 'entity.group_content.group_node.collection';
+    switch ($name) {
+      // The collection route can be found in GroupNodeRouteProvider.
+      case 'collection':
+        return 'entity.group_content.group_node.collection';
+
+      // The add form routes need to have the node type hardcoded in their path
+      // so we can have a different route for each node type. That way, the
+      // routes can check for the responsible plugin without needing to have the
+      // plugin ID in the path.
+      case 'add-form':
+      case 'node-add-form':
+        $prefix = str_replace('-', '_', $name) . '_';
+        $type = $this->getEntityBundle();
+        return "entity.group_content.group_node.$prefix$type";
     }
+
     return parent::getRouteName($name);
   }
 
@@ -129,6 +146,7 @@ class GroupNode extends GroupContentEnablerBase {
         ->setDefaults([
           '_controller' => '\Drupal\gnode\Controller\GroupNodeController::add',
           '_title_callback' => '\Drupal\gnode\Controller\GroupNodeController::addTitle',
+          'node_type' => $this->getEntityBundle(),
         ])
         ->setRequirement('_group_permission', 'create ' . $this->getEntityBundle() . ' node')
         ->setRequirement('_group_installed_content', $this->getPluginId())

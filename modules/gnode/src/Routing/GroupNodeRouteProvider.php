@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
 class GroupNodeRouteProvider {
 
   /**
-   * {@inheritdoc}
+   * Provides the shared collection route for group node plugins.
    */
   public function getRoutes() {
     $plugin_ids = [];

@@ -35,7 +35,6 @@ class GroupNodeDerivatives implements DeriverInterface {
         'entity_bundle' => $name,
         'label' => t('Group node') . " ($label)",
         'description' => t('Adds %type content to groups both publicly and privately.', ['%type' => $label]),
-        'path_key' => "node/$name",
       ] + $base_plugin_definition;
     }
 
