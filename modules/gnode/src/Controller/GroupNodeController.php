@@ -58,7 +58,7 @@ class GroupNodeController extends ControllerBase {
    *   The node type to create.
    *
    * @return array
-   *   todo.
+   *   The form array for either step 1 or 2 of the group node creation wizard.
    */
   public function add(GroupInterface $group, NodeTypeInterface $node_type) {
     // If we are on step one, we need to build a node form.
