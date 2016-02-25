@@ -169,6 +169,10 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       'title_args' => ['%plugin_name' => $this->getLabel()],
     ];
 
+    $permissions["access $plugin_id overview"] = [
+      'title' => 'Access the %plugin_name overview page',
+    ] + $defaults;
+
     $permissions["view $plugin_id content"] = [
       'title' => '%plugin_name: View content',
     ] + $defaults;
@@ -243,7 +247,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
           'plugin_id' => $plugin_id,
         ])
-        ->setRequirement('_group_permission', "view $plugin_id content")
+        ->setRequirement('_group_permission', "access $plugin_id overview")
         ->setRequirement('_group_installed_content', $plugin_id)
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
