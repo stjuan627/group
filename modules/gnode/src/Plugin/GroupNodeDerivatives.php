@@ -28,7 +28,6 @@ class GroupNodeDerivatives implements DeriverInterface {
   public function getDerivativeDefinitions($base_plugin_definition) {
     $derivatives = [];
 
-    // @todo This will define the common routes multiple times. Try to avoid.
     foreach (NodeType::loadMultiple() as $name => $node_type) {
       $label = $node_type->label();
 
@@ -36,6 +35,7 @@ class GroupNodeDerivatives implements DeriverInterface {
         'entity_bundle' => $name,
         'label' => t('Group node') . " ($label)",
         'description' => t('Adds %type content to groups both publicly and privately.', ['%type' => $label]),
+        'path_key' => "node/$name",
       ] + $base_plugin_definition;
     }
 
