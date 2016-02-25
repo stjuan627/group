@@ -36,6 +36,8 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
+    $must_own_content = $route->getRequirement('_group_owns_content') === 'TRUE';
+
     // Don't interfere if no group or group content was specified.
     $parameters = $route_match->getParameters();
     if (!$parameters->has('group') || !$parameters->has('group_content')) {
@@ -54,17 +56,12 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Check what boolean was assigned to _group_owns_content and respect that.
+    // If we have a group and group content, see if the owner matches.
     $group_owns_content = $group_content->getGroup()->id() == $group->id();
-    if ($route->getRequirement('_group_owns_content') === 'TRUE') {
-      return AccessResult::allowedIf($group_owns_content);
-    }
-    elseif ($route->getRequirement('_group_owns_content') === 'FALSE') {
-      return AccessResult::allowedIf(!$group_owns_content);
-    }
-    else {
-      return AccessResult::neutral();
-    }
+
+    // Only allow access if the group content is owned by the group and
+    // _group_owns_content is set to TRUE or the other way around.
+    return AccessResult::allowedIf($group_owns_content xor !$must_own_content);
   }
 
 }

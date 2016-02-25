@@ -48,8 +48,8 @@ class GroupMemberAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Only allow access if the user is not a member and _group_member is set to
-    // FALSE or if the user is a member and _group_member is set to TRUE.
+    // Only allow access if the user is a member of the group and _group_member
+    // is set to TRUE or the other way around.
     return AccessResult::allowedIf($group->getMember($account) xor !$member_only);
   }
 
