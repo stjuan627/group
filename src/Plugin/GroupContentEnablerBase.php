@@ -270,7 +270,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::title',
         ])
         ->setRequirement('_entity_access', 'group_content.view')
-        ->setRequirement('_group_installed_content', $this->getPluginId())
+        ->setRequirement('_group_owns_content', 'TRUE')
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
           'group_content' => ['type' => 'entity:group_content'],
@@ -323,7 +323,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::editTitle',
         ])
         ->setRequirement('_entity_access', 'group_content.update')
-        ->setRequirement('_group_installed_content', $this->getPluginId())
+        ->setRequirement('_group_owns_content', 'TRUE')
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
@@ -350,7 +350,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
           '_title_callback' => '\Drupal\Core\Entity\Controller\EntityController::deleteTitle',
         ])
         ->setRequirement('_entity_access', 'group_content.delete')
-        ->setRequirement('_group_installed_content', $this->getPluginId())
+        ->setRequirement('_group_owns_content', 'TRUE')
         ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],

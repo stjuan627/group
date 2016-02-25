@@ -27,10 +27,14 @@ services:
     class: 'Drupal\group\Access\GroupMemberAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_member' }
-  access_check.group.enabled_content:
+  access_check.group.installed_content:
     class: 'Drupal\group\Access\GroupInstalledContentAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_installed_content' }
+  access_check.group.owns_content:
+    class: 'Drupal\group\Access\GroupOwnsContentAccessCheck'
+    tags:
+      - { name: 'access_check', applies_to: '_group_owns_content' }
   access_check.group_content.add:
     class: 'Drupal\group\Access\GroupContentAddAccessCheck'
     arguments: ['@entity.manager']
