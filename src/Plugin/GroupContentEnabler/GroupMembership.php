@@ -8,12 +8,15 @@
 namespace Drupal\group\Plugin\GroupContentEnabler;
 
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -70,8 +73,6 @@ class GroupMembership extends GroupContentEnablerBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @todo Implement these on the corresponding routes.
    */
   public function getPermissions() {
     $permissions['administer members'] = [
@@ -80,13 +81,8 @@ class GroupMembership extends GroupContentEnablerBase {
       'restrict access' => TRUE,
     ];
 
-    $permissions['access member overview'] = [
-      'title' => 'Access the member overview page',
-    ];
-
-    $permissions['view members'] = [
-      'title' => 'View group members',
-    ];
+    // @todo This can be removed once plugin permissions are autosorted.
+    $permissions += parent::getPermissions();
 
     $permissions['join group'] = [
       'title' => 'Join group',
@@ -94,16 +90,26 @@ class GroupMembership extends GroupContentEnablerBase {
       'allowed for' => ['outsider'],
     ];
 
-    $permissions['edit own membership'] = [
-      'title' => 'Edit own membership',
-      'description' => 'Edit own membership information',
-      'allowed for' => ['member'],
-    ];
-
     $permissions['leave group'] = [
       'title' => 'Leave group',
       'allowed for' => ['member'],
     ];
+
+    // Update the labels of the default permissions.
+    $permissions['access group_membership overview']['title'] = 'Access the member overview page';
+    $permissions['view group_membership content']['title'] = 'View individual group members';
+
+    // @todo Implement this in updateAccess() once group content can be owned.
+    $permissions['edit own group_membership content'] = [
+      'title' => 'Edit own membership',
+      'allowed for' => ['member'],
+    ];
+
+    // These are handled by 'administer members' or 'leave group'.
+    unset($permissions['create group_membership content']);
+    unset($permissions['edit any group_membership content']);
+    unset($permissions['delete any group_membership content']);
+    unset($permissions['delete own group_membership content']);
 
     return $permissions;
   }
@@ -128,7 +134,7 @@ class GroupMembership extends GroupContentEnablerBase {
     // signifies that only one permission needs to be set for the user. We also
     // don't set the _group_installed_content requirement again because we know
     // this plugin will always be installed.
-    $route->setRequirements([])->setRequirement('_group_permission', 'administer members+access member overview');
+    $route->setRequirements([])->setRequirement('_group_permission', 'administer members+access group_membership overview');
 
     // Swap out the GroupContent list controller for our own.
     // @todo Implement this after we've completed the above list controller.
@@ -202,6 +208,35 @@ class GroupMembership extends GroupContentEnablerBase {
     }
 
     return $routes;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function createAccess(GroupInterface $group, AccountInterface $account) {
+    return AccessResult::allowedIf($group->hasPermission('administer members', $account));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function viewAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission('administer members+view group_membership content', $account));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function updateAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    // @todo Check for own membership when we support setting an author.
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission('administer members', $account));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function deleteAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    return AccessResult::allowedIf($group_content->getGroup()->hasPermission('administer members', $account));
   }
 
   /**
