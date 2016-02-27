@@ -397,6 +397,23 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getLocalActions($base_plugin_definition) {
+    $derivatives = [];
+
+    if (($appears_on = $this->getRouteName('collection')) && ($route_name = $this->getRouteName('add-form'))) {
+      $derivatives['group_content.add.' . $this->getPluginId()] = [
+        'title' => t('Add @label', ['@label' => $this->getLabel()]),
+        'route_name' => $route_name,
+        'appears_on' => [$appears_on],
+      ] + $base_plugin_definition;
+    }
+
+    return $derivatives;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function createAccess(GroupInterface $group, AccountInterface $account) {
     $plugin_id = $this->getPluginId();
     return AccessResult::allowedIf($group->hasPermission("create $plugin_id content", $account));

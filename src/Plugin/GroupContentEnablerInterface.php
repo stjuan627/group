@@ -247,6 +247,19 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getRoutes();
 
   /**
+   * Provides local actions for group content routes.
+   *
+   * @param array $base_plugin_definition
+   *   The local action base plugin definition.
+   *
+   * @return array
+   *   An array of local action definitions, keyed by their derivative ID.
+   *
+   * @see https://www.drupal.org/node/2133247
+   */
+  public function getLocalActions($base_plugin_definition);
+
+  /**
    * Performs access check for the create operation.
    *
    * This method is supposed to be overwritten by extending classes that

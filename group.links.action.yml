@@ -15,3 +15,7 @@ group.add_group_role:
   title: 'Add group role'
   appears_on:
     - 'entity.group_role.collection'
+
+group_content.dynamic:
+  class: '\Drupal\group\Plugin\Menu\LocalAction\GroupContentDynamic'
+  deriver: '\Drupal\group\Plugin\Menu\LocalAction\GroupContentDynamicDeriver'
