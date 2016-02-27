@@ -21,7 +21,7 @@ class GroupContentDynamic extends LocalActionDefault {
    */
   public function getOptions(RouteMatchInterface $route_match) {
     $options = parent::getOptions($route_match);
-    $options['query']['destination'] = Url::fromRoute('<current>');
+    $options['query']['destination'] = Url::fromRoute('<current>')->toString();
     return $options;
   }
 
