@@ -7,6 +7,7 @@
 
 use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -38,7 +39,6 @@ function group_theme() {
     /*'group' => [
       'render element' => 'elements',
     ],*/
-    // @todo Try to polyfill this for core's themes (especially Seven).
     'group_add_list' => [
       'variables' => ['group_types' => NULL],
     ],
@@ -60,13 +60,13 @@ function template_preprocess_group_add_list(&$variables) {
   $variables['types'] = [];
 
   if (!empty($variables['group_types'])) {
-    foreach ($variables['group_types'] as $type) {
-      $variables['types'][$type->id()] = [
-        'type' => $type->id(),
-        'add_link' => \Drupal::l($type->label(), new Url('entity.group.add_form', ['group_type' => $type->id()])),
-        'description' => [
-          '#markup' => $type->getDescription(),
-        ],
+    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    foreach ($variables['group_types'] as $group_type) {
+      $add_url = Url::fromRoute('entity.group.add_form', ['group_type' => $group_type->id()]);
+      $variables['types'][$group_type->id()] = [
+        'type' => $group_type->id(),
+        'add_link' => Link::fromTextAndUrl($group_type->label(), $add_url),
+        'description' => ['#markup' => $group_type->getDescription()],
       ];
     }
   }
