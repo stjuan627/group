@@ -9,6 +9,7 @@ namespace Drupal\gnode\Form;
 
 use Drupal\group\Entity\Form\GroupContentForm;
 use Drupal\user\PrivateTempStoreFactory;
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -88,8 +89,6 @@ class GroupNodeFormStep2 extends GroupContentForm {
       $this->privateTempStore->delete('node');
       $this->privateTempStore->delete('group_content');
 
-      // @todo Read a redirect from the plugin?
-      $form_state->setRedirect('entity.group.collection');
       return parent::save($form, $form_state);
     }
   }
@@ -107,6 +106,11 @@ class GroupNodeFormStep2 extends GroupContentForm {
    */
   public function back(array &$form, FormStateInterface $form_state) {
     $this->privateTempStore->set('step', 1);
+
+    // Disable any URL-based redirect when going back to the previous step.
+    $request = $this->getRequest();
+    $form_state->setRedirectUrl(Url::fromRoute('<current>', [], ['query' => $request->query->all()]));
+    $request->query->remove('destination');
   }
 
 }

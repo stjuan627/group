@@ -9,6 +9,7 @@ namespace Drupal\gnode\Form;
 
 use Drupal\node\NodeForm;
 use Drupal\user\PrivateTempStoreFactory;
+use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
 
@@ -71,6 +72,11 @@ class GroupNodeFormStep1 extends NodeForm {
   public function saveTemporary(array &$form, FormStateInterface $form_state) {
     $this->privateTempStore->set('node', $this->entity);
     $this->privateTempStore->set('step', 2);
+
+    // Disable any URL-based redirect until the final step.
+    $request = $this->getRequest();
+    $form_state->setRedirectUrl(Url::fromRoute('<current>', [], ['query' => $request->query->all()]));
+    $request->query->remove('destination');
   }
 
   /**
@@ -85,7 +91,8 @@ class GroupNodeFormStep1 extends NodeForm {
    */
   public function cancel(array &$form, FormStateInterface $form_state) {
     $this->privateTempStore->delete('node');
-    // @todo Read a redirect from the plugin?
+
+    // @todo Redirect to group content collection. Feed $group to form for this.
     $form_state->setRedirect('entity.group.collection');
   }
 

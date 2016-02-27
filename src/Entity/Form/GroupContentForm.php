@@ -32,9 +32,18 @@ class GroupContentForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    // @todo Read a redirect from the plugin?
-    $form_state->setRedirect('entity.group.collection');
-    return parent::save($form, $form_state);
+    $return = parent::save($form, $form_state);
+
+    // The below redirect ensures the user will be redirected to the entity this
+    // form was for. But only if there was no destination set in the URL.
+    $route_name = $this->getContentPlugin()->getRouteName('canonical');
+    $route_params = [
+      'group' => $this->getEntity()->getGroup()->id(),
+      'group_content' => $this->getEntity()->id(),
+    ];
+    $form_state->setRedirect($route_name, $route_params);
+
+    return $return;
   }
 
 }
