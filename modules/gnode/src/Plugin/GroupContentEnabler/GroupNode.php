@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Route;
  *   entity_type_id = "node",
  *   entity_cardinality = 1,
  *   path_key = "node",
- *   deriver = "Drupal\gnode\Plugin\GroupNodeDerivatives"
+ *   deriver = "Drupal\gnode\Plugin\GroupContentEnabler\GroupNodeDeriver"
  * )
  */
 class GroupNode extends GroupContentEnablerBase {
