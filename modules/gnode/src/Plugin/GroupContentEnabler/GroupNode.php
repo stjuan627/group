@@ -94,7 +94,7 @@ class GroupNode extends GroupContentEnablerBase {
 
     $type = $this->getEntityBundle();
     $paths['add-form'] = "/group/{group}/node/add/$type";
-    $paths['node-add-form'] = "/group/{group}/node/create/$type";
+    $paths['create-form'] = "/group/{group}/node/create/$type";
 
     return $paths;
   }
@@ -115,7 +115,7 @@ class GroupNode extends GroupContentEnablerBase {
       // routes can check for the responsible plugin without needing to have the
       // plugin ID in the path.
       case 'add-form':
-      case 'node-add-form':
+      case 'create-form':
         $prefix = str_replace('-', '_', $name) . '_';
         $type = $this->getEntityBundle();
         return "entity.group_content.group_node.$prefix$type";
@@ -138,8 +138,8 @@ class GroupNode extends GroupContentEnablerBase {
    * @return \Symfony\Component\Routing\Route|null
    *   The generated route, if available.
    */
-  protected function getNodeAddFormRoute() {
-    if ($path = $this->getPath('node-add-form')) {
+  protected function getCreateFormRoute() {
+    if ($path = $this->getPath('create-form')) {
       $route = new Route($path);
 
       $route
@@ -165,8 +165,8 @@ class GroupNode extends GroupContentEnablerBase {
   public function getRoutes() {
     $routes = parent::getRoutes();
 
-    if ($route = $this->getNodeAddFormRoute()) {
-      $routes[$this->getRouteName('node-add-form')] = $route;
+    if ($route = $this->getCreateFormRoute()) {
+      $routes[$this->getRouteName('create-form')] = $route;
     }
 
     return $routes;
