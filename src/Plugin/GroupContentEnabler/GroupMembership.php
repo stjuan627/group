@@ -210,6 +210,12 @@ class GroupMembership extends GroupContentEnablerBase {
     return $routes;
   }
 
+  public function getLocalActions($base_plugin_definition) {
+    $actions = parent::getLocalActions($base_plugin_definition);
+    $actions['group_membership.add']['title'] = 'Add member';
+    return $actions;
+  }
+
   /**
    * {@inheritdoc}
    */
