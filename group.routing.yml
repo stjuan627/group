@@ -30,7 +30,7 @@ entity.group.add_form:
   path: '/group/add/{group_type}'
   defaults:
     _controller: '\Drupal\group\Entity\Controller\GroupController::add'
-    _title_callback: '\Drupal\group\Entity\Controller\GroupController::addPageTitle'
+    _title_callback: '\Drupal\group\Entity\Controller\GroupController::addTitle'
   requirements:
     _group_add_access: 'group:{group_type}'
   options:

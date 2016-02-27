@@ -23,22 +23,21 @@ class GroupController extends ControllerBase {
    * Redirects to group/add/[type] if only one group type is available.
    *
    * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
-   *   A render array for a list of the group types that can be added; however,
-   *   if there is only one group type defined for the site, the function
-   *   will return a RedirectResponse to the group add page for that one group
-   *   type.
+   *   A render array for a list of the group types that can be added. However,
+   *   if there is only one group type available to the user, the function will
+   *   return a RedirectResponse to the group add page for that group type.
    */
   public function addPage() {
-    $group_types = [];
+    $group_types = GroupType::loadMultiple();
 
     // Only use group types the user has access to.
-    foreach (GroupType::loadMultiple() as $group_type) {
-      if ($this->entityTypeManager()->getAccessControlHandler('group')->createAccess($group_type->id())) {
-        $group_types[$group_type->id()] = $group_type;
+    foreach (array_keys($group_types) as $group_type_id) {
+      if (!$this->entityTypeManager()->getAccessControlHandler('group')->createAccess($group_type_id)) {
+        unset($group_types[$group_type_id]);
       }
     }
 
-    // Bypass the group/add listing if only one content type is available.
+    // Bypass the page if only one group type is available.
     if (count($group_types) == 1) {
       $group_type = array_shift($group_types);
       return $this->redirect('entity.group.add_form', ['group_type' => $group_type->id()]);
@@ -74,7 +73,7 @@ class GroupController extends ControllerBase {
    * @return string
    *   The page title.
    */
-  public function addPageTitle(GroupTypeInterface $group_type) {
+  public function addTitle(GroupTypeInterface $group_type) {
     return $this->t('Create @name', ['@name' => $group_type->label()]);
   }
 
