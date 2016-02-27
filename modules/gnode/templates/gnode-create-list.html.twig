@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Default theme implementation for the create group node page.
+ *
+ * Available variables:
+ * - types: A list of content types, each with the following properties:
+ *   - add_link: Link to create a piece of content of this type.
+ *   - description: Description of this type of content.
+ *
+ * @see template_preprocess_gnode_create_list()
+ *
+ * @ingroup themeable
+ */
+#}
+<dl>
+  {% for type in types %}
+    <dt>{{ type.add_link }}</dt>
+    <dd>{{ type.description }}</dd>
+  {% endfor %}
+</dl>
