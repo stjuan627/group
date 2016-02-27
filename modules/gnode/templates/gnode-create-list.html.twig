@@ -5,17 +5,17 @@
  *
  * Available variables:
  * - types: A list of content types, each with the following properties:
- *   - add_link: Link to create a piece of content of this type.
- *   - description: Description of this type of content.
+ *   - url: Path to the create group node of this type page.
+ *   - label: The name of this content type.
+ *   - description: Description of this content type.
  *
  * @see template_preprocess_gnode_create_list()
  *
  * @ingroup themeable
  */
 #}
-<dl>
+<ul class="admin-list">
   {% for type in types %}
-    <dt>{{ type.add_link }}</dt>
-    <dd>{{ type.description }}</dd>
+    <li class="clearfix"><a href="{{ type.url }}"><span class="label">{{ type.label }}</span><div class="description">{{ type.description }}</div></a></li>
   {% endfor %}
-</dl>
+</ul>

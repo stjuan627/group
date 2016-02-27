@@ -49,11 +49,11 @@ function template_preprocess_gnode_add_list(&$variables) {
     /** @var \Drupal\node\NodeTypeInterface $node_type */
     foreach ($variables['node_types'] as $node_type_id => $node_type) {
       $plugin = $group->getGroupType()->getContentPlugin("group_node:$node_type_id");
-      $add_url = Url::fromRoute($plugin->getRouteName('add-form'), ['group' => $group->id()]);
 
       $variables['types'][$node_type_id] = [
         'type' => $node_type_id,
-        'add_link' => Link::fromTextAndUrl($node_type->label(), $add_url),
+        'url' => Url::fromRoute($plugin->getRouteName('add-form'), ['group' => $group->id()]),
+        'label' => $node_type->label(),
         'description' => ['#markup' => $node_type->getDescription()],
       ];
     }
@@ -79,11 +79,11 @@ function template_preprocess_gnode_create_list(&$variables) {
     /** @var \Drupal\node\NodeTypeInterface $node_type */
     foreach ($variables['node_types'] as $node_type_id => $node_type) {
       $plugin = $group->getGroupType()->getContentPlugin("group_node:$node_type_id");
-      $add_url = Url::fromRoute($plugin->getRouteName('create-form'), ['group' => $group->id()]);
 
       $variables['types'][$node_type_id] = [
         'type' => $node_type_id,
-        'add_link' => Link::fromTextAndUrl($node_type->label(), $add_url),
+        'url' => Url::fromRoute($plugin->getRouteName('create-form'), ['group' => $group->id()]),
+        'label' => $node_type->label(),
         'description' => ['#markup' => $node_type->getDescription()],
       ];
     }
