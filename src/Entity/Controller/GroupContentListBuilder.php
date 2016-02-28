@@ -76,12 +76,22 @@ class GroupContentListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function load() {
-    $properties = ['id' => $this->getEntityIds(), 'gid' => $this->group->id()];
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery();
+    $query->sort($this->entityType->getKey('id'));
+    $query->condition('gid', $this->group->id());
+
+    // Filter on bundles if they were specified by the constructor.
     if (!empty($this->bundles)) {
-      $properties['type'] = $this->bundles;
+      $query->condition('type', $this->bundles, 'IN');
     }
-    return $this->storage->loadByProperties($properties);
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $query->pager($this->limit);
+    }
+
+    return $query->execute();
   }
 
   /**
