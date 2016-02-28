@@ -6,9 +6,9 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
