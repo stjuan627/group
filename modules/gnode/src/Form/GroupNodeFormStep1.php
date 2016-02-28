@@ -70,8 +70,10 @@ class GroupNodeFormStep1 extends NodeForm {
    * @see \Drupal\gnode\Form\GroupNodeFormStep2
    */
   public function saveTemporary(array &$form, FormStateInterface $form_state) {
-    $this->privateTempStore->set('node', $this->entity);
-    $this->privateTempStore->set('step', 2);
+    $storage_id = $form_state->get('storage_id');
+
+    $this->privateTempStore->set("$storage_id:node", $this->entity);
+    $this->privateTempStore->set("$storage_id:step", 2);
 
     // Disable any URL-based redirect until the final step.
     $request = $this->getRequest();
@@ -90,7 +92,8 @@ class GroupNodeFormStep1 extends NodeForm {
    * @see \Drupal\gnode\Controller\GroupNodeController::add()
    */
   public function cancel(array &$form, FormStateInterface $form_state) {
-    $this->privateTempStore->delete('node');
+    $storage_id = $form_state->get('storage_id');
+    $this->privateTempStore->delete("$storage_id:node");
 
     // @todo Redirect to group content collection. Feed $group to form for this.
     $form_state->setRedirect('entity.group.collection');

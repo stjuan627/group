@@ -79,18 +79,18 @@ class GroupNodeFormStep2 extends GroupContentForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    if ($node = $this->privateTempStore->get('node')) {
-      // We can now safely save the node and set its ID on the group content.
-      $node->save();
-      $this->entity->set('entity_id', $node->id());
+    $storage_id = $form_state->get('storage_id');
 
-      // We also clear the private store so we can start fresh next time around.
-      $this->privateTempStore->delete('step');
-      $this->privateTempStore->delete('node');
-      $this->privateTempStore->delete('group_content');
+    // We can now safely save the node and set its ID on the group content.
+    $node = $this->privateTempStore->get("$storage_id:node");
+    $node->save();
+    $this->entity->set('entity_id', $node->id());
 
-      return parent::save($form, $form_state);
-    }
+    // We also clear the private store so we can start fresh next time around.
+    $this->privateTempStore->delete("$storage_id:step");
+    $this->privateTempStore->delete("$storage_id:node");
+
+    return parent::save($form, $form_state);
   }
 
   /**
@@ -105,7 +105,8 @@ class GroupNodeFormStep2 extends GroupContentForm {
    * @see \Drupal\gnode\Form\GroupNodeFormStep1
    */
   public function back(array &$form, FormStateInterface $form_state) {
-    $this->privateTempStore->set('step', 1);
+    $storage_id = $form_state->get('storage_id');
+    $this->privateTempStore->set("$storage_id:step", 1);
 
     // Disable any URL-based redirect when going back to the previous step.
     $request = $this->getRequest();

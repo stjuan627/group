@@ -74,26 +74,31 @@ class GroupNodeController extends ControllerBase {
    *   The form array for either step 1 or 2 of the group node creation wizard.
    */
   public function add(GroupInterface $group, NodeTypeInterface $node_type) {
+    $plugin_id = 'group_node:' . $node_type->id();
+    $storage_id = $plugin_id . ':' . $group->id();
+
     // If we are on step one, we need to build a node form.
-    if ($this->privateTempStore->get('step') !== 2) {
-      $this->privateTempStore->set('step', 1);
+    if ($this->privateTempStore->get("$storage_id:step") !== 2) {
+      $this->privateTempStore->set("$storage_id:step", 1);
 
       // Only create a new node if we have nothing stored.
-      if (!$entity = $this->privateTempStore->get('node')) {
+      if (!$entity = $this->privateTempStore->get("$storage_id:node")) {
         $entity = Node::create(['type' => $node_type->id()]);
       }
     }
     // If we are on step two, we need to build a group content form.
     else {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      $plugin = $group->getGroupType()->getContentPlugin('group_node:' . $node_type->id());
+      $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
       $entity = GroupContent::create([
         'type' => $plugin->getContentTypeConfigId(),
         'gid' => $group->id(),
       ]);
     }
 
-    return $this->entityFormBuilder()->getForm($entity, 'gnode-form');
+    // Return the form with the group and storage ID added to the form state.
+    $extra = ['group' => $group, 'storage_id' => $storage_id];
+    return $this->entityFormBuilder()->getForm($entity, 'gnode-form', $extra);
   }
 
   /**
