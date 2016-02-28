@@ -45,7 +45,7 @@ class GroupMembership extends GroupContentEnablerBase {
       if ($group->hasPermission('leave group', $account)) {
         $operations['group-leave'] = [
           'title' => $this->t('Leave group'),
-          'url' => new Url('entity.group_content.group_membership.leave_form', ['group' => $group->id()]),
+          'url' => new Url($this->getRouteName('leave-form'), ['group' => $group->id()]),
           'weight' => 99,
         ];
       }
@@ -53,7 +53,7 @@ class GroupMembership extends GroupContentEnablerBase {
     elseif ($group->hasPermission('join group', $account)) {
       $operations['group-join'] = [
         'title' => $this->t('Join group'),
-        'url' => new Url('entity.group_content.group_membership.join_form', ['group' => $group->id()]),
+        'url' => new Url($this->getRouteName('join-form'), ['group' => $group->id()]),
         'weight' => 0,
       ];
     }
