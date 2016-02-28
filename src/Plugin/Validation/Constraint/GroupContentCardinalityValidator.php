@@ -89,9 +89,21 @@ class GroupContentCardinalityValidator extends ConstraintValidator {
         // Get the current instances of this content entity in the group.
         $group = $group_content->getGroup();
         $entity_instances = $group->getContentByEntityId($plugin_id, $value->target_id);
+        $entity_count = count($entity_instances);
+
+        // If the current group content entity has an ID, exclude that one.
+        if ($group_content_id = $group_content->id()) {
+          foreach ($entity_instances as $instance) {
+            /** @var \Drupal\group\Entity\GroupContentInterface $instance */
+            if ($instance->id() == $group_content_id) {
+              $entity_count--;
+              break;
+            }
+          }
+        }
 
         // Raise a violation if the content has reached the cardinality limit.
-        if (count($entity_instances) >= $entity_cardinality) {
+        if ($entity_count >= $entity_cardinality) {
           $this->context->buildViolation($constraint->entityMessage)
             ->setParameter('@field', $field_name)
             ->setParameter('%content', $entity->label())
