@@ -177,18 +177,18 @@ class GroupNode extends GroupContentEnablerBase {
    *
    * @see \Drupal\gnode\Routing\GroupNodeRouteProvider
    */
-  public function getLocalActions($base_plugin_definition) {
+  public function getLocalActions() {
     $actions['group_node.add'] = [
       'title' => 'Add node',
       'route_name' => 'entity.group_content.group_node.add_page',
       'appears_on' => [$this->getRouteName('collection')],
-    ] + $base_plugin_definition;
+    ];
 
     $actions['group_node.create'] = [
       'title' => 'Create node',
       'route_name' => 'entity.group_content.group_node.create_page',
       'appears_on' => [$this->getRouteName('collection')],
-    ] + $base_plugin_definition;
+    ];
 
     return $actions;
   }

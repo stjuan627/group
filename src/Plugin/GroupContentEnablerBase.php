@@ -397,7 +397,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function getLocalActions($base_plugin_definition) {
+  public function getLocalActions() {
     $actions = [];
 
     if (($appears_on = $this->getRouteName('collection')) && ($route_name = $this->getRouteName('add-form'))) {
@@ -406,7 +406,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
         'title' => 'Add ' . $this->getLabel(),
         'route_name' => $route_name,
         'appears_on' => [$appears_on],
-      ] + $base_plugin_definition;
+      ];
     }
 
     return $actions;

@@ -249,15 +249,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   /**
    * Provides local actions for group content routes.
    *
-   * @param array $base_plugin_definition
-   *   The local action base plugin definition.
-   *
    * @return array
-   *   An array of local action definitions, keyed by their derivative ID.
+   *   An array of local action definitions, keyed by a unique ID. Please try to
+   *   namespace your IDs to avoid collisions with other plugins' local actions.
    *
+   * @see \Drupal\group\Plugin\GroupContentEnablerBase::getLocalActions()
    * @see https://www.drupal.org/node/2133247
    */
-  public function getLocalActions($base_plugin_definition);
+  public function getLocalActions();
 
   /**
    * Performs access check for the create operation.

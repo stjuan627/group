@@ -30,7 +30,9 @@ class GroupContentDynamicDeriver extends DeriverBase {
       }
 
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      $this->derivatives = array_merge($this->derivatives, $plugin->getLocalActions($base_plugin_definition));
+      foreach ($plugin->getLocalActions() as $action_id => $local_action) {
+        $this->derivatives[$action_id] = $local_action + $base_plugin_definition;
+      }
     }
 
     return $this->derivatives;
