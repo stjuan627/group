@@ -6,6 +6,7 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 
@@ -14,7 +15,7 @@ use Drupal\Core\Entity\EntityChangedInterface;
  *
  * @ingroup group
  */
-interface GroupContentInterface extends ContentEntityInterface, EntityChangedInterface {
+interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
    * Returns the group content type entity the group content uses.

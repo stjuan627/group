@@ -6,12 +6,13 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\user\UserInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 
-// @todo Remove the below https://www.drupal.org/node/2645136 lands.
+// @todo Remove the below when https://www.drupal.org/node/2645136 lands.
 use Drupal\Core\Url;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Entity\EntityMalformedException;
@@ -210,6 +211,36 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public function getOwner() {
+    return $this->get('uid')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return $this->get('uid')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    $this->set('uid', $uid);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    $this->set('uid', $account->id());
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Group content ID'))
@@ -276,12 +307,39 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
         'weight' => -5,
       ]);
 
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Group content creator'))
+      ->setDescription(t('The username of the group content creator.'))
+      ->setSetting('target_type', 'user')
+      ->setSetting('handler', 'default')
+      ->setDefaultValueCallback('Drupal\group\Entity\GroupContent::getCurrentUserId')
+      ->setTranslatable(TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created on'))
+      ->setDescription(t('The time that the group content was created.'))
+      ->setTranslatable(TRUE);
+
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed on'))
-      ->setDescription(t('The time that the group was last edited.'))
+      ->setDescription(t('The time that the group content was last edited.'))
       ->setTranslatable(TRUE);
 
     return $fields;
+  }
+
+  /**
+   * Default value callback for 'uid' base field definition.
+   *
+   * @see ::baseFieldDefinitions()
+   *
+   * @return array
+   *   An array of default values.
+   */
+  public static function getCurrentUserId() {
+    return [\Drupal::currentUser()->id()];
   }
 
   /**
