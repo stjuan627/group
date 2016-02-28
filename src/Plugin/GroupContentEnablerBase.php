@@ -508,7 +508,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getEntityReferenceSettings() {
-    return ['target_type' => $this->getEntityTypeId()];
+    $settings['target_type'] = $this->getEntityTypeId();
+    if ($bundle = $this->getEntityBundle()) {
+      $settings['handler_settings']['target_bundles'] = [$bundle];
+    }
+    return $settings;
   }
 
   /**

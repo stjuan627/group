@@ -250,7 +250,7 @@ class GroupMembership extends GroupContentEnablerBase {
    */
   public function getEntityReferenceSettings() {
     $settings = parent::getEntityReferenceSettings();
-    $settings['handler_settings'] = ['include_anonymous' => FALSE];
+    $settings['handler_settings']['include_anonymous'] = FALSE;
     return $settings;
   }
 
