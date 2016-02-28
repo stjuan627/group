@@ -7,8 +7,10 @@
 
 namespace Drupal\gnode\Plugin\GroupContentEnabler;
 
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\node\Entity\NodeType;
+use Drupal\Core\Url;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -34,6 +36,25 @@ class GroupNode extends GroupContentEnablerBase {
    */
   protected function getNodeType() {
     return NodeType::load($this->getEntityBundle());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupOperations(GroupInterface $group) {
+    $account = \Drupal::currentUser();
+    $type = $this->getEntityBundle();
+    $operations = [];
+
+    if ($group->hasPermission("create $type node", $account)) {
+      $operations["gnode-create-$type"] = [
+        'title' => $this->t('Create @type', ['@type' => $this->getNodeType()->label()]),
+        'url' => new Url($this->getRouteName('create-form'), ['group' => $group->id()]),
+        'weight' => 30,
+      ];
+    }
+
+    return $operations;
   }
 
   /**
