@@ -92,11 +92,15 @@ class GroupNodeFormStep1 extends NodeForm {
    * @see \Drupal\gnode\Controller\GroupNodeController::add()
    */
   public function cancel(array &$form, FormStateInterface $form_state) {
+    /** @var \Drupal\group\Entity\GroupInterface $group */
+    $group = $form_state->get('group');
+
     $storage_id = $form_state->get('storage_id');
     $this->privateTempStore->delete("$storage_id:node");
 
-    // @todo Redirect to group content collection. Feed $group to form for this.
-    $form_state->setRedirect('entity.group.collection');
+    // Redirect to the collection page if no destination was set in the URL.
+    $plugin = $group->getGroupType()->getContentPlugin('group_node:' . $this->entity->bundle());
+    $form_state->setRedirect($plugin->getRouteName('collection'), ['group' => $group->id()]);
   }
 
 }
