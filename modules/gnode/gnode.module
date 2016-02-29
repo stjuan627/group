@@ -253,38 +253,43 @@ function gnode_node_access_records(NodeInterface $node) {
   $records = [];
   $type = $node->bundle();
 
-  // Load all the group content for this node.
-  $group_content_types = GroupContentType::loadByContentPluginId("group_node:$type");
-  $group_contents = \Drupal::entityTypeManager()
-    ->getStorage('group_content')
-    ->loadByProperties(['type' => array_keys($group_content_types), 'entity_id' => $node->id()]);
+  // Only act if there are group content types for this node type.
+  if ($group_content_types = GroupContentType::loadByContentPluginId("group_node:$type")) {
+    // Load all of the group content for this node.
+    $group_contents = \Drupal::entityTypeManager()
+      ->getStorage('group_content')
+      ->loadByProperties([
+        'type' => array_keys($group_content_types),
+        'entity_id' => $node->id()
+      ]);
 
-  // Set records for every group the node belongs to.
-  foreach ($group_contents as $group_content) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
-    $gid = $group_content->getGroup()->id();
+    // Set records for every group the node belongs to.
+    foreach ($group_contents as $group_content) {
+      /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+      $gid = $group_content->getGroup()->id();
 
-    // Non-author records are only added for published nodes.
-    if ($node->isPublished()) {
+      // Non-author records are only added for published nodes.
+      if ($node->isPublished()) {
+        $records[] = [
+          'gid' => $gid,
+          'grant_view' => 1,
+          'grant_update' => 1,
+          'grant_delete' => 1,
+          'priority' => 0,
+          'realm' => "gnode:$type",
+        ];
+      }
+
+      // Add a grant for the node author.
       $records[] = [
-        'gid' => $gid,
+        'gid' => $node->getOwnerId(),
         'grant_view' => 1,
         'grant_update' => 1,
         'grant_delete' => 1,
         'priority' => 0,
-        'realm' => "gnode:$type",
+        'realm' => "gnode_author:$gid:$type",
       ];
     }
-
-    // Add a grant for the node author.
-    $records[] = [
-      'gid' => $node->getOwnerId(),
-      'grant_view' => 1,
-      'grant_update' => 1,
-      'grant_delete' => 1,
-      'priority' => 0,
-      'realm' => "gnode_author:$gid:$type",
-    ];
   }
 
   return $records;
