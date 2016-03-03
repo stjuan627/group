@@ -125,8 +125,13 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
 
   $type = $node->bundle();
 
-  // Load all the group content for this node.
+  // Only act if there are group content types for this node type.
   $group_content_types = GroupContentType::loadByContentPluginId("group_node:$type");
+  if (empty($group_content_types)) {
+    return AccessResult::neutral();
+  }
+
+  // Load all the group content for this node.
   $group_contents = \Drupal::entityTypeManager()
     ->getStorage('group_content')
     ->loadByProperties(['type' => array_keys($group_content_types), 'entity_id' => $node->id()]);
@@ -254,42 +259,45 @@ function gnode_node_access_records(NodeInterface $node) {
   $type = $node->bundle();
 
   // Only act if there are group content types for this node type.
-  if ($group_content_types = GroupContentType::loadByContentPluginId("group_node:$type")) {
-    // Load all of the group content for this node.
-    $group_contents = \Drupal::entityTypeManager()
-      ->getStorage('group_content')
-      ->loadByProperties([
-        'type' => array_keys($group_content_types),
-        'entity_id' => $node->id()
-      ]);
+  $group_content_types = GroupContentType::loadByContentPluginId("group_node:$type");
+  if (empty($group_content_types)) {
+    return $records;
+  }
 
-    // Set records for every group the node belongs to.
-    foreach ($group_contents as $group_content) {
-      /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
-      $gid = $group_content->getGroup()->id();
+  // Load all of the group content for this node.
+  $group_contents = \Drupal::entityTypeManager()
+    ->getStorage('group_content')
+    ->loadByProperties([
+      'type' => array_keys($group_content_types),
+      'entity_id' => $node->id()
+    ]);
 
-      // Non-author records are only added for published nodes.
-      if ($node->isPublished()) {
-        $records[] = [
-          'gid' => $gid,
-          'grant_view' => 1,
-          'grant_update' => 1,
-          'grant_delete' => 1,
-          'priority' => 0,
-          'realm' => "gnode:$type",
-        ];
-      }
+  // Set records for every group the node belongs to.
+  foreach ($group_contents as $group_content) {
+    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+    $gid = $group_content->getGroup()->id();
 
-      // Add a grant for the node author.
+    // Non-author records are only added for published nodes.
+    if ($node->isPublished()) {
       $records[] = [
-        'gid' => $node->getOwnerId(),
+        'gid' => $gid,
         'grant_view' => 1,
         'grant_update' => 1,
         'grant_delete' => 1,
         'priority' => 0,
-        'realm' => "gnode_author:$gid:$type",
+        'realm' => "gnode:$type",
       ];
     }
+
+    // Add a grant for the node author.
+    $records[] = [
+      'gid' => $node->getOwnerId(),
+      'grant_view' => 1,
+      'grant_update' => 1,
+      'grant_delete' => 1,
+      'priority' => 0,
+      'realm' => "gnode_author:$gid:$type",
+    ];
   }
 
   return $records;
