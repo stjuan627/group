@@ -47,27 +47,31 @@ class GroupOperationsBlock extends BlockBase {
 
     /** @var \Drupal\group\Entity\GroupInterface $group */
     if ($group = $this->getContextValue('group')) {
-      // Instead of copying the cache tag logic from the cache contexts, we run
-      // the existing code to generate cache tags for us. Hopefully, core will
-      // fix this. See: https://www.drupal.org/node/2666838.
-      $service_1 = \Drupal::service('group.group_route_context');
-      $service_2 = \Drupal::service('current_user');
-      $context_1 = new GroupTypeCacheContext($service_1, $service_2);
-      $context_2 = new GroupMembershipCacheContext($service_1, $service_2);
-      $tags = Cache::mergeTags(
-        $context_1->getCacheableMetadata()->getCacheTags(),
-        $context_2->getCacheableMetadata()->getCacheTags()
-      );
-
-      $build['#type'] = 'operations';
-      $build['#cache']['tags'] = $tags;
-
       $links = [];
       foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin) {
+        /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
         $links += $plugin->getGroupOperations($group);
       }
-      uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
-      $build['#links'] = $links;
+
+      if ($links) {
+        uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
+
+        // Instead of copying the cache tag logic from the cache contexts, we
+        // run the existing code to generate cache tags for us. Hopefully, core
+        // will fix this. See: https://www.drupal.org/node/2666838.
+        $service_1 = \Drupal::service('group.group_route_context');
+        $service_2 = \Drupal::service('current_user');
+        $context_1 = new GroupTypeCacheContext($service_1, $service_2);
+        $context_2 = new GroupMembershipCacheContext($service_1, $service_2);
+        $tags = Cache::mergeTags(
+          $context_1->getCacheableMetadata()->getCacheTags(),
+          $context_2->getCacheableMetadata()->getCacheTags()
+        );
+
+        $build['#type'] = 'operations';
+        $build['#cache']['tags'] = $tags;
+        $build['#links'] = $links;
+      }
     }
 
     // If no group was found, cache the empty result on the route.
