@@ -70,6 +70,11 @@ class GroupNode extends GroupContentEnablerBase {
   public function getPermissions() {
     $permissions = parent::getPermissions();
 
+    // Unset unwanted permissions defined by the base plugin.
+    $plugin_id = $this->getPluginId();
+    unset($permissions["access $plugin_id overview"]);
+
+    // Add our own permissions for managing the actual nodes.
     $type = $this->getEntityBundle();
     $type_arg = ['%node_type' => $this->getNodeType()->label()];
     $defaults = [
