@@ -10,6 +10,7 @@ namespace Drupal\group\Plugin;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
@@ -121,7 +122,15 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getContentTypeConfigId() {
-    return $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getPluginId());
+    $preferred_id = $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getPluginId());
+
+    // Return a hashed ID if the readable ID would exceed the maximum length.
+    if (strlen($preferred_id) > EntityTypeInterface::BUNDLE_MAX_LENGTH) {
+      $hashed_id = 'group_content_type_' . md5($preferred_id);
+      $preferred_id = substr($hashed_id, 0, EntityTypeInterface::BUNDLE_MAX_LENGTH);
+    }
+
+    return $preferred_id;
   }
 
   /**
