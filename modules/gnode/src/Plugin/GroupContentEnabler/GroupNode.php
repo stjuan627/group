@@ -131,22 +131,9 @@ class GroupNode extends GroupContentEnablerBase {
    * @see \Drupal\gnode\Routing\GroupNodeRouteProvider
    */
   public function getRouteName($name) {
-    switch ($name) {
-      // The collection route can be found in GroupNodeRouteProvider.
-      case 'collection':
-        return 'entity.group_content.group_node.collection';
-
-      // The add form routes need to have the node type hardcoded in their path
-      // so we can have a different route for each node type. That way, the
-      // routes can check for the responsible plugin without needing to have the
-      // plugin ID in the path.
-      case 'add-form':
-      case 'create-form':
-        $prefix = str_replace('-', '_', $name) . '_';
-        $type = $this->getEntityBundle();
-        return "entity.group_content.group_node.$prefix$type";
+    if ($name == 'collection') {
+      return 'entity.group_content.group_node.collection';
     }
-
     return parent::getRouteName($name);
   }
 
