@@ -10,6 +10,7 @@ namespace Drupal\group\Entity;
 use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
+use Drupal\Core\Config\Entity\Exception\ConfigEntityIdLengthException;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
@@ -119,6 +120,18 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       $role_ids[] = $group_role->id();
     }
     return $role_ids;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    // Throw an exception if the group type ID is longer than the limit.
+    if (strlen($this->id()) > GroupTypeInterface::ID_MAX_LENGTH) {
+      throw new ConfigEntityIdLengthException("Attempt to create a group type with an ID longer than " . GroupTypeInterface::ID_MAX_LENGTH . " characters: {$this->id()}.");
+    }
+
+    parent::preSave($storage);
   }
 
   /**

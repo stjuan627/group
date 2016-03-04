@@ -7,9 +7,8 @@
 
 namespace Drupal\group\Entity\Form;
 
-use Drupal\group\Entity\GroupRole;
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Entity\BundleEntityFormBase;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -46,7 +45,7 @@ class GroupTypeForm extends BundleEntityFormBase {
     $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $type->id(),
-      '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
+      '#maxlength' => GroupTypeInterface::ID_MAX_LENGTH,
       '#machine_name' => [
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
         'source' => ['label'],

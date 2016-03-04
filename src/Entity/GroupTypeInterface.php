@@ -16,6 +16,15 @@ use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginCollectionInterface {
 
   /**
+   * The maximum length of the ID, in characters.
+   *
+   * This is shorter than the default limit of 32 to allow group roles to have
+   * an ID which can be appended to the group type's ID without exceeding the
+   * default limit there. We leave of 10 characters to account for '-anonymous'.
+   */
+  const ID_MAX_LENGTH = 22;
+
+  /**
    * Gets the description.
    *
    * @return string
