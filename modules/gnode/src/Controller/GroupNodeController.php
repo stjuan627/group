@@ -15,6 +15,7 @@ use Drupal\node\NodeTypeInterface;
 use Drupal\user\PrivateTempStoreFactory;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -40,16 +41,26 @@ class GroupNodeController extends ControllerBase {
   protected $currentUser;
 
   /**
+   * The current request.
+   *
+   * @var \Symfony\Component\HttpFoundation\Request
+   */
+  protected $currentRequest;
+
+  /**
    * Constructs a new GroupNodeController.
    *
    * @param \Drupal\user\PrivateTempStoreFactory $temp_store_factory
    *   The factory for the temp store object.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
    */
-  public function __construct(PrivateTempStoreFactory $temp_store_factory, AccountInterface $current_user) {
+  public function __construct(PrivateTempStoreFactory $temp_store_factory, AccountInterface $current_user, RequestStack $request_stack) {
     $this->privateTempStore = $temp_store_factory->get('gnode_add_temp');
     $this->currentUser = $current_user;
+    $this->currentRequest = $request_stack->getCurrentRequest();
   }
 
   /**
@@ -58,7 +69,8 @@ class GroupNodeController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('user.private_tempstore'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('request_stack')
     );
   }
 
@@ -198,6 +210,17 @@ class GroupNodeController extends ControllerBase {
       '#group' => $group,
       '#node_types' => NodeType::loadMultiple($node_type_ids),
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Overwritten to pass on the URL redirect parameter instead of following it.
+   */
+  protected function redirect($route_name, array $route_parameters = [], array $options = [], $status = 302) {
+    $options['query'] = $this->currentRequest->query->all();
+    $this->currentRequest->query->remove('destination');
+    return parent::redirect($route_name, $route_parameters, $options, $status);
   }
 
 }
