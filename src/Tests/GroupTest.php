@@ -14,6 +14,7 @@ use Drupal\group\Entity\Group;
  *
  * @package Drupal\group\Tests
  * @ingroup group
+ * @group Group
  */
 class GroupTest extends GroupTestBase {
 
