@@ -153,6 +153,21 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function addMember(AccountInterface $account, $values = []) {
+    if (!$this->getMember($account)) {
+      $plugin = $this->getGroupType()->getContentPlugin('group_membership');
+      $group_content = GroupContent::create([
+          'type' => $plugin->getContentTypeConfigId(),
+          'gid' => $this->id(),
+          'entity_id' => $account->id(),
+        ] + $values);
+      $group_content->save();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMember(AccountInterface $account) {
     return GroupMembership::load($this, $account);
   }
@@ -269,6 +284,20 @@ class Group extends ContentEntityBase implements GroupInterface {
    */
   public static function getCurrentUserId() {
     return [\Drupal::currentUser()->id()];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    // If a new group is created, add the creator as a member by default.
+    // @todo Add creator roles by passing in a second parameter like this:
+    // ['group_roles' => ['foo', 'bar']].
+    if ($update === FALSE) {
+      $this->addMember($this->getOwner());
+    }
   }
 
   /**

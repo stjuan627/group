@@ -72,6 +72,20 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getContentEntities($content_enabler = NULL, $filters = []);
 
   /**
+   * Adds a user as a member of the group.
+   *
+   * Does nothing if the user is already a member of the group.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user to add as a member.
+   * @param array $values
+   *   (optional) Extra values to add to the group membership, like the
+   *   'group_roles' field. You cannot overwrite the group ID (gid) or user ID
+   *   (entity_id) with this method. Leave blank to make the user just a member.
+   */
+  public function addMember(AccountInterface $account, $values = []);
+
+  /**
    * Retrieves a user's membership for the group.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
