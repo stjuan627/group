@@ -27,7 +27,6 @@ use Symfony\Component\Routing\Route;
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
- *   entity_cardinality = 1,
  *   path_key = "members",
  *   enforced = TRUE
  * )
@@ -315,6 +314,15 @@ class GroupMembership extends GroupContentEnablerBase {
         'link' => 0,
       ],
     ])->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $config = parent::defaultConfiguration();
+    $config['entity_cardinality'] = 1;
+    return $config;
   }
 
 }

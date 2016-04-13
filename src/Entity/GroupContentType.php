@@ -20,6 +20,11 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   label = @Translation("Group content type"),
  *   handlers = {
  *     "access" = "Drupal\group\Entity\Access\GroupContentTypeAccessControlHandler",
+ *     "form" = {
+ *       "add" = "Drupal\group\Entity\Form\GroupContentTypeForm",
+ *       "edit" = "Drupal\group\Entity\Form\GroupContentTypeForm",
+ *       "delete" = "Drupal\group\Entity\Form\GroupContentTypeDeleteForm"
+ *     },
  *   },
  *   admin_permission = "administer group",
  *   config_prefix = "content_type",

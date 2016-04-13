@@ -11,6 +11,7 @@ use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -21,7 +22,7 @@ use Drupal\Core\Session\AccountInterface;
  * @see \Drupal\group\Plugin\GroupContentEnablerBase
  * @see plugin_api
  */
-interface GroupContentEnablerInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
+interface GroupContentEnablerInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**
    * Returns the plugin provider.
@@ -75,6 +76,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
    *   The group content's entity cardinality.
    */
   public function getEntityCardinality();
+
+  /**
+   * Returns the group type the plugin was instantiated for.
+   *
+   * @return \Drupal\group\Entity\GroupTypeInterface|null
+   *   The group type, if set in the plugin configuration.
+   */
+  public function getGroupType();
 
   /**
    * Returns the ID of the group type the plugin was instantiated for.

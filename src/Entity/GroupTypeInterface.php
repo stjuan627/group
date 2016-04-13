@@ -88,11 +88,23 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    * @param string $plugin_id
    *   The ID of the content enabler plugin to add.
    * @param array $configuration
-   *   An array of content enabler plugin configuration.
+   *   (optional) An array of content enabler plugin configuration.
    *
    * @return $this
    */
   public function installContentPlugin($plugin_id, array $configuration = []);
+
+  /**
+   * Updates the configuration of a content enabler plugin for this group type.
+   *
+   * @param string $plugin_id
+   *   The ID of the content enabler plugin to add.
+   * @param array $configuration
+   *   An array of content enabler plugin configuration.
+   *
+   * @return $this
+   */
+  public function updateContentPlugin($plugin_id, array $configuration);
 
   /**
    * Removes a content enabler plugin from this group type.

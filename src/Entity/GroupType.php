@@ -221,9 +221,15 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function installContentPlugin($plugin_id, array $configuration = []) {
-    // Save the plugin to the group type.
+    // The content plugins expect the actual configurable data to be under the
+    // 'data' key and the crucial data at the root level, so let's fix that.
+    $configuration['data'] = $configuration;
+
+    // Add in the crucial configuration keys.
     $configuration['id'] = $plugin_id;
     $configuration['group_type'] = $this->id();
+
+    // Save the plugin to the group type.
     $this->getInstalledContentPlugins()->addInstanceId($plugin_id, $configuration);
     $this->save();
 
@@ -257,6 +263,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     }
 
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateContentPlugin($plugin_id, array $configuration) {
+    if ($this->hasContentPlugin($plugin_id)) {
+      // @todo Refactor the way GroupContentEnablerBase saves config.
+      $plugin = $this->getContentPlugin($plugin_id);
+      $old = $plugin->getConfiguration();
+      $old['data'] = $configuration + $old['data'];
+      $this->getInstalledContentPlugins()->setInstanceConfiguration($plugin_id, $old);
+      $this->save();
+    }
   }
 
   /**

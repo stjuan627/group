@@ -80,24 +80,6 @@ class GroupContentEnabler extends Plugin {
   public $pathKey;
 
   /**
-   * (optional) The amount of groups the same content may be added to.
-   *
-   * Defaults to 0, which means unlimited.
-   *
-   * @var int
-   */
-  public $group_cardinality = 0;
-
-  /**
-   * (optional) The amount of times the same content may be added to a group.
-   *
-   * Defaults to 0, which means unlimited.
-   *
-   * @var int
-   */
-  public $entity_cardinality = 0;
-
-  /**
    * (optional) Whether this plugin is always on.
    *
    * @var bool

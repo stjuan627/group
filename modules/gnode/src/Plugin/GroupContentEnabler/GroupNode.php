@@ -21,7 +21,6 @@ use Symfony\Component\Routing\Route;
  *   label = @Translation("Group node"),
  *   description = @Translation("Adds nodes to groups both publicly and privately."),
  *   entity_type_id = "node",
- *   entity_cardinality = 1,
  *   path_key = "node",
  *   deriver = "Drupal\gnode\Plugin\GroupContentEnabler\GroupNodeDeriver"
  * )
@@ -204,6 +203,15 @@ class GroupNode extends GroupContentEnablerBase {
     ];
 
     return $actions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    $config = parent::defaultConfiguration();
+    $config['entity_cardinality'] = 1;
+    return $config;
   }
 
 }

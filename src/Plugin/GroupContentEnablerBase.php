@@ -13,11 +13,15 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
+ *
+ * @todo Refactor the way config is set, it's causing GroupType to have ugly
+ *       code in installContentPlugin() and updateContentPlugin().
  *
  * @see \Drupal\group\Annotation\GroupContentEnabler
  * @see \Drupal\group\GroupContentEnablerManager
@@ -35,8 +39,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
   /**
    * {@inheritdoc}
-   *
-   * @todo Consider doing configuration like BlockBase so we can remove this.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -87,14 +89,23 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getGroupCardinality() {
-    return $this->pluginDefinition['group_cardinality'];
+    return $this->configuration['group_cardinality'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEntityCardinality() {
-    return $this->pluginDefinition['entity_cardinality'];
+    return $this->configuration['entity_cardinality'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupType() {
+    if ($id = $this->getGroupTypeId()) {
+      return GroupType::load($id);
+    }
   }
 
   /**
@@ -137,8 +148,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getContentTypeLabel() {
-    $group_type = GroupType::load($this->getGroupTypeId());
-    return $group_type->label() . ': ' . $this->getLabel();
+    return $this->getGroupType()->label() . ': ' . $this->getLabel();
   }
 
   /**
@@ -558,7 +568,60 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return [];
+    return [
+      'group_cardinality' => 0,
+      'entity_cardinality' => 0,
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    /** @var \Drupal\Core\Entity\EntityTypeManager $entity_type_manager */
+    $entity_type_manager = \Drupal::service('entity_type.manager');
+
+    $replace = [
+      '%entity_type' => $entity_type_manager->getDefinition($this->getEntityTypeId())->getLabel(),
+      '%group_type' => $this->getGroupType()->label(),
+      '%plugin' => $this->getLabel(),
+    ];
+
+    $form['group_cardinality'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Group cardinality'),
+      '#description' => $this->t('The amount of %group_type groups a single %entity_type entity can be added to as a %plugin. Set to 0 for unlimited.', $replace),
+      '#default_value' => $this->configuration['group_cardinality'],
+      '#min' => 0,
+      '#required' => TRUE,
+    ];
+
+    $form['entity_cardinality'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Entity cardinality'),
+      '#description' => $this->t('The amount of times a single %entity_type entity can be added to the same %group_type group as a %plugin. Set to 0 for unlimited.', $replace),
+      '#default_value' => $this->configuration['entity_cardinality'],
+      '#min' => 0,
+      '#required' => TRUE,
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Only override this function if you need to do something specific to the
+   * submitted data before it is saved as configuration on the plugin. The data
+   * gets saved on the plugin in \Drupal\group\Entity\Form\GroupContentTypeForm.
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
   }
 
   /**

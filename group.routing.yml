@@ -151,11 +151,12 @@ entity.group_role.permissions_form:
 # todo Move to group type path when https://www.drupal.org/node/2651974 lands.
 # todo When moved, remove the breadcrumb generator.
 
-# todo Turn into confirmation form.
+# todo This route needs a requirement which only allows access if the plugin
+#      isn't installed on the group type yet.
 entity.group_content_type.add_form:
   path: '/admin/group/content/install/{group_type}/{plugin_id}'
   defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::installContentPlugin'
+    _entity_form: 'group_content_type.add'
     _title: 'Install content plugin'
   requirements:
     _permission: 'administer group'
@@ -163,16 +164,15 @@ entity.group_content_type.add_form:
 entity.group_content_type.edit_form:
   path: '/admin/group/content/manage/{group_content_type}'
   defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::configureContent'
+    _entity_form: 'group_content_type.edit'
     _title: 'Configure content plugin'
   requirements:
     _permission: 'administer group'
 
-# todo Turn into confirmation form.
 entity.group_content_type.delete_form:
   path: '/admin/group/content/manage/{group_content_type}/uninstall'
   defaults:
-    _controller: '\Drupal\group\Entity\Controller\GroupTypeController::uninstallContentPlugin'
+    _entity_form: 'group_content_type.delete'
     _title: 'Uninstall content plugin'
   requirements:
     _permission: 'administer group'
