@@ -146,7 +146,7 @@ class GroupNode extends GroupContentEnablerBase {
   }
 
   /**
-   * Gets the join form route.
+   * Gets the create form route.
    *
    * @return \Symfony\Component\Routing\Route|null
    *   The generated route, if available.
