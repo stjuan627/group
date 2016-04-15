@@ -5,9 +5,11 @@
  * Contains Drupal\group\group.module
  */
 
+use Drupal\group\Entity\GroupContent;
 use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
@@ -127,5 +129,19 @@ function group_form_block_form_alter(&$form, FormStateInterface $form_state, $fo
     $form['visibility']['group_type']['negate']['#type'] = 'value';
     $form['visibility']['group_type']['negate']['#title_display'] = 'invisible';
     $form['visibility']['group_type']['negate']['#value'] = $form['visibility']['group_type']['negate']['#default_value'];
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function group_entity_delete(EntityInterface $entity) {
+  if ($entity instanceof ContentEntityInterface) {
+    if ($group_contents = GroupContent::loadByEntity($entity)) {
+      /** @var \Drupal\group\Entity\GroupContent $group_content */
+      foreach ($group_contents as $group_content) {
+        $group_content->delete();
+      }
+    }
   }
 }
