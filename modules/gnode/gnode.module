@@ -123,6 +123,14 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
     return AccessResult::neutral();
   }
 
+  // Some modules, including the code in \Drupal\node\NodeForm::access() may
+  // check for 'view', 'update' or 'delete' access on new nodes, even though
+  // that makes little sense. We need to account for it to avoid crashes because
+  // we would otherwise query the DB with a non-existent node ID.
+  if ($node->isNew()) {
+    return AccessResult::neutral();
+  }
+
   $type = $node->bundle();
 
   // Only act if there are group content types for this node type.
@@ -134,11 +142,13 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
   // Load all the group content for this node.
   $group_contents = \Drupal::entityTypeManager()
     ->getStorage('group_content')
-    ->loadByProperties(['type' => array_keys($group_content_types), 'entity_id' => $node->id()]);
-
+    ->loadByProperties([
+      'type' => array_keys($group_content_types),
+      'entity_id' => $node->id(),
+    ]);
 
   // If the node does not belong to any group, we have nothing to say.
-  if (!count($group_contents)) {
+  if (empty($group_contents)) {
     return AccessResult::neutral();
   }
 
