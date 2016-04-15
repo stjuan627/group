@@ -63,14 +63,12 @@ services:
   plugin.manager.group_content_enabler:
     class: 'Drupal\group\Plugin\GroupContentEnablerManager'
     parent: 'default_plugin_manager'
-# TODO Implement this (look at filter module).
-# Prevent modules providing group content from being uninstalled.
-#  group.uninstall_validator:
-#    class: Drupal\group\GroupContentUninstallValidator
-#    tags:
-#      - { name: module_install.uninstall_validator }
-#    arguments: ['@plugin.manager.group_content_enabler', '@entity.manager', '@string_translation']
-#    lazy: true
+  group.uninstall_validator.group_content:
+    class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
+    tags:
+      - { name: 'module_install.uninstall_validator' }
+    arguments: ['@string_translation', '@entity.query']
+    lazy: true
   group.group_route_context:
     class: 'Drupal\group\Context\GroupRouteContext'
     arguments: ['@current_route_match']
