@@ -6,6 +6,9 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\user\UserInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -366,6 +369,35 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     }
 
     return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function loadByEntity(ContentEntityInterface $entity) {
+    $group_content_type_ids = [];
+
+    /** @var GroupContentEnablerBase $plugin */
+    foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
+      // If the plugin handles the entity type of the provided entity, we need
+      // to add the group content types it created to the list of bundle IDs to
+      // check group content against.
+      if ($plugin->getEntityTypeId() === $entity->getEntityTypeId()) {
+        $group_content_type_ids = array_merge($group_content_type_ids, array_keys(GroupContentType::loadByContentPluginId($plugin_id)));
+      }
+    }
+
+    // If no responsible group content types were found, we return nothing.
+    if (empty($group_content_type_ids)) {
+      return [];
+    }
+
+    return \Drupal::entityTypeManager()
+      ->getStorage('group_content')
+      ->loadByProperties([
+        'type' => $group_content_type_ids,
+        'entity_id' => $entity->id(),
+      ]);
   }
 
 }

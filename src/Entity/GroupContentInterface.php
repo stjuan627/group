@@ -56,4 +56,15 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    */
   public static function loadByContentPluginId($plugin_id);
 
+  /**
+   * Loads group content entities which reference a given entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   An entity which may be within one or more groups.
+   *
+   * @return \Drupal\group\Entity\GroupContentInterface[]
+   *   An array of group content entities which reference the given entity.
+   */
+  public static function loadByEntity(ContentEntityInterface $entity);
+
 }
