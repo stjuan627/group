@@ -12,6 +12,10 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Implements hook_help().
@@ -144,4 +148,32 @@ function group_entity_delete(EntityInterface $entity) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_entity_field_access().
+ *
+ * {@inheritdoc}
+ *
+ * @todo Move this to a form controller so we can hide the field if it has no
+ *       options available to it?
+ */
+function group_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  // We only care about the group roles field for now.
+  if ($field_definition->getName() != 'group_roles') {
+    return AccessResult::neutral();
+  }
+
+  /** @var \Drupal\group\Entity\GroupContent $group_content */
+  $group_content = $items->getEntity();
+  $group = $group_content->getGroup();
+
+  // Just to be safe, let's check the plugin ID.
+  if ($group_content->getContentPlugin()->getPluginId() == 'group_membership') {
+    // Only group administrators should be able to change the membership roles.
+    return AccessResult::forbiddenIf(!$group->hasPermission('administer members', $account));
+  }
+
+  // Don't show the field if the plugin ID didn't match.
+  return AccessResult::forbidden();
 }
