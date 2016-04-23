@@ -46,6 +46,9 @@ function group_theme() {
     'group' => [
       'render element' => 'elements',
     ],
+    'group_content' => [
+      'render element' => 'elements',
+    ],
     'group_add_list' => [
       'variables' => ['group_types' => NULL],
     ],
@@ -67,6 +70,25 @@ function group_theme_suggestions_group(array $variables) {
   $suggestions[] = 'group__' . $group->bundle() . '__' . $sanitized_view_mode;
   $suggestions[] = 'group__' . $group->id();
   $suggestions[] = 'group__' . $group->id() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function group_theme_suggestions_group_content(array $variables) {
+  $suggestions = [];
+
+  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+  $group_content = $variables['elements']['#group_content'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'group_content__' . $sanitized_view_mode;
+  $suggestions[] = 'group_content__' . $group_content->bundle();
+  $suggestions[] = 'group_content__' . $group_content->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'group_content__' . $group_content->id();
+  $suggestions[] = 'group_content__' . $group_content->id() . '__' . $sanitized_view_mode;
 
   return $suggestions;
 }
@@ -96,6 +118,40 @@ function template_preprocess_group(&$variables) {
     $page_group = $route_match->getParameter('group');
   }
   $is_page = (!empty($page_group) ? $page_group->id() == $group->id() : FALSE);
+  $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
+
+  // Helpful $content variable for templates.
+  $variables += array('content' => array());
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Prepares variables for the group content template.
+ *
+ * Default template: group-content.html.twig
+ *
+ * @param array $variables
+ *   - elements: An array of elements to display in view mode.
+ *   - group_content: The group content object.
+ *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
+ */
+function template_preprocess_group_content(&$variables) {
+  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+  $group_content = $variables['elements']['#group_content'];
+
+  $variables['group_content'] = $group_content;
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  $variables['label'] = $group_content->label();
+  $variables['url'] = $group_content->toUrl('canonical', ['language' => $group_content->language()]);
+
+  // See if we are rendering the group at its canonical route.
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() == $group_content->getContentPlugin()->getRouteName('canonical')) {
+    $page_group_content = $route_match->getParameter('group_content');
+  }
+  $is_page = (!empty($page_group_content) ? $page_group_content->id() == $group_content->id() : FALSE);
   $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
 
   // Helpful $content variable for templates.
