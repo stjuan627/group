@@ -11,6 +11,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -42,13 +43,66 @@ function group_element_info_alter(array &$types) {
  */
 function group_theme() {
   return [
-    /*'group' => [
+    'group' => [
       'render element' => 'elements',
-    ],*/
+    ],
     'group_add_list' => [
       'variables' => ['group_types' => NULL],
     ],
   ];
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function group_theme_suggestions_group(array $variables) {
+  $suggestions = [];
+
+  /** @var \Drupal\group\Entity\GroupInterface $group */
+  $group = $variables['elements']['#group'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'group__' . $sanitized_view_mode;
+  $suggestions[] = 'group__' . $group->bundle();
+  $suggestions[] = 'group__' . $group->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'group__' . $group->id();
+  $suggestions[] = 'group__' . $group->id() . '__' . $sanitized_view_mode;
+
+  return $suggestions;
+}
+
+/**
+ * Prepares variables for the group template.
+ *
+ * Default template: group.html.twig
+ *
+ * @param array $variables
+ *   - elements: An array of elements to display in view mode.
+ *   - group: The group object.
+ *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
+ */
+function template_preprocess_group(&$variables) {
+  /** @var \Drupal\group\Entity\GroupInterface $group */
+  $group = $variables['elements']['#group'];
+
+  $variables['group'] = $group;
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  $variables['label'] = $group->label();
+  $variables['url'] = $group->toUrl('canonical', ['language' => $group->language()]);
+
+  // See if we are rendering the group at its canonical route.
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() == 'entity.group.canonical') {
+    $page_group = $route_match->getParameter('group');
+  }
+  $is_page = (!empty($page_group) ? $page_group->id() == $group->id() : FALSE);
+  $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
+
+  // Helpful $content variable for templates.
+  $variables += array('content' => array());
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
 }
 
 /**
