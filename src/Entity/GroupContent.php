@@ -14,6 +14,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 // @todo Remove the below when https://www.drupal.org/node/2645136 lands.
 use Drupal\Core\Url;
