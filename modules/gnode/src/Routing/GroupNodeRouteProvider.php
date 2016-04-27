@@ -19,13 +19,20 @@ class GroupNodeRouteProvider {
    * Provides the shared collection route for group node plugins.
    */
   public function getRoutes() {
-    $plugin_ids = $permissions_add = $permissions_create = [];
+    $routes = $plugin_ids = $permissions_add = $permissions_create = [];
+
     foreach (NodeType::loadMultiple() as $name => $node_type) {
       $plugin_id = "group_node:$name";
 
       $plugin_ids[] = $plugin_id;
       $permissions_add[] = "create $plugin_id content";
       $permissions_create[] = "create $name node";
+    }
+
+    // If there are no node types yet, we cannot have any plugin IDs and should
+    // therefore exit early because we cannot have any routes for them either.
+    if (empty($plugin_ids)) {
+      return $routes;
     }
 
     $routes['entity.group_content.group_node.collection'] = new Route('group/{group}/node');
