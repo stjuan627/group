@@ -28,7 +28,7 @@ use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
  *
  * @ContentEntityType(
  *   id = "group_content",
- *   label = @Translation("Group content entity"),
+ *   label = @Translation("Group content"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\group\Entity\Views\GroupContentViewsData",

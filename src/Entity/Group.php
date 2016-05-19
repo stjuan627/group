@@ -22,7 +22,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @ContentEntityType(
  *   id = "group",
- *   label = @Translation("Group entity"),
+ *   label = @Translation("Group"),
  *   bundle_label = @Translation("Group type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
