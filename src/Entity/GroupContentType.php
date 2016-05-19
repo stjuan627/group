@@ -9,6 +9,7 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
@@ -129,6 +130,28 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     return \Drupal::entityTypeManager()
       ->getStorage('group_content_type')
       ->loadByProperties(['content_plugin' => $plugin_id]);
+  }
+  
+  /**
+   * {@inheritdoc}
+   */
+  public static function loadByEntityTypeId($entity_type_id) {
+    $plugin_ids = [];
+
+    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
+      if ($plugin->getEntityTypeId() === $entity_type_id) {
+        $plugin_ids[] = $plugin_id;
+      }
+    }
+
+    // If no responsible group content plugins were found, we return nothing.
+    if (empty($plugin_ids)) {
+      return [];
+    }
+
+    // Otherwise load all group content types being handled by gathered plugins.
+    return self::loadByContentPluginId($plugin_ids);
   }
 
   /**
