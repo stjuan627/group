@@ -9,7 +9,6 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\group\Plugin\GroupContentEnablerHelper;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 
