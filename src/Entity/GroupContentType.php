@@ -137,9 +137,12 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    */
   public static function loadByEntityTypeId($entity_type_id) {
     $plugin_ids = [];
+    
+    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
 
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-    foreach (GroupContentEnablerHelper::getAllContentEnablers() as $plugin_id => $plugin) {
+    foreach ($plugin_manager->getAll() as $plugin_id => $plugin) {
       if ($plugin->getEntityTypeId() === $entity_type_id) {
         $plugin_ids[] = $plugin_id;
       }

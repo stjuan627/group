@@ -68,7 +68,7 @@ services:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:
       - { name: 'module_install.uninstall_validator' }
-    arguments: ['@string_translation', '@entity.query']
+    arguments: ['@string_translation', '@entity.query', '@plugin.manager.group_content_enabler']
     lazy: 'true'
 
   group_content_type.breadcrumb:
@@ -78,4 +78,4 @@ services:
 
   plugin.manager.group_content_enabler:
     class: 'Drupal\group\Plugin\GroupContentEnablerManager'
-    parent: 'default_plugin_manager'
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
