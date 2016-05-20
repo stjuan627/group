@@ -11,6 +11,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Manages GroupContentEnabler plugin implementations.
@@ -104,6 +105,35 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
     }
 
     return $this->installedPluginIds;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function installEnforced(GroupTypeInterface $group_type = NULL) {
+    $enforced = [];
+
+    // Gather the ID of all plugins that are marked as enforced.
+    foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
+      if ($plugin_info['enforced']) {
+        $enforced[] = $plugin_id;
+      }
+    }
+
+    // If no group type was specified, we check all of them.
+    /** @var \Drupal\group\Entity\GroupTypeInterface[] $group_types */
+    $group_types = empty($group_type)
+      ? $this->entityTypeManager->getStorage('group_type')->loadMultiple()
+      : [$group_type];
+
+    // Search through all of the enforced plugins and install new ones.
+    foreach ($group_types as $group_type) {
+      foreach ($enforced as $plugin_id) {
+        if (!$group_type->hasContentPlugin($plugin_id)) {
+          $group_type->installContentPlugin($plugin_id);
+        }
+      }
+    }
   }
 
   /**

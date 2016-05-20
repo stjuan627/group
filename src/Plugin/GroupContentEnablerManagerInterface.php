@@ -8,6 +8,7 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Provides a common interface for group content enabler managers.
@@ -40,6 +41,15 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
    */
   public function getInstalledIds();
 
+  /**
+   * Installs all plugins which are marked as enforced.
+   *
+   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
+   *   (optional) The group type to install enforced plugins for. Leave blank to
+   *   run the installation process for all group types.
+   */
+  public function installEnforced(GroupTypeInterface $group_type = NULL);
+  
   /**
    * Resets the static properties on this class.
    * 
