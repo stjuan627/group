@@ -163,7 +163,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     // In case the group content type got deleted by uninstalling the providing
     // module, we still need to uninstall it on the group type.
     foreach ($entities as $entity) {
-      /** @var \Drupal\group\Entity\GroupContentType $entity */
+      /** @var \Drupal\group\Entity\GroupContentTypeInterface $entity */
       if ($entity->isUninstalling()) {
         $group_type = $entity->getGroupType();
         $group_type->getInstalledContentPlugins()->removeInstanceId($entity->getContentPluginId());
