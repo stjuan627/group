@@ -370,7 +370,24 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     if ($group_content_type = GroupContentType::load($bundle)) {
       $plugin = $group_content_type->getContentPlugin();
 
-      $fields['entity_id'] = clone $base_field_definitions['entity_id'];
+      /** @var \Drupal\Core\Field\BaseFieldDefinition $original */
+      $original = $base_field_definitions['entity_id'];
+
+      // Recreated the original entity_id field so that it does not contain any
+      // data in its "propertyDefinitions" or "schema" properties because those
+      // were set based on the base field which had no clue what bundle to serve
+      // up until now. This is a bug in core because we can't simply unset those
+      // two properties, see: https://www.drupal.org/node/2346329
+      $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel($original->getLabel())
+        ->setDescription($original->getDescription())
+        ->setConstraints($original->getConstraints())
+        ->setDisplayOptions('view', $original->getDisplayOptions('view'))
+        ->setDisplayOptions('form', $original->getDisplayOptions('form'))
+        ->setDisplayConfigurable('view', $original->isDisplayConfigurable('view'))
+        ->setDisplayConfigurable('form', $original->isDisplayConfigurable('form'))
+        ->setRequired($original->isRequired());
+
       foreach ($plugin->getEntityReferenceSettings() as $name => $setting) {
         $fields['entity_id']->setSetting($name, $setting);
       }

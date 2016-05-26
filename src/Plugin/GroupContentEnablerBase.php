@@ -126,8 +126,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getContentLabel(GroupContentInterface $group_content) {
-    // Temporary hotfix for https://www.drupal.org/node/2734105.
-    return '';
     return $group_content->getEntity()->label();
   }
 
