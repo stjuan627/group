@@ -42,6 +42,11 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
   public function getInstalledIds();
 
   /**
+   * Clears static and persistent installed plugin ID caches.
+   */
+  public function clearCachedInstalledIds();
+
+  /**
    * Installs all plugins which are marked as enforced.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
@@ -49,12 +54,21 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
    *   run the installation process for all group types.
    */
   public function installEnforced(GroupTypeInterface $group_type = NULL);
-  
+
   /**
-   * Resets the static properties on this class.
+   * Retrieves all of the group content types for a plugin.
+   *
+   * @param $plugin_id
+   *   The ID of the plugin to retrieve GroupContentType entity IDs for.
    * 
-   * @todo Incorporate in other cache invalidation?
+   * @return string[]
+   *   An array of GroupContentType IDs.
    */
-  public function reset();
-  
+  public function getGroupContentTypeIds($plugin_id);
+
+  /**
+   * Clears static and persistent group content type ID map caches.
+   */
+  public function clearCachedGroupContentTypeIdMap();
+
 }
