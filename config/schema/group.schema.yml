@@ -37,6 +37,16 @@ group.type.*:
           data:
             type: 'sequence'
             label: 'Plugin configuration'
+            sequence:
+              type: 'group_content_enabler.config.[%key]'
+
+group_content_enabler.config.group_cardinality:
+  type: 'integer'
+  label: 'Group Cardinality'
+
+group_content_enabler.config.entity_cardinality:
+  type: 'integer'
+  label: 'Entity Cardinality'
 
 # Follows the pattern group.role.GROUP_TYPE_ID-GROUP_ROLE_ID.
 group.role.*:
