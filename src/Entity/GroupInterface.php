@@ -19,6 +19,14 @@ use Drupal\Core\Session\AccountInterface;
 interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
+   * Gets the group creation timestamp.
+   *
+   * @return int
+   *   Creation timestamp of the group.
+   */
+  public function getCreatedTime();
+
+  /**
    * Returns the group type entity the group uses.
    *
    * @return \Drupal\group\Entity\GroupTypeInterface

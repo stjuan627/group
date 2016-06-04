@@ -285,6 +285,18 @@ class Group extends ContentEntityBase implements GroupInterface {
       ))
       ->setDisplayConfigurable('view', TRUE);
 
+    if (\Drupal::moduleHandler()->moduleExists('path')) {
+      $fields['path'] = BaseFieldDefinition::create('path')
+        ->setLabel(t('URL alias'))
+        ->setTranslatable(TRUE)
+        ->setDisplayOptions('form', array(
+          'type' => 'path',
+          'weight' => 30,
+        ))
+        ->setDisplayConfigurable('form', TRUE)
+        ->setCustomStorage(TRUE);
+    }
+
     return $fields;
   }
 
@@ -317,7 +329,7 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+  public static function preDelete(EntityStorageInterface $storage, array $entities) {
     // Remove all group content from these groups as well.
     foreach ($entities as $group) {
       foreach ($group->getContent() as $group_content) {
