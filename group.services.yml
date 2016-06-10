@@ -41,7 +41,17 @@ services:
     arguments: ['@group.group_route_context', '@current_user']
     tags:
       - { name: 'cache.context'}
-  cache_context.group_membership.permissions:
+  cache_context.group_membership.audience:
+    class: 'Drupal\group\Cache\Context\GroupMembershipAudienceCacheContext'
+    arguments: ['@group.group_route_context', '@current_user']
+    tags:
+      - { name: 'cache.context'}
+  cache_context.group_membership.roles:
+    class: 'Drupal\group\Cache\Context\GroupMembershipRolesCacheContext'
+    arguments: ['@group.group_route_context', '@current_user']
+    tags:
+      - { name: 'cache.context'}
+  cache_context.group_membership.roles.permissions:
     class: 'Drupal\group\Cache\Context\GroupMembershipPermissionsCacheContext'
     arguments: ['@group.group_route_context', '@current_user', '@group.permissions_hash_generator']
     tags:

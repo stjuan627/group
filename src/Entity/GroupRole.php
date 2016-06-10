@@ -94,7 +94,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * The permissions belonging to the group role.
    *
-   * @var array
+   * @var string[]
    */
   protected $permissions = [];
 

@@ -7,15 +7,16 @@
 
 namespace Drupal\group;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupRole;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
-use Drupal\Core\Session\AccountInterface;
 
 /**
  * Wrapper class for a GroupContent entity representing a membership.
  */
-class GroupMembership {
+class GroupMembership implements CacheableDependencyInterface {
 
   /**
    * The group content entity to wrap.
@@ -217,6 +218,28 @@ class GroupMembership {
       }
     }
     return FALSE;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    return $this->getGroupContent()->getCacheContexts();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheTags() {
+    return $this->getGroupContent()->getCacheTags();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return $this->getGroupContent()->getCacheMaxAge();
   }
 
 }

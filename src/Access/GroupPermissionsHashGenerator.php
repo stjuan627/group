@@ -75,8 +75,8 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
     // If the user isn't a member, retrieve the outsider or anonymous role.
     else {
       $role_name = $account->id() == 0
-        ? $group->bundle() . '.outsider'
-        : $group->bundle() . '.anonymous';
+        ? $group->bundle() . '-outsider'
+        : $group->bundle() . '-anonymous';
       $group_roles[$role_name] = GroupRole::load($role_name);
     }
 

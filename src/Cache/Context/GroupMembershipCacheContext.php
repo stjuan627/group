@@ -38,22 +38,23 @@ class GroupMembershipCacheContext extends GroupMembershipCacheContextBase implem
       return $group_membership->getGroupContent()->id();
     }
 
-    // Otherwise, return 'outsider' or 'anonymous' depending on the user.
-    return $this->user->id() == 0 ? 'anonymous' : 'outsider';
+    // Otherwise, return the name of the 'outsider' or 'anonymous' group role,
+    // depending on the user. This is necessary to have a unique identifier to
+    // distinguish between 'outsider' or 'anonymous' users for different group
+    // types.
+    return $this->user->id() == 0
+      ? $this->group->bundle() . '-anonymous'
+      : $this->group->bundle() . '-outsider';
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheableMetadata() {
-    $cacheable_metadata = new CacheableMetadata();
-
-    // This needs to be invalidated whenever the group membership is updated.
-    if ($this->hasExistingGroup() && $group_membership = $this->group->getMember($this->user)) {
-      $cacheable_metadata->setCacheTags($group_membership->getGroupContent()->getCacheTags());
-    }
-
-    return $cacheable_metadata;
+    // You can't update a group content's ID. So even if somehow this top-level
+    // cache context got optimized away, it does not need to set a cache tag for
+    // a group content entity as the ID is not invalidated by a save.
+    return new CacheableMetadata();
   }
 
 }
