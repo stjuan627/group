@@ -9,7 +9,6 @@ namespace Drupal\group;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupRole;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
 
@@ -196,8 +195,8 @@ class GroupMembership implements CacheableDependencyInterface {
     }
 
     // Add the special 'member' role to the retrieved roles.
-    $member_role_id = $this->getGroup()->bundle() . '-member';
-    $roles[$member_role_id] = GroupRole::load($member_role_id);
+    $member_role = $this->getGroup()->getGroupType()->getMemberRole();
+    $roles[$member_role->id()] = $member_role;
 
     return $roles;
   }

@@ -53,9 +53,9 @@ class GroupMembershipRolesCacheContext extends GroupMembershipCacheContextBase i
       $group_roles = array_keys($group_membership->getRoles());
     }
     else {
-      $group_roles = $this->user->id() == 0
-        ? [$this->group->bundle() . '-anonymous']
-        : [$this->group->bundle() . '-outsider'];
+      $group_roles = $this->user->isAnonymous()
+        ? [$this->group->getGroupType()->getAnonymousRoleId()]
+        : [$this->group->getGroupType()->getOutsiderRoleId()];
     }
 
     if ($group_role === NULL) {

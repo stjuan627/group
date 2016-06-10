@@ -199,10 +199,10 @@ class Group extends ContentEntityBase implements GroupInterface {
       return $group_membership->hasPermission($permission);
     }
 
-    // Otherwise, check the outsider or anonymous role.
-    return $account->isAuthenticated()
-      ? GroupRole::load($this->bundle() . '-outsider')->hasPermission($permission)
-      : GroupRole::load($this->bundle() . '-anonymous')->hasPermission($permission);
+    // Otherwise, check the 'anonymous' or 'outsider' role.
+    return $account->isAnonymous()
+      ? $this->getGroupType()->getAnonymousRole()->hasPermission($permission)
+      : $this->getGroupType()->getOutsiderRole()->hasPermission($permission);
   }
 
   /**

@@ -11,7 +11,6 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 use Drupal\Core\Plugin\Context\ContextProviderInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupRole;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
 
 /**
@@ -87,10 +86,10 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
       }
       // Otherwise retrieve the 'anonymous' or 'outsider' role.
       else {
-        $role_name = $this->user->id() == 0
-          ? $this->group->bundle() . '-anonymous'
-          : $this->group->bundle() . '-outsider';
-        $group_roles[$role_name] = GroupRole::load($role_name);
+        $group_role = $this->user->isAnonymous()
+          ? $this->group->getGroupType()->getAnonymousRole()
+          : $this->group->getGroupType()->getOutsiderRole();
+        $group_roles[$group_role->id()] = $group_role;
       }
 
       // Merge the cacheable metadata of all the roles.

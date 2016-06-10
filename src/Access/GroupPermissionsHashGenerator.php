@@ -7,7 +7,6 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupRole;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Cache\Cache;
@@ -74,10 +73,10 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
     }
     // If the user isn't a member, retrieve the outsider or anonymous role.
     else {
-      $role_name = $account->id() == 0
-        ? $group->bundle() . '-outsider'
-        : $group->bundle() . '-anonymous';
-      $group_roles[$role_name] = GroupRole::load($role_name);
+      $group_role = $account->isAnonymous()
+        ? $group->getGroupType()->getAnonymousRole()
+        : $group->getGroupType()->getOutsiderRole();
+      $group_roles[$group_role->id()] = $group_role;
     }
 
     // Sort the group roles by ID.

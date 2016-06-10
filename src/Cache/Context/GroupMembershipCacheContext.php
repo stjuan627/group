@@ -44,13 +44,13 @@ class GroupMembershipCacheContext extends GroupMembershipCacheContextBase implem
       return $group_membership->getGroupContent()->id();
     }
 
-    // Otherwise, return the name of the 'outsider' or 'anonymous' group role,
+    // Otherwise, return the ID of the 'outsider' or 'anonymous' group role,
     // depending on the user. This is necessary to have a unique identifier to
     // distinguish between 'outsider' or 'anonymous' users for different group
     // types.
-    return $this->user->id() == 0
-      ? $this->group->bundle() . '-anonymous'
-      : $this->group->bundle() . '-outsider';
+    return $this->user->isAnonymous()
+      ? $this->group->getGroupType()->getAnonymousRoleId()
+      : $this->group->getGroupType()->getOutsiderRoleId();
   }
 
   /**
