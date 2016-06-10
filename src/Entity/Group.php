@@ -64,6 +64,15 @@ class Group extends ContentEntityBase implements GroupInterface {
   use EntityChangedTrait;
 
   /**
+   * Gets the group membership loader.
+   *
+   * @return \Drupal\group\GroupMembershipLoaderInterface
+   */
+  protected function membershipLoader() {
+    return \Drupal::service('group.membership_loader');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getCreatedTime() {
@@ -170,14 +179,14 @@ class Group extends ContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public function getMember(AccountInterface $account) {
-    return GroupMembership::load($this, $account);
+    return $this->membershipLoader()->load($this, $account);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getMembers($roles = NULL) {
-    return GroupMembership::loadByGroup($this, $roles);
+    return $this->membershipLoader()->loadByGroup($this, $roles);
   }
 
   /**
