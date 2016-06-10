@@ -17,6 +17,12 @@ use Drupal\Core\Cache\Context\CacheContextInterface;
  * the fact that a user is a member, outsider or anonymous user with regard to
  * the group.
  *
+ * Please note: This cache context uses the group from the current route as the
+ * value object to work with. This context is therefore only to be used with
+ * data that was based on the group from the route. You can retrieve it using
+ * the 'entity:group' context provided by the 'group.group_route_context'
+ * service. See an example at: \Drupal\group\Plugin\Block\GroupOperationsBlock.
+ *
  * Cache context ID: 'group_membership.audience'.
  */
 class GroupMembershipAudienceCacheContext extends GroupMembershipCacheContextBase implements CacheContextInterface {

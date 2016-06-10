@@ -17,6 +17,12 @@ use Drupal\Core\Cache\Context\CalculatedCacheContextInterface;
  * instance when you want to show a block listing all of the member's roles. Use
  * group_membership.roles.permissions for anything that checks permissions.
  *
+ * Please note: This cache context uses the group from the current route as the
+ * value object to work with. This context is therefore only to be used with
+ * data that was based on the group from the route. You can retrieve it using
+ * the 'entity:group' context provided by the 'group.group_route_context'
+ * service. See an example at: \Drupal\group\Plugin\Block\GroupOperationsBlock.
+ *
  * Cache context ID: 'group_membership.roles' (to vary by all roles).
  * Calculated cache context ID: 'group_membership.roles:%group_role', e.g.
  * 'group_membership.roles:%administrator' (to vary by the presence or absence

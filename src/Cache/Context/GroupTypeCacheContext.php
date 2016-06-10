@@ -13,6 +13,12 @@ use Drupal\Core\Cache\Context\CacheContextInterface;
 /**
  * Defines a cache context for "per group type" caching.
  *
+ * Please note: This cache context uses the group from the current route as the
+ * value object to work with. This context is therefore only to be used with
+ * data that was based on the group from the route. You can retrieve it using
+ * the 'entity:group' context provided by the 'group.group_route_context'
+ * service. See an example at: \Drupal\group\Plugin\Block\GroupOperationsBlock.
+ *
  * Cache context ID: 'group.type'.
  */
 class GroupTypeCacheContext extends GroupCacheContextBase implements CacheContextInterface {
