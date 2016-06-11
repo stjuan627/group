@@ -73,7 +73,8 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   property or field names and the values are the value to filter on.
    *
    * @return \Drupal\Core\Entity\EntityInterface[]
-   *   A list of entities matching the criteria.
+   *   A list of entities matching the criteria. This list does not have keys
+   *   that represent the entity IDs as we could have collisions that way.
    *
    * @see \Drupal\group\Entity\GroupInterface::getContent()
    */

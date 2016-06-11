@@ -153,8 +153,7 @@ class Group extends ContentEntityBase implements GroupInterface {
     $entities = [];
 
     foreach ($this->getContent($content_enabler, $filters) as $group_content) {
-      $entity = $group_content->getEntity();
-      $entities[$entity->id()] = $entity;
+      $entities[] = $group_content->getEntity();
     }
 
     return $entities;
