@@ -22,7 +22,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-  
+
   /**
    * The current user's account object.
    *
@@ -42,43 +42,55 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
   }
+
+  /**
+   * Gets the group content storage.
+   *
+   * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
+   */
+  protected function groupContentStorage() {
+    return $this->entityTypeManager->getStorage('group_content');
+  }
+
+  /**
+   * Wraps GroupContent entities ina GroupMembership object.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface[] $entities
+   *   An array of GroupContent entities to wrap.
+   * 
+   * @return \Drupal\group\GroupMembership[]
+   *   A list of GroupMembership wrapper objects.
+   */
+  protected function wrapGroupContentEntities($entities) {
+    $group_memberships = [];
+    foreach ($entities as $group_content) {
+      $group_memberships[] = new GroupMembership($group_content);
+    }
+    return $group_memberships;
+  }
   
   /**
    * {@inheritdoc}
    */
   public function load(GroupInterface $group, AccountInterface $account) {
-    if ($group_content = $group->getContent('group_membership', ['entity_id' => $account->id()])) {
-      return new GroupMembership(reset($group_content));
-    }
-    return FALSE;
+    $filters = ['entity_id' => $account->id()];
+    $group_contents = $this->groupContentStorage()->loadByGroup($group, 'group_membership', $filters);
+    $group_memberships = $this->wrapGroupContentEntities($group_contents);
+    return $group_memberships ? reset($group_memberships) : FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function loadByGroup(GroupInterface $group, $roles = NULL) {
-    // Retrieve the group content type ID for the provided group's type.
-    $plugin = $group->getGroupType()->getContentPlugin('group_membership');
-    $group_content_type_id = $plugin->getContentTypeConfigId();
-
-    // Try to load all possible membership group content for the group.
-    $properties = ['type' => $group_content_type_id, 'gid' => $group->id()];
-    if (!empty($roles)) {
-      $properties['group_roles'] = (array) $roles;
+    $filters = [];
+    
+    if (isset($roles)) {
+      $filters['group_roles'] = (array) $roles;
     }
-
-    /** @var \Drupal\group\Entity\GroupContentInterface[] $group_contents */
-    $group_contents = $this->entityTypeManager
-      ->getStorage('group_content')
-      ->loadByProperties($properties);
-
-    // Wrap the retrieved group content in a GroupMembership.
-    $group_memberships = [];
-    foreach ($group_contents as $group_content) {
-      $group_memberships[] = new GroupMembership($group_content);
-    }
-
-    return $group_memberships;
+    
+    $group_contents = $this->groupContentStorage()->loadByGroup($group, 'group_membership', $filters);
+    return $this->wrapGroupContentEntities($group_contents);
   }
 
   /**
@@ -106,22 +118,13 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     }
 
     $properties = ['type' => $group_content_type_ids, 'entity_id' => $account->id()];
-    if (!empty($roles)) {
+    if (isset($roles)) {
       $properties['group_roles'] = (array) $roles;
     }
 
     /** @var \Drupal\group\Entity\GroupContentInterface[] $group_contents */
-    $group_contents = $this->entityTypeManager
-      ->getStorage('group_content')
-      ->loadByProperties($properties);
-
-    // Wrap the retrieved group content in a GroupMembership.
-    $group_memberships = [];
-    foreach ($group_contents as $group_content) {
-      $group_memberships[] = new GroupMembership($group_content);
-    }
-
-    return $group_memberships;
+    $group_contents = $this->groupContentStorage()->loadByProperties($properties);
+    return $this->wrapGroupContentEntities($group_contents);
   }
 
 }

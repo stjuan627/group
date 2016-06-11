@@ -73,6 +73,15 @@ class Group extends ContentEntityBase implements GroupInterface {
   }
 
   /**
+   * Gets the group content storage.
+   *
+   * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
+   */
+  protected function groupContentStorage() {
+    return $this->entityTypeManager()->getStorage('group_content');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getCreatedTime() {
@@ -127,16 +136,7 @@ class Group extends ContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public function getContent($content_enabler = NULL, $filters = []) {
-    $properties = ['gid' => $this->id()] + $filters;
-
-    // If a plugin ID was provided, set the group content type ID for it.
-    if (isset($content_enabler)) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      $plugin = $this->getGroupType()->getContentPlugin($content_enabler);
-      $properties['type'] = $plugin->getContentTypeConfigId();
-    }
-
-    return \Drupal::entityTypeManager()->getStorage('group_content')->loadByProperties($properties);
+    return $this->groupContentStorage()->loadByGroup($this, $content_enabler, $filters);
   }
 
   /**
