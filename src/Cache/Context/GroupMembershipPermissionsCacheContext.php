@@ -9,7 +9,7 @@ namespace Drupal\group\Cache\Context;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
-use Drupal\Core\Plugin\Context\ContextProviderInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
 
@@ -36,15 +36,15 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
   /**
    * Constructs a new GroupMembershipPermissionsCacheContext class.
    *
-   * @param \Drupal\Core\Plugin\Context\ContextProviderInterface $context_provider
-   *   The group route context.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
+   *   The current route match object.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
    * @param \Drupal\group\Access\GroupPermissionsHashGeneratorInterface $hash_generator
    *   The permissions hash generator.
    */
-  public function __construct(ContextProviderInterface $context_provider, AccountInterface $user, GroupPermissionsHashGeneratorInterface $hash_generator) {
-    parent::__construct($context_provider, $user);
+  public function __construct(RouteMatchInterface $current_route_match, AccountInterface $user, GroupPermissionsHashGeneratorInterface $hash_generator) {
+    parent::__construct($current_route_match, $user);
     $this->permissionsHashGenerator = $hash_generator;
   }
 

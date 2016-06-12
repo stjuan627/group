@@ -28,32 +28,32 @@ services:
 
   cache_context.group:
     class: 'Drupal\group\Cache\Context\GroupCacheContext'
-    arguments: ['@group.group_route_context']
+    arguments: ['@current_route_match']
     tags:
       - { name: 'cache.context'}
   cache_context.group.type:
     class: 'Drupal\group\Cache\Context\GroupTypeCacheContext'
-    arguments: ['@group.group_route_context']
+    arguments: ['@current_route_match']
     tags:
       - { name: 'cache.context'}
   cache_context.group_membership:
     class: 'Drupal\group\Cache\Context\GroupMembershipCacheContext'
-    arguments: ['@group.group_route_context', '@current_user']
+    arguments: ['@current_route_match', '@current_user']
     tags:
       - { name: 'cache.context'}
   cache_context.group_membership.audience:
     class: 'Drupal\group\Cache\Context\GroupMembershipAudienceCacheContext'
-    arguments: ['@group.group_route_context', '@current_user']
+    arguments: ['@current_route_match', '@current_user']
     tags:
       - { name: 'cache.context'}
   cache_context.group_membership.roles:
     class: 'Drupal\group\Cache\Context\GroupMembershipRolesCacheContext'
-    arguments: ['@group.group_route_context', '@current_user']
+    arguments: ['@current_route_match', '@current_user']
     tags:
       - { name: 'cache.context'}
   cache_context.group_membership.roles.permissions:
     class: 'Drupal\group\Cache\Context\GroupMembershipPermissionsCacheContext'
-    arguments: ['@group.group_route_context', '@current_user', '@group.permissions_hash_generator']
+    arguments: ['@current_route_match', '@current_user', '@group.permissions_hash_generator']
     tags:
       - { name: 'cache.context'}
 
