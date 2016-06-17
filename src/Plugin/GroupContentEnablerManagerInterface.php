@@ -30,6 +30,20 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
   public function getAll();
 
   /**
+   * Returns a plugin collection of all installed content enablers.
+   *
+   * This collection will not have anything set in the individual plugins'
+   * configuration. Do not use any methods on the plugin that require a group
+   * type to be set or you may encounter unexpected behavior. Instead, use
+   * GroupTypeInterface::getInstalledContentPlugins()->get($plugin_id) to get
+   * fully configured instances of the plugins.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   *   A plugin collection with a vanilla instance of every installed plugin.
+   */
+  public function getInstalled();
+  
+  /**
    * Returns the plugin ID of all content enablers in use.
    *
    * Seeing as a plugin can be installed on multiple group types, we cannot

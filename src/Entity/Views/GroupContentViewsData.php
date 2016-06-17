@@ -76,17 +76,8 @@ class GroupContentViewsData extends EntityViewsData {
     /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
     $entity_types = $this->entityManager->getDefinitions();
 
-    // Retrieve all installed content enabler plugins.
-    $installed = $this->pluginManager->getInstalledIds();
-
     // Add views data for each installed plugin.
-    $group_content_plugins = $this->pluginManager->getAll();
-    foreach ($group_content_plugins as $plugin_id => $plugin) {
-      // Skip plugins that have not been installed anywhere.
-      if (!in_array($plugin_id, $installed)) {
-        continue;
-      }
-
+    foreach ($this->pluginManager->getInstalled() as $plugin_id => $plugin) {
       $entity_type_id = $plugin->getEntityTypeId();
       $entity_type = $entity_types[$entity_type_id];
       $entity_data_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();

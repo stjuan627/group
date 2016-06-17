@@ -246,18 +246,10 @@ function group_entity_type_alter(array &$entity_types) {
 function _group_get_additional_entity_forms() {
   /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-  // Retrieve all installed content enabler plugins.
-  $installed = $plugin_manager->getInstalledIds();
-
+  
   // Retrieve all possible forms from all installed plugins.
   $forms = [];
-  foreach ($plugin_manager->getAll() as $plugin_id => $plugin) {
-    // Skip plugins that have not been installed anywhere.
-    if (!in_array($plugin_id, $installed)) {
-      continue;
-    }
-
+  foreach ($plugin_manager->getInstalled() as $plugin_id => $plugin) {
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $forms = array_merge($forms, $plugin->getEntityForms());
   }

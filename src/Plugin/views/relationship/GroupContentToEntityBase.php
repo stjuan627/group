@@ -95,19 +95,11 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
-
-    // Retrieve all installed content enabler plugins.
-    $installed = $this->pluginManager->getInstalledIds();
-
-    // Retrieve all of the plugins that can handle this entity type.
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    
+    // Retrieve all of the installed plugins that can handle this entity type.
     $options = [];
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      // Skip plugins that have not been installed anywhere.
-      if (!in_array($plugin_id, $installed)) {
-        continue;
-      }
-
+    foreach ($this->pluginManager->getInstalled() as $plugin_id => $plugin) {
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
       if ($plugin->getEntityTypeId() === $this->getTargetEntityType()) {
         $options[$plugin_id] = $plugin->getLabel();
       }

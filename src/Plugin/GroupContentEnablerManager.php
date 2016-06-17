@@ -111,6 +111,27 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * {@inheritdoc}
    */
+  public function getInstalled() {
+    // Retrieve a vanilla instance of all known content enabler plugins.
+    $plugins = clone $this->getAll();
+    
+    // Retrieve all installed content enabler plugin IDs.
+    $installed = $this->getInstalledIds();
+
+    // Remove uninstalled plugins from the collection.
+    /** @var \Drupal\group\Plugin\GroupContentEnablerCollection $plugins */
+    foreach ($plugins as $plugin_id => $plugin) {
+      if (!in_array($plugin_id, $installed)) {
+        $plugins->removeInstanceId($plugin_id);
+      }
+    }
+
+    return $plugins;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getInstalledIds() {
     $plugin_ids = $this->getCachedInstalledIDs();
 
