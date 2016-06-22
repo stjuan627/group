@@ -78,18 +78,9 @@ class GroupMembership implements CacheableDependencyInterface {
    *   An array of group roles, keyed by their ID.
    */
   public function getRoles() {
-    $roles = [];
-
-    // Retrieve all group roles for the membership.
-    foreach ($this->groupContent->group_roles->referencedEntities() as $group_role) {
-      $roles[$group_role->id()] = $group_role;
-    }
-
-    // Add the special 'member' role to the retrieved roles.
-    $member_role = $this->getGroup()->getGroupType()->getMemberRole();
-    $roles[$member_role->id()] = $member_role;
-
-    return $roles;
+    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
+    $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
+    return $group_role_storage->loadByUserAndGroup($this->getUser(), $this->getGroup());
   }
 
   /**

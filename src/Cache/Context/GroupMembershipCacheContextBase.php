@@ -7,6 +7,7 @@
 
 namespace Drupal\group\Cache\Context;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Context\GroupRouteContextTrait;
@@ -47,17 +48,27 @@ abstract class GroupMembershipCacheContextBase {
   protected $user;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a new GroupMembershipCacheContextBase class.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
    *   The current route match object.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(RouteMatchInterface $current_route_match, AccountInterface $user) {
+  public function __construct(RouteMatchInterface $current_route_match, AccountInterface $user, EntityTypeManagerInterface $entity_type_manager) {
     $this->currentRouteMatch = $current_route_match;
     $this->group = $this->getGroupFromRoute();
     $this->user = $user;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -68,6 +79,15 @@ abstract class GroupMembershipCacheContextBase {
    */
   protected function hasExistingGroup() {
     return !empty($this->group) && $this->group->id();
+  }
+
+  /**
+   * Gets the group role storage.
+   *
+   * @return \Drupal\group\Entity\Storage\GroupRoleStorageInterface
+   */
+  protected function groupRoleStorage() {
+    return $this->entityTypeManager->getStorage('group_role');
   }
 
 }

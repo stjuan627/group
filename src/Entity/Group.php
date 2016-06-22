@@ -6,7 +6,6 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\group\GroupMembership;
 use Drupal\user\UserInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -79,6 +78,15 @@ class Group extends ContentEntityBase implements GroupInterface {
    */
   protected function groupContentStorage() {
     return $this->entityTypeManager()->getStorage('group_content');
+  }
+
+  /**
+   * Gets the group role storage.
+   *
+   * @return \Drupal\group\Entity\Storage\GroupRoleStorageInterface
+   */
+  protected function groupRoleStorage() {
+    return $this->entityTypeManager()->getStorage('group_role');
   }
 
   /**
@@ -202,15 +210,18 @@ class Group extends ContentEntityBase implements GroupInterface {
       return TRUE;
     }
 
-    // If the user has a membership, check for the permission there.
-    if ($group_membership = $this->getMember($account)) {
-      return $group_membership->hasPermission($permission);
+    // Retrieve all of the group roles the user may get for the group.
+    $group_roles = $this->groupRoleStorage()->loadByUserAndGroup($account, $this);
+
+    // Check each retrieved role for the requested permission.
+    foreach ($group_roles as $group_role) {
+      if ($group_role->hasPermission($permission)) {
+        return TRUE;
+      }
     }
 
-    // Otherwise, check the 'anonymous' or 'outsider' role.
-    return $account->isAnonymous()
-      ? $this->getGroupType()->getAnonymousRole()->hasPermission($permission)
-      : $this->getGroupType()->getOutsiderRole()->hasPermission($permission);
+    // If no role had the requested permission, we deny access.
+    return FALSE;
   }
 
   /**

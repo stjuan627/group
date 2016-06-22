@@ -48,21 +48,14 @@ class GroupMembershipRolesCacheContext extends GroupMembershipCacheContextBase i
       return '...none...';
     }
 
-    // Gather all of the user's group roles for the current group.
-    if ($group_membership = $this->group->getMember($this->user)) {
-      $group_roles = array_keys($group_membership->getRoles());
-    }
-    else {
-      $group_roles = $this->user->isAnonymous()
-        ? [$this->group->getGroupType()->getAnonymousRoleId()]
-        : [$this->group->getGroupType()->getOutsiderRoleId()];
-    }
+    // Retrieve all of the group roles the user may get for the group.
+    $group_roles = $this->groupRoleStorage()->loadByUserAndGroup($this->user, $this->group);
 
     if ($group_role === NULL) {
-      return implode(',', $group_roles);
+      return implode(',', array_keys($group_roles));
     }
     else {
-      return in_array($group_role, $group_roles) ? '0' : '1';
+      return isset($group_roles[$group_role]) ? '0' : '1';
     }
   }
 

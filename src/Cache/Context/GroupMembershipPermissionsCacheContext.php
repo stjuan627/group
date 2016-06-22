@@ -9,6 +9,7 @@ namespace Drupal\group\Cache\Context;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
@@ -40,11 +41,13 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
    *   The current route match object.
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\group\Access\GroupPermissionsHashGeneratorInterface $hash_generator
    *   The permissions hash generator.
    */
-  public function __construct(RouteMatchInterface $current_route_match, AccountInterface $user, GroupPermissionsHashGeneratorInterface $hash_generator) {
-    parent::__construct($current_route_match, $user);
+  public function __construct(RouteMatchInterface $current_route_match, AccountInterface $user, EntityTypeManagerInterface $entity_type_manager, GroupPermissionsHashGeneratorInterface $hash_generator) {
+    parent::__construct($current_route_match, $user, $entity_type_manager);
     $this->permissionsHashGenerator = $hash_generator;
   }
 
@@ -80,17 +83,8 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
     // Note that we do not set the membership's cacheable metadata because that
     // one is taken care of in the parent 'group_membership.roles' context.
     if ($this->hasExistingGroup()) {
-      // Gather the member's roles if they have a membership.
-      if ($group_membership = $this->group->getMember($this->user)) {
-        $group_roles = $group_membership->getRoles();
-      }
-      // Otherwise retrieve the 'anonymous' or 'outsider' role.
-      else {
-        $group_role = $this->user->isAnonymous()
-          ? $this->group->getGroupType()->getAnonymousRole()
-          : $this->group->getGroupType()->getOutsiderRole();
-        $group_roles[$group_role->id()] = $group_role;
-      }
+      // Retrieve all of the group roles the user may get for the group.
+      $group_roles = $this->groupRoleStorage()->loadByUserAndGroup($this->user, $this->group);
 
       // Merge the cacheable metadata of all the roles.
       foreach ($group_roles as $group_role) {
