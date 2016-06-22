@@ -583,9 +583,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     return [
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
-      // This string will be saved as part of the group type config entity. We
-      // do not use a t() function here as it needs to be stored untranslated.
-      'info_text' => '<p>Please fill out any available fields to describe the relation between the content and the group.</p>',
+      'info_text' => [
+        // This string will be saved as part of the group type config entity. We
+        // do not use a t() function here as it needs to be stored untranslated.
+        'value' => '<p>Please fill out any available fields to describe the relation between the content and the group.</p>',
+      ],
     ];
   }
 
@@ -626,7 +628,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       '#description' => $this->t('A bit of info to show atop every form that links a %entity_type entity to a %group_type group.', $replace),
       '#default_value' => $this->configuration['info_text']['value'],
     ];
-    
+
     // Only specify a default format if the data has been saved before.
     if (!empty($this->configuration['info_text']['format'])) {
       $form['info_text']['#format'] = $this->configuration['info_text']['format'];

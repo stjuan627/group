@@ -35,7 +35,7 @@ class GroupContentForm extends ContentEntityForm {
     $form = parent::form($form, $form_state);
 
     $config = $this->getContentPlugin()->getConfiguration();
-    if (!empty($config['data']['info_text'])) {
+    if (!empty($config['data']['info_text']['value'])) {
       $form['info_text'] = [
         '#markup' => $config['data']['info_text']['value'],
         '#weight' => -99,

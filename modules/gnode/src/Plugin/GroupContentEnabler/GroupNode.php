@@ -215,7 +215,7 @@ class GroupNode extends GroupContentEnablerBase {
 
     // This string will be saved as part of the group type config entity. We do
     // not use a t() function here as it needs to be stored untranslated.
-    $config['info_text'] = '<p>By submitting this form you will add this content to the group.<br />It will then be subject to the access control settings that were configured for the group.<br/>Please fill out any available fields to describe the relation between the content and the group.</p>';
+    $config['info_text']['value'] = '<p>By submitting this form you will add this content to the group.<br />It will then be subject to the access control settings that were configured for the group.<br/>Please fill out any available fields to describe the relation between the content and the group.</p>';
     return $config;
   }
 

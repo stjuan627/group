@@ -334,7 +334,7 @@ class GroupMembership extends GroupContentEnablerBase {
 
     // This string will be saved as part of the group type config entity. We do
     // not use a t() function here as it needs to be stored untranslated.
-    $config['info_text'] = '<p>By submitting this form you will become a member of the group.<br />Please fill out any available fields to complete your membership information.</p>';
+    $config['info_text']['value'] = '<p>By submitting this form you will become a member of the group.<br />Please fill out any available fields to complete your membership information.</p>';
     return $config;
   }
 
