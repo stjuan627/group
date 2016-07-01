@@ -73,7 +73,7 @@ services:
     arguments: ['@entity_type.manager', '@current_user']
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
-    arguments: ['@module_handler', '@string_translation', '@controller_resolver']
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_content_enabler']
   group.permissions_hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'
     arguments: ['@private_key', '@cache.default', '@cache.static', '@entity_type.manager']

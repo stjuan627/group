@@ -44,14 +44,14 @@ class GroupPermissionsTypeSpecificForm extends GroupPermissionsForm {
   /**
    * {@inheritdoc}
    */
-  protected function getType() {
+  protected function getGroupType() {
     return $this->groupType;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getRoles() {
+  protected function getGroupRoles() {
     return $this->groupType->getRoles();
   }
 
