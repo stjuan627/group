@@ -302,6 +302,11 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
     return AccessResult::neutral();
   }
 
+  // Can't retrieve an entity from an empty item list.
+  if (!isset($items)) {
+    return AccessResult::neutral();
+  }
+
   /** @var \Drupal\group\Entity\GroupContent $group_content */
   $group_content = $items->getEntity();
   $group = $group_content->getGroup();
