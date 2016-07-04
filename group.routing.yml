@@ -107,10 +107,6 @@ entity.group_role.add_form:
     _title_callback: '\Drupal\group\Entity\Controller\GroupRoleController::addPageTitle'
   requirements:
     _permission: 'administer group'
-  options:
-    parameters:
-      group_type:
-        type: 'entity:group_type'
 
 entity.group_role.edit_form:
   path: '/admin/group/types/manage/{group_type}/roles/{group_role}'

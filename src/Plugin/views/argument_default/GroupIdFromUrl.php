@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupIdFromUrl extends ArgumentDefaultPluginBase implements CacheableDependencyInterface {
 
   /**
-   * The group entity.
+   * The group entity from the route.
    *
    * @var \Drupal\group\Entity\GroupInterface
    */
