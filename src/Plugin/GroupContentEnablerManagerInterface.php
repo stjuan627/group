@@ -38,11 +38,16 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
    * GroupTypeInterface::getInstalledContentPlugins()->get($plugin_id) to get
    * fully configured instances of the plugins.
    *
+   * This should mainly be used when trying to build something that relies on
+   * the plugins being installed on a group type. For instance: When altering
+   * the GroupContent entity type definition based on info gathered from plugins
+   * that are actually installed somewhere.
+   *
    * @return \Drupal\group\Plugin\GroupContentEnablerCollection
    *   A plugin collection with a vanilla instance of every installed plugin.
    */
   public function getInstalled();
-  
+
   /**
    * Returns the plugin ID of all content enablers in use.
    *
@@ -74,7 +79,7 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
    *
    * @param $plugin_id
    *   The ID of the plugin to retrieve GroupContentType entity IDs for.
-   * 
+   *
    * @return string[]
    *   An array of GroupContentType IDs.
    */

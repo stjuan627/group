@@ -120,9 +120,12 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   public function getPermissions($include_plugins = FALSE) {
     $all_permissions = $this->buildPermissionsYaml();
 
-    // Add the plugin defined permissions to the whole.
+    // Add the plugin defined permissions to the whole. We query all defined
+    // plugins to avoid scenarios where modules want to ship with default
+    // configuration but can't because their plugins may not be installed along
+    // with the module itself (i.e.: non-enforced plugins).
     if ($include_plugins) {
-      foreach ($this->pluginManager->getInstalled() as $plugin) {
+      foreach ($this->pluginManager->getAll() as $plugin) {
         /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
         foreach ($plugin->getPermissions() as $permission_name => $permission) {
           $permission += ['provider' => $plugin->getProvider()];
