@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal\gnode\gnode.module
+ * Enables Group functionality for the Node module.
  */
 
 use Drupal\group\Entity\Group;

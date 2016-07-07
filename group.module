@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains Drupal\group\group.module
+ * Allows you to group users, content and other entities.
  */
 
 use Drupal\group\Entity\GroupContent;
