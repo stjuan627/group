@@ -54,6 +54,14 @@ use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
  *     "langcode" = "langcode",
  *     "uuid" = "uuid",
  *   },
+ *   links = {
+ *     "add-form" = "/group/{group}/content/add/{plugin_id}",
+ *     "add-page" = "/group/{group}/content/add",
+ *     "canonical" = "/group/{group}/content/{group_content}",
+ *     "collection" = "/group/{group}/content",
+ *     "delete-form" = "/group/{group}/content/{group_content}/delete",
+ *     "edit-form" = "/group/{group}/content/{group_content}/edit"
+ *   },
  *   bundle_entity_type = "group_content_type",
  *   field_ui_base_route = "entity.group_content_type.edit_form",
  *   permission_granularity = "bundle"
@@ -111,88 +119,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   public function label() {
     return $this->getContentPlugin()->getContentLabel($this);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * Exact copy of Entity::toUrl() with the exception of one line until the
-   * patch in https://www.drupal.org/node/2645136 lands.
-   *
-   * @todo Remove this if the issue above gets resolved.
-   */
-  public function toUrl($rel = 'canonical', array $options = []) {
-    if ($this->id() === NULL) {
-      throw new EntityMalformedException(sprintf('The "%s" entity cannot have a URI as it does not have an ID', $this->getEntityTypeId()));
-    }
-
-    // The links array might contain URI templates set in annotations.
-    $link_templates = $this->linkTemplates();
-
-    // Links pointing to the current revision point to the actual entity. So
-    // instead of using the 'revision' link, use the 'canonical' link.
-    if ($rel === 'revision' && $this instanceof RevisionableInterface && $this->isDefaultRevision()) {
-      $rel = 'canonical';
-    }
-
-    if (isset($link_templates[$rel])) {
-      $route_parameters = $this->urlRouteParameters($rel);
-      $route_name = $this->urlRoute($rel);
-      $uri = new Url($route_name, $route_parameters);
-    }
-    else {
-      $bundle = $this->bundle();
-      // A bundle-specific callback takes precedence over the generic one for
-      // the entity type.
-      $bundles = $this->entityManager()->getBundleInfo($this->getEntityTypeId());
-      if (isset($bundles[$bundle]['uri_callback'])) {
-        $uri_callback = $bundles[$bundle]['uri_callback'];
-      }
-      elseif ($entity_uri_callback = $this->getEntityType()->getUriCallback()) {
-        $uri_callback = $entity_uri_callback;
-      }
-
-      // Invoke the callback to get the URI. If there is no callback, use the
-      // default URI format.
-      if (isset($uri_callback) && is_callable($uri_callback)) {
-        $uri = call_user_func($uri_callback, $this);
-      }
-      else {
-        throw new UndefinedLinkTemplateException("No link template '$rel' found for the '{$this->getEntityTypeId()}' entity type");
-      }
-    }
-
-    // Pass the entity data through as options, so that alter functions do not
-    // need to look up this entity again.
-    $uri
-      ->setOption('entity_type', $this->getEntityTypeId())
-      ->setOption('entity', $this);
-
-    // Display links by default based on the current language.
-    if ($rel !== 'collection') {
-      $options += ['language' => $this->language()];
-    }
-
-    $uri_options = $uri->getOptions();
-    $uri_options += $options;
-
-    return $uri->setOptions($uri_options);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function linkTemplates() {
-    return $this->getContentPlugin()->getPaths();
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Will inherit docs once https://www.drupal.org/node/2645136 lands.
-   */
-  protected function urlRoute($rel) {
-    return $this->getContentPlugin()->getRouteName($rel);
   }
 
   /**

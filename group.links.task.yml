@@ -29,10 +29,10 @@ group.delete_form:
   route_name: 'entity.group.delete_form'
   weight: 10
 
-group.members:
-  title: 'Members'
+group.content:
+  title: 'Related entities'
   base_route: 'entity.group.canonical'
-  route_name: 'entity.group_content.group_membership.collection'
+  route_name: 'entity.group_content.collection'
   weight: 15
 
 group_type.edit_form:

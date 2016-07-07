@@ -215,57 +215,6 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Config
   public function getPermissions();
 
   /**
-   * Returns all paths defined by the plugin.
-   *
-   * @return string[]
-   *   An associative array of paths, keyed by their link template name (e.g.:
-   *   canonical, add-form, ...).
-   */
-  public function getPaths();
-
-  /**
-   * Returns a path defined by the plugin.
-   *
-   * @var string $name
-   *   The link template name to retrieve the path for.
-   *
-   * @return string|false
-   *   The path for the provided link template or FALSE if none was found.
-   */
-  public function getPath($name);
-
-  /**
-   * Returns a route name defined by the plugin.
-   *
-   * @var string $name
-   *   The link template name to retrieve the route name for.
-   *
-   * @return string
-   *   The route name for the provided link template.
-   */
-  public function getRouteName($name);
-
-  /**
-   * Provides routes for GroupContent entities.
-   *
-   * @return \Symfony\Component\Routing\Route[]
-   *   An array of routes keyed by name.
-   */
-  public function getRoutes();
-
-  /**
-   * Provides local actions for group content routes.
-   *
-   * @return array
-   *   An array of local action definitions, keyed by a unique ID. Please try to
-   *   namespace your IDs to avoid collisions with other plugins' local actions.
-   *
-   * @see \Drupal\group\Plugin\GroupContentEnablerBase::getLocalActions()
-   * @see https://www.drupal.org/node/2133247
-   */
-  public function getLocalActions();
-
-  /**
    * Performs access check for the create operation.
    *
    * This method is supposed to be overwritten by extending classes that

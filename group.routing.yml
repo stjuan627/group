@@ -39,6 +39,23 @@ entity.group.add_form:
       group_type:
         with_config_overrides: TRUE
 
+entity.group.join:
+  path: '/group/{group}/join'
+  defaults:
+    _controller: '\Drupal\group\Controller\GroupMembershipController::join'
+    _title_callback: '\Drupal\group\Controller\GroupMembershipController::joinTitle'
+  requirements:
+    _group_permission: 'join group'
+    _group_member: 'FALSE'
+
+entity.group.leave:
+  path: '/group/{group}/leave'
+  defaults:
+    _controller: '\Drupal\group\Controller\GroupMembershipController::leave'
+  requirements:
+    _group_permission: 'leave group'
+    _group_member: 'TRUE'
+
 # Group type entity routes.
 entity.group_type.collection:
   path: '/admin/group/types'

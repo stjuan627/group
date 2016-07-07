@@ -66,7 +66,7 @@ class GroupNodeFormStep1 extends NodeForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @see \Drupal\gnode\Controller\GroupNodeController::add()
+   * @see \Drupal\gnode\Controller\GroupNodeWizardController::add()
    * @see \Drupal\gnode\Form\GroupNodeFormStep2
    */
   public function saveTemporary(array &$form, FormStateInterface $form_state) {
@@ -89,7 +89,7 @@ class GroupNodeFormStep1 extends NodeForm {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @see \Drupal\gnode\Controller\GroupNodeController::add()
+   * @see \Drupal\gnode\Controller\GroupNodeWizardController::add()
    */
   public function cancel(array &$form, FormStateInterface $form_state) {
     /** @var \Drupal\group\Entity\GroupInterface $group */
@@ -99,8 +99,7 @@ class GroupNodeFormStep1 extends NodeForm {
     $this->privateTempStore->delete("$storage_id:node");
 
     // Redirect to the collection page if no destination was set in the URL.
-    $plugin = $group->getGroupType()->getContentPlugin('group_node:' . $this->entity->bundle());
-    $form_state->setRedirect($plugin->getRouteName('collection'), ['group' => $group->id()]);
+    $form_state->setRedirect('entity.group_content.collection', ['group' => $group->id()]); // @todo Views route
   }
 
 }

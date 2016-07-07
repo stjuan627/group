@@ -147,7 +147,7 @@ function template_preprocess_group_content(&$variables) {
 
   // See if we are rendering the group at its canonical route.
   $route_match = \Drupal::routeMatch();
-  if ($route_match->getRouteName() == $group_content->getContentPlugin()->getRouteName('canonical')) {
+  if ($route_match->getRouteName() == 'entity.group_content.canonical') {
     $page_group_content = $route_match->getParameter('group_content');
   }
   $is_page = (!empty($page_group_content) ? $page_group_content->id() == $group_content->id() : FALSE);
