@@ -37,10 +37,17 @@ class GroupPermissionsRoleSpecificForm extends GroupPermissionsForm {
   }
 
   /**
-   * {@inheritdoc}
+   * Form constructor.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    * @param \Drupal\group\Entity\GroupRoleInterface $group_role
    *   The group role used for this form.
+   *
+   * @return array
+   *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state, GroupRoleInterface $group_role = NULL) {
     if ($group_role->isInternal()) {

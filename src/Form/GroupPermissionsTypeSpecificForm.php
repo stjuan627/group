@@ -56,10 +56,17 @@ class GroupPermissionsTypeSpecificForm extends GroupPermissionsForm {
   }
 
   /**
-   * {@inheritdoc}
+   * Form constructor.
    *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type used for this form.
+   *
+   * @return array
+   *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state, GroupTypeInterface $group_type = NULL) {
     $this->groupType = $group_type;
