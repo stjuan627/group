@@ -201,6 +201,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
         'label' => t('Anonymous'),
         'weight' => -102,
         'internal' => TRUE,
+        'audience' => 'anonymous',
         'group_type' => $group_type_id,
       ])->save();
       GroupRole::create([
@@ -208,6 +209,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
         'label' => t('Outsider'),
         'weight' => -101,
         'internal' => TRUE,
+        'audience' => 'outsider',
         'group_type' => $group_type_id,
       ])->save();
       GroupRole::create([

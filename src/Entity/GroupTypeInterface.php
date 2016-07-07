@@ -49,7 +49,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function getRoleIds();
   
   /**
-   * Gets the anonymous group role for this group type.
+   * Gets the generic anonymous group role for this group type.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface
    *   The anonymous group role this group type uses.
@@ -57,7 +57,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function getAnonymousRole();
 
   /**
-   * Gets the anonymous role ID.
+   * Gets the generic anonymous role ID.
    *
    * @return string
    *   The ID of the anonymous group role this group type uses.
@@ -65,7 +65,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function getAnonymousRoleId();
 
   /**
-   * Gets the outsider group role for this group type.
+   * Gets the generic outsider group role for this group type.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface
    *   The outsider group role this group type uses.
@@ -73,7 +73,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
   public function getOutsiderRole();
 
   /**
-   * Gets the outsider role ID.
+   * Gets the generic outsider role ID.
    *
    * @return string
    *   The ID of the outsider group role this group type uses.

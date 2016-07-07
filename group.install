@@ -172,3 +172,32 @@ function group_update_8002() {
     $database->insert($data_table)->from($data_query)->execute();
   }
 }
+
+/**
+ * Update all group role entities to use the new audience property.
+ */
+function group_update_8003() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.role.') as $group_role_config_name) {
+    $group_role = $config_factory->getEditable($group_role_config_name);
+
+    // Figure out what audience the role is for based on role ID.
+    list(, $group_role_id) = explode('-', $group_role->get('id'), 2);
+    switch ($group_role_id) {
+      case 'anonymous':
+        $audience = 'anonymous';
+        break;
+
+      case 'outsider':
+        $audience = 'outsider';
+        break;
+
+      default:
+        $audience = 'member';
+    }
+
+    $group_role->set('audience', $audience);
+    $group_role->save(TRUE);
+  }
+}

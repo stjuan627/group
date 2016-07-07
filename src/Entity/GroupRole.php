@@ -47,6 +47,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label",
  *     "weight",
  *     "internal",
+ *     "audience",
  *     "group_type",
  *     "permissions"
  *   }
@@ -86,6 +87,15 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   protected $internal = FALSE;
 
   /**
+   * The audience the role is intended for.
+   *
+   * Supported values are: 'anonymous', 'outsider' or 'member'.
+   *
+   * @var string
+   */
+  protected $audience = 'member';
+
+  /**
    * The ID of the group type this role belongs to.
    *
    * @var string
@@ -114,20 +124,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   }
 
   /**
-   * Returns just the part of the ID pertaining to the group role.
-   *
-   * @return string
-   *   The part of the group role ID after the period.
-   */
-  protected function strippedId() {
-    if (!isset($this->strippedId)) {
-      list(, $group_role) = explode('-', $this->id(), 2);
-      $this->strippedId = $group_role;
-    }
-    return $this->strippedId;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getWeight() {
@@ -153,20 +149,23 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function isAnonymous() {
-    return $this->strippedId() == 'anonymous';
+    return $this->audience == 'anonymous';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isOutsider() {
-    return $this->strippedId() == 'outsider';
+    return $this->audience == 'outsider';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMember() {
+    // Instead of checking whether the audience property is set to 'member', we
+    // check whether it isn't 'anonymous' or 'outsider'. Any unsupported value
+    // will therefore default to 'member'.
     return !$this->isAnonymous() && !$this->isOutsider();
   }
 
