@@ -75,6 +75,9 @@ group.role.*:
     group_type:
       type: 'string'
       label: 'Group type ID'
+    permissions_ui:
+      type: 'boolean'
+      label: 'Show this role in the default permissions UI'
     permissions:
       type: 'sequence'
       label: 'Permissions'

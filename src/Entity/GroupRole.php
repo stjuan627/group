@@ -49,7 +49,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "internal",
  *     "audience",
  *     "group_type",
- *     "permissions"
+ *     "permissions",
+ *     "permissions_ui"
  *   }
  * )
  */
@@ -79,8 +80,10 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * Whether the group role is used internally.
    *
-   * Examples of these are the special group roles 'anonymous', 'outsider' and
-   * 'member'.
+   * Internal roles cannot be edited or assigned directly. They do not show in
+   * the list of group roles to edit or assign and do not have an individual
+   * permissions page either. Examples of these are the special group roles
+   * 'anonymous', 'outsider' and 'member'.
    *
    * @var bool
    */
@@ -101,6 +104,17 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * @var string
    */
   protected $group_type;
+
+  /**
+   * Whether the role shows in the default permissions UI.
+   *
+   * By default, group roles show on the permissions page regardless of their
+   * 'internal' property. If you want to hide a group role from that UI, you can
+   * do so by setting this to FALSE.
+   *
+   * @var bool
+   */
+  protected $permissions_ui = TRUE;
 
   /**
    * The permissions belonging to the group role.
@@ -174,6 +188,13 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function getGroupTypeId() {
     return $this->group_type;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function inPermissionsUI() {
+    return $this->permissions_ui;
   }
 
   /**

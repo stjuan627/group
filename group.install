@@ -201,3 +201,16 @@ function group_update_8003() {
     $group_role->save(TRUE);
   }
 }
+
+/**
+ * Update all group role entities to use the new permissions_ui property.
+ */
+function group_update_8004() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.role.') as $group_role_config_name) {
+    $group_role = $config_factory->getEditable($group_role_config_name);
+    $group_role->set('permissions_ui', TRUE);
+    $group_role->save(TRUE);
+  }
+}

@@ -82,6 +82,14 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function getGroupTypeId();
 
   /**
+   * Returns whether the role shows up in the default permissions UI.
+   *
+   * @return bool
+   *   Whether the role shows up in the default permissions UI.
+   */
+  public function inPermissionsUI();
+  
+  /**
    * Returns a list of permissions assigned to the role.
    *
    * @return array

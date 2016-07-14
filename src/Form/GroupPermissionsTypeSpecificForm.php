@@ -7,8 +7,12 @@
 
 namespace Drupal\group\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the user permissions administration form for a specific group type.
@@ -21,6 +25,39 @@ class GroupPermissionsTypeSpecificForm extends GroupPermissionsForm {
    * @var \Drupal\group\Entity\GroupTypeInterface
    */
   protected $groupType;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a new GroupPermissionsForm.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
+   *   The group permission handler.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface $module_handler) {
+    parent::__construct($permission_handler, $module_handler);
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('group.permissions'),
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -52,7 +89,14 @@ class GroupPermissionsTypeSpecificForm extends GroupPermissionsForm {
    * {@inheritdoc}
    */
   protected function getGroupRoles() {
-    return $this->groupType->getRoles();
+    $properties = [
+      'group_type' => $this->groupType->id(),
+      'permissions_ui' => TRUE,
+    ];
+
+    return $this->entityTypeManager
+      ->getStorage('group_role')
+      ->loadByProperties($properties);
   }
 
   /**
