@@ -22,7 +22,11 @@ class GroupRoleDeleteForm extends EntityDeleteForm {
     if ($this->entity->isInternal()) {
       return [
         '#title' => t('Error'),
-        'description' => ['#markup' => '<p>' . t('Cannot edit an internal group role directly.') . '</p>'],
+        'description' => [
+          '#prefix' => '<p>',
+          '#suffix' => '</p>',
+          '#markup' => t('Cannot edit an internal group role directly.'),
+        ],
       ];
     }
 

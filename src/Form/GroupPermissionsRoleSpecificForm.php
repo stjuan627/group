@@ -51,7 +51,14 @@ class GroupPermissionsRoleSpecificForm extends GroupPermissionsForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state, GroupRoleInterface $group_role = NULL) {
     if ($group_role->isInternal()) {
-      return ['#markup' => t('Cannot edit an internal group role directly.')];
+      return [
+        '#title' => t('Error'),
+        'description' => [
+          '#prefix' => '<p>',
+          '#suffix' => '</p>',
+          '#markup' => t('Cannot edit an internal group role directly.'),
+        ],
+      ];
     }
 
     $this->groupRole = $group_role;
