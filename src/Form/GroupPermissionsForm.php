@@ -34,7 +34,7 @@ abstract class GroupPermissionsForm extends FormBase {
   protected $moduleHandler;
 
   /**
-   * Constructs a new UserPermissionsForm.
+   * Constructs a new GroupPermissionsForm.
    *
    * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
    *   The group permission handler.
