@@ -110,13 +110,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   protected $permissions = [];
 
   /**
-   * The part of the group role ID after the period.
-   *
-   * @var string
-   */
-  protected $strippedId;
-
-  /**
    * {@inheritdoc}
    */
   public function id() {
