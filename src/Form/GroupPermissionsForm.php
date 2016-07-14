@@ -8,10 +8,10 @@
 namespace Drupal\group\Form;
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
