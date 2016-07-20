@@ -49,8 +49,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "internal",
  *     "audience",
  *     "group_type",
- *     "permissions",
- *     "permissions_ui"
+ *     "permissions_ui",
+ *     "permissions"
  *   }
  * )
  */
