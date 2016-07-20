@@ -188,29 +188,29 @@ function template_preprocess_group_add_list(&$variables) {
 }
 
 /**
+ * Gets the group content enabler plugin manager.
+ *
+ * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+ *   The group content enabler plugin manager.
+ *
+ * @internal Try to properly inject the service when possible.
+ */
+function _group_content_enabler_manager() {
+  return \Drupal::service('plugin.manager.group_content_enabler');
+}
+
+/**
  * Implements hook_rebuild().
  */
 function group_rebuild() {
-  _group_install_enforced_plugins();
+  _group_content_enabler_manager()->installEnforced();
 }
 
 /**
  * Implements hook_modules_installed().
  */
 function group_modules_installed($modules) {
-  _group_install_enforced_plugins();
-}
-
-/**
- * Installs enforced plugins.
- *
- * @internal Use the plugin.manager.group_content_enabler service instead.
- */
-function _group_install_enforced_plugins() {
-  // Checks if there are any new enforced plugins to install.
-  /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
-  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
-  $plugin_manager->installEnforced();
+  _group_content_enabler_manager()->installEnforced();
 }
 
 /**
@@ -250,12 +250,10 @@ function group_entity_type_alter(array &$entity_types) {
  * @see group_entity_type_alter()
  */
 function _group_get_additional_entity_forms() {
-  /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
-  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+  $forms = [];
 
   // Retrieve all possible forms from all installed plugins.
-  $forms = [];
-  foreach ($plugin_manager->getInstalled() as $plugin_id => $plugin) {
+  foreach (_group_content_enabler_manager()->getInstalled() as $plugin_id => $plugin) {
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $forms = array_merge($forms, $plugin->getEntityForms());
   }
