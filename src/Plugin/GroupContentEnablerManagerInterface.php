@@ -7,13 +7,14 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Provides a common interface for group content enabler managers.
  */
-interface GroupContentEnablerManagerInterface extends PluginManagerInterface {
+interface GroupContentEnablerManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
 
   /**
    * Returns a plugin collection of all available content enablers.
