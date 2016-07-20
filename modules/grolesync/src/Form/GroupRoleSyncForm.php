@@ -54,7 +54,7 @@ class GroupRoleSyncForm extends GroupPermissionsTypeSpecificForm {
     // all "hidden" group roles for this group type and check the dependencies.
     foreach ($group_roles as $group_role_id => $group_role) {
       $dependencies = $group_role->getDependencies();
-      if (!isset($dependencies['modules']) || !in_array('grolesync', $dependencies['modules'])) {
+      if (!isset($dependencies['module']) || !in_array('grolesync', $dependencies['module'])) {
         unset($group_roles[$group_role_id]);
       }
     }

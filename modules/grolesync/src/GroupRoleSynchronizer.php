@@ -98,7 +98,7 @@ class GroupRoleSynchronizer implements GroupRoleSynchronizerInterface {
           // module is uninstalled or the user role is deleted.
           'dependencies' => [
             'enforced' => [
-              'modules' => ['grolesync'],
+              'module' => ['grolesync'],
               'config' => [$user_roles[$role_id]->getConfigDependencyName()],
             ],
           ],
