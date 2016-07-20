@@ -273,6 +273,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function calculateDependencies() {
+    parent::calculateDependencies();
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
   }
 
