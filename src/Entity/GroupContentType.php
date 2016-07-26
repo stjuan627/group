@@ -180,7 +180,9 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       // When a new GroupContentType is saved, we clear the views data cache to
       // make sure that all of the views data which relies on group content
       // types is up to date.
-      \Drupal::service('views.views_data')->clear();
+      if (\Drupal::moduleHandler()->moduleExists('views')) {
+        \Drupal::service('views.views_data')->clear();
+      }
 
       /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
       $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
@@ -213,7 +215,9 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     // When a GroupContentType is deleted, we clear the views data cache to make
     // sure that all of the views data which relies on group content types is up
     // to date.
-    \Drupal::service('views.views_data')->clear();
+    if (\Drupal::moduleHandler()->moduleExists('views')) {
+      \Drupal::service('views.views_data')->clear();
+    }
 
     /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
