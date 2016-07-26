@@ -236,7 +236,7 @@ class GroupContentController extends ControllerBase {
    * @return string
    *   The page title.
    *
-   * @todo Revisit when https://www.drupal.org/node/2744657 lands.
+   * @todo Revisit when 8.2.0 is released, https://www.drupal.org/node/2767853.
    */
   public function collectionTitle(GroupInterface $group) {
     return $this->t('Related entities for @group', ['@group' => $group->label()]);
