@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Controller\GroupContentController.
- */
-
 namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
@@ -83,8 +78,8 @@ class GroupContentController extends ControllerBase {
    */
   public function addPage(GroupInterface $group) {
     $build = ['#theme' => 'entity_add_list', '#bundles' => []];
+    $form_route = $this->addPageFormRoute($group);
     $bundle_names = $this->addPageBundles($group);
-    $form_route_name = $this->addPageFormRoute($group);
 
     // Set the add bundle message if available.
     $add_bundle_message = $this->addPageBundleMessage($group);
@@ -104,7 +99,9 @@ class GroupContentController extends ControllerBase {
 
     // Redirect if there's only one bundle available.
     if (count($bundle_names) == 1) {
-      $url = Url::fromRoute($form_route_name, ['group' => $group, 'plugin_id' => key($bundle_names)], ['absolute' => TRUE]);
+      reset($bundle_names);
+      $route_params = ['group' => $group->id(), 'plugin_id' => key($bundle_names)];
+      $url = Url::fromRoute($form_route, $route_params, ['absolute' => TRUE]);
       return new RedirectResponse($url->toString());
     }
 
@@ -113,19 +110,10 @@ class GroupContentController extends ControllerBase {
       $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
       $label = $plugin->getLabel();
 
-      $entity_type = $this->entityTypeManager->getDefinition($plugin->getEntityTypeId());
-      $entity_type_string = $entity_type->getLabel();
-      if ($plugin->getEntityBundle() !== FALSE) {
-        $storage = $this->entityTypeManager->getStorage($entity_type->getBundleEntityType());
-        $bundle_entity = $storage->load($plugin->getEntityBundle());
-        $entity_type_string .= ': ' . $bundle_entity->label();
-      }
-
-      $t_args = ['%entity_type' => $entity_type_string, '%plugin' => $label];
       $build['#bundles'][$bundle_name] = [
         'label' => $label,
-        'description' => $this->t('Adds a %entity_type to the group using the %plugin plugin', $t_args),
-        'add_link' => Link::createFromRoute($label, $form_route_name, ['group' => $group->id(), 'plugin_id' => $plugin_id]),
+        'description' => $plugin->getContentTypeDescription(),
+        'add_link' => Link::createFromRoute($label, $form_route, ['group' => $group->id(), 'plugin_id' => $plugin_id]),
       ];
     }
 

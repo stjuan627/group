@@ -4,8 +4,8 @@ route_callbacks:
 entity.group_content.group_node_add_form:
   path: '/group/{group}/node/create/{node_type}'
   defaults:
-    _controller: '\Drupal\gnode\Controller\GroupNodeWizardController::addFormWizard'
-    _title_callback: '\Drupal\gnode\Controller\GroupNodeWizardController::addFormWizardTitle'
+    _controller: '\Drupal\gnode\Controller\GroupNodeWizardController::addForm'
+    _title_callback: '\Drupal\gnode\Controller\GroupNodeWizardController::addFormTitle'
   requirements:
     _group_node_add_access: 'TRUE'
   options:

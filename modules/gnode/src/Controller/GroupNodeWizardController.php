@@ -1,27 +1,25 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Controller\GroupNodeWizardController.
- */
-
 namespace Drupal\gnode\Controller;
 
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\group\Entity\Controller\GroupContentController;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeTypeInterface;
 use Drupal\user\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Returns responses for 'group_node' GroupContent routes.
  */
-class GroupNodeWizardController extends GroupContentController {
+class GroupNodeWizardController extends ControllerBase {
 
   /**
    * The private store for temporary group nodes.
@@ -29,6 +27,27 @@ class GroupNodeWizardController extends GroupContentController {
    * @var \Drupal\user\PrivateTempStore
    */
   protected $privateTempStore;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity form builder.
+   *
+   * @var \Drupal\Core\Entity\EntityFormBuilderInterface
+   */
+  protected $entityFormBuilder;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
 
   /**
    * Constructs a new GroupNodeWizardController.
@@ -43,8 +62,10 @@ class GroupNodeWizardController extends GroupContentController {
    *   The renderer.
    */
   public function __construct(PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
-    parent::__construct($entity_type_manager, $entity_form_builder, $renderer);
     $this->privateTempStore = $temp_store_factory->get('gnode_add_temp');
+    $this->entityTypeManager = $entity_type_manager;
+    $this->entityFormBuilder = $entity_form_builder;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -70,7 +91,7 @@ class GroupNodeWizardController extends GroupContentController {
    * @return array
    *   The form array for either step 1 or 2 of the group node creation wizard.
    */
-  public function addFormWizard(GroupInterface $group, NodeTypeInterface $node_type) {
+  public function addForm(GroupInterface $group, NodeTypeInterface $node_type) {
     $plugin_id = 'group_node:' . $node_type->id();
     $storage_id = $plugin_id . ':' . $group->id();
 
@@ -109,44 +130,74 @@ class GroupNodeWizardController extends GroupContentController {
    * @return string
    *   The page title.
    */
-  public function addFormWizardTitle(GroupInterface $group, NodeTypeInterface $node_type) {
+  public function addFormTitle(GroupInterface $group, NodeTypeInterface $node_type) {
     return $this->t('Create %type in %label', ['%type' => $node_type->label(), '%label' => $group->label()]);
   }
 
   /**
-   * {@inheritdoc}
+   * Provides the group node creation overview page.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group to add the group node to.
+   *
+   * @return array
+   *   The group node creation overview page.
    */
-  protected function addPageBundles(GroupInterface $group) {
-    $plugins = $group->getGroupType()->getInstalledContentPlugins();
+  public function addPage(GroupInterface $group) {
+    // We do not set the "entity_add_list" template's "#add_bundle_message" key
+    // because we deny access to the page if no bundle is available.
+    $build = ['#theme' => 'entity_add_list', '#bundles' => []];
+    $add_form_route = 'entity.group_content.group_node_add_form';
 
-    $bundle_names = [];
-    foreach ($plugins as $plugin_id => $plugin) {
+    // Build a list of available bundles.
+    $bundles = [];
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
+    foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin_id => $plugin) {
       /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      list($base_plugin_id, $derivative_id) = explode(':', $plugin->getPluginId() . ':');
-
       // Only select the group_node plugins.
-      if ($base_plugin_id == 'group_node') {
-        $bundle_names[$plugin_id] = $plugin->getContentTypeConfigId();
+      if ($plugin->getBaseId() == 'group_node') {
+        $bundle = $plugin->getContentTypeConfigId();
+
+        // Add the user's access rights as cacheable dependencies.
+        $access = $access_control_handler->createAccess($bundle, NULL, ['group' => $group], TRUE);
+        $this->renderer->addCacheableDependency($build, $access);
+
+        // Filter out the bundles the user doesn't have access to.
+        if ($access->isAllowed()) {
+          $bundles[$plugin_id] = $bundle;
+        }
       }
     }
 
-    return $bundle_names;
-  }
+    // Redirect if there's only one bundle available.
+    if (count($bundles) == 1) {
+      $plugin = $group->getGroupType()->getContentPlugin(key($bundles));
+      $route_params = ['group' => $group->id(), 'node_type' => $plugin->getEntityBundle()];
+      $url = Url::fromRoute($add_form_route, $route_params, ['absolute' => TRUE]);
+      return new RedirectResponse($url->toString());
+    }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function addPageBundleMessage(GroupInterface $group) {
-    // We do not set the 'add_bundle_message' variable because we deny access to
-    // the add page if no bundle is available.
-    return FALSE;
-  }
+    // Get the node type storage handler.
+    $storage_handler = $this->entityTypeManager->getStorage('node_type');
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function addPageFormRoute(GroupInterface $group) {
-    return 'entity.group_content.group_node_add_form';
+    // Set the info for all of the remaining bundles.
+    foreach ($bundles as $plugin_id => $bundle) {
+      $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+      $bundle_label = $storage_handler->load($plugin->getEntityBundle())->label();
+      $route_params = ['group' => $group->id(), 'node_type' => $plugin->getEntityBundle()];
+
+      $build['#bundles'][$bundle] = [
+        'label' => $bundle_label,
+        'description' => $this->t('Create a node of type %node_type for the group.', ['%node_type' => $bundle_label]),
+        'add_link' => Link::createFromRoute($bundle_label, $add_form_route, $route_params),
+      ];
+    }
+
+    // Add the list cache tags for the GroupContentType entity type.
+    $bundle_entity_type = $this->entityTypeManager->getDefinition('group_content_type');
+    $build['#cache']['tags'] = $bundle_entity_type->getListCacheTags();
+
+    return $build;
   }
 
 }
