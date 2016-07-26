@@ -7,12 +7,13 @@
 
 namespace Drupal\group\Plugin;
 
-use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupInterface;
 
 /**
  * Defines an interface for pluggable GroupContentEnabler back-ends.
@@ -22,7 +23,7 @@ use Drupal\Core\Session\AccountInterface;
  * @see \Drupal\group\Plugin\GroupContentEnablerBase
  * @see plugin_api
  */
-interface GroupContentEnablerInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
+interface GroupContentEnablerInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**
    * Returns the plugin provider.
