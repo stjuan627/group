@@ -124,6 +124,25 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public static function loadByEntity(ContentEntityInterface $entity) {
+    $group_content_types = GroupContentType::loadByEntityTypeId($entity->getEntityTypeId());
+
+    // If no responsible group content types were found, we return nothing.
+    if (empty($group_content_types)) {
+      return [];
+    }
+
+    return \Drupal::entityTypeManager()
+      ->getStorage('group_content')
+      ->loadByProperties([
+        'type' => array_keys($group_content_types),
+        'entity_id' => $entity->id(),
+      ]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function label() {
     return $this->getContentPlugin()->getContentLabel($this);
   }
@@ -303,25 +322,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     }
 
     return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function loadByEntity(ContentEntityInterface $entity) {
-    $group_content_types = GroupContentType::loadByEntityTypeId($entity->getEntityTypeId());
-
-    // If no responsible group content types were found, we return nothing.
-    if (empty($group_content_types)) {
-      return [];
-    }
-
-    return \Drupal::entityTypeManager()
-      ->getStorage('group_content')
-      ->loadByProperties([
-        'type' => array_keys($group_content_types),
-        'entity_id' => $entity->id(),
-      ]);
   }
 
 }
