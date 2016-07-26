@@ -1,5 +1,5 @@
 group.add_group:
-  route_name: 'group.group_add_page'
+  route_name: 'entity.group.add_page'
   title: 'Add group'
   appears_on:
     - 'entity.group.collection'

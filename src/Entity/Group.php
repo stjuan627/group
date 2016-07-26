@@ -22,6 +22,12 @@ use Drupal\Core\Session\AccountInterface;
  * @ContentEntityType(
  *   id = "group",
  *   label = @Translation("Group"),
+ *   label_singular = @Translation("group"),
+ *   label_plural = @Translation("groups"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count group",
+ *     plural = "@count groups"
+ *   ),
  *   bundle_label = @Translation("Group type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
@@ -42,16 +48,18 @@ use Drupal\Core\Session\AccountInterface;
  *   translatable = TRUE,
  *   entity_keys = {
  *     "id" = "id",
- *     "bundle" = "type",
- *     "label" = "label",
- *     "langcode" = "langcode",
  *     "uuid" = "uuid",
+ *     "langcode" = "langcode",
+ *     "bundle" = "type",
+ *     "label" = "label"
  *   },
  *   links = {
+ *     "add-form" = "/group/add/{group_type}",
+ *     "add-page" = "/group/add",
  *     "canonical" = "/group/{group}",
+ *     "collection" = "/group/list",
  *     "edit-form" = "/group/{group}/edit",
- *     "delete-form" = "/group/{group}/delete",
- *     "collection" = "/group/list"
+ *     "delete-form" = "/group/{group}/delete"
  *   },
  *   bundle_entity_type = "group_type",
  *   field_ui_base_route = "entity.group_type.edit_form",
@@ -228,32 +236,7 @@ class Group extends ContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('Group ID'))
-      ->setDescription(t('The ID of the Group entity.'))
-      ->setReadOnly(TRUE)
-      ->setSetting('unsigned', TRUE);
-
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the Group entity.'))
-      ->setReadOnly(TRUE);
-
-    $fields['type'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Type'))
-      ->setDescription(t('The group type.'))
-      ->setSetting('target_type', 'group_type')
-      ->setReadOnly(TRUE);
-
-    $fields['langcode'] = BaseFieldDefinition::create('language')
-      ->setLabel(t('Language'))
-      ->setDescription(t('The group language code.'))
-      ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', ['type' => 'hidden'])
-      ->setDisplayOptions('form', [
-        'type' => 'language_select',
-        'weight' => 2,
-      ]);
+    $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))

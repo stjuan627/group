@@ -18,6 +18,12 @@ use Drupal\Core\Entity\EntityStorageInterface;
  * @ConfigEntityType(
  *   id = "group_role",
  *   label = @Translation("Group role"),
+ *   label_singular = @Translation("group role"),
+ *   label_plural = @Translation("group roles"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count group role",
+ *     plural = "@count group roles"
+ *   ),
  *   handlers = {
  *     "storage" = "Drupal\group\Entity\Storage\GroupRoleStorage",
  *     "access" = "Drupal\group\Entity\Access\GroupRoleAccessControlHandler",

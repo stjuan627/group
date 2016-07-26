@@ -29,6 +29,13 @@ use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
  * @ContentEntityType(
  *   id = "group_content",
  *   label = @Translation("Group content"),
+ *   label_singular = @Translation("group content item"),
+ *   label_plural = @Translation("group content items"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count group content item",
+ *     plural = "@count group content items"
+ *   ),
+ *   bundle_label = @Translation("Group content type"),
  *   handlers = {
  *     "storage" = "Drupal\group\Entity\Storage\GroupContentStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
@@ -49,10 +56,10 @@ use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
  *   translatable = TRUE,
  *   entity_keys = {
  *     "id" = "id",
- *     "bundle" = "type",
- *     "label" = "label",
- *     "langcode" = "langcode",
  *     "uuid" = "uuid",
+ *     "langcode" = "langcode",
+ *     "bundle" = "type",
+ *     "label" = "label"
  *   },
  *   links = {
  *     "add-form" = "/group/{group}/content/add/{plugin_id}",
@@ -188,22 +195,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('Group content ID'))
-      ->setDescription(t('The ID of the Group content entity.'))
-      ->setReadOnly(TRUE)
-      ->setSetting('unsigned', TRUE);
-
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the Group content entity.'))
-      ->setReadOnly(TRUE);
-
-    $fields['type'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Type'))
-      ->setDescription(t('The group content type.'))
-      ->setSetting('target_type', 'group_content_type')
-      ->setReadOnly(TRUE);
+    $fields = parent::baseFieldDefinitions($entity_type);
 
     $fields['gid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Parent group'))
@@ -229,18 +221,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE)
       ->setRequired(TRUE);
-
-    $fields['langcode'] = BaseFieldDefinition::create('language')
-      ->setLabel(t('Language'))
-      ->setDescription(t('The group content language code.'))
-      ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', [
-        'type' => 'hidden',
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'language_select',
-        'weight' => 2,
-      ]);
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))

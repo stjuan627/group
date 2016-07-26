@@ -18,6 +18,12 @@ use Drupal\Core\Entity\EntityStorageInterface;
  * @ConfigEntityType(
  *   id = "group_content_type",
  *   label = @Translation("Group content type"),
+ *   label_singular = @Translation("group content type"),
+ *   label_plural = @Translation("group content types"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count group content type",
+ *     plural = "@count group content types"
+ *   ),
  *   handlers = {
  *     "access" = "Drupal\group\Entity\Access\GroupContentTypeAccessControlHandler",
  *     "form" = {
@@ -97,6 +103,14 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
+  public function setDescription($description) {
+    $this->description = $description;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getGroupType() {
     return GroupType::load($this->group_type);
   }
@@ -130,7 +144,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       ->getStorage('group_content_type')
       ->loadByProperties(['content_plugin' => $plugin_id]);
   }
-  
+
   /**
    * {@inheritdoc}
    */

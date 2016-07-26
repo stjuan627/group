@@ -48,9 +48,6 @@ function group_theme() {
     'group_content' => [
       'render element' => 'elements',
     ],
-    'group_add_list' => [
-      'variables' => ['group_types' => NULL],
-    ],
   ];
 }
 
@@ -157,33 +154,6 @@ function template_preprocess_group_content(&$variables) {
   $variables += array('content' => array());
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
-  }
-}
-
-/**
- * Prepares variables for list of available group type templates.
- *
- * Default template: group-add-list.html.twig.
- *
- * @param array $variables
- *   An associative array containing:
- *   - group_types: An array of group types.
- *
- * @see group_add_page()
- */
-function template_preprocess_group_add_list(&$variables) {
-  $variables['types'] = [];
-
-  if (!empty($variables['group_types'])) {
-    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
-    foreach ($variables['group_types'] as $group_type) {
-      $variables['types'][$group_type->id()] = [
-        'type' => $group_type->id(),
-        'url' => Url::fromRoute('entity.group.add_form', ['group_type' => $group_type->id()]),
-        'label' => $group_type->label(),
-        'description' => ['#markup' => $group_type->getDescription()],
-      ];
-    }
   }
 }
 

@@ -19,6 +19,12 @@ use Drupal\Core\Entity\EntityStorageInterface;
  * @ConfigEntityType(
  *   id = "group_type",
  *   label = @Translation("Group type"),
+ *   label_singular = @Translation("group type"),
+ *   label_plural = @Translation("group types"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count group type",
+ *     plural = "@count group types"
+ *   ),
  *   handlers = {
  *     "access" = "Drupal\group\Entity\Access\GroupTypeAccessControlHandler",
  *     "form" = {
@@ -100,6 +106,14 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function getDescription() {
     return $this->description;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDescription($description) {
+    $this->description = $description;
+    return $this;
   }
 
   /**
