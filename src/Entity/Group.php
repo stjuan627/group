@@ -152,8 +152,8 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function addContent(ContentEntityInterface $entity, $content_enabler, $values = []) {
-    $plugin = $this->getGroupType()->getContentPlugin($content_enabler);
+  public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []) {
+    $plugin = $this->getGroupType()->getContentPlugin($plugin_id);
     
     // Only add the entity if the provided plugin supports it.
     // @todo Verify bundle as well and throw exceptions?
@@ -170,24 +170,24 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function getContent($content_enabler = NULL, $filters = []) {
-    return $this->groupContentStorage()->loadByGroup($this, $content_enabler, $filters);
+  public function getContent($plugin_id = NULL, $filters = []) {
+    return $this->groupContentStorage()->loadByGroup($this, $plugin_id, $filters);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentByEntityId($content_enabler, $id) {
-    return $this->getContent($content_enabler, ['entity_id' => $id]);
+  public function getContentByEntityId($plugin_id, $id) {
+    return $this->getContent($plugin_id, ['entity_id' => $id]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentEntities($content_enabler = NULL, $filters = []) {
+  public function getContentEntities($plugin_id = NULL, $filters = []) {
     $entities = [];
 
-    foreach ($this->getContent($content_enabler, $filters) as $group_content) {
+    foreach ($this->getContent($plugin_id, $filters) as $group_content) {
       $entities[] = $group_content->getEntity();
     }
 
