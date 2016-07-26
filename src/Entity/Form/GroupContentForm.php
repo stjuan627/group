@@ -43,6 +43,12 @@ class GroupContentForm extends ContentEntityForm {
       ];
     }
 
+    // Do not allow to edit the group content subject through the UI.
+    // @todo Perhaps make this configurable per plugin.
+    if ($this->operation !== 'add') {
+      $form['entity_id']['#access'] = FALSE;
+    }
+
     return $form;
   }
 
