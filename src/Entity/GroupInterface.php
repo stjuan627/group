@@ -10,6 +10,7 @@ use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Provides an interface defining a Group entity.
@@ -32,6 +33,19 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @return \Drupal\group\Entity\GroupTypeInterface
    */
   public function getGroupType();
+
+  /**
+   * Adds a content entity as a group content entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The content entity to add to the group.
+   * @param string $content_enabler
+   *   The content enabler plugin to add the entity with.
+   * @param array $values
+   *   (optional) Extra values to add to the group content relationship. You
+   *   cannot overwrite the group ID (gid) or entity ID (entity_id).
+   */
+  public function addContent(ContentEntityInterface $entity, $content_enabler, $values = []);
 
   /**
    * Retrieves all GroupContent entities for the group.
@@ -85,14 +99,14 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *
    * Does nothing if the user is already a member of the group.
    *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user to add as a member.
+   * @param \Drupal\user\UserInterface $account
+   *   The user entity to add as a member.
    * @param array $values
    *   (optional) Extra values to add to the group membership, like the
    *   'group_roles' field. You cannot overwrite the group ID (gid) or user ID
    *   (entity_id) with this method. Leave blank to make the user just a member.
    */
-  public function addMember(AccountInterface $account, $values = []);
+  public function addMember(UserInterface $account, $values = []);
 
   /**
    * Retrieves a user's membership for the group.

@@ -6,13 +6,14 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\user\UserInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the Group entity.
@@ -151,6 +152,24 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function addContent(ContentEntityInterface $entity, $content_enabler, $values = []) {
+    $plugin = $this->getGroupType()->getContentPlugin($content_enabler);
+    
+    // Only add the entity if the provided plugin supports it.
+    // @todo Verify bundle as well and throw exceptions?
+    if ($entity->getEntityTypeId() == $plugin->getEntityTypeId()) {
+      $keys = [
+        'type' => $plugin->getContentTypeConfigId(),
+        'gid' => $this->id(),
+        'entity_id' => $entity->id(),
+      ];
+      GroupContent::create($keys + $values)->save();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContent($content_enabler = NULL, $filters = []) {
     return $this->groupContentStorage()->loadByGroup($this, $content_enabler, $filters);
   }
@@ -178,15 +197,9 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function addMember(AccountInterface $account, $values = []) {
+  public function addMember(UserInterface $account, $values = []) {
     if (!$this->getMember($account)) {
-      $plugin = $this->getGroupType()->getContentPlugin('group_membership');
-      $group_content = GroupContent::create([
-          'type' => $plugin->getContentTypeConfigId(),
-          'gid' => $this->id(),
-          'entity_id' => $account->id(),
-        ] + $values);
-      $group_content->save();
+      $this->addContent($account, 'group_membership', $values);
     }
   }
 

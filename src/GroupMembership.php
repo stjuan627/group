@@ -65,7 +65,7 @@ class GroupMembership implements CacheableDependencyInterface {
   /**
    * Returns the user for the membership.
    *
-   * @return \Drupal\Core\Session\AccountInterface
+   * @return \Drupal\user\UserInterface
    */
   public function getUser() {
     return $this->groupContent->getEntity();
