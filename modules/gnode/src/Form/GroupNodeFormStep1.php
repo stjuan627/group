@@ -98,8 +98,8 @@ class GroupNodeFormStep1 extends NodeForm {
     $storage_id = $form_state->get('storage_id');
     $this->privateTempStore->delete("$storage_id:node");
 
-    // Redirect to the collection page if no destination was set in the URL.
-    $form_state->setRedirect('entity.group_content.collection', ['group' => $group->id()]); // @todo Views route
+    // Redirect to the group page if no destination was set in the URL.
+    $form_state->setRedirect('entity.group.canonical', ['group' => $group->id()]);
   }
 
 }
