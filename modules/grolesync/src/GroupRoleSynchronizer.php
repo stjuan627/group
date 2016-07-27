@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\grolesync\GroupRoleSynchronizer.
- */
-
 namespace Drupal\grolesync;
 
 use Drupal\Core\Entity\EntityTypeInterface;

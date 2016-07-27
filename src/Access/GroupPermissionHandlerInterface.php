@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Access\GroupPermissionHandlerInterface.
- */
-
 namespace Drupal\group\Access;
 
 use Drupal\group\Entity\GroupTypeInterface;

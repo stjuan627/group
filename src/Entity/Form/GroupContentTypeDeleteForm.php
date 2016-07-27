@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Form\GroupContentTypeDeleteForm.
- */
-
 namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\Query\QueryFactory;

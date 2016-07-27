@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Form\GroupNodeFormStep2.
- */
-
 namespace Drupal\gnode\Form;
 
 use Drupal\group\Entity\Form\GroupContentForm;

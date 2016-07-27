@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\grolesync\Form\GroupRoleSyncForm.
- */
-
 namespace Drupal\grolesync\Form;
 
 use Drupal\group\Form\GroupPermissionsTypeSpecificForm;

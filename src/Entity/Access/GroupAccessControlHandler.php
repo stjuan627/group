@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Access\GroupAccessControlHandler
- */
-
 namespace Drupal\group\Entity\Access;
 
 use Drupal\group\Access\GroupAccessResult;

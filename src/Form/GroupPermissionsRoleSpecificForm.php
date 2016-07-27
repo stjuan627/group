@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Form\GroupPermissionsRoleSpecificForm.
- */
-
 namespace Drupal\group\Form;
 
 use Drupal\Core\Form\FormStateInterface;

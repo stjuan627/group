@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\grolesync\GroupRoleSynchronizerInterface.
- */
-
 namespace Drupal\grolesync;
 
 use Drupal\User\RoleInterface;

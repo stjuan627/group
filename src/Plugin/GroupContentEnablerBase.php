@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Plugin\GroupContentEnablerBase.
- */
-
 namespace Drupal\group\Plugin;
 
 use Drupal\group\Access\GroupAccessResult;

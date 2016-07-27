@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Controller\GroupNodeController.
- */
-
 namespace Drupal\gnode\Controller;
 
 use Drupal\Core\Entity\EntityFormBuilderInterface;

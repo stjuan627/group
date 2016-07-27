@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Access\GroupNodeAddAccessCheck.
- */
-
 namespace Drupal\gnode\Access;
 
 use Drupal\Core\Access\AccessResult;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Form\GroupRoleForm.
- */
-
 namespace Drupal\group\Entity\Form;
 
 use Drupal\group\Entity\GroupRole;

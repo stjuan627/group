@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Access\GroupContentCreateAnyAccessCheck.
- */
-
 namespace Drupal\group\Access;
 
 use Drupal\Core\Access\AccessResult;

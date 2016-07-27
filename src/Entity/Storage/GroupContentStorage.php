@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Storage\GroupContentStorage.
- */
-
 namespace Drupal\group\Entity\Storage;
 
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;

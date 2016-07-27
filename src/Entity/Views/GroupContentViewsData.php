@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Views\GroupContentViewsData.
- */
-
 namespace Drupal\group\Entity\Views;
 
 use Drupal\Core\Entity\EntityManagerInterface;

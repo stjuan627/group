@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Plugin\Menu\LocalAction\WithDestination.
- */
-
 namespace Drupal\group\Plugin\Menu\LocalAction;
 
 use Drupal\Core\Menu\LocalActionDefault;

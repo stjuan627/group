@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\GroupMembership.
- */
-
 namespace Drupal\group;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Form\GroupPermissionsTypeSpecificForm.
- */
-
 namespace Drupal\group\Form;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;

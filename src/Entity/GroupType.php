@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\GroupType.
- */
-
 namespace Drupal\group\Entity;
 
 use Drupal\group\Plugin\GroupContentEnablerCollection;

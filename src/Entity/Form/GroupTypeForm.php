@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Form\GroupTypeForm.
- */
-
 namespace Drupal\group\Entity\Form;
 
 use Drupal\group\Entity\GroupTypeInterface;

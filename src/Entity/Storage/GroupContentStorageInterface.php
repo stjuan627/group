@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Storage\GroupContentStorageInterface.
- */
-
 namespace Drupal\group\Entity\Storage;
 
 use Drupal\Core\Entity\ContentEntityStorageInterface;

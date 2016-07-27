@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\Routing\GroupRouteProvider.
- */
-
 namespace Drupal\group\Entity\Routing;
 
 use Drupal\Core\Entity\EntityTypeInterface;

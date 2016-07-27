@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Form\GroupPermissionsForm.
- */
-
 namespace Drupal\group\Form;
 
 use Drupal\Component\Render\FormattableMarkup;

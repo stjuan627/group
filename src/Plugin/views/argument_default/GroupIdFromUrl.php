@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Plugin\views\argument_default\GroupIdFromUrl.
- */
-
 namespace Drupal\group\Plugin\views\argument_default;
 
 use Drupal\Core\Cache\Cache;

@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\group\Entity\Group.
- */
 
 namespace Drupal\group\Entity;
 

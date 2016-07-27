@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Plugin\GroupContentEnablerManager.
- */
-
 namespace Drupal\group\Plugin;
 
 use Drupal\Core\Cache\Cache;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Access\GroupPermissionHandler.
- */
-
 namespace Drupal\group\Access;
 
 use Drupal\Component\Discovery\YamlDiscovery;

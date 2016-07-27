@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Entity\GroupTypeInterface.
- */
-
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Controller\GroupMembershipController.
- */
-
 namespace Drupal\group\Controller;
 
 use Drupal\Core\Controller\ControllerBase;

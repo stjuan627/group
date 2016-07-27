@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\group\Plugin\views\access\GroupPermission.
- */
-
 namespace Drupal\group\Plugin\views\access;
 
 use Drupal\Core\Cache\Cache;

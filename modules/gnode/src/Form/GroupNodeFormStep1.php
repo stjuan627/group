@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Form\GroupNodeFormStep1.
- */
-
 namespace Drupal\gnode\Form;
 
 use Drupal\node\NodeForm;

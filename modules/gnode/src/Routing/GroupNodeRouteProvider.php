@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\gnode\Routing\GroupNodeRouteProvider.
- */
-
 namespace Drupal\gnode\Routing;
 
 use Drupal\node\Entity\NodeType;

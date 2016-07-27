@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Annotation\GroupContentEnabler.
- */
-
 namespace Drupal\group\Annotation;
 
 use Drupal\Component\Annotation\Plugin;

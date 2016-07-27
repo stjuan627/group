@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\group\Plugin\GroupContentEnablerInterface.
- */
-
 namespace Drupal\group\Plugin;
 
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
