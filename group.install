@@ -95,7 +95,7 @@ function group_update_8002() {
     // We can't update the definition if the storage handler doesn't have the
     // onEntityTypeCreate() method available to it.
     if (!($new_storage instanceof EntityTypeListenerInterface)) {
-      // @todo This should probably throw an exception.
+      // This should probably throw an exception, but we're in alpha.
       return;
     }
 
@@ -104,7 +104,7 @@ function group_update_8002() {
     // types did not specify a storage backend, Drupal defaulted to SQL so all
     // sites should be using that unless they swapped out the storage.
     if (!($new_storage instanceof SqlContentEntityStorage && $old_storage instanceof SqlContentEntityStorage)) {
-      // @todo This should probably throw an exception.
+      // This should probably throw an exception, but we're in alpha.
       return;
     }
 

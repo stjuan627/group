@@ -3,8 +3,6 @@
 /**
  * @file
  * Contains \Drupal\group\Entity\GroupContentType.
- *
- * @todo Create these automatically for fixed plugins!
  */
 
 namespace Drupal\group\Entity;

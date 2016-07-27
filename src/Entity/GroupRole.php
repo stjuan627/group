@@ -3,8 +3,6 @@
 /**
  * @file
  * Contains \Drupal\group\Entity\GroupRole.
- *
- * @todo Other edit/delete paths, perhaps use a route provider?
  */
 
 namespace Drupal\group\Entity;

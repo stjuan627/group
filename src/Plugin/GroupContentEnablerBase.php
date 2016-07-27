@@ -20,9 +20,6 @@ use Symfony\Component\Routing\Route;
 /**
  * Provides a base class for GroupContentEnabler plugins.
  *
- * @todo Refactor the way config is set, it's causing GroupType to have ugly
- *       code in installContentPlugin() and updateContentPlugin().
- *
  * @see \Drupal\group\Annotation\GroupContentEnabler
  * @see \Drupal\group\GroupContentEnablerManager
  * @see \Drupal\group\Plugin\GroupContentEnablerInterface

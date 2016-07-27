@@ -70,7 +70,6 @@ class GroupContentEnabler extends Plugin {
    * (optional) The key to use in automatically generated paths.
    *
    * Will be added to the entity tokens so modules like Pathauto may use it.
-   * @todo Better documentation.
    *
    * @var string
    */

@@ -239,8 +239,8 @@ abstract class GroupPermissionsForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
-    // @todo.
-    $form['#attached']['library'][] = 'user/drupal.user.permissions';
+    // @todo Do something like the global permissions page for 'member'.
+    // $form['#attached']['library'][] = 'user/drupal.user.permissions';
 
     return $form;
   }
