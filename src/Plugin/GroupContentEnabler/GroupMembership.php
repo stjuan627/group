@@ -63,16 +63,6 @@ class GroupMembership extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
-  public function getEntityForms() {
-    return [
-      'group-join' => 'Drupal\group\Form\GroupJoinForm',
-      'group-leave' => 'Drupal\group\Form\GroupLeaveForm',
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPermissions() {
     $permissions['administer members'] = [
       'title' => 'Administer group members',

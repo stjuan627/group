@@ -48,6 +48,8 @@ use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
  *       "add" = "Drupal\group\Entity\Form\GroupContentForm",
  *       "edit" = "Drupal\group\Entity\Form\GroupContentForm",
  *       "delete" = "Drupal\group\Entity\Form\GroupContentDeleteForm",
+ *       "group-join" = "Drupal\group\Form\GroupJoinForm",
+ *       "group-leave" = "Drupal\group\Form\GroupLeaveForm",
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupContentAccessControlHandler",
  *   },

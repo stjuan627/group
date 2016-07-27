@@ -183,54 +183,6 @@ function group_modules_installed($modules) {
 }
 
 /**
- * Implements hook_entity_type_alter().
- */
-function group_entity_type_alter(array &$entity_types) {
-  static $mute_self;
-
-  // Because we load content enabler plugins while rebuilding entity types, we
-  // need to make sure the code below does not keep triggering itself.
-  //
-  // This could happen because content enabler plugins may load entity types to
-  // create derivatives (like gnode does) and because we load all group types to
-  // see which plugins are actually installed.
-  if ($mute_self !== TRUE) {
-    $mute_self = TRUE;
-
-    // Enables extra forms for GroupContent entities as defined by plugins.
-    foreach (_group_get_additional_entity_forms() as $name => $class) {
-      /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
-      $entity_types['group_content']->setFormClass($name, $class);
-    }
-
-    $mute_self = FALSE;
-  }
-}
-
-/**
- * Returns a list of additional forms to enable for group content entities.
- *
- * @todo As soon as this gets more usage or we have more similar functionality,
- * this should be moved to a service so we can inject it as a dependency.
- *
- * @return array
- *   An associative array with form names as keys and class names as values.
- *
- * @see group_entity_type_alter()
- */
-function _group_get_additional_entity_forms() {
-  $forms = [];
-
-  // Retrieve all possible forms from all installed plugins.
-  foreach (_group_content_enabler_manager()->getInstalled() as $plugin_id => $plugin) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-    $forms = array_merge($forms, $plugin->getEntityForms());
-  }
-
-  return $forms;
-}
-
-/**
  * Implements hook_form_FORM_ID_alter().
  *
  * @param array $form

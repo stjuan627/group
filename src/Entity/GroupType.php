@@ -311,11 +311,6 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
     // Run the post install tasks on the plugin.
     $plugin->postInstall();
 
-    // Clear the entity type cache if the plugin adds to the GroupContent info.
-    if (!empty($plugin->getEntityForms())) {
-      $this->entityTypeManager()->clearCachedDefinitions();
-    }
-
     return $this;
   }
 

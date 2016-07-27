@@ -143,7 +143,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function getContentTypeDescription();
 
   /**
-   * Provides an list of operations for a group.
+   * Provides a list of operations for a group.
    *
    * These operations can be implemented in numerous ways by extending modules.
    * Out of the box, Group provides a block that shows the available operations
@@ -162,7 +162,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function getGroupOperations(GroupInterface $group);
 
   /**
-   * Provides an list of operations for the content enabler plugin.
+   * Provides a list of operations for the content enabler plugin.
    *
    * These operations will be merged with the ones already available on the
    * group type content configuration page: (un)install, manage fields, etc.
@@ -176,29 +176,6 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
    *   - weight: The weight of this operation.
    */
   public function getOperations();
-
-  /**
-   * Provides a list of additional forms to enable for group content entities.
-   *
-   * Usually, entity types only specify three forms in their annotation: 'add',
-   * 'edit' and 'delete'. In case you want to extend one of these forms to work
-   * some magic on them, you may need to define an extra key by altering the
-   * GroupContent entity type definition.
-   *
-   * To avoid multiple modules messing with the entity type definition, Group
-   * allows content enabler plugins to define extra forms on the plugin. A good
-   * example is \Drupal\group\Plugin\GroupContentEnabler\GroupMembership.
-   *
-   * Please prefix your form names with your module's name to avoid collisions
-   * with other modules' forms. E.g.: group-join, group-leave, ... instead of
-   * join, leave, ...
-   *
-   * @return array
-   *   An associative array as seen in the 'form' section of the 'handlers' key
-   *   in an entity annotation. I.e.: An array where the keys represent form
-   *   names and the values are class names.
-   */
-  public function getEntityForms();
 
   /**
    * Provides a list of group permissions the plugin exposes.

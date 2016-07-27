@@ -61,13 +61,6 @@ class GroupNode extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
-  public function getEntityForms() {
-    return ['gnode-form' => 'Drupal\gnode\Form\GroupNodeFormStep2'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPermissions() {
     $permissions = parent::getPermissions();
 
