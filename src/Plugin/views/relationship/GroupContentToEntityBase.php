@@ -95,7 +95,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
-    
+
     // Retrieve all of the plugins that can serve this entity type.
     $options = [];
     foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
@@ -139,10 +139,17 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
       $def['extra'] = $this->definition['extra'];
     }
 
+    // We can't run an IN-query on an empty array. So if there are no group
+    // content types yet, we need to improvise.
+    $group_content_type_ids = $this->getGroupContentTypeIds();
+    if (empty($group_content_type_ids)) {
+      $group_content_type_ids = ['***'];
+    }
+
     // Then add our own join condition, namely the group content type IDs.
     $def['extra'][] = [
       $this->getJoinFieldType() => 'type',
-      'value' => $this->getGroupContentTypeIds(),
+      'value' => $group_content_type_ids,
     ];
 
     // Use the standard join plugin unless instructed otherwise.
