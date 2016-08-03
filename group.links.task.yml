@@ -79,3 +79,20 @@ group_role.permissions_form:
   route_name: 'entity.group_role.permissions_form'
   base_route: 'entity.group_role.edit_form'
   weight: 10
+
+group_content.view:
+  title: 'View'
+  base_route: 'entity.group_content.canonical'
+  route_name: 'entity.group_content.canonical'
+
+group_content.edit:
+  title: 'Edit'
+  base_route: 'entity.group_content.canonical'
+  route_name: 'entity.group_content.edit_form'
+  weight: 5
+
+group_content.delete:
+  title: 'Remove'
+  base_route: 'entity.group_content.canonical'
+  route_name: 'entity.group_content.delete_form'
+  weight: 10
