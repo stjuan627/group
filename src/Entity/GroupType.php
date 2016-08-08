@@ -315,11 +315,15 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   public function updateContentPlugin($plugin_id, array $configuration) {
     if ($this->hasContentPlugin($plugin_id)) {
       $plugin = $this->getContentPlugin($plugin_id);
-      
+
       // Merge in the new configuration with the old. @todo Merge deep?
       $old_conf = $plugin->getConfiguration();
       $new_conf['data'] = $configuration + $old_conf['data'];
-      
+
+      // Add in the crucial configuration keys.
+      $new_conf['id'] = $plugin_id;
+      $new_conf['group_type'] = $this->id();
+
       // Set the new configuration and save the group type.
       $this->getInstalledContentPlugins()->setInstanceConfiguration($plugin_id, $new_conf);
       $this->save();

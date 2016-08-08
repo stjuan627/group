@@ -214,3 +214,23 @@ function group_update_8004() {
     $group_role->save(TRUE);
   }
 }
+
+/**
+ * Update all group types to fix some potentially broken plugin config.
+ */
+function group_update_8005() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type = $config_factory->getEditable($group_type_config_name);
+    list(,,$group_type_id) = explode('.', $group_type_config_name);
+
+    // Make sure the group type ID is set in the plugin config.
+    $plugins = $group_type->get('content');
+    foreach ($plugins as $plugin_id => $config) {
+      $group_type->set("content.$plugin_id.group_type", $group_type_id);
+    }
+
+    $group_type->save(TRUE);
+  }
+}
