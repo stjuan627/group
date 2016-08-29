@@ -21,8 +21,9 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: group_permission
+        options:
+          group_permission: 'access group_node overview'
       cache:
         type: tag
         options: {  }
@@ -863,7 +864,7 @@ display:
           group_type: group
           admin_label: 'Content relation'
           required: true
-          group_content_plugins: {}
+          group_content_plugins: {  }
           entity_type: node
           plugin_id: group_content_to_entity_reverse
       arguments:
@@ -909,6 +910,7 @@ display:
     cache_metadata:
       max-age: 0
       contexts:
+        - group_membership.roles.permissions
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
@@ -936,6 +938,7 @@ display:
     cache_metadata:
       max-age: 0
       contexts:
+        - group_membership.roles.permissions
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
