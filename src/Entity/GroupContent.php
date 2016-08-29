@@ -62,7 +62,10 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   },
  *   bundle_entity_type = "group_content_type",
  *   field_ui_base_route = "entity.group_content_type.edit_form",
- *   permission_granularity = "bundle"
+ *   permission_granularity = "bundle",
+ *   constraints = {
+ *     "GroupContentCardinality" = {}
+ *   }
  * )
  */
 class GroupContent extends ContentEntityBase implements GroupContentInterface {
@@ -218,7 +221,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Content'))
       ->setDescription(t('The entity to add to the group.'))
-      ->addConstraint('GroupContentCardinality')
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,
