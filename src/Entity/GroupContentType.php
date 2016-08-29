@@ -18,6 +18,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     plural = "@count group content types"
  *   ),
  *   handlers = {
+ *     "storage" = "Drupal\group\Entity\Storage\GroupContentTypeStorage",
  *     "access" = "Drupal\group\Entity\Access\GroupContentTypeAccessControlHandler",
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupContentTypeForm",
@@ -39,6 +40,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "description",
  *     "group_type",
  *     "content_plugin",
+ *     "plugin_config",
  *   }
  * )
  */
@@ -80,6 +82,20 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   protected $content_plugin;
 
   /**
+   * The group content enabler plugin configuration for group content type.
+   *
+   * @var array
+   */
+  protected $plugin_config = [];
+
+  /**
+   * The content enabler plugin instance.
+   *
+   * @var \Drupal\group\Plugin\GroupContentEnablerInterface
+   */
+  protected $pluginInstance;
+
+  /**
    * {@inheritdoc}
    */
   public function id() {
@@ -105,7 +121,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function getGroupType() {
-    return GroupType::load($this->group_type);
+    return GroupType::load($this->getGroupTypeId());
   }
 
   /**
@@ -116,10 +132,25 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   }
 
   /**
+   * Returns the content enabler plugin manager.
+   *
+   * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   *   The group content plugin manager.
+   */
+  protected function getContentEnablerManager() {
+    return \Drupal::service('plugin.manager.group_content_enabler');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getContentPlugin() {
-    return $this->getGroupType()->getContentPlugin($this->content_plugin);
+    if (!isset($this->pluginInstance)) {
+      $configuration = $this->plugin_config;
+      $configuration['group_type_id'] = $this->getGroupTypeId();
+      $this->pluginInstance = $this->getContentEnablerManager()->createInstance($this->getContentPluginId(), $configuration);
+    }
+    return $this->pluginInstance;
   }
 
   /**
@@ -132,35 +163,33 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
+  public function updateContentPlugin(array $configuration) {
+    $this->plugin_config = $configuration;
+    $this->save();
+
+    // Make sure people get a fresh local plugin instance.
+    $this->pluginInstance = NULL;
+
+    // Make sure people get a freshly configured plugin collection.
+    $this->getContentEnablerManager()->clearCachedGroupTypeCollections($this->getGroupType());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function loadByContentPluginId($plugin_id) {
-    return \Drupal::entityTypeManager()
-      ->getStorage('group_content_type')
-      ->loadByProperties(['content_plugin' => $plugin_id]);
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    return $storage->loadByContentPluginId($plugin_id);
   }
 
   /**
    * {@inheritdoc}
    */
   public static function loadByEntityTypeId($entity_type_id) {
-    $plugin_ids = [];
-
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-    foreach ($plugin_manager->getAll() as $plugin_id => $plugin) {
-      if ($plugin->getEntityTypeId() === $entity_type_id) {
-        $plugin_ids[] = $plugin_id;
-      }
-    }
-
-    // If no responsible group content plugins were found, we return nothing.
-    if (empty($plugin_ids)) {
-      return [];
-    }
-
-    // Otherwise load all group content types being handled by gathered plugins.
-    return self::loadByContentPluginId($plugin_ids);
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    return $storage->loadByEntityTypeId($entity_type_id);
   }
 
   /**
@@ -177,16 +206,11 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
         \Drupal::service('views.views_data')->clear();
       }
 
-      /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
-      $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+      // Run the post install tasks on the plugin.
+      $this->getContentPlugin()->postInstall();
 
-      // We also need to reset the cache that maps plugin IDs to group content
-      // type IDs as this one needs to be added to it.
-      $plugin_manager->clearCachedGroupContentTypeIdMap();
-
-      // A previously unused plugin may be in use now, so clear the installed
-      // plugin ID cache.
-      $plugin_manager->clearCachedInstalledIds();
+      // We need to reset the plugin ID map cache as it will be out of date now.
+      $this->getContentEnablerManager()->clearCachedPluginMaps();
     }
   }
 
@@ -194,17 +218,6 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
-    // In case the group content type got deleted by uninstalling the providing
-    // module, we still need to uninstall it on the group type.
-    foreach ($entities as $entity) {
-      /** @var \Drupal\group\Entity\GroupContentTypeInterface $entity */
-      if ($entity->isUninstalling()) {
-        $group_type = $entity->getGroupType();
-        $group_type->getInstalledContentPlugins()->removeInstanceId($entity->getContentPluginId());
-        $group_type->save();
-      }
-    }
-
     // When a GroupContentType is deleted, we clear the views data cache to make
     // sure that all of the views data which relies on group content types is up
     // to date.
@@ -215,22 +228,20 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
 
-    // We also need to reset the cache that maps plugin IDs to group content
-    // type IDs as this one needs to be removed from it.
-    $plugin_manager->clearCachedGroupContentTypeIdMap();
-
-    // A plugin may no longer be in use now, so clear the installed ID cache.
-    $plugin_manager->clearCachedInstalledIds();
+    // We need to reset the plugin ID map cache as it will be out of date now.
+    $plugin_manager->clearCachedPluginMaps();
   }
 
   /**
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    // By adding the group type and module as dependencies, we ensure the group
-    // content type is deleted as well when the module or group type is deleted.
+    // By adding the group type as a dependency, we ensure the group content
+    // type is deleted along with the group type.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
-    $this->addDependency('module', $this->getContentPlugin()->getProvider());
+
+    // Add the dependencies of the responsible content enabler plugin.
+    $this->addDependencies($this->getContentPlugin()->calculateDependencies());
   }
 
 }

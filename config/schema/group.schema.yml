@@ -21,24 +21,6 @@ group.type.*:
     description:
       type: 'text'
       label: 'Description'
-    content:
-      type: 'sequence'
-      label: 'Group content enabler plugins'
-      sequence:
-        type: 'mapping'
-        label: 'Group content plugin configuration'
-        mapping:
-          id:
-            type: 'string'
-            label: 'Plugin ID'
-          group_type:
-            type: 'string'
-            label: 'Group type ID'
-          data:
-            type: 'sequence'
-            label: 'Plugin configuration'
-            sequence:
-              type: 'group_content_enabler.config.[%key]'
 
 group_content_enabler.config.group_cardinality:
   type: 'integer'
@@ -104,6 +86,11 @@ group_content_type:
     content_plugin:
       type: 'text'
       label: 'Group content plugin ID'
+    plugin_config:
+      type: 'sequence'
+      label: 'Plugin configuration'
+      sequence:
+        type: 'group_content_enabler.config.[%key]'
 
 # Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID.
 # Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID.

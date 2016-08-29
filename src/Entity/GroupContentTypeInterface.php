@@ -43,6 +43,16 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
   public function getContentPluginId();
 
   /**
+   * Updates the configuration of the content enabler plugin.
+   * 
+   * Any keys that were left out will be reset to the default.
+   *
+   * @param array $configuration
+   *   An array of content enabler plugin configuration.
+   */
+  public function updateContentPlugin(array $configuration);
+
+  /**
    * Loads group content type entities by their responsible plugin ID.
    *
    * @param string|string[] $plugin_id

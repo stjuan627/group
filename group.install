@@ -234,3 +234,36 @@ function group_update_8005() {
     $group_type->save(TRUE);
   }
 }
+
+/**
+ * Move all plugin config from group types to group content types.
+ */
+function group_update_8006() {
+  $config_factory = \Drupal::configFactory();
+  $plugin_config = [];
+
+  // Get the configuration from every group type.
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type = $config_factory->getEditable($group_type_config_name);
+    list(,,$group_type_id) = explode('.', $group_type_config_name);
+
+    // Store the group type's plugin configuration in an array.
+    $plugins = $group_type->get('content');
+    foreach ($plugins as $plugin_id => $config) {
+      $plugin_config[$group_type_id][$plugin_id] = $config['data'];
+    }
+
+    // Remove the plugin config from the group type altogether.
+    $group_type->clear('content');
+    $group_type->save(TRUE);
+  }
+
+  // Store the configuration on the group content types.
+  foreach ($config_factory->listAll('group.content_type.') as $group_content_type_config_name) {
+    $group_content_type = $config_factory->getEditable($group_content_type_config_name);
+    $group_type_id = $group_content_type->get('group_type');
+    $plugin_id = $group_content_type->get('content_plugin');
+    $group_content_type->set('plugin_config', $plugin_config[$group_type_id][$plugin_id]);
+    $group_content_type->save(TRUE);
+  }
+}

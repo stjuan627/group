@@ -130,4 +130,11 @@ class GroupNode extends GroupContentEnablerBase {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateDependencies() {
+    return ['config' => ['node.type.' . $this->getEntityBundle()]];
+  }
+
 }

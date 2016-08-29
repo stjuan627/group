@@ -110,9 +110,9 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $group_type->getContentPlugin($group_content_type->getContentPluginId());
+    $plugin = $group_content_type->getContentPlugin();
 
-    $group_type->uninstallContentPlugin($plugin->getPluginId());
+    $group_content_type->delete();
     \Drupal::logger('group_content_type')->notice('Uninstalled %plugin from %group_type.', [
       '%plugin' => $plugin->getLabel(),
       '%group_type' => $group_type->label(),

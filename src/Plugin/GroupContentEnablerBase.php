@@ -6,11 +6,11 @@ use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
-use Symfony\Component\Routing\Route;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
@@ -35,10 +35,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    // We call ::setConfiguration at construction to hide all non-configurable
-    // keys such as 'id'. This causes the $configuration property to only list
-    // that which is in fact configurable. However, ::getConfiguration still
-    // returns the full configuration array.
+    // Only support setting the group type ID during construction.
+    if (!empty($configuration['group_type_id'])) {
+      $this->groupTypeId = $configuration['group_type_id'];
+    }
+
+    // Include the default configuration by calling ::setConfiguration().
     $this->setConfiguration($configuration);
   }
 
@@ -322,23 +324,22 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getConfiguration() {
-    return [
-      'id' => $this->getPluginId(),
-      'group_type' => $this->getGroupTypeId(),
-      'data' => $this->configuration,
-    ];
+    return $this->configuration;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    $configuration += [
-      'data' => [],
-      'group_type' => NULL,
-    ];
-    $this->configuration = $configuration['data'] + $this->defaultConfiguration();
-    $this->groupTypeId = $configuration['group_type'];
+    // Do not allow the changing of the group type ID after construction.
+    unset($configuration['group_type_id']);
+
+    // Merge in the default configuration.
+    $this->configuration = NestedArray::mergeDeep(
+      $this->defaultConfiguration(),
+      $configuration
+    );
+
     return $this;
   }
 

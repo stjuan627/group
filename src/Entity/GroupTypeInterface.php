@@ -4,12 +4,11 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityDescriptionInterface;
-use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 
 /**
  * Provides an interface defining a group type entity.
  */
-interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginCollectionInterface, EntityDescriptionInterface {
+interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInterface {
 
   /**
    * The maximum length of the ID, in characters.
@@ -35,7 +34,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *   The ids of the group roles this group type uses.
    */
   public function getRoleIds();
-  
+
   /**
    * Gets the generic anonymous group role for this group type.
    *
@@ -127,6 +126,10 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *   (optional) An array of content enabler plugin configuration.
    *
    * @return $this
+   *
+   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
+   *   \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface::
+   *   createFromPlugin() instead.
    */
   public function installContentPlugin($plugin_id, array $configuration = []);
 
@@ -139,6 +142,10 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *   An array of content enabler plugin configuration.
    *
    * @return $this
+   *
+   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
+   *   \Drupal\group\Entity\GroupContentTypeInterface::updateContentPlugin()
+   *   instead.
    */
   public function updateContentPlugin($plugin_id, array $configuration);
 
@@ -149,6 +156,9 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityWithPluginColl
    *   The content enabler plugin ID.
    *
    * @return $this
+   *
+   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
+   *   \Drupal\group\Entity\GroupContentType::delete() instead.
    */
   public function uninstallContentPlugin($plugin_id);
 

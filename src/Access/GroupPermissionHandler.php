@@ -76,7 +76,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
    */
   protected $pluginManager;
-  
+
   /**
    * Constructs a new PermissionHandler.
    *

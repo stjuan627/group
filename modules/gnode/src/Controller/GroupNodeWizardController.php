@@ -10,6 +10,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeTypeInterface;
 use Drupal\user\PrivateTempStoreFactory;
@@ -43,6 +44,13 @@ class GroupNodeWizardController extends ControllerBase {
   protected $entityFormBuilder;
 
   /**
+   * The group content plugin manager.
+   *
+   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   */
+  protected $pluginManager;
+
+  /**
    * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -58,13 +66,16 @@ class GroupNodeWizardController extends ControllerBase {
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
    *   The entity form builder.
+   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
+   *   The group content plugin manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
-  public function __construct(PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
+  public function __construct(PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, GroupContentEnablerManagerInterface $plugin_manager, RendererInterface $renderer) {
     $this->privateTempStore = $temp_store_factory->get('gnode_add_temp');
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFormBuilder = $entity_form_builder;
+    $this->pluginManager = $plugin_manager;
     $this->renderer = $renderer;
   }
 
@@ -76,6 +87,7 @@ class GroupNodeWizardController extends ControllerBase {
       $container->get('user.private_tempstore'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
+      $container->get('plugin.manager.group_content_enabler'),
       $container->get('renderer')
     );
   }
@@ -149,29 +161,39 @@ class GroupNodeWizardController extends ControllerBase {
     $build = ['#theme' => 'entity_add_list', '#bundles' => []];
     $add_form_route = 'entity.group_content.group_node_add_form';
 
-    // Build a list of available bundles.
-    $bundles = [];
+    // Retrieve all group_node plugins for the group's type.
+    $plugin_ids = $this->pluginManager->getInstalledIds($group->getGroupType());
+    foreach ($plugin_ids as $key => $plugin_id) {
+      if (strpos($plugin_id, 'group_node:') !== 0) {
+        unset($plugin_ids[$key]);
+      }
+    }
+
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $properties = [
+      'group_type' => $group->bundle(),
+      'content_plugin' => $plugin_ids,
+    ];
+    /** @var \Drupal\group\Entity\GroupContentTypeInterface[] $bundles */
+    $bundles = $storage->loadByProperties($properties);
+
+    // Filter out the bundles the user doesn't have access to.
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
-    foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin_id => $plugin) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      // Only select the group_node plugins.
-      if ($plugin->getBaseId() == 'group_node') {
-        $bundle = $plugin->getContentTypeConfigId();
+    foreach (array_keys($bundles) as $bundle) {
+      // Check for access and add it as a cacheable dependency.
+      $access = $access_control_handler->createAccess($bundle, NULL, ['group' => $group], TRUE);
+      $this->renderer->addCacheableDependency($build, $access);
 
-        // Add the user's access rights as cacheable dependencies.
-        $access = $access_control_handler->createAccess($bundle, NULL, ['group' => $group], TRUE);
-        $this->renderer->addCacheableDependency($build, $access);
-
-        // Filter out the bundles the user doesn't have access to.
-        if ($access->isAllowed()) {
-          $bundles[$plugin_id] = $bundle;
-        }
+      // Remove inaccessible bundles from the list.
+      if (!$access->isAllowed()) {
+        unset($bundles[$bundle]);
       }
     }
 
     // Redirect if there's only one bundle available.
     if (count($bundles) == 1) {
-      $plugin = $group->getGroupType()->getContentPlugin(key($bundles));
+      $group_content_type = reset($bundles);
+      $plugin = $group_content_type->getContentPlugin();
       $route_params = ['group' => $group->id(), 'node_type' => $plugin->getEntityBundle()];
       $url = Url::fromRoute($add_form_route, $route_params, ['absolute' => TRUE]);
       return new RedirectResponse($url->toString());
@@ -181,8 +203,8 @@ class GroupNodeWizardController extends ControllerBase {
     $storage_handler = $this->entityTypeManager->getStorage('node_type');
 
     // Set the info for all of the remaining bundles.
-    foreach ($bundles as $plugin_id => $bundle) {
-      $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+    foreach ($bundles as $bundle => $group_content_type) {
+      $plugin = $group_content_type->getContentPlugin();
       $bundle_label = $storage_handler->load($plugin->getEntityBundle())->label();
       $route_params = ['group' => $group->id(), 'node_type' => $plugin->getEntityBundle()];
 

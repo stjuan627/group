@@ -53,11 +53,15 @@ class GroupContentCreateAnyAccessCheck implements AccessInterface {
     // Get the group content access control handler.
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
 
-    // Loop over all available content plugins for the group and see if the user
-    // can create a group content entity using one of them.
-    foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      if ($access_control_handler->createAccess($plugin->getContentTypeConfigId(), $account, ['group' => $group])) {
+    // Retrieve all of the group content type IDs for the group.
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $entity_query = $storage->getQuery();
+    $entity_query->condition('group_type', $group->bundle());
+    $group_content_type_ids = $entity_query->execute();
+
+    // Find out which ones the user has access to create.
+    foreach ($group_content_type_ids as $group_content_type_id) {
+      if ($access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group])) {
         // Allow access if the route flag was set to 'TRUE'.
         return AccessResult::allowedIf($needs_access);
       }

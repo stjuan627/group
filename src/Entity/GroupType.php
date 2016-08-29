@@ -2,10 +2,8 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Config\Entity\Exception\ConfigEntityIdLengthException;
-use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
@@ -48,7 +46,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "id",
  *     "label",
  *     "description",
- *     "content"
  *   }
  * )
  */
@@ -74,20 +71,6 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * @var string
    */
   protected $description;
-
-  /**
-   * The content enabler plugin configuration for the group type.
-   *
-   * @var string[]
-   */
-  protected $content = [];
-
-  /**
-   * Holds the collection of content enabler plugins the group type uses.
-   *
-   * @var \Drupal\group\Plugin\GroupContentEnablerCollection
-   */
-  protected $contentCollection;
 
   /**
    * {@inheritdoc}
@@ -248,18 +231,15 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function getInstalledContentPlugins() {
-    if (!$this->contentCollection) {
-      $this->contentCollection = new GroupContentEnablerCollection($this->getContentEnablerManager(), $this->content);
-      $this->contentCollection->sort();
-    }
-    return $this->contentCollection;
+    return $this->getContentEnablerManager()->getInstalled($this);
   }
 
   /**
    * {@inheritdoc}
    */
   public function hasContentPlugin($plugin_id) {
-    return isset($this->content[$plugin_id]);
+    $installed = $this->getContentEnablerManager()->getInstalledIds($this);
+    return in_array($plugin_id, $installed);
   }
 
   /**
@@ -272,40 +252,10 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPluginCollections() {
-    return ['content' => $this->getInstalledContentPlugins()];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function installContentPlugin($plugin_id, array $configuration = []) {
-    // The content plugins expect the actual configurable data to be under the
-    // 'data' key and the crucial data at the root level, so let's fix that.
-    $configuration['data'] = $configuration;
-
-    // Add in the crucial configuration keys.
-    $configuration['id'] = $plugin_id;
-    $configuration['group_type'] = $this->id();
-
-    // Save the plugin to the group type.
-    $this->getInstalledContentPlugins()->addInstanceId($plugin_id, $configuration);
-    $this->save();
-
-    // Save the group content type config entity.
-    $plugin = $this->getContentPlugin($plugin_id);
-    $values = [
-      'id' => $plugin->getContentTypeConfigId(),
-      'label' => $plugin->getContentTypeLabel(),
-      'description' => $plugin->getContentTypeDescription(),
-      'group_type' => $this->id(),
-      'content_plugin' => $plugin_id,
-    ];
-    GroupContentType::create($values)->save();
-
-    // Run the post install tasks on the plugin.
-    $plugin->postInstall();
-
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager()->getStorage('group_content_type');
+    $storage->createFromPlugin($this, $plugin_id, $configuration)->save();
     return $this;
   }
 
@@ -313,65 +263,17 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * {@inheritdoc}
    */
   public function updateContentPlugin($plugin_id, array $configuration) {
-    if ($this->hasContentPlugin($plugin_id)) {
-      $plugin = $this->getContentPlugin($plugin_id);
-
-      // Merge in the new configuration with the old. @todo Merge deep?
-      $old_conf = $plugin->getConfiguration();
-      $new_conf['data'] = $configuration + $old_conf['data'];
-
-      // Add in the crucial configuration keys.
-      $new_conf['id'] = $plugin_id;
-      $new_conf['group_type'] = $this->id();
-
-      // Set the new configuration and save the group type.
-      $this->getInstalledContentPlugins()->setInstanceConfiguration($plugin_id, $new_conf);
-      $this->save();
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function uninstallContentPlugin($plugin_id) {
-    // Get the content type ID from the plugin instance before we delete it.
     $plugin = $this->getContentPlugin($plugin_id);
-    $content_type_id = $plugin->getContentTypeConfigId();
-
-    // Remove the plugin from the group type.
-    $this->getInstalledContentPlugins()->removeInstanceId($plugin_id);
-    $this->save();
-
-    // Delete the group content type config entity.
-    GroupContentType::load($content_type_id)->delete();
-
+    GroupContentType::load($plugin->getContentTypeConfigId())->updateContentPlugin($configuration);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies() {
-    // All dependencies should be recalculated on every save apart from enforced
-    // dependencies. This ensures stale dependencies are never saved.
-    $this->dependencies = array_intersect_key($this->dependencies, ['enforced' => '']);
-
-    // The parent calculateDependencies() would merge in the installed plugin
-    // dependencies at this point. However, because we have an uninstall
-    // validator preventing you from removing any module that provides a plugin
-    // which has content for it, we don't want the plugin's dependencies added
-    // to the group type as it would get deleted when the module which provides
-    // that plugin is uninstalled.
-
-    // Taken from the parent function 1:1.
-    if ($this instanceof ThirdPartySettingsInterface) {
-      // Configuration entities need to depend on the providers of any third
-      // parties that they store the configuration for.
-      foreach ($this->getThirdPartyProviders() as $provider) {
-        $this->addDependency('module', $provider);
-      }
-    }
-
+  public function uninstallContentPlugin($plugin_id) {
+    $plugin = $this->getContentPlugin($plugin_id);
+    GroupContentType::load($plugin->getContentTypeConfigId())->delete();
     return $this;
   }
 
