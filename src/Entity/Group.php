@@ -27,7 +27,7 @@ use Drupal\user\UserInterface;
  *   ),
  *   bundle_label = @Translation("Group type"),
  *   handlers = {
- *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "view_builder" = "Drupal\group\Entity\ViewBuilder\GroupViewBuilder",
  *     "views_data" = "Drupal\group\Entity\Views\GroupViewsData",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupListBuilder",
  *     "route_provider" = {
