@@ -8,6 +8,14 @@ views.access.group_permission:
       type: 'string'
       label: 'Group permission'
 
+views.argument.group_id:
+  type: views_argument
+  label: 'Group ID'
+  mapping:
+    not:
+      type: boolean
+      label: 'Exclude'
+
 views.argument_default.group_id_from_url:
   type: 'sequence'
   label: 'Group ID from current route'

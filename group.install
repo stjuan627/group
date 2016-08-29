@@ -267,3 +267,13 @@ function group_update_8006() {
     $group_content_type->save(TRUE);
   }
 }
+
+/**
+ * Update the members view to use the argument provided title.
+ */
+function group_update_8007() {
+  $view = \Drupal::configFactory()->getEditable('views.view.group_members');
+  $view->set('display.default.display_options.arguments.gid.title_enable', TRUE);
+  $view->set('display.default.display_options.arguments.gid.title', '{{ arguments.gid|placeholder }} members');
+  $view->save(TRUE);
+}

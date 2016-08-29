@@ -61,6 +61,13 @@ class GroupContentViewsData extends EntityViewsData {
   public function getViewsData() {
     $data = parent::getViewsData();
 
+    // Add a custom numeric argument for the parent group ID that allows us to
+    // use replacement titles with the parent group's label.
+    $data['group_content_field_data']['gid']['argument'] = [
+      'id' => 'group_id',
+      'numeric' => TRUE,
+    ];
+    
     // Get the data table for GroupContent entities.
     $data_table = $this->entityType->getDataTable();
 
