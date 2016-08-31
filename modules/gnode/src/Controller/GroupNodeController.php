@@ -55,6 +55,8 @@ class GroupNodeController extends GroupContentController {
    * {@inheritdoc}
    */
   protected function addPageBundles(GroupInterface $group) {
+    $bundles = [];
+
     // Retrieve all group_node plugins for the group's type.
     $plugin_ids = $this->pluginManager->getInstalledIds($group->getGroupType());
     foreach ($plugin_ids as $key => $plugin_id) {
@@ -63,11 +65,15 @@ class GroupNodeController extends GroupContentController {
       }
     }
 
+    // Retrieve all of the responsible group content types, keyed by plugin ID.
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $entity_query = $storage->getQuery();
-    $entity_query->condition('group_type', $group->bundle());
-    $entity_query->condition('content_plugin', $plugin_ids, 'IN');
-    return $entity_query->execute();
+    $properties = ['group_type' => $group->bundle(), 'content_plugin' => $plugin_ids];
+    foreach ($storage->loadByProperties($properties) as $bundle => $group_content_type) {
+      /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
+      $bundles[$group_content_type->getContentPluginId()] = $bundle;
+    }
+    
+    return $bundles;
   }
 
   /**

@@ -135,10 +135,15 @@ class GroupContentController extends ControllerBase {
    *   generate their respective group content types.
    */
   protected function addPageBundles(GroupInterface $group) {
+    $bundles = [];
+
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $entity_query = $storage->getQuery();
-    $entity_query->condition('group_type', $group->bundle());
-    return $entity_query->execute();
+    foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
+      $bundles[$group_content_type->getContentPluginId()] = $bundle;
+    }
+
+    return $bundles;
   }
 
   /**
