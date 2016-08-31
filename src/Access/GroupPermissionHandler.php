@@ -3,6 +3,7 @@
 namespace Drupal\group\Access;
 
 use Drupal\Component\Discovery\YamlDiscovery;
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -258,7 +259,16 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     // Sort all permissions by provider name first and then by title.
     uasort($permissions, function (array $permission_a, array $permission_b) use ($modules) {
       if ($modules[$permission_a['provider']] == $modules[$permission_b['provider']]) {
-        return $permission_a['title'] > $permission_b['title'];
+        // Account for the possibility that titles may already be instances of
+        // \Drupal\Core\StringTranslation\TranslatableMarkup.
+        $title_a = $permission_a['title'] instanceof MarkupInterface
+          ? $permission_a['title']->__toString()
+          : $permission_a['title'];
+        $title_b = $permission_b['title'] instanceof MarkupInterface
+          ? $permission_b['title']->__toString()
+          : $permission_b['title'];
+
+        return $title_a > $title_b;
       }
       else {
         return $modules[$permission_a['provider']] > $modules[$permission_b['provider']];
