@@ -247,6 +247,88 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
 }
 
 /**
+ * Implements hook_user_cancel_methods_alter().
+ */
+function group_user_cancel_methods_alter(&$methods) {
+  $methods['user_cancel_block']['title'] = t('Disable the account and keep its content and groups.');
+  $methods['user_cancel_block']['description'] .= ' ' . t('Groups that were created by you will still list you as the owner.');
+  $methods['user_cancel_block_unpublish']['title'] .= ' ' . t('Does not affect groups.');
+  $methods['user_cancel_block_unpublish']['description'] .= ' ' . t('Groups that were created by you will remain visible.');
+  $methods['user_cancel_reassign']['title'] .= ' ' . t('Reassign its groups to the super administrator.');
+  $methods['user_cancel_reassign']['description'] .= ' ' . t('All of your groups will be assigned to the super administrator.');
+  $methods['user_cancel_delete']['title'] = t('Delete the account, its content and groups.');
+  $methods['user_cancel_delete']['description'] .= ' ' . t('This includes groups that were created by you, including all of their content relationships!');
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+function group_user_cancel($edit, $account, $method) {
+  // Reassign all groups to the super user.
+  if ($method == 'user_cancel_reassign') {
+    $storage = \Drupal::entityTypeManager()->getStorage('group');
+    $gids = $storage->getQuery()
+      ->condition('uid', $account->id())
+      ->execute();
+
+    // Run this as a batch if there are more than 10 groups.
+    if (count($gids) > 10) {
+      batch_set(['operations' => [['_group_mass_reassign_to_super_user', [$gids]]]]);
+    }
+    // Run it immediately if not.
+    else {
+      foreach ($storage->loadMultiple($gids) as $group) {
+        /** @var \Drupal\group\Entity\GroupInterface $group */
+        $group->set('uid', 1);
+        $storage->save($group);
+      }
+    }
+  }
+}
+
+/**
+ * Implements callback_batch_operation().
+ *
+ * Mass reassigns ownership of groups to the super user.
+ *
+ * @param int[] $ids
+ *   An array of group IDs.
+ */
+function _group_mass_reassign_to_super_user(array $ids, &$context) {
+  if (!isset($context['sandbox']['progress'])) {
+    $context['sandbox']['progress'] = 0;
+    $context['sandbox']['max'] = count($ids);
+    $context['sandbox']['ids'] = $ids;
+  }
+
+  // Try to update 10 groups at a time.
+  $ids = array_slice($context['sandbox']['ids'], $context['sandbox']['progress'], 10);
+
+  $storage = \Drupal::entityTypeManager()->getStorage('group');
+  foreach ($storage->loadMultiple($ids) as $group) {
+    /** @var \Drupal\group\Entity\GroupInterface $group */
+    $group->set('uid', 1);
+    $storage->save($group);
+    $context['sandbox']['progress']++;
+  }
+
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_predelete().
+ */
+function group_user_predelete(EntityInterface $account) {
+  // If a user is deleted, we delete all of their groups too.
+  $storage = \Drupal::entityTypeManager()->getStorage('group');
+  if ($groups = $storage->loadByProperties(['uid' => $account->id()])) {
+    $storage->delete($groups);
+  }
+}
+
+/**
  * @defgroup group_access Group access rights
  * @{
  * The group access system determines who can do what in which groups.
