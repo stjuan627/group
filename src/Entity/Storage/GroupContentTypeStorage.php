@@ -6,7 +6,6 @@ use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
@@ -103,6 +102,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     $configuration['group_type_id'] = $group_type->id();
 
     // Instantiate the plugin we are installing.
+    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $this->pluginManager->createInstance($plugin_id, $configuration);
 
     // Create the group content type using plugin generated info.
@@ -112,7 +112,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
       'description' => $plugin->getContentTypeDescription(),
       'group_type' => $group_type->id(),
       'content_plugin' => $plugin_id,
-      'plugin_config' => $configuration,
+      'plugin_config' => $plugin->getConfiguration(),
     ];
     
     return $this->create($values);
