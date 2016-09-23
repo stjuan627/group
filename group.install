@@ -274,10 +274,14 @@ function group_update_8006() {
  * Update the members view to use the argument provided title.
  */
 function group_update_8007() {
-  $view = \Drupal::configFactory()->getEditable('views.view.group_members');
-  $view->set('display.default.display_options.arguments.gid.title_enable', TRUE);
-  $view->set('display.default.display_options.arguments.gid.title', '{{ arguments.gid|placeholder }} members');
-  $view->save(TRUE);
+  if (\Drupal::moduleHandler()->moduleExists('views')) {
+    $view = \Drupal::configFactory()->getEditable('views.view.group_members');
+    if (!$view->isNew()) {
+      $view->set('display.default.display_options.arguments.gid.title_enable', TRUE);
+      $view->set('display.default.display_options.arguments.gid.title', '{{ arguments.gid|placeholder }} members');
+      $view->save(TRUE);
+    }
+  }
 }
 
 /**
