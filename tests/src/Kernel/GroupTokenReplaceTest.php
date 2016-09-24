@@ -5,7 +5,6 @@ namespace Drupal\Tests\group\Kernel;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\group\Entity\Group;
-use Drupal\group\Entity\GroupType;
 use Drupal\Tests\system\Kernel\Token\TokenReplaceKernelTestBase;
 
 /**

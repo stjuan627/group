@@ -187,33 +187,42 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       // @todo Remove this line when https://www.drupal.org/node/2645202 lands.
       $this->setOriginalId($group_type_id);
 
-      // Create the three special roles for the group type.
-      GroupRole::create([
-        'id' => $this->getAnonymousRoleId(),
-        'label' => t('Anonymous'),
-        'weight' => -102,
-        'internal' => TRUE,
-        'audience' => 'anonymous',
-        'group_type' => $group_type_id,
-      ])->save();
-      GroupRole::create([
-        'id' => $this->getOutsiderRoleId(),
-        'label' => t('Outsider'),
-        'weight' => -101,
-        'internal' => TRUE,
-        'audience' => 'outsider',
-        'group_type' => $group_type_id,
-      ])->save();
-      GroupRole::create([
-        'id' => $this->getMemberRoleId(),
-        'label' => t('Member'),
-        'weight' => -100,
-        'internal' => TRUE,
-        'group_type' => $group_type_id,
-      ])->save();
+      // The code below will create the default group roles and the group
+      // content types for enforced plugins. It is extremely important that we
+      // only run this code if we are dealing with a new group type that was
+      // created through the API or UI; not through config synchronization.
+      //
+      // We do not create group roles or group content types for a synced group
+      // type because those should have been exported along with the group type.
+      if (!$this->isSyncing()) {
+        // Create the three special roles for the group type.
+        GroupRole::create([
+          'id' => $this->getAnonymousRoleId(),
+          'label' => t('Anonymous'),
+          'weight' => -102,
+          'internal' => TRUE,
+          'audience' => 'anonymous',
+          'group_type' => $group_type_id,
+        ])->save();
+        GroupRole::create([
+          'id' => $this->getOutsiderRoleId(),
+          'label' => t('Outsider'),
+          'weight' => -101,
+          'internal' => TRUE,
+          'audience' => 'outsider',
+          'group_type' => $group_type_id,
+        ])->save();
+        GroupRole::create([
+          'id' => $this->getMemberRoleId(),
+          'label' => t('Member'),
+          'weight' => -100,
+          'internal' => TRUE,
+          'group_type' => $group_type_id,
+        ])->save();
 
-      // Enable enforced content plugins for new group types.
-      $this->getContentEnablerManager()->installEnforced($this);
+        // Enable enforced content plugins for new group types.
+        $this->getContentEnablerManager()->installEnforced($this);
+      }
     }
   }
 
