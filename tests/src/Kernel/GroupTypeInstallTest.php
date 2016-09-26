@@ -7,6 +7,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 /**
  * Tests the creation of group type entities during extension install.
  *
+ * @coversDefaultClass \Drupal\group\Entity\GroupType
  * @group group
  */
 class GroupTypeInstallTest extends EntityKernelTestBase {
@@ -50,9 +51,11 @@ class GroupTypeInstallTest extends EntityKernelTestBase {
 
   /**
    * Tests special behavior during group type creation.
+   *
+   * @covers ::postSave
    */
   public function testInstall() {
-    // Check that the group type was created and saved properly.
+    // Check that the group type was installed properly.
     /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager
       ->getStorage('group_type')

@@ -7,6 +7,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 /**
  * Tests the import or synchronization of group type entities.
  *
+ * @coversDefaultClass \Drupal\group\Entity\GroupType
  * @group group
  */
 class GroupTypeImportTest extends EntityKernelTestBase {
@@ -57,6 +58,8 @@ class GroupTypeImportTest extends EntityKernelTestBase {
 
   /**
    * Tests special behavior during group type import.
+   *
+   * @covers ::postSave
    */
   public function testImport() {
     // Simulate config data to import.

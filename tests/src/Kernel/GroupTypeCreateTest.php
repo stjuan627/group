@@ -7,6 +7,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 /**
  * Tests the creation of group type entities.
  *
+ * @coversDefaultClass \Drupal\group\Entity\GroupType
  * @group group
  */
 class GroupTypeCreateTest extends EntityKernelTestBase {
@@ -50,6 +51,8 @@ class GroupTypeCreateTest extends EntityKernelTestBase {
 
   /**
    * Tests special behavior during group type creation.
+   *
+   * @covers ::postSave
    */
   public function testCreate() {
     // Check that the group type was created and saved properly.
