@@ -57,6 +57,15 @@ class GroupTypeForm extends BundleEntityFormBase {
       '#description' => t('This text will be displayed on the <em>Add group</em> page.'),
     ];
 
+    if ($this->operation == 'add') {
+      $form['add_admin_role'] = [
+        '#title' => t('Automatically configure an administrative role'),
+        '#type' => 'checkbox',
+        '#default_value' => 0,
+        '#description' => t("This will create an 'Admin' role by default which will have all possible permissions."),
+      ];
+    }
+
     return $this->protectBundleIdElement($form);
   }
 
@@ -101,6 +110,21 @@ class GroupTypeForm extends BundleEntityFormBase {
       drupal_set_message(t('The group type %label has been added.', $t_args));
       $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group type %label.', $context);
+    }
+
+    // Create a default admin role if instructed to do so.
+    if ($form_state->getValue('add_admin_role')) {
+      $storage = $this->entityTypeManager->getStorage('group_role');
+
+      /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+      $group_role = $storage->create([
+        'id' => $type->id() . '-admin',
+        'label' => t('Admin'),
+        'weight' => 100,
+        'group_type' => $type->id(),
+      ]);
+
+      $group_role->grantAllPermissions()->save();
     }
 
     $form_state->setRedirectUrl($type->toUrl('collection'));

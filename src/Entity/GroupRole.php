@@ -228,6 +228,21 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
+  public function grantAllPermissions() {
+    $permissions = $this->getPermissionHandler()->getPermissionsByGroupType($this->getGroupType());
+
+    foreach ($permissions as $permission => $info) {
+      if (!in_array($this->audience, $info['allowed for'])) {
+        unset($permissions[$permission]);
+      }
+    }
+
+    return $this->grantPermissions(array_keys($permissions));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function revokePermission($permission) {
     return $this->revokePermissions([$permission]);
   }
@@ -257,6 +272,16 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     }
 
     return $this;
+  }
+
+  /**
+   * Returns the group permission handler.
+   *
+   * @return \Drupal\group\Access\GroupPermissionHandler
+   *   The group permission handler.
+   */
+  protected function getPermissionHandler() {
+    return \Drupal::service('group.permissions');
   }
 
   /**
