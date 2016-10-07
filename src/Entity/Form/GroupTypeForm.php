@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity\Form;
 
+use Drupal\Core\Url;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -57,6 +58,7 @@ class GroupTypeForm extends BundleEntityFormBase {
       '#description' => $this->t('This text will be displayed on the <em>Add group</em> page.'),
     ];
 
+    // Add-form specific elements.
     if ($this->operation == 'add') {
       $form['add_admin_role'] = [
         '#title' => $this->t('Automatically configure an administrative role'),
@@ -64,6 +66,28 @@ class GroupTypeForm extends BundleEntityFormBase {
         '#default_value' => 0,
         '#description' => $this->t("This will create an 'Admin' role by default which will have all possible permissions."),
       ];
+    }
+    // Edit-form specific elements.
+    else {
+      $options = [];
+      foreach ($type->getRoles(FALSE) as $group_role) {
+        $options[$group_role->id()] = $group_role->label();
+      }
+
+      $form['creator_roles'] = [
+        '#title' => $this->t('Group creator roles'),
+        '#type' => 'checkboxes',
+        '#options' => $options,
+        '#default_value' => $type->getCreatorRoleIds(),
+        '#description' => $this->t('Please select which custom group roles a group creator will receive.'),
+      ];
+
+      if (empty($options)) {
+        $add_role_url = Url::fromRoute('entity.group_role.add_form', ['group_type' => $type->id()]);
+        $t_args = ['@url' => $add_role_url->toString()];
+        $description = $this->t('You do not have any custom group roles yet, <a href="@url">create one here</a>.', $t_args);
+        $form['creator_roles']['#description'] .= "<br /><em>$description</em>";
+      }
     }
 
     return $this->protectBundleIdElement($form);
@@ -98,7 +122,14 @@ class GroupTypeForm extends BundleEntityFormBase {
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\group\Entity\GroupTypeInterface $type */
     $type = $this->entity;
+
+    // Trim any whitespace off the label.
     $type->set('label', trim($type->label()));
+
+    // Clean up the creator role IDs as it comes from a checkboxes element.
+    if ($creator_roles = $type->getCreatorRoleIds()) {
+      $type->set('creator_roles', array_values(array_filter($creator_roles)));
+    }
 
     $status = $type->save();
     $t_args = ['%label' => $type->label()];

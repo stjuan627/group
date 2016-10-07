@@ -22,18 +22,26 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   /**
    * Gets the group roles.
    *
+   * @param bool $include_internal
+   *   (optional) Whether to include internal roles in the result. Defaults to
+   *   TRUE.
+   *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
    *   The group roles this group type uses.
    */
-  public function getRoles();
+  public function getRoles($include_internal = TRUE);
 
   /**
    * Gets the role IDs.
    *
+   * @param bool $include_internal
+   *   (optional) Whether to include internal roles in the result. Defaults to
+   *   TRUE.
+   *
    * @return string[]
    *   The ids of the group roles this group type uses.
    */
-  public function getRoleIds();
+  public function getRoleIds($include_internal = TRUE);
 
   /**
    * Gets the generic anonymous group role for this group type.
@@ -82,6 +90,14 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    *   The ID of the generic member group role this group type uses.
    */
   public function getMemberRoleId();
+
+  /**
+   * Gets the IDs of the group roles a group creator should receive.
+   *
+   * @return string
+   *   The IDs of the group role the group creator should receive.
+   */
+  public function getCreatorRoleIds();
 
   /**
    * Returns the installed content enabler plugins for this group type.

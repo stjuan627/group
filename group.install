@@ -334,3 +334,16 @@ function group_update_8008() {
 
   return $message;
 }
+
+/**
+ * Add the 'creator_roles' property to all group types.
+ */
+function group_update_8009() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type = $config_factory->getEditable($group_type_config_name);
+    $group_type->set('creator_roles', []);
+    $group_type->save(TRUE);
+  }
+}

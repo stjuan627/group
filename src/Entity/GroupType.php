@@ -46,6 +46,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "id",
  *     "label",
  *     "description",
+ *     "creator_roles",
  *   }
  * )
  */
@@ -73,6 +74,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   protected $description;
 
   /**
+   * The IDs of the group roles a group creator should receive.
+   *
+   * @var string[]
+   */
+  protected $creator_roles = [];
+
+  /**
    * {@inheritdoc}
    */
   public function id() {
@@ -97,21 +105,34 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRoles() {
+  public function getRoles($include_internal = TRUE) {
+    $properties = ['group_type' => $this->id()];
+
+    // Exclude internal roles if told to.
+    if ($include_internal === FALSE) {
+      $properties['internal'] = FALSE;
+    }
+
     return $this->entityTypeManager()
       ->getStorage('group_role')
-      ->loadByProperties(['group_type' => $this->id()]);
+      ->loadByProperties($properties);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRoleIds() {
-    $role_ids = [];
-    foreach ($this->getRoles() as $group_role) {
-      $role_ids[] = $group_role->id();
+  public function getRoleIds($include_internal = TRUE) {
+    $query = $this->entityTypeManager()
+      ->getStorage('group_role')
+      ->getQuery()
+      ->condition('group_type', $this->id());
+
+    // Exclude internal roles if told to.
+    if ($include_internal === FALSE) {
+      $query->condition('internal', FALSE);
     }
-    return $role_ids;
+
+    return $query->execute();
   }
 
   /**
@@ -160,6 +181,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function getMemberRoleId() {
     return $this->id() . '-member';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCreatorRoleIds() {
+    return $this->creator_roles;
   }
 
   /**

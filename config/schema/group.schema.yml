@@ -21,6 +21,12 @@ group.type.*:
     description:
       type: 'text'
       label: 'Description'
+    creator_roles:
+      type: 'sequence'
+      label: 'Group creator roles'
+      sequence:
+        type: 'string'
+        label: 'Group role ID'
 
 group_content_enabler.config.group_cardinality:
   type: 'integer'
