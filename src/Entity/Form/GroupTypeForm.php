@@ -27,11 +27,11 @@ class GroupTypeForm extends BundleEntityFormBase {
     }
 
     $form['label'] = [
-      '#title' => t('Name'),
+      '#title' => $this->t('Name'),
       '#type' => 'textfield',
       '#default_value' => $type->label(),
-      '#description' => t('The human-readable name of this group type. This text will be displayed as part of the list on the %group-add page. This name must be unique.', [
-        '%group-add' => t('Add group'),
+      '#description' => $this->t('The human-readable name of this group type. This text will be displayed as part of the list on the %group-add page. This name must be unique.', [
+        '%group-add' => $this->t('Add group'),
       ]),
       '#required' => TRUE,
       '#size' => 30,
@@ -45,24 +45,24 @@ class GroupTypeForm extends BundleEntityFormBase {
         'exists' => ['Drupal\group\Entity\GroupType', 'load'],
         'source' => ['label'],
       ],
-      '#description' => t('A unique machine-readable name for this group type. It must only contain lowercase letters, numbers, and underscores. This name will be used for constructing the URL of the %group-add page, in which underscores will be converted into hyphens.', [
-        '%group-add' => t('Add group'),
+      '#description' => $this->t('A unique machine-readable name for this group type. It must only contain lowercase letters, numbers, and underscores. This name will be used for constructing the URL of the %group-add page, in which underscores will be converted into hyphens.', [
+        '%group-add' => $this->t('Add group'),
       ]),
     ];
 
     $form['description'] = [
-      '#title' => t('Description'),
+      '#title' => $this->t('Description'),
       '#type' => 'textarea',
       '#default_value' => $type->getDescription(),
-      '#description' => t('This text will be displayed on the <em>Add group</em> page.'),
+      '#description' => $this->t('This text will be displayed on the <em>Add group</em> page.'),
     ];
 
     if ($this->operation == 'add') {
       $form['add_admin_role'] = [
-        '#title' => t('Automatically configure an administrative role'),
+        '#title' => $this->t('Automatically configure an administrative role'),
         '#type' => 'checkbox',
         '#default_value' => 0,
-        '#description' => t("This will create an 'Admin' role by default which will have all possible permissions."),
+        '#description' => $this->t("This will create an 'Admin' role by default which will have all possible permissions."),
       ];
     }
 
@@ -74,8 +74,8 @@ class GroupTypeForm extends BundleEntityFormBase {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
-    $actions['submit']['#value'] = t('Save group type');
-    $actions['delete']['#value'] = t('Delete group type');
+    $actions['submit']['#value'] = $this->t('Save group type');
+    $actions['delete']['#value'] = $this->t('Delete group type');
     return $actions;
   }
 
@@ -104,10 +104,10 @@ class GroupTypeForm extends BundleEntityFormBase {
     $t_args = ['%label' => $type->label()];
 
     if ($status == SAVED_UPDATED) {
-      drupal_set_message(t('The group type %label has been updated.', $t_args));
+      drupal_set_message($this->t('The group type %label has been updated.', $t_args));
     }
     elseif ($status == SAVED_NEW) {
-      drupal_set_message(t('The group type %label has been added.', $t_args));
+      drupal_set_message($this->t('The group type %label has been added. You may now configure which roles a group creator will receive by editing the group type.', $t_args));
       $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group type %label.', $context);
     }
@@ -119,7 +119,7 @@ class GroupTypeForm extends BundleEntityFormBase {
       /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
       $group_role = $storage->create([
         'id' => $type->id() . '-admin',
-        'label' => t('Admin'),
+        'label' => $this->t('Admin'),
         'weight' => 100,
         'group_type' => $type->id(),
       ]);
