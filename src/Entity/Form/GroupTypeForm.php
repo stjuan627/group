@@ -64,7 +64,17 @@ class GroupTypeForm extends BundleEntityFormBase {
         '#title' => $this->t('Automatically configure an administrative role'),
         '#type' => 'checkbox',
         '#default_value' => 0,
-        '#description' => $this->t("This will create an 'Admin' role by default which will have all possible permissions."),
+        '#description' => $this->t("This will create an 'Admin' role by default which will have all currently defined permissions."),
+      ];
+
+      $form['assign_admin_role'] = [
+        '#title' => $this->t('Automatically assign this administrative role to group creators'),
+        '#type' => 'checkbox',
+        '#default_value' => 0,
+        '#description' => $this->t("This will assign the 'Admin' role to anyone who creates a group of this type."),
+        '#states' => [
+          'visible' => [':input[name="add_admin_role"]' => ['checked' => TRUE]],
+        ],
       ];
     }
     // Edit-form specific elements.
@@ -141,21 +151,25 @@ class GroupTypeForm extends BundleEntityFormBase {
       drupal_set_message($this->t('The group type %label has been added. You may now configure which roles a group creator will receive by editing the group type.', $t_args));
       $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group type %label.', $context);
-    }
 
-    // Create a default admin role if instructed to do so.
-    if ($form_state->getValue('add_admin_role')) {
-      $storage = $this->entityTypeManager->getStorage('group_role');
+      // Optionally create a default admin role.
+      if ($form_state->getValue('add_admin_role')) {
+        $storage = $this->entityTypeManager->getStorage('group_role');
 
-      /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
-      $group_role = $storage->create([
-        'id' => $type->id() . '-admin',
-        'label' => $this->t('Admin'),
-        'weight' => 100,
-        'group_type' => $type->id(),
-      ]);
+        /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+        $group_role = $storage->create([
+          'id' => $type->id() . '-admin',
+          'label' => $this->t('Admin'),
+          'weight' => 100,
+          'group_type' => $type->id(),
+        ]);
+        $group_role->grantAllPermissions()->save();
 
-      $group_role->grantAllPermissions()->save();
+        // Optionally auto-assign the admin role to group creators.
+        if ($form_state->getValue('assign_admin_role')) {
+          $type->set('creator_roles', [$type->id() . '-admin'])->save();
+        }
+      }
     }
 
     $form_state->setRedirectUrl($type->toUrl('collection'));
