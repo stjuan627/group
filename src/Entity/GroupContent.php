@@ -298,8 +298,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       // up until now. This is a bug in core because we can't simply unset those
       // two properties, see: https://www.drupal.org/node/2346329
       $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel($original->getLabel())
-        ->setDescription($original->getDescription())
+        ->setLabel($plugin->getEntityReferenceLabel() ?: $original->getLabel())
+        ->setDescription($plugin->getEntityReferenceDescription() ?: $original->getDescription())
         ->setConstraints($original->getConstraints())
         ->setDisplayOptions('view', $original->getDisplayOptions('view'))
         ->setDisplayOptions('form', $original->getDisplayOptions('form'))

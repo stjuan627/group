@@ -306,6 +306,24 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function getEntityReferenceLabel() {
+    return isset($this->pluginDefinition['reference_label'])
+      ? $this->pluginDefinition['reference_label']
+      : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityReferenceDescription() {
+    return isset($this->pluginDefinition['reference_description'])
+      ? $this->pluginDefinition['reference_description']
+      : NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEntityReferenceSettings() {
     $settings['target_type'] = $this->getEntityTypeId();
     if ($bundle = $this->getEntityBundle()) {
