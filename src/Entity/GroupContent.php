@@ -207,6 +207,37 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    if ($update === FALSE) {
+      // We want to make sure that the entity we just added to the group behaves
+      // as a grouped entity. This means we may need to update access records,
+      // flush some caches containing the entity or perform other operations we
+      // cannot possibly know about. Lucky for us, all of that behavior usually
+      // happens when saving an entity so let's re-save the added entity.
+      $this->getEntity()->save();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function postDelete(EntityStorageInterface $storage, array $entities) {
+    parent::postDelete($storage, $entities);
+
+    // For the same reasons we re-save entities that are added to a group, we
+    // need to re-save entities that were removed from one. See ::postSave().
+    /** @var GroupContentInterface[] $entities */
+    foreach ($entities as $entity) {
+      // @todo Revisit when https://www.drupal.org/node/2754399 lands.
+      $entity->getEntity()->save();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
