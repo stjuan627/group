@@ -296,6 +296,18 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ->setDescription(t('The time that the group content was last edited.'))
       ->setTranslatable(TRUE);
 
+    if (\Drupal::moduleHandler()->moduleExists('path')) {
+      $fields['path'] = BaseFieldDefinition::create('path')
+        ->setLabel(t('URL alias'))
+        ->setTranslatable(TRUE)
+        ->setDisplayOptions('form', array(
+          'type' => 'path',
+          'weight' => 30,
+        ))
+        ->setDisplayConfigurable('form', TRUE)
+        ->setComputed(TRUE);
+    }
+
     return $fields;
   }
 
