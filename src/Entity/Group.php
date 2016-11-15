@@ -306,7 +306,7 @@ class Group extends ContentEntityBase implements GroupInterface {
           'weight' => 30,
         ))
         ->setDisplayConfigurable('form', TRUE)
-        ->setCustomStorage(TRUE);
+        ->setComputed(TRUE);
     }
 
     return $fields;
