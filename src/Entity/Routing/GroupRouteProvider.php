@@ -50,7 +50,6 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
     }
   }
 
-
   /**
    * {@inheritdoc}
    */
