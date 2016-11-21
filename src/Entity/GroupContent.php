@@ -229,9 +229,14 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     // For the same reasons we re-save entities that are added to a group, we
     // need to re-save entities that were removed from one. See ::postSave().
     /** @var GroupContentInterface[] $entities */
-    foreach ($entities as $entity) {
-      // @todo Revisit when https://www.drupal.org/node/2754399 lands.
-      $entity->getEntity()->save();
+    foreach ($entities as $group_content) {
+      // We only save the entity if it still exists to avoid trying to save an
+      // entity that just got deleted and triggered the deletion of its group
+      // content entities.
+      if ($entity = $group_content->getEntity()) {
+        // @todo Revisit when https://www.drupal.org/node/2754399 lands.
+        $entity->save();
+      }
     }
   }
 
