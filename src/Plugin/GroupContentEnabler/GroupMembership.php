@@ -232,11 +232,4 @@ class GroupMembership extends GroupContentEnablerBase {
     return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateDependencies() {
-    return ['module' => ['user']];
-  }
-
 }
