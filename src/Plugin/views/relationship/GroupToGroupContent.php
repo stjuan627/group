@@ -10,9 +10,13 @@ use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * A relationship handler base for group content entity references.
+ * A relationship handler for group content.
+ *
+ * @ingroup views_relationship_handlers
+ *
+ * @ViewsRelationship("group_to_group_content")
  */
-abstract class GroupContentToEntityBase extends RelationshipPluginBase {
+class GroupToGroupContent extends RelationshipPluginBase {
 
   /**
    * The Views join plugin manager.
@@ -29,7 +33,14 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
   protected $pluginManager;
 
   /**
-   * Constructs an GroupContentToEntityBase object.
+   * The group content type IDs to filter the join on.
+   *
+   * @var string[]
+   */
+  protected $groupContentTypeIds;
+
+  /**
+   * Constructs a GroupToGroupContent object.
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
@@ -56,27 +67,6 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
   }
 
   /**
-   * Retrieves the entity type ID this plugin targets.
-   *
-   * Do not return 'group_content', but the actual entity type ID you're trying
-   * to link up to the group_content entity type.
-   *
-   * @return string
-   *   The target entity type ID.
-   */
-  protected abstract function getTargetEntityType();
-
-  /**
-   * Retrieves type of join field to use.
-   *
-   * Can be either 'field' or 'left_field'.
-   *
-   * @return string
-   *   The type of join field to use.
-   */
-  protected abstract function getJoinFieldType();
-
-  /**
    * {@inheritdoc}
    */
   protected function defineOptions() {
@@ -91,23 +81,29 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
-    // Retrieve all of the plugins that can serve this entity type.
-    $options = [];
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
-      if ($plugin->getEntityTypeId() === $this->getTargetEntityType()) {
-        $options[$plugin_id] = $plugin->getLabel();
-      }
-    }
-
     $form['group_content_plugins'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Filter by plugin'),
       '#description' => $this->t('Refine the result by plugin. Leave empty to select all plugins, including those that could be added after this relationship was configured.'),
-      '#options' => $options,
+      '#options' => $this->getContentPluginOptions(),
       '#weight' => -2,
       '#default_value' => $this->options['group_content_plugins'],
     ];
+  }
+
+  /**
+   * Builds the options for the content plugin selection.
+   *
+   * @return string[]
+   *   An array of content plugin labels, keyed by plugin ID.
+   */
+  protected function getContentPluginOptions() {
+    $options = [];
+    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
+      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      $options[$plugin_id] = $plugin->getLabel();
+    }
+    return $options;
   }
 
   /**
@@ -135,19 +131,14 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
     }
 
     // We can't run an IN-query on an empty array. So if there are no group
-    // content types yet, we need to make sure the JOIN does not return any GCT
-    // that does not serve the entity type that was configured for this handler
-    // instance.
+    // content types yet, we do not add our extra condition to the JOIN.
     $group_content_type_ids = $this->getGroupContentTypeIds();
-    if (empty($group_content_type_ids)) {
-      $group_content_type_ids = ['***'];
+    if (!empty($group_content_type_ids)) {
+      $def['extra'][] = [
+        'field' => 'type',
+        'value' => $group_content_type_ids,
+      ];
     }
-
-    // Then add our own join condition, namely the group content type IDs.
-    $def['extra'][] = [
-      $this->getJoinFieldType() => 'type',
-      'value' => $group_content_type_ids,
-    ];
 
     // Use the standard join plugin unless instructed otherwise.
     $join_id = !empty($def['join_id']) ? $def['join_id'] : 'standard';
@@ -177,20 +168,26 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    * plugin is installed on a group type after this relationship has been
    * configured on a view without any plugins selected.
    *
-   * @todo Could be cached even more, I guess.
-   *
    * @return string[]
    *   The group content type IDs to filter on.
    */
   protected function getGroupContentTypeIds() {
-    $plugin_ids = array_filter($this->options['group_content_plugins']);
+    // Even though the retrieval needs to happen live, there's nothing stopping
+    // us from statically caching it during runtime.
+    if (!isset($this->groupContentTypeIds)) {
+      $plugin_ids = array_filter($this->options['group_content_plugins']);
 
-    $group_content_type_ids = [];
-    foreach ($plugin_ids as $plugin_id) {
-      $group_content_type_ids = array_merge($group_content_type_ids, $this->pluginManager->getGroupContentTypeIds($plugin_id));
+      $group_content_type_ids = [];
+      foreach ($plugin_ids as $plugin_id) {
+        $group_content_type_ids = array_merge($group_content_type_ids, $this->pluginManager->getGroupContentTypeIds($plugin_id));
+      }
+
+      $this->groupContentTypeIds = $plugin_ids
+        ? $group_content_type_ids
+        : array_keys(GroupContentType::loadMultiple());
     }
 
-    return $plugin_ids ? $group_content_type_ids : array_keys(GroupContentType::loadByEntityTypeId($this->getTargetEntityType()));
+    return $this->groupContentTypeIds;
   }
 
 }
