@@ -203,6 +203,15 @@ class Group extends ContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function removeMember(UserInterface $account) {
+    if ($member = $this->getMember($account)) {
+      $member->getGroupContent()->delete();
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMember(AccountInterface $account) {
     return $this->membershipLoader()->load($this, $account);
   }
