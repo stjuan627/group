@@ -25,6 +25,14 @@ services:
     arguments: ['@entity.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_access' }
+  access_check.group_content.create_entity:
+    class: 'Drupal\group\Access\GroupContentCreateEntityAccessCheck'
+    tags:
+      - { name: 'access_check', applies_to: '_group_content_create_entity_access' }
+  access_check.group_content.create_any_entity:
+    class: 'Drupal\group\Access\GroupContentCreateAnyEntityAccessCheck'
+    tags:
+      - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
 
   cache_context.group:
     class: 'Drupal\group\Cache\Context\GroupCacheContext'

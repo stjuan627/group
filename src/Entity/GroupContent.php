@@ -57,6 +57,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "add-page" = "/group/{group}/content/add",
  *     "canonical" = "/group/{group}/content/{group_content}",
  *     "collection" = "/group/{group}/content",
+ *     "create-form" = "/group/{group}/content/create/{plugin_id}",
+ *     "create-page" = "/group/{group}/content/create",
  *     "delete-form" = "/group/{group}/content/{group_content}/delete",
  *     "edit-form" = "/group/{group}/content/{group_content}/edit"
  *   },

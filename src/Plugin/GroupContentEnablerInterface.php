@@ -90,6 +90,16 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function getGroupTypeId();
 
   /**
+   * Returns whether this plugin defines entity access.
+   *
+   * @return bool
+   *   Whether this plugin defines entity access.
+   *
+   * @see \Drupal\group\Annotation\GroupContentEnabler::$entity_access
+   */
+  public function definesEntityAccess();
+
+  /**
    * Returns whether this plugin is always on.
    *
    * @return bool
@@ -186,6 +196,22 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
    * @see GroupPermissionHandlerInterface::getPermissions()
    */
   public function getPermissions();
+
+  /**
+   * Performs access check for the create target entity operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group to check for target entity creation access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function createEntityAccess(GroupInterface $group, AccountInterface $account);
 
   /**
    * Performs access check for the create operation.

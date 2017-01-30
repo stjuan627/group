@@ -51,6 +51,23 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
   /**
    * {@inheritdoc}
    */
+  public function getRoutes(EntityTypeInterface $entity_type) {
+    $collection = parent::getRoutes($entity_type);
+
+    if ($create_page_route = $this->getCreatePageRoute($entity_type)) {
+      $collection->add("entity.group_content.create_page", $create_page_route);
+    }
+
+    if ($create_form_route = $this->getCreateFormRoute($entity_type)) {
+      $collection->add("entity.group_content.create_form", $create_form_route);
+    }
+
+    return $collection;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function getAddPageRoute(EntityTypeInterface $entity_type) {
     if ($entity_type->hasLinkTemplate('add-page') && $entity_type->getKey('bundle')) {
       $route = new Route($entity_type->getLinkTemplate('add-page'));
@@ -58,10 +75,7 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
         ->setDefault('_controller', '\Drupal\group\Entity\Controller\GroupContentController::addPage')
         ->setDefault('_title', 'Relate content to group')
         ->setRequirement('_group_content_create_any_access', 'TRUE')
-        ->setOption('_group_operation_route', TRUE)
-        ->setOption('parameters', [
-          'group' => ['type' => 'entity:group'],
-        ]);
+        ->setOption('_group_operation_route', TRUE);
 
       return $route;
     }
@@ -76,13 +90,59 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route
         ->setDefaults([
           '_controller' => '\Drupal\group\Entity\Controller\GroupContentController::addForm',
+          // @todo Let forms set title?
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::addFormTitle',
         ])
         ->setRequirement('_group_content_create_access', 'TRUE')
-        ->setOption('_group_operation_route', TRUE)
-        ->setOption('parameters', [
-          'group' => ['type' => 'entity:group'],
-        ]);
+        ->setOption('_group_operation_route', TRUE);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the create-page route.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getCreatePageRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('create-page') && $entity_type->getKey('bundle')) {
+      $route = new Route($entity_type->getLinkTemplate('create-page'));
+      $route
+        ->setDefault('_controller', '\Drupal\group\Entity\Controller\GroupContentController::addPage')
+        ->setDefault('_title', 'Create content in group')
+        ->setDefault('create_mode', TRUE)
+        ->setRequirement('_group_content_create_any_entity_access', 'TRUE')
+        ->setOption('_group_operation_route', TRUE);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the create-form route.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getCreateFormRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('create-form')) {
+      $route = new Route($entity_type->getLinkTemplate('create-form'));
+      $route
+        ->setDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentController::createForm',
+          // @todo Let forms set title?
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::createFormTitle',
+        ])
+        ->setRequirement('_group_content_create_entity_access', 'TRUE')
+        ->setOption('_group_operation_route', TRUE);
 
       return $route;
     }

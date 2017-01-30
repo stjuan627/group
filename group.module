@@ -6,8 +6,8 @@
  */
 
 use Drupal\group\Entity\GroupContent;
+use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -325,6 +325,140 @@ function group_user_delete(EntityInterface $account) {
   $storage = \Drupal::entityTypeManager()->getStorage('group');
   if ($groups = $storage->loadByProperties(['uid' => $account->id()])) {
     $storage->delete($groups);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // GroupContentController::createForm() tends to load entity forms for adding
+  // entities to a group. We need to add or alter the submit handlers of those
+  // forms for the process to work properly.
+  if ($form_state->getFormObject() instanceof ContentEntityForm && $form_state->has('group_content_enabler')) {
+    if ($wizard = $form_state->has('store_id')) {
+      $store = \Drupal::service('user.private_tempstore')->get('group_content_wizard');
+      $store_id = $form_state->get('store_id');
+
+      // Bail out if we are on step 2 of the wizard. We only want to alter the
+      // submit handlers for the first step or if we are not in a wizard.
+      if ($store->get("$store_id:step") === 2) {
+        return;
+      }
+    }
+
+    foreach (Element::children($form['actions']) as $name) {
+      // Remove preview button as it redirects back to the wrong form.
+      if ($name == 'preview') {
+        unset($form['actions'][$name]);
+        continue;
+      }
+
+      // Skip buttons without submit handlers.
+      if (empty($form['actions'][$name]['#submit'])) {
+        continue;
+      }
+
+      // Skip buttons that do not properly build and save an entity.
+      $submit = $form['actions'][$name]['#submit'];
+      if (!in_array('::submitForm', $submit) || !in_array('::save', $submit)) {
+        continue;
+      }
+
+      // If we are using the wizard, we need to substitute the entity save
+      // handler in order to add the entity to the private temp store.
+      if ($wizard) {
+        foreach ($submit as $key => $handler) {
+          if ($handler == '::save') {
+            $form['actions'][$name]['#submit'][$key] = 'group_content_wizard_store';
+          }
+        }
+      }
+      // Otherwise, we can simply add our submit handler and be done with it.
+      else {
+        $form['actions'][$name]['#submit'][] = 'group_content_entity_submit';
+      }
+    }
+
+    // If we are using the wizard, we also add a cancel button to step 1.
+    if ($wizard) {
+      $form['actions']['cancel'] = [
+        '#type' => 'submit',
+        '#value' => t('Cancel'),
+        '#submit' => ['group_content_wizard_cancel'],
+        '#limit_validation_errors' => [],
+      ];
+    }
+  }
+}
+
+/**
+ * Stores a content entity from the wizard step 1 in the temp store.
+ *
+ * @see group_form_alter()
+ * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
+ */
+function group_content_wizard_store($form, FormStateInterface $form_state) {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $entity = $form_state->getFormObject()->getEntity();
+
+  // Store the unsaved entity in the temp store.
+  $store = \Drupal::service('user.private_tempstore')->get('group_content_wizard');
+  $store_id = $form_state->get('store_id');
+  $store->set("$store_id:entity", $entity);
+  $store->set("$store_id:step", 2);
+
+  // Disable any URL-based redirect until the final step.
+  $request = \Drupal::service('request_stack')->getCurrentRequest();
+  $form_state->setRedirect('<current>', [], ['query' => $request->query->all()]);
+  $request->query->remove('destination');
+}
+
+/**
+ * Cancels the wizard for group content creation.
+ *
+ * @see group_form_alter()
+ * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
+ */
+function group_content_wizard_cancel($form, FormStateInterface $form_state) {
+  $store = \Drupal::service('user.private_tempstore')->get('group_content_wizard');
+  $store_id = $form_state->get('store_id');
+  $store->delete("$store_id:entity");
+  $store->delete("$store_id:step");
+
+  /** @var \Drupal\group\Entity\GroupInterface $group */
+  $group = $form_state->get('group');
+
+  // Redirect to the group page if no destination was set in the URL.
+  $form_state->setRedirect('entity.group.canonical', ['group' => $group->id()]);
+}
+
+/**
+ * Adds a newly saved entity to a group.
+ *
+ * @see group_form_alter()
+ * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
+ */
+function group_content_entity_submit($form, FormStateInterface $form_state) {
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $entity = $form_state->getFormObject()->getEntity();
+
+  /** @var \Drupal\group\Entity\GroupInterface $group */
+  $group = $form_state->get('group');
+  $group->addContent($entity, $form_state->get('group_content_enabler'));
+
+  // This submit handler is only called when creating new content within a group
+  // without using the 2-step wizard. We can therefore safely assume the user
+  // wants to see the entity itself and not the relationship (group content).
+  // This only applies if there was no destination GET parameter set in the URL.
+  if ($entity->access('view')) {
+    $form_state->setRedirectUrl($entity->toUrl());
+  }
+  elseif ($group->access('view')) {
+    $form_state->setRedirectUrl($group->toUrl());
+  }
+  else {
+    $form_state->setRedirect('<front>');
   }
 }
 

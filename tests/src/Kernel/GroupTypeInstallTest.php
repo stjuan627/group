@@ -80,7 +80,7 @@ class GroupTypeInstallTest extends EntityKernelTestBase {
     $plugin = $group_type->getContentPlugin('group_membership');
     $config = $plugin->getConfiguration();
 
-    $this->assertEquals('<p>test</p>', $config['info_text']['value'], 'Enforced group_membership plugin was created from Yaml file.');
+    $this->assertEquals('99', $config['group_cardinality'], 'Enforced group_membership plugin was created from Yaml file.');
   }
 
 }

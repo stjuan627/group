@@ -62,6 +62,21 @@ class GroupContentEnabler extends Plugin {
   public $entity_bundle = FALSE;
 
   /**
+   * (optional) Whether the plugin defines entity access.
+   *
+   * This controls whether you can create entities within the group (TRUE) or
+   * only add existing ones (FALSE). It also generates the necessary group
+   * permissions when enabled.
+   *
+   * Eventually, this will even generate entity access records for you, but that
+   * will only happen after the patch in https://www.drupal.org/node/777578 has
+   * been committed to Drupal core.
+   *
+   * @var bool
+   */
+  public $entity_access = FALSE;
+
+  /**
    * (optional) The key to use in automatically generated paths.
    *
    * Will be added to the entity tokens so modules like Pathauto may use it.

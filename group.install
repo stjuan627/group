@@ -362,3 +362,16 @@ function group_update_8010() {
     }
   }
 }
+
+/**
+ * Remove the the 'info_text' config option from all group content types.
+ */
+function group_update_8011() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.content_type.') as $group_content_type_config_name) {
+    $group_content_type = $config_factory->getEditable($group_content_type_config_name);
+    $group_content_type->clear('plugin_config.info_text');
+    $group_content_type->save(TRUE);
+  }
+}

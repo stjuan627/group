@@ -60,33 +60,34 @@ class GroupMembership extends GroupContentEnablerBase {
   /**
    * {@inheritdoc}
    */
-  public function getPermissions() {
+  protected function getGroupContentPermissions() {
+    $permissions = parent::getGroupContentPermissions();
+    $defaults = ['title_args' => ['%plugin_name' => $this->getLabel()]];
+
+    // Add extra permissions specific to membership group content entities.
     $permissions['administer members'] = [
-      'title' => 'Administer group members',
-      'description' => 'Administer the group members',
+      'title' => '%plugin_name: Administer group members',
       'restrict access' => TRUE,
-    ];
+    ] + $defaults;
 
     $permissions['join group'] = [
-      'title' => 'Join group',
-      'description' => 'Join a group by filling out the configured fields',
+      'title' => '%plugin_name: Join group',
       'allowed for' => ['outsider'],
-    ];
+    ] + $defaults;
 
     $permissions['leave group'] = [
-      'title' => 'Leave group',
+      'title' => '%plugin_name: Leave group',
       'allowed for' => ['member'],
-    ];
+    ] + $defaults;
 
     // Update the labels of the default permissions.
-    $permissions['view group_membership content']['title'] = 'View individual group members';
-    $permissions['edit own group_membership content'] = [
-      'title' => 'Edit own membership',
-      'allowed for' => ['member'],
-    ];
+    $permissions['view group_membership content']['title'] = '%plugin_name: View individual group members';
+    $permissions['edit own group_membership content']['title'] = '%plugin_name: Edit own membership';
 
-    // These are handled by 'administer members' or 'leave group'.
-    unset($permissions['access group_membership overview']);
+    // Only members can update their membership.
+    $permissions['edit own group_membership content']['allowed for'] = ['member'];
+
+    // These are handled by 'administer members', 'join group' or 'leave group'.
     unset($permissions['create group_membership content']);
     unset($permissions['edit any group_membership content']);
     unset($permissions['delete any group_membership content']);
@@ -209,10 +210,6 @@ class GroupMembership extends GroupContentEnablerBase {
   public function defaultConfiguration() {
     $config = parent::defaultConfiguration();
     $config['entity_cardinality'] = 1;
-
-    // This string will be saved as part of the group type config entity. We do
-    // not use a t() function here as it needs to be stored untranslated.
-    $config['info_text']['value'] = '<p>By submitting this form you will become a member of the group.<br />Please fill out any available fields to complete your membership information.</p>';
     return $config;
   }
 

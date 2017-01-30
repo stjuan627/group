@@ -112,10 +112,26 @@ abstract class GroupNodeAccessTestBase extends EntityKernelTestBase {
     $storage->createFromPlugin($this->groupTypeB, 'group_node:b')->save();
 
     // Set group_node permissions on the group types.
-    $member_a = ['view a node', 'view b node', 'update own a node', 'delete own a node'];
-    $member_b = ['update any b node', 'delete any b node'];
-    $outsider_a = ['view a node', 'update any a node', 'delete any a node'];
-    $outsider_b = ['view b node', 'update own b node', 'delete own b node'];
+    $member_a = [
+      'view group_node:a entity',
+      'view group_node:b entity',
+      'update own group_node:a entity',
+      'delete own group_node:a entity',
+    ];
+    $member_b = [
+      'update any group_node:b entity',
+      'delete any group_node:b entity',
+    ];
+    $outsider_a = [
+      'view group_node:a entity',
+      'update any group_node:a entity',
+      'delete any group_node:a entity',
+    ];
+    $outsider_b = [
+      'view group_node:b entity',
+      'update own group_node:b entity',
+      'delete own group_node:b entity',
+    ];
     $this->groupTypeA->getMemberRole()->grantPermissions($member_a)->save();
     $this->groupTypeB->getMemberRole()->grantPermissions($member_b)->save();
     $this->groupTypeA->getOutsiderRole()->grantPermissions($outsider_a)->save();
