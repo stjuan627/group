@@ -82,14 +82,14 @@ class GroupMembership extends GroupContentEnablerBase {
 
     // Update the labels of the default permissions.
     $permissions['view group_membership content']['title'] = '%plugin_name: View individual group members';
-    $permissions['edit own group_membership content']['title'] = '%plugin_name: Edit own membership';
+    $permissions['update own group_membership content']['title'] = '%plugin_name: Edit own membership';
 
     // Only members can update their membership.
-    $permissions['edit own group_membership content']['allowed for'] = ['member'];
+    $permissions['update own group_membership content']['allowed for'] = ['member'];
 
     // These are handled by 'administer members', 'join group' or 'leave group'.
     unset($permissions['create group_membership content']);
-    unset($permissions['edit any group_membership content']);
+    unset($permissions['update any group_membership content']);
     unset($permissions['delete any group_membership content']);
     unset($permissions['delete own group_membership content']);
 
@@ -120,7 +120,7 @@ class GroupMembership extends GroupContentEnablerBase {
 
     // Allow members to edit their own membership data.
     if ($group_content->entity_id->entity->id() == $account->id()) {
-      $permissions = ['edit own group_membership content', 'administer members'];
+      $permissions = ['update own group_membership content', 'administer members'];
       return GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $permissions, 'OR');
     }
 

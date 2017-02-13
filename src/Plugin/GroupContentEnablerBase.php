@@ -215,11 +215,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       'description' => 'Allows you to relate an existing %entity_type entity to the group.',
     ] + $defaults;
 
-    $permissions["edit own $plugin_id content"] = [
+    $permissions["update own $plugin_id content"] = [
       'title' => "$prefix Edit own entity relations",
     ] + $defaults;
 
-    $permissions["edit any $plugin_id content"] = [
+    $permissions["update any $plugin_id content"] = [
       'title' => "$prefix Edit any entity relation",
     ] + $defaults;
 
@@ -265,11 +265,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       'description' => 'Allows you to create a new %entity_type entity and relate it to the group.',
     ] + $defaults;
 
-    $permissions["edit own $plugin_id entity"] = [
+    $permissions["update own $plugin_id entity"] = [
       'title' => "$prefix Edit own %entity_type entities",
     ] + $defaults;
 
-    $permissions["edit any $plugin_id entity"] = [
+    $permissions["update any $plugin_id entity"] = [
       'title' => "$prefix Edit any %entity_type entities",
     ] + $defaults;
 
@@ -356,10 +356,10 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     // Allow members to edit their own group content.
     if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "edit own $plugin_id content");
+      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update own $plugin_id content");
     }
 
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "edit any $plugin_id content");
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update any $plugin_id content");
   }
 
   /**

@@ -85,22 +85,12 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
       break;
 
     case 'update':
-      foreach ($groups as $group) {
-        if ($group->hasPermission("edit any $plugin_id entity", $account)) {
-          return AccessResult::allowed();
-        }
-        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("edit own $plugin_id entity", $account)) {
-          return AccessResult::allowed();
-        }
-      }
-      break;
-
     case 'delete':
       foreach ($groups as $group) {
-        if ($group->hasPermission("delete any $plugin_id entity", $account)) {
+        if ($group->hasPermission("$op any $plugin_id entity", $account)) {
           return AccessResult::allowed();
         }
-        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("delete own $plugin_id entity", $account)) {
+        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("$op own $plugin_id entity", $account)) {
           return AccessResult::allowed();
         }
       }

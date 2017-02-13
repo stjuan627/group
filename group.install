@@ -375,3 +375,26 @@ function group_update_8011() {
     $group_content_type->save(TRUE);
   }
 }
+
+/**
+ * Change 'edit' into 'update' in permission names.
+ */
+function group_update_8012() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.role.') as $group_role_config_name) {
+    $group_role = $config_factory->getEditable($group_role_config_name);
+
+    // Replace 'edit any/own' with 'update any/own' in permission names.
+    $search = '%^edit (any|own) (\S+) (\S+)$%';
+    $replace = 'update $1 $2 $3';
+
+    $permissions = $group_role->get('permissions');
+    foreach ($permissions as &$permission) {
+      $permission = preg_replace($search, $replace, $permission);
+    }
+
+    $group_role->set('permissions', $permissions);
+    $group_role->save();
+  }
+}
