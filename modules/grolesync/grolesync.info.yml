@@ -1,6 +1,6 @@
-name: 'Group Role Sync'
-description: 'Allows you to synchronize global roles to special ''outsider'' group roles.'
-package: 'Group'
+name: 'Group role sync'
+description: 'DOES NOT CURRENTLY WORK, SEE https://www.drupal.org/node/2850417. Allows you to synchronize global roles to group roles.'
+package: 'Group (Work in progress)'
 type: 'module'
 version: 1.0
 core: '8.x'

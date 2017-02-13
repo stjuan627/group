@@ -6,10 +6,8 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\User\RoleInterface;
-use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**
@@ -28,28 +26,28 @@ function _grolesync_synchronizer() {
  * Implements hook_rebuild().
  */
 function grolesync_rebuild() {
-  _grolesync_synchronizer()->createGroupRoles();
+  //_grolesync_synchronizer()->createGroupRoles();
 }
 
 /**
  * Implements hook_modules_installed().
  */
 function grolesync_modules_installed($modules) {
-  _grolesync_synchronizer()->createGroupRoles();
+  //_grolesync_synchronizer()->createGroupRoles();
 }
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
 function grolesync_group_type_insert(GroupTypeInterface $group_type) {
-  _grolesync_synchronizer()->createGroupRoles([$group_type->id()]);
+  //_grolesync_synchronizer()->createGroupRoles([$group_type->id()]);
 }
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
 function grolesync_user_role_insert(RoleInterface $role) {
-  _grolesync_synchronizer()->createGroupRoles(NULL, [$role->id()]);
+  //_grolesync_synchronizer()->createGroupRoles(NULL, [$role->id()]);
 }
 
 /**
@@ -57,12 +55,12 @@ function grolesync_user_role_insert(RoleInterface $role) {
  */
 function grolesync_user_role_update(RoleInterface $role) {
   /** @var \Drupal\User\RoleInterface $original */
-  $original = $role->original;
+  /*$original = $role->original;
 
   // Update the group roles if the user role label changed.
   if ($role->label() != $original->label()) {
     _grolesync_synchronizer()->updateGroupRoleLabels($role);
-  }
+  }*/
 }
 
 /**
@@ -74,7 +72,7 @@ function grolesync_user_role_update(RoleInterface $role) {
  * @return array
  */
 function grolesync_entity_operation(EntityInterface $entity) {
-  $operations = [];
+  /*$operations = [];
 
   if ($entity->getEntityTypeId() == 'group_type') {
     $operations['synchronized-roles'] = array(
@@ -84,22 +82,5 @@ function grolesync_entity_operation(EntityInterface $entity) {
     );
   }
 
-  return $operations;
-}
-
-/**
- * Implements hook_group_user_roles_alter().
- *
- * @param string[] $role_ids
- *   The list of GroupRole IDs the user would normally get.
- * @param Drupal\Core\Session\AccountInterface $account
- *   The user who is to receive the roles.
- * @param Drupal\group\Entity\GroupInterface $group
- *   The group for which the user is to receive the roles.
- */
-function grolesync_group_user_roles_alter(&$role_ids, AccountInterface $account, GroupInterface $group) {
-  $synchronizer = _grolesync_synchronizer();
-  foreach ($account->getRoles(TRUE) as $role_id) {
-    $role_ids[] = $synchronizer->getGroupRoleId($group->bundle(), $role_id);
-  }
+  return $operations;*/
 }
