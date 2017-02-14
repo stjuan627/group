@@ -78,7 +78,12 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
   switch ($op) {
     case 'view':
       foreach ($groups as $group) {
-        if ($group->hasPermission("view $plugin_id entity", $account)) {
+        if ($node->isPublished()) {
+          if ($group->hasPermission("view $plugin_id entity", $account)) {
+            return AccessResult::allowed();
+          }
+        }
+        elseif ($group->hasPermission("view unpublished $plugin_id entity", $account)) {
           return AccessResult::allowed();
         }
       }
@@ -104,8 +109,9 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
  * Implements hook_node_grants().
  *
  * We define the following grants:
- * - 'gnode:NODE_TYPE': Grants access for this node type.
- * - 'gnode_author:UID:NODE_TYPE': Grants access to authors for this node type.
+ * - 'gnode:NODE_TYPE': Grants view access for this node type.
+ * - 'gnode_unpublished:NODE_TYPE': Grants view access to unpublished nodes.
+ * - 'gnode_author:UID:NODE_TYPE': Grants update or delete access to authors.
  * - 'gnode_bypass': Given to anyone with the 'bypass group access' permission.
  *
  * @see gnode_node_access_records()
@@ -144,6 +150,9 @@ function gnode_node_grants(AccountInterface $account, $op) {
         case 'view':
           if ($group->hasPermission("view $plugin_id entity", $account)) {
             $grants_m["gnode:$node_type_id"][] = $gid;
+          }
+          elseif ($group->hasPermission("view unpublished $plugin_id entity", $account)) {
+            $grants_m["gnode_unpublished:$node_type_id"][] = $gid;
           }
           break;
 
@@ -200,6 +209,9 @@ function gnode_node_grants(AccountInterface $account, $op) {
         case 'view':
           if ($group_role->hasPermission("view $plugin_id entity")) {
             $grants_ao["gnode:$node_type_id"] = $gids;
+          }
+          elseif ($group_role->hasPermission("view unpublished $plugin_id entity")) {
+            $grants_ao["gnode_unpublished:$node_type_id"] = $gids;
           }
           break;
 
@@ -264,12 +276,11 @@ function gnode_node_access_records(NodeInterface $node) {
     /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $gid = $group_content->getGroup()->id();
 
-    // Add the non-author record for published nodes only.
-    if ($node->isPublished()) {
-      $records[] = ['gid' => $gid, 'realm' => "gnode:$type"] + $base;
-    }
+    // Add the non-author record for viewing nodes.
+    $prefix = $node->isPublished() ? 'gnode' : 'gnode_unpublished';
+    $records[] = ['gid' => $gid, 'realm' => "$prefix:$type"] + $base;
 
-    // Add the author record.
+    // Add the author record for updating or deleting.
     $uid = $node->getOwnerId();
     $records[] = ['gid' => $gid, 'realm' => "gnode_author:$uid:$type"] + $base;
   }

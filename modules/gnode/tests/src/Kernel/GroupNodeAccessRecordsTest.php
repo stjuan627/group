@@ -79,7 +79,7 @@ class GroupNodeAccessRecordsTest extends GroupNodeAccessTestBase {
     $this->groupA1->addContent($node, 'group_node:a');
 
     $records = gnode_node_access_records($node);
-    $this->assertCount(2, $records, '2 access records set for an unpublished group node.');
+    $this->assertCount(3, $records, '3 access records set for an unpublished group node.');
 
     $base = [
       'grant_view' => 1,
@@ -89,8 +89,9 @@ class GroupNodeAccessRecordsTest extends GroupNodeAccessTestBase {
     ];
     $gid = $this->groupA1->id();
     $uid = $node->getOwnerId();
-    $this->assertEquals(['gid' => $gid, 'realm' => "gnode_author:$uid:a"] + $base, $records[0], 'Author gnode_author:UID:NODE_TYPE grant found.');
-    $this->assertEquals(['gid' => GNODE_MASTER_GRANT_ID, 'realm' => 'gnode_bypass'] + $base, $records[1], 'Admin gnode_bypass grant found.');
+    $this->assertEquals(['gid' => $gid, 'realm' => 'gnode_unpublished:a'] + $base, $records[0], 'General gnode_unpublished:NODE_TYPE grant found.');
+    $this->assertEquals(['gid' => $gid, 'realm' => "gnode_author:$uid:a"] + $base, $records[1], 'Author gnode_author:UID:NODE_TYPE grant found.');
+    $this->assertEquals(['gid' => GNODE_MASTER_GRANT_ID, 'realm' => 'gnode_bypass'] + $base, $records[2], 'Admin gnode_bypass grant found.');
   }
 
 }

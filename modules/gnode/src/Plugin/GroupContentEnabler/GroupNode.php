@@ -7,7 +7,6 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\node\Entity\NodeType;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\Routing\Route;
 
 /**
  * Provides a content enabler for nodes.
@@ -55,6 +54,22 @@ class GroupNode extends GroupContentEnablerBase {
     }
 
     return $operations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getTargetEntityPermissions() {
+    $permissions = parent::getTargetEntityPermissions();
+    $plugin_id = $this->getPluginId();
+
+    // Add a 'view unpublished' permission by re-using most of the 'view' one.
+    $original = $permissions["view $plugin_id entity"];
+    $permissions["view unpublished $plugin_id entity"] = [
+      'title' => str_replace('View ', 'View unpublished ', $original['title']),
+    ] + $original;
+
+    return $permissions;
   }
 
   /**
