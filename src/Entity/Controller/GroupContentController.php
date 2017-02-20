@@ -4,9 +4,11 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupInterface;
@@ -251,6 +253,25 @@ class GroupContentController extends ControllerBase {
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Create @name', ['@name' => $group_content_type->label()]);
+  }
+
+  /**
+   * The _title_callback for the entity.group_content.edit_form route.
+   *
+   * Overrides the Drupal\Core\Entity\Controller\EntityController::editTitle().
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match.
+   * @param \Drupal\Core\Entity\EntityInterface $_entity
+   *   (optional) An entity, passed in directly from the request attributes.
+   *
+   * @return string|null
+   *   The title for the entity edit page, if an entity was found.
+   */
+  public function editFormTitle(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {
+    if ($entity = $route_match->getParameter('group_content')) {
+      return $this->t('Edit %label', ['%label' => $entity->label()]);
+    }
   }
 
   /**

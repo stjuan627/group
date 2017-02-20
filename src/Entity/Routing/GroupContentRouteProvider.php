@@ -192,6 +192,7 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    */
   protected function getEditFormRoute(EntityTypeInterface $entity_type) {
     return parent::getEditFormRoute($entity_type)
+      ->setDefault('_title_callback', '\Drupal\group\Entity\Controller\GroupContentController::editFormTitle')
       ->setRequirement('_group_owns_content', 'TRUE')
       ->setOption('_group_operation_route', TRUE)
       ->setOption('parameters', [
