@@ -2,28 +2,12 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
-
 /**
  * Tests the behavior of group creators.
  *
  * @group group
  */
-class GroupCreatorTest extends EntityKernelTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['group', 'group_test_config'];
-
-  /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
+class GroupCreatorTest extends GroupKernelTestBase {
 
   /**
    * The account to use as the group creator.
@@ -37,28 +21,14 @@ class GroupCreatorTest extends EntityKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->account = $this->createUser();
-
-    $this->installConfig(['group', 'group_test_config']);
-    $this->installEntitySchema('group');
-    $this->installEntitySchema('group_type');
-    $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
   }
 
   /**
    * Tests that a group creator is automatically a member.
    */
   public function testCreatorMembership() {
-    /* @var \Drupal\group\Entity\GroupInterface $group */
-    $group = $this->entityTypeManager->getStorage('group')->create([
-      'type' => 'default',
-      'uid' => $this->account->id(),
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->save();
+    $group = $this->createGroup(['uid' => $this->account->id()]);
 
     $group_membership = $group->getMember($this->account);
     $this->assertNotFalse($group_membership, 'Membership could be loaded for the group creator.');
@@ -80,13 +50,7 @@ class GroupCreatorTest extends EntityKernelTestBase {
     $group_type->set('creator_roles', ['default-custom']);
     $group_type->save();
 
-    /* @var \Drupal\group\Entity\GroupInterface $group */
-    $group = $this->entityTypeManager->getStorage('group')->create([
-      'type' => 'default',
-      'uid' => $this->account->id(),
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->save();
+    $group = $this->createGroup(['uid' => $this->account->id()]);
 
     /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
     $group_role_storage = $this->entityTypeManager->getStorage('group_role');

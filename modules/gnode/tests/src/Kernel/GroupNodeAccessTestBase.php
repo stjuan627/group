@@ -149,9 +149,9 @@ abstract class GroupNodeAccessTestBase extends EntityKernelTestBase {
     $this->groupB1->save();
     $this->groupB2->save();
 
-    // Remove the test account from the A2 and B2 groups. @todo removeMember().
-    $this->groupA2->getMember($this->account)->getGroupContent()->delete();
-    $this->groupB2->getMember($this->account)->getGroupContent()->delete();
+    // Remove the test account from the A2 and B2 groups.
+    $this->groupA2->removeMember($this->account);
+    $this->groupB2->removeMember($this->account);
   }
 
 }

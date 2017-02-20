@@ -2,29 +2,13 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
-
 /**
  * Tests the general behavior of group entities.
  *
  * @coversDefaultClass \Drupal\group\Entity\Group
  * @group group
  */
-class GroupTest extends EntityKernelTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['group', 'group_test_config'];
-
-  /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
+class GroupTest extends GroupKernelTestBase {
 
   /**
    * The group we will use to test methods on.
@@ -38,36 +22,7 @@ class GroupTest extends EntityKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
-
-    $this->installConfig(['group', 'group_test_config']);
-    $this->installEntitySchema('group');
-    $this->installEntitySchema('group_type');
-    $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
-
-    $this->container->get('current_user')->setAccount($this->createUser());
     $this->group = $this->createGroup();
-  }
-
-  /**
-   * Creates a group.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\Group
-   *   The created group entity.
-   */
-  protected function createGroup($values = []) {
-    $group = $this->entityTypeManager->getStorage('group')->create($values + [
-      'type' => 'default',
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->enforceIsNew();
-    $group->save();
-    return $group;
   }
 
   /**

@@ -23,12 +23,20 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   protected $entityTypeManager;
 
   /**
+   * The content enabler plugin manager.
+   *
+   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   */
+  protected $pluginManager;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
 
     $this->entityTypeManager = $this->container->get('entity_type.manager');
+    $this->pluginManager = $this->container->get('plugin.manager.group_content_enabler');
 
     $this->installConfig(['group', 'group_test_config']);
     $this->installEntitySchema('group');

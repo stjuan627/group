@@ -3,7 +3,6 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
  * Tests the general behavior of group type entities.
@@ -11,28 +10,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
  * @coversDefaultClass \Drupal\group\Entity\GroupType
  * @group group
  */
-class GroupTypeTest extends EntityKernelTestBase {
-
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = ['group', 'group_test_config'];
-
-  /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The content enabler plugin manager.
-   *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
-   */
-  protected $pluginManager;
+class GroupTypeTest extends GroupKernelTestBase {
 
   /**
    * The 'default' group type from the group_test_config test module.
@@ -46,16 +24,6 @@ class GroupTypeTest extends EntityKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
-    $this->pluginManager = $this->container->get('plugin.manager.group_content_enabler');
-
-    $this->installConfig(['group', 'group_test_config']);
-    $this->installEntitySchema('group');
-    $this->installEntitySchema('group_type');
-    $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
-
     $this->groupType = $this->entityTypeManager
       ->getStorage('group_type')
       ->load('default');
