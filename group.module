@@ -223,8 +223,8 @@ function group_entity_delete(EntityInterface $entity) {
  *       options available to it?
  */
 function group_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
-  // We only care about the group roles field for now.
-  if ($field_definition->getName() != 'group_roles') {
+  // We only care about editing the group_roles field for now.
+  if ($field_definition->getName() != 'group_roles' || $operation !== 'edit') {
     return AccessResult::neutral();
   }
 
