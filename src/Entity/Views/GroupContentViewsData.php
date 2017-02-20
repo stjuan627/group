@@ -80,7 +80,7 @@ class GroupContentViewsData extends EntityViewsData {
 
     // Add views data for all defined plugins so modules can provide default
     // views even though their plugins may not have been installed yet.
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
+    foreach ($this->pluginManager->getAll() as $plugin) {
       $entity_type_id = $plugin->getEntityTypeId();
       $entity_type = $entity_types[$entity_type_id];
       $entity_data_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
