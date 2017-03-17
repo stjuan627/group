@@ -339,9 +339,11 @@ class Group extends ContentEntityBase implements GroupInterface {
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
 
-    // If a new group is created, add the creator as a member by default.
-    if ($update === FALSE) {
-      $values = ['group_roles' => $this->getGroupType()->getCreatorRoleIds()];
+    // If a new group is created and the group type is configured to grant group
+    // creators a membership by default, add the creator as a member.
+    $group_type = $this->getGroupType();
+    if ($update === FALSE && $group_type->creatorGetsMembership()) {
+      $values = ['group_roles' => $group_type->getCreatorRoleIds()];
       $this->addMember($this->getOwner(), $values);
     }
   }
