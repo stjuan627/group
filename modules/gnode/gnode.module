@@ -151,7 +151,7 @@ function gnode_node_grants(AccountInterface $account, $op) {
           if ($group->hasPermission("view $plugin_id entity", $account)) {
             $grants_m["gnode:$node_type_id"][] = $gid;
           }
-          elseif ($group->hasPermission("view unpublished $plugin_id entity", $account)) {
+          if ($group->hasPermission("view unpublished $plugin_id entity", $account)) {
             $grants_m["gnode_unpublished:$node_type_id"][] = $gid;
           }
           break;
@@ -210,7 +210,7 @@ function gnode_node_grants(AccountInterface $account, $op) {
           if ($group_role->hasPermission("view $plugin_id entity")) {
             $grants_ao["gnode:$node_type_id"][] = $gids;
           }
-          elseif ($group_role->hasPermission("view unpublished $plugin_id entity")) {
+          if ($group_role->hasPermission("view unpublished $plugin_id entity")) {
             $grants_ao["gnode_unpublished:$node_type_id"][] = $gids;
           }
           break;
