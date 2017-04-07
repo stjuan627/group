@@ -150,18 +150,9 @@ class Group extends ContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []) {
-    $plugin = $this->getGroupType()->getContentPlugin($plugin_id);
-
-    // Only add the entity if the provided plugin supports it.
-    // @todo Verify bundle as well and throw exceptions?
-    if ($entity->getEntityTypeId() == $plugin->getEntityTypeId()) {
-      $keys = [
-        'type' => $plugin->getContentTypeConfigId(),
-        'gid' => $this->id(),
-        'entity_id' => $entity->id(),
-      ];
-      GroupContent::create($keys + $values)->save();
-    }
+    $storage = $this->groupContentStorage();
+    $group_content = $storage->createForEntityInGroup($entity, $this, $plugin_id, $values);
+    $storage->save($group_content);
   }
 
   /**
