@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\CacheableMetadata;
 
 /**
  * Provides a block with operations the user can perform on a group.
@@ -21,6 +22,11 @@ class GroupOperationsBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
+    $cache = new CacheableMetadata();
+
+    // Create an operations element that will hold all of the links.
+    $build['#type'] = 'operations';
+
     // This block varies per group type and per current user's group membership
     // permissions. Different group types could have different content plugins
     // enabled, influencing which group operations are available to them. The
@@ -28,7 +34,7 @@ class GroupOperationsBlock extends BlockBase {
     //
     // We do not need to specify the current user or group as cache contexts
     // because, in essence, a group membership is a union of both.
-    $build['#cache']['contexts'] = ['group.type', 'group_membership.roles.permissions'];
+    $cache->addCacheContexts(['group.type', 'group_membership.roles.permissions']);
 
     // Of special note is the cache context 'group_membership.audience'. Where
     // the above cache contexts should suffice if everything is ran through the
@@ -36,7 +42,7 @@ class GroupOperationsBlock extends BlockBase {
     // such as 'join' and 'leave' not only check for a permission, but also the
     // audience the user belongs to. I.e.: whether they're a 'member', an
     // 'outsider' or 'anonymous'.
-    $build['#cache']['contexts'][] = 'group_membership.audience';
+    $cache->addCacheContexts(['group_membership.audience']);
 
     /** @var \Drupal\group\Entity\GroupInterface $group */
     if (($group = $this->getContextValue('group')) && $group->id()) {
@@ -55,15 +61,16 @@ class GroupOperationsBlock extends BlockBase {
         // Sort the operations by weight.
         uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');
 
-        // Create an operations element with all of the links.
-        $build['#type'] = 'operations';
         // @todo We should have operation links provide cacheable metadata that
         // we could then merge in here.
         $build['#links'] = $links;
       }
     }
 
-    // If no group was found, cache the empty result on the route.
+    // Apply the cacheable metadata to the block.
+    $cache->applyTo($build);
+
+    // Return the operations, even if there were none, so the result is cached.
     return $build;
   }
 
