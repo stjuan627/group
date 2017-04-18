@@ -279,32 +279,32 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setLabel(t('Created on'))
       ->setDescription(t('The time that the group was created.'))
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'hidden',
         'weight' => 0,
-      ))
+      ])
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed on'))
       ->setDescription(t('The time that the group was last edited.'))
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'hidden',
         'weight' => 0,
-      ))
+      ])
       ->setDisplayConfigurable('view', TRUE);
 
     if (\Drupal::moduleHandler()->moduleExists('path')) {
       $fields['path'] = BaseFieldDefinition::create('path')
         ->setLabel(t('URL alias'))
         ->setTranslatable(TRUE)
-        ->setDisplayOptions('form', array(
+        ->setDisplayOptions('form', [
           'type' => 'path',
           'weight' => 30,
-        ))
+        ])
         ->setDisplayConfigurable('form', TRUE)
         ->setComputed(TRUE);
     }

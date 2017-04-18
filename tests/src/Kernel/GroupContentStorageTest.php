@@ -64,7 +64,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @return \Drupal\user\Entity\User
    *   The created user entity.
    */
-  protected function createUnsavedUser($values = array()) {
+  protected function createUnsavedUser($values = []) {
     $account = $this->entityTypeManager->getStorage('user')->create($values + [
       'name' => $this->randomMachineName(),
       'status' => 1,
