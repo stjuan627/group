@@ -51,6 +51,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label",
  *     "description",
  *     "creator_membership",
+ *     "creator_wizard",
  *     "creator_roles",
  *   }
  * )
@@ -84,6 +85,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * @var bool
    */
   protected $creator_membership = TRUE;
+
+  /**
+   * The group creator must immediately complete their membership.
+   *
+   * @var bool
+   */
+  protected $creator_wizard = TRUE;
 
   /**
    * The IDs of the group roles a group creator should receive.
@@ -200,6 +208,13 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function creatorGetsMembership() {
     return $this->creator_membership;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function creatorMustCompleteMembership() {
+    return $this->creator_membership && $this->creator_wizard;
   }
 
   /**
