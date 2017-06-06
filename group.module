@@ -5,16 +5,17 @@
  * Allows you to group users, content and other entities.
  */
 
-use Drupal\group\Entity\GroupContent;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
+use Drupal\group\Entity\GroupContent;
+use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_help().
@@ -157,22 +158,11 @@ function template_preprocess_group_content(&$variables) {
 }
 
 /**
- * Gets the group content enabler plugin manager.
- *
- * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
- *   The group content enabler plugin manager.
- *
- * @internal Try to properly inject the service when possible.
- */
-function _group_content_enabler_manager() {
-  return \Drupal::service('plugin.manager.group_content_enabler');
-}
-
-/**
  * Implements hook_rebuild().
  */
 function group_rebuild() {
   _group_content_enabler_manager()->installEnforced();
+  _group_role_synchronizer()->createGroupRoles();
 }
 
 /**
@@ -180,6 +170,7 @@ function group_rebuild() {
  */
 function group_modules_installed($modules) {
   _group_content_enabler_manager()->installEnforced();
+  _group_role_synchronizer()->createGroupRoles();
 }
 
 /**
@@ -335,6 +326,26 @@ function group_user_delete(EntityInterface $account) {
   $storage = \Drupal::entityTypeManager()->getStorage('group');
   if ($groups = $storage->loadByProperties(['uid' => $account->id()])) {
     $storage->delete($groups);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function group_user_role_insert(RoleInterface $role) {
+  _group_role_synchronizer()->createGroupRoles(NULL, [$role->id()]);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function group_user_role_update(RoleInterface $role) {
+  /** @var \Drupal\User\RoleInterface $original */
+  $original = $role->original;
+
+  // Update the group roles if the user role label changed.
+  if ($role->label() != $original->label()) {
+    _group_role_synchronizer()->updateGroupRoleLabels($role);
   }
 }
 
@@ -503,3 +514,27 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 /**
  * @} End of "defgroup group_access".
  */
+
+/**
+ * Gets the group content enabler plugin manager.
+ *
+ * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+ *   The group content enabler plugin manager.
+ *
+ * @internal Try to properly inject the service when possible.
+ */
+function _group_content_enabler_manager() {
+  return \Drupal::service('plugin.manager.group_content_enabler');
+}
+
+/**
+ * Gets the group role synchronizer service.
+ *
+ * @return \Drupal\group\GroupRoleSynchronizerInterface
+ *   The group role synchronizer service.
+ *
+ * @internal Try to properly inject the service when possible.
+ */
+function _group_role_synchronizer() {
+  return \Drupal::service('group_role.synchronizer');
+}

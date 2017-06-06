@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\grolesync;
+namespace Drupal\group;
 
 use Drupal\User\RoleInterface;
 
 /**
- * Synchronizes global site roles to group roles.
+ * Synchronizes global site roles to outsider group roles.
  */
 interface GroupRoleSynchronizerInterface {
 
@@ -18,9 +18,31 @@ interface GroupRoleSynchronizerInterface {
    *   The ID of the user role the group role ID should be generated for.
    *
    * @return string
-   *   The ID of the group role ID for the given group type and user role.
+   *   The group role ID for the given group type and user role.
    */
   public function getGroupRoleId($group_type_id, $role_id);
+
+  /**
+   * Retrieves all possible synchronized group role IDs for a group type.
+   *
+   * @param $group_type_id
+   *   The ID of the group type the group role IDs should be retrieved for.
+   *
+   * @return string[]
+   *   The synchronized group role IDs for the given group type.
+   */
+  public function getGroupRoleIdsByGroupType($group_type_id);
+
+  /**
+   * Retrieves all possible synchronized group role IDs for a user role.
+   *
+   * @param $role_id
+   *   The ID of the user role the group role IDs should be retrieved for.
+   *
+   * @return string[]
+   *   The synchronized group role IDs for the given user role.
+   */
+  public function getGroupRoleIdsByUserRole($role_id);
 
   /**
    * Creates group roles for all user roles.

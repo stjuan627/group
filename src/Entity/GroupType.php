@@ -284,8 +284,21 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
         // Enable enforced content plugins for new group types.
         $this->getContentEnablerManager()->installEnforced($this);
+
+        // Synchronize outsider roles for new group types.
+        $this->getGroupRoleSynchronizer()->createGroupRoles([$group_type_id]);
       }
     }
+  }
+
+  /**
+   * Returns the group role synchronizer service.
+   *
+   * @return \Drupal\group\GroupRoleSynchronizerInterface
+   *   The group role synchronizer service.
+   */
+  protected function getGroupRoleSynchronizer() {
+    return \Drupal::service('group_role.synchronizer');
   }
 
   /**
