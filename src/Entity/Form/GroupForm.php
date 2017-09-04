@@ -56,25 +56,27 @@ class GroupForm extends ContentEntityForm {
     $replace = ['@group_type' => $group_type->label()];
 
     // We need to adjust the actions when using the group creator wizard.
-    if ($form_state->get('group_wizard') && $form_state->get('group_wizard_id') == 'group_creator') {
-      // Store a group instead of saving it.
-      $actions['submit']['#submit'] = ['::submitForm', '::store'];
+    if ($this->operation == 'add') {
+      if ($form_state->get('group_wizard') && $form_state->get('group_wizard_id') == 'group_creator') {
+        // Store a group instead of saving it.
+        $actions['submit']['#submit'] = ['::submitForm', '::store'];
 
-      // Update the label to be more user friendly.
-      $actions['submit']['#value'] = $this->t('Create @group_type and complete your membership', $replace);
+        // Update the label to be more user friendly.
+        $actions['submit']['#value'] = $this->t('Create @group_type and complete your membership', $replace);
 
-      // Add a cancel button to clear the private temp store.
-      $actions['cancel'] = [
-        '#type' => 'submit',
-        '#value' => $this->t('Cancel'),
-        '#submit' => ['::cancel'],
-        '#limit_validation_errors' => [],
-      ];
-    }
-    // If we are not in the wizard, but creator memberships are enabled, we need
-    // to reflect that on the submit button as well.
-    elseif ($group_type->creatorGetsMembership()) {
-      $actions['submit']['#value'] = $this->t('Create @group_type and become a member', $replace);
+        // Add a cancel button to clear the private temp store.
+        $actions['cancel'] = [
+          '#type' => 'submit',
+          '#value' => $this->t('Cancel'),
+          '#submit' => ['::cancel'],
+          '#limit_validation_errors' => [],
+        ];
+      }
+      // If we are not in the wizard, but creator memberships are enabled, we
+      // need to reflect that on the submit button as well.
+      elseif ($group_type->creatorGetsMembership()) {
+        $actions['submit']['#value'] = $this->t('Create @group_type and become a member', $replace);
+      }
     }
 
     return $actions;
