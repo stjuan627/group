@@ -72,9 +72,7 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
     $groups[$group->id()] = $group;
   }
 
-  // From this point on you need group to allow you to perform the requested
-  // operation. If you are not granted access for a node belonging to a group,
-  // you should be denied access instead.
+  // From this point on you need group to allow you to perform the operation.
   switch ($op) {
     case 'view':
       foreach ($groups as $group) {
@@ -102,6 +100,10 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
       break;
   }
 
+  // Instead of outright forbidding access when no group granted it, we return
+  // a neutral access result to play nice with other modules. If the end result
+  // is still neutral, Drupal will deny access anyway unless the node grants
+  // system allows the operation in a last ditch effort to determine access.
   return AccessResult::neutral();
 }
 
