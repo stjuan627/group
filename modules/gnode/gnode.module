@@ -102,7 +102,7 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
       break;
   }
 
-  return AccessResult::forbidden();
+  return AccessResult::neutral();
 }
 
 /**
