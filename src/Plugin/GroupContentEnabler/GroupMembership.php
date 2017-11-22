@@ -62,27 +62,26 @@ class GroupMembership extends GroupContentEnablerBase {
    */
   protected function getGroupContentPermissions() {
     $permissions = parent::getGroupContentPermissions();
-    $defaults = ['title_args' => ['%plugin_name' => $this->getLabel()]];
 
     // Add extra permissions specific to membership group content entities.
     $permissions['administer members'] = [
-      'title' => '%plugin_name: Administer group members',
+      'title' => 'Administer group members',
       'restrict access' => TRUE,
-    ] + $defaults;
+    ];
 
     $permissions['join group'] = [
-      'title' => '%plugin_name: Join group',
+      'title' => 'Join group',
       'allowed for' => ['outsider'],
-    ] + $defaults;
+    ];
 
     $permissions['leave group'] = [
-      'title' => '%plugin_name: Leave group',
+      'title' => 'Leave group',
       'allowed for' => ['member'],
-    ] + $defaults;
+    ];
 
     // Update the labels of the default permissions.
-    $permissions['view group_membership content']['title'] = '%plugin_name: View individual group members';
-    $permissions['update own group_membership content']['title'] = '%plugin_name: Edit own membership';
+    $permissions['view group_membership content']['title'] = 'View individual group members';
+    $permissions['update own group_membership content']['title'] = 'Edit own membership';
 
     // Only members can update their membership.
     $permissions['update own group_membership content']['allowed for'] = ['member'];
