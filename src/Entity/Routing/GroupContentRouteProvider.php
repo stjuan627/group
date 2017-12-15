@@ -236,7 +236,27 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    *   The generated route, if available.
    */
   protected function getEntityDeleteFormRoute(EntityTypeInterface $entity_type) {
+    // @todo:
+    //   - Check that entity is part of this group. DONE
+    //   - Check actual entity access.
+    //   - Check that entity can be deleted in this group.
+    if ($entity_type->hasLinkTemplate('entity-delete-form')) {
+      $route = new Route($entity_type->getLinkTemplate('entity-delete-form'));
+      $route
+        ->addDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteForm',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteFormTitle',
+        ])
+        ->setRequirement('_group_owns_content', 'TRUE')
+        ->setRequirement('group', '\d+')
+        ->setRequirement('group_content', '\d+')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
 
+      return $route;
+    }
   }
 
   /**
@@ -249,7 +269,27 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    *   The generated route, if available.
    */
   protected function getEntityEditFormRoute(EntityTypeInterface $entity_type) {
+    // @todo:
+    //   - Check that entity is part of this group. DONE
+    //   - Check actual entity access.
+    //   - Check that entity can be edited in this group.
+    if ($entity_type->hasLinkTemplate('entity-edit-form')) {
+      $route = new Route($entity_type->getLinkTemplate('entity-edit-form'));
+      $route
+        ->addDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editForm',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editFormTitle',
+        ])
+        ->setRequirement('_group_owns_content', 'TRUE')
+        ->setRequirement('group', '\d+')
+        ->setRequirement('group_content', '\d+')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
 
+      return $route;
+    }
   }
 
   /**
