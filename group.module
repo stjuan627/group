@@ -169,8 +169,11 @@ function group_rebuild() {
  * Implements hook_modules_installed().
  */
 function group_modules_installed($modules) {
-  _group_content_enabler_manager()->installEnforced();
-  _group_role_synchronizer()->createGroupRoles();
+  // Only create config objects while config import is not in progress.
+  if (!\Drupal::isConfigSyncing()) {
+    _group_content_enabler_manager()->installEnforced();
+    _group_role_synchronizer()->createGroupRoles();
+  }
 }
 
 /**
@@ -350,7 +353,10 @@ function group_user_delete(EntityInterface $account) {
  * Implements hook_ENTITY_TYPE_insert().
  */
 function group_user_role_insert(RoleInterface $role) {
-  _group_role_synchronizer()->createGroupRoles(NULL, [$role->id()]);
+  // Only create config objects while config import is not in progress.
+  if (!\Drupal::isConfigSyncing()) {
+    _group_role_synchronizer()->createGroupRoles(NULL, [$role->id()]);
+  }
 }
 
 /**
