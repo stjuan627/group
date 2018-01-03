@@ -16,6 +16,8 @@ use Drupal\Core\Session\AccountInterface;
 /**
  * Provides a base class for GroupContentEnabler plugins.
  *
+ * @todo This class is HUGE and should be using handlers like entity types do.
+ *
  * @see \Drupal\group\Annotation\GroupContentEnabler
  * @see \Drupal\group\GroupContentEnablerManager
  * @see \Drupal\group\Plugin\GroupContentEnablerInterface
@@ -300,6 +302,26 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       $permissions += $this->getTargetEntityPermissions();
     }
     return $permissions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityOperationPermission($operation) {
+    // This only applies when the plugin defines entity access.
+    if (!$this->definesEntityAccess()) {
+      return FALSE;
+    }
+
+    // "view $plugin_id entity"
+    // "create $plugin_id entity"
+    // "update own $plugin_id entity"
+    // "update any $plugin_id entity"
+    // "delete own $plugin_id entity"
+    // "delete any $plugin_id entity"
+
+    // @todo What about ANY vs OWN?
+    // @todo Call this method elsewhere in this base class.
   }
 
   /**

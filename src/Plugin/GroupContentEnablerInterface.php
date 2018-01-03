@@ -206,6 +206,17 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function getPermissions();
 
   /**
+   * Retrieves the permission name for a given operation on the target entity.
+   *
+   * @param string $operation
+   *   The name of the entity operation to retrieve the permission name for.
+   *
+   * @return string|FALSE
+   *   The permission name of FALSE if none exists.
+   */
+  public function getEntityOperationPermission($operation);
+
+  /**
    * Performs access check for the create target entity operation.
    *
    * This method is supposed to be overwritten by extending classes that

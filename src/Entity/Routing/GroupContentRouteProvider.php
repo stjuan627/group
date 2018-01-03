@@ -236,8 +236,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    *   The generated route, if available.
    */
   protected function getEntityDeleteFormRoute(EntityTypeInterface $entity_type) {
-    // @todo:
-    //   - Check that entity can be deleted in this group.
     if ($entity_type->hasLinkTemplate('entity-delete-form')) {
       $route = new Route($entity_type->getLinkTemplate('entity-delete-form'));
       $route
@@ -268,8 +266,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    *   The generated route, if available.
    */
   protected function getEntityEditFormRoute(EntityTypeInterface $entity_type) {
-    // @todo:
-    //   - Check that entity can be edited in this group.
     if ($entity_type->hasLinkTemplate('entity-edit-form')) {
       $route = new Route($entity_type->getLinkTemplate('entity-edit-form'));
       $route
@@ -302,7 +298,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
   protected function getEntityViewRoute(EntityTypeInterface $entity_type) {
     // @todo:
     //   - Check that entity's type hasViewBuilderClass()
-    //   - Check that entity can be viewed in this group.
     if ($entity_type->hasLinkTemplate('entity-view')) {
       $route = new Route($entity_type->getLinkTemplate('entity-view'));
       $route

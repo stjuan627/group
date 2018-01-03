@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Access;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
@@ -31,7 +32,24 @@ class GroupContentEntityAccessCheck implements AccessInterface {
    */
   public function access(Route $route, AccountInterface $account, GroupContentInterface $group_content) {
     $operation = $route->getRequirement('_group_content_entity_access');
-    return $group_content->getEntity()->access($operation, $account, TRUE);
+
+    // We first check if the user can access the entity. If another module is
+    // denying access, we do not need to check for the group permission.
+    if (!$group_content->getEntity()->access($operation, $account)) {
+      return AccessResult::forbidden();
+    }
+
+    // @todo Distinguish ANY vs OWN. Retrieve both permissions.
+    // Retrieve the permission name from the plugin and check whether the user
+    // has said permission in the group.
+    $permission = $group_content->getContentPlugin()->getEntityOperationPermission($operation);
+    if ($permission !== FALSE) {
+      return AccessResult::allowedIf($group_content->getGroup()->hasPermission($permission, $account));
+    }
+
+    // If we got this far, it means we could not retrieve a permission name and
+    // as such should default to the most sane option we have left: Deny access.
+    return AccessResult::forbidden();
   }
 
 }
