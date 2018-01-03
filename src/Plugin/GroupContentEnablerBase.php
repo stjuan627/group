@@ -2,16 +2,17 @@
 
 namespace Drupal\group\Plugin;
 
-use Drupal\Core\Access\AccessResult;
-use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupType;
-use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Access\GroupAccessResult;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupType;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
@@ -307,26 +308,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function getEntityOperationPermission($operation) {
-    // This only applies when the plugin defines entity access.
-    if (!$this->definesEntityAccess()) {
-      return FALSE;
-    }
-
-    // "view $plugin_id entity"
-    // "create $plugin_id entity"
-    // "update own $plugin_id entity"
-    // "update any $plugin_id entity"
-    // "delete own $plugin_id entity"
-    // "delete any $plugin_id entity"
-
-    // @todo What about ANY vs OWN?
-    // @todo Call this method elsewhere in this base class.
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function createEntityAccess(GroupInterface $group, AccountInterface $account) {
     // You cannot create target entities if the plugin does not support it.
     if (!$this->definesEntityAccess()) {
@@ -335,6 +316,110 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     $plugin_id = $this->getPluginId();
     return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "create $plugin_id entity");
+  }
+
+  /**
+   * Performs access check for the view operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function entityViewAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $group = $group_content->getGroup();
+    $plugin_id = $this->getPluginId();
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "view $plugin_id entity");
+  }
+
+  /**
+   * Performs access check for the update operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function entityUpdateAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $group = $group_content->getGroup();
+    $plugin_id = $this->getPluginId();
+
+    // Check for access to update own target entities.
+    $entity = $group_content->getEntity();
+    if ($entity instanceof EntityOwnerInterface && $entity->getOwnerId() == $account->id()) {
+      if ($group->hasPermission("update own $plugin_id entity", $account)) {
+        return AccessResult::allowed();
+      }
+    }
+
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update any $plugin_id entity");
+  }
+
+  /**
+   * Performs access check for the delete operation.
+   *
+   * This method is supposed to be overwritten by extending classes that
+   * do their own custom access checking.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  protected function entityDeleteAccess(GroupContentInterface $group_content, AccountInterface $account) {
+    $group = $group_content->getGroup();
+    $plugin_id = $this->getPluginId();
+
+    // Check for access to delete own target entities.
+    $entity = $group_content->getEntity();
+    if ($entity instanceof EntityOwnerInterface && $entity->getOwnerId() == $account->id()) {
+      if ($group->hasPermission("delete own $plugin_id entity", $account)) {
+        return AccessResult::allowed();
+      }
+    }
+
+    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete any $plugin_id entity");
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function checkEntityAccess(GroupContentInterface $group_content, $operation, AccountInterface $account) {
+    // Do not check for target entity access if the plugin does not support it.
+    if (!$this->definesEntityAccess()) {
+      return AccessResult::neutral();
+    }
+
+    switch ($operation) {
+      case 'view':
+        $result = $this->entityViewAccess($group_content, $account);
+        break;
+      case 'update':
+        $result = $this->entityUpdateAccess($group_content, $account);
+        break;
+      case 'delete':
+        $result = $this->entityDeleteAccess($group_content, $account);
+        break;
+      default:
+        $result = AccessResult::neutral();
+    }
+
+    return $result;
   }
 
   /**
@@ -385,7 +470,9 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     // Allow members to edit their own group content.
     if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update own $plugin_id content");
+      if ($group->hasPermission("update own $plugin_id content", $account)) {
+        return AccessResult::allowed();
+      }
     }
 
     return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update any $plugin_id content");
@@ -411,7 +498,9 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     // Allow members to delete their own group content.
     if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete own $plugin_id content");
+      if ($group->hasPermission("delete own $plugin_id content", $account)) {
+        return AccessResult::allowed();
+      }
     }
 
     return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete any $plugin_id content");
@@ -432,7 +521,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
         $result = $this->deleteAccess($group_content, $account);
         break;
       default:
-        $result = GroupAccessResult::neutral();
+        $result = AccessResult::neutral();
     }
 
     return $result;

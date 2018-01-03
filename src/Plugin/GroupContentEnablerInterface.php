@@ -233,6 +233,25 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function createEntityAccess(GroupInterface $group, AccountInterface $account);
 
   /**
+   * Checks access to an operation on a given group content's target entity.
+   *
+   * Use \Drupal\group\Plugin\GroupContentEnablerInterface::createEntityAccess()
+   * to check access to create a group content's target entity.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content for which to check access for the target entity.
+   * @param string $operation
+   *   The operation access should be checked for. Usually one of "view",
+   *   "update" or "delete".
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user session for which to check access.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function checkEntityAccess(GroupContentInterface $group_content, $operation, AccountInterface $account);
+
+  /**
    * Performs access check for the create operation.
    *
    * This method is supposed to be overwritten by extending classes that

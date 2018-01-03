@@ -39,17 +39,10 @@ class GroupContentEntityAccessCheck implements AccessInterface {
       return AccessResult::forbidden();
     }
 
-    // @todo Distinguish ANY vs OWN. Retrieve both permissions.
-    // Retrieve the permission name from the plugin and check whether the user
-    // has said permission in the group.
-    $permission = $group_content->getContentPlugin()->getEntityOperationPermission($operation);
-    if ($permission !== FALSE) {
-      return AccessResult::allowedIf($group_content->getGroup()->hasPermission($permission, $account));
-    }
-
-    // If we got this far, it means we could not retrieve a permission name and
-    // as such should default to the most sane option we have left: Deny access.
-    return AccessResult::forbidden();
+    // Check whether the user has access to the operation in this group.
+    return $group_content
+      ->getContentPlugin()
+      ->checkEntityAccess($group_content, $operation, $account);
   }
 
 }
