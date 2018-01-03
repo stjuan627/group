@@ -4,6 +4,7 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
@@ -88,29 +89,75 @@ class GroupContentEntityController implements ContainerInjectionInterface {
     return $group_content->getEntity()->label();
   }
 
-  // @todo Document the below routes.
-  // @todo Join the below two forms into one with a _default route operation.
+  /**
+   * Builds the entity edit form for the target entity.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content entity to retrieve the target entity from.
+   *
+   * @return \Drupal\Core\Entity\EntityFormInterface
+   *   The target entity edit form.
+   */
   public function editForm(GroupContentInterface $group_content) {
     $entity = $group_content->getEntity();
     $operation = $entity->getEntityType()->getFormClass('edit') ? 'edit' : 'default';
-    $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), $operation);
-    $form_object->setEntity($entity);
-    return $form_object;
+    return $this->getEntityForm($entity, $operation);
   }
 
+  /**
+   * Provides the page title for the target entity edit form.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content entity to retrieve the target entity from.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The page title.
+   */
   public function editTitle(GroupContentInterface $group_content) {
     return $this->t('Edit %label', ['%label' => $group_content->getEntity()->label()]);
   }
 
+  /**
+   * Builds the entity delete form for the target entity.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content entity to retrieve the target entity from.
+   *
+   * @return \Drupal\Core\Entity\EntityFormInterface
+   *   The target entity delete form.
+   */
   public function deleteForm(GroupContentInterface $group_content) {
-    $entity = $group_content->getEntity();
-    $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), 'delete');
-    $form_object->setEntity($entity);
-    return $form_object;
+    return $this->getEntityForm($group_content->getEntity(), 'delete');
   }
 
+  /**
+   * Provides the page title for the target entity delete form.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content entity to retrieve the target entity from.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   *   The page title.
+   */
   public function deleteTitle(GroupContentInterface $group_content) {
     return $this->t('Delete %label', ['%label' => $group_content->getEntity()->label()]);
+  }
+
+  /**
+   * Builds an entity form for a given entity and operation.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to build the form for.
+   * @param string $operation
+   *   The operation to build the form for.
+   *
+   * @return \Drupal\Core\Entity\EntityFormInterface
+   *   The entity form.
+   */
+  protected function getEntityForm(EntityInterface $entity, $operation) {
+    $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), $operation);
+    $form_object->setEntity($entity);
+    return $form_object;
   }
 
 }
