@@ -335,6 +335,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   protected function entityViewAccess(GroupContentInterface $group_content, AccountInterface $account) {
     $group = $group_content->getGroup();
     $plugin_id = $this->getPluginId();
+
+    // We can only allow access to view an entity if it has a view builder.
+    if (!$group_content->getEntity()->getEntityType()->hasViewBuilderClass()) {
+      return AccessResult::forbidden();
+    }
+
     return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "view $plugin_id entity");
   }
 

@@ -296,8 +296,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
    *   The generated route, if available.
    */
   protected function getEntityViewRoute(EntityTypeInterface $entity_type) {
-    // @todo:
-    //   - Check that entity's type hasViewBuilderClass()
     if ($entity_type->hasLinkTemplate('entity-view')) {
       $route = new Route($entity_type->getLinkTemplate('entity-view'));
       $route
