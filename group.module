@@ -106,15 +106,15 @@ function template_preprocess_group(&$variables) {
   $variables['group'] = $group;
   $variables['view_mode'] = $variables['elements']['#view_mode'];
   $variables['label'] = $group->label();
+  $variables['page'] = FALSE;
   $variables['url'] = $group->toUrl('canonical', ['language' => $group->language()]);
 
   // See if we are rendering the group at its canonical route.
   $route_match = \Drupal::routeMatch();
   if ($route_match->getRouteName() == 'entity.group.canonical') {
     $page_group = $route_match->getParameter('group');
+    $variables['page'] = $variables['view_mode'] == 'full' && $page_group->id() == $group->id();
   }
-  $is_page = (!empty($page_group) ? $page_group->id() == $group->id() : FALSE);
-  $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
 
   // Helpful $content variable for templates.
   $variables += ['content' => []];
@@ -140,15 +140,15 @@ function template_preprocess_group_content(&$variables) {
   $variables['group_content'] = $group_content;
   $variables['view_mode'] = $variables['elements']['#view_mode'];
   $variables['label'] = $group_content->label();
+  $variables['page'] = FALSE;
   $variables['url'] = $group_content->toUrl('canonical', ['language' => $group_content->language()]);
 
   // See if we are rendering the group at its canonical route.
   $route_match = \Drupal::routeMatch();
   if ($route_match->getRouteName() == 'entity.group_content.canonical') {
     $page_group_content = $route_match->getParameter('group_content');
+    $variables['page'] = $variables['view_mode'] == 'full' && $page_group_content->id() == $group_content->id();
   }
-  $is_page = (!empty($page_group_content) ? $page_group_content->id() == $group_content->id() : FALSE);
-  $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
 
   // Helpful $content variable for templates.
   $variables += ['content' => []];
