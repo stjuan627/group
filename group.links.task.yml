@@ -109,3 +109,20 @@ group_content.delete:
   base_route: 'entity.group_content.canonical'
   route_name: 'entity.group_content.delete_form'
   weight: 10
+
+group_content.entity.view:
+  title: 'View'
+  base_route: 'entity.group_content.entity_view'
+  route_name: 'entity.group_content.entity_view'
+
+group_content.entity.edit:
+  title: 'Edit'
+  base_route: 'entity.group_content.entity_view'
+  route_name: 'entity.group_content.entity_edit_form'
+  weight: 5
+
+group_content.entity.delete:
+  title: 'Remove'
+  base_route: 'entity.group_content.entity_view'
+  route_name: 'entity.group_content.entity_delete_form'
+  weight: 10
