@@ -69,10 +69,6 @@ services:
     tags:
       - { name: 'cache.context'}
 
-  controller.group_content.entity_form:
-    class: 'Drupal\group\Entity\Form\GroupContentEntityFormController'
-    arguments: ['@controller_resolver', '@form_builder', '@entity_type.manager', '@string_translation']
-
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
@@ -114,8 +110,3 @@ services:
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     tags:
       - { name: 'plugin_manager_cache_clear' }
-
-  route_enhancer.group_content_entity:
-    class: 'Drupal\group\Entity\Enhancer\GroupContentEntityRouteEnhancer'
-    tags:
-      - { name: 'route_enhancer', priority: 20 }
