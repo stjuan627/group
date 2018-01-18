@@ -4,8 +4,6 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentInterface;
@@ -26,25 +24,15 @@ class GroupContentEntityController implements ContainerInjectionInterface {
   protected $controllerResolver;
 
   /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * Creates an GroupContentEntityController object.
    *
    * @param \Drupal\Core\Controller\ControllerResolverInterface $controller_resolver
    *   The controller resolver.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation.
    */
-  public function __construct(ControllerResolverInterface $controller_resolver, EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation) {
+  public function __construct(ControllerResolverInterface $controller_resolver, TranslationInterface $string_translation) {
     $this->controllerResolver = $controller_resolver;
-    $this->entityTypeManager = $entity_type_manager;
     $this->stringTranslation = $string_translation;
   }
 
@@ -54,7 +42,6 @@ class GroupContentEntityController implements ContainerInjectionInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('controller_resolver'),
-      $container->get('entity_type.manager'),
       $container->get('string_translation')
     );
   }
@@ -90,21 +77,6 @@ class GroupContentEntityController implements ContainerInjectionInterface {
   }
 
   /**
-   * Builds the entity edit form for the target entity.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content entity to retrieve the target entity from.
-   *
-   * @return \Drupal\Core\Entity\EntityFormInterface
-   *   The target entity edit form.
-   */
-  public function editForm(GroupContentInterface $group_content) {
-    $entity = $group_content->getEntity();
-    $operation = $entity->getEntityType()->getFormClass('edit') ? 'edit' : 'default';
-    return $this->getEntityForm($entity, $operation);
-  }
-
-  /**
    * Provides the page title for the target entity edit form.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
@@ -118,19 +90,6 @@ class GroupContentEntityController implements ContainerInjectionInterface {
   }
 
   /**
-   * Builds the entity delete form for the target entity.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content entity to retrieve the target entity from.
-   *
-   * @return \Drupal\Core\Entity\EntityFormInterface
-   *   The target entity delete form.
-   */
-  public function deleteForm(GroupContentInterface $group_content) {
-    return $this->getEntityForm($group_content->getEntity(), 'delete');
-  }
-
-  /**
    * Provides the page title for the target entity delete form.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
@@ -141,23 +100,6 @@ class GroupContentEntityController implements ContainerInjectionInterface {
    */
   public function deleteTitle(GroupContentInterface $group_content) {
     return $this->t('Delete %label', ['%label' => $group_content->getEntity()->label()]);
-  }
-
-  /**
-   * Builds an entity form for a given entity and operation.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to build the form for.
-   * @param string $operation
-   *   The operation to build the form for.
-   *
-   * @return \Drupal\Core\Entity\EntityFormInterface
-   *   The entity form.
-   */
-  protected function getEntityForm(EntityInterface $entity, $operation) {
-    $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), $operation);
-    $form_object->setEntity($entity);
-    return $form_object;
   }
 
 }

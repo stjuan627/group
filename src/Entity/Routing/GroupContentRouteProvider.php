@@ -240,8 +240,8 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('entity-delete-form'));
       $route
         ->addDefaults([
-          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteForm',
-          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteFormTitle',
+          '_group_content_entity_form' => 'delete',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteTitle',
         ])
         ->setRequirement('group', '\d+')
         ->setRequirement('group_content', '\d+')
@@ -270,8 +270,8 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('entity-edit-form'));
       $route
         ->addDefaults([
-          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editForm',
-          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editFormTitle',
+          '_group_content_entity_form' => 'edit',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editTitle',
         ])
         ->setRequirement('group', '\d+')
         ->setRequirement('group_content', '\d+')
@@ -300,7 +300,7 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('entity-view'));
       $route
         ->addDefaults([
-          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::view',
+          '_group_content_entity_view' => 'full',
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::viewTitle',
         ])
         ->setRequirement('group', '\d+')
