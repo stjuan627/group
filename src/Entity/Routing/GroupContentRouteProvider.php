@@ -247,6 +247,7 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
         ->setRequirement('group_content', '\d+')
         ->setRequirement('_group_owns_content', 'TRUE')
         ->setRequirement('_group_content_entity_access', 'delete')
+        ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
           'group_content' => ['type' => 'entity:group_content'],
@@ -277,6 +278,7 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
         ->setRequirement('group_content', '\d+')
         ->setRequirement('_group_owns_content', 'TRUE')
         ->setRequirement('_group_content_entity_access', 'update')
+        ->setOption('_group_operation_route', TRUE)
         ->setOption('parameters', [
           'group' => ['type' => 'entity:group'],
           'group_content' => ['type' => 'entity:group_content'],
