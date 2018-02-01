@@ -6,7 +6,9 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\node\NodeInterface;
@@ -14,6 +16,25 @@ use Drupal\node\NodeTypeInterface;
 
 // We need a grant ID for match-all access records.
 define('GNODE_MASTER_GRANT_ID', 1986);
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function gnode_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'group') {
+    $current_user = \Drupal::currentUser();
+
+    /** @var \Drupal\group\Entity\GroupInterface $entity */
+    if ($entity->hasPermission('access group_node overview', $current_user)) {
+      $route_params = ['group' => $entity->id()];
+      $operations['group_node'] = [
+        'title' => t('Nodes'),
+        'weight' => 103,
+        'url' => Url::fromRoute('view.group_nodes.page_1', $route_params),
+      ];
+    }
+  }
+}
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
