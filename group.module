@@ -376,6 +376,10 @@ function group_user_role_update(RoleInterface $role) {
  * Implements hook_form_alter().
  */
 function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $alter_submit_handlers = FALSE;
+  $extra_submit_handlers = [];
+  $disallow_preview = TRUE;
+
   // GroupContentController::createForm() tends to load entity forms for adding
   // entities to a group. We need to add or alter the submit handlers of those
   // forms for the process to work properly.
@@ -391,9 +395,40 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       }
     }
 
+    $alter_submit_handlers = TRUE;
+
+    // If we are using the wizard, we need to substitute the entity save handler
+    // in order to add the entity to the private temp store. We also add a
+    // cancel button to step 1.
+    if ($wizard) {
+      $alternate_save_handler = 'group_content_wizard_store';
+
+      $form['actions']['cancel'] = [
+        '#type' => 'submit',
+        '#value' => t('Cancel'),
+        '#submit' => ['group_content_wizard_cancel'],
+        '#limit_validation_errors' => [],
+      ];
+    }
+    // Otherwise, we can simply add our submit handler and be done with it.
+    else {
+      $extra_submit_handlers[] = 'group_content_entity_submit';
+      $extra_submit_handlers[] = 'group_content_entity_redirect';
+    }
+  }
+
+  // GroupContentEntityController allows us to see an entity edit and delete
+  // form within the scope of a parent group. We need to alter the submit
+  // handlers to make sure we redirect back to the group scope after submission.
+  if ($form_state->get('entity_form_in_group_scope')) {
+    $alter_submit_handlers = TRUE;
+    $extra_submit_handlers[] = 'group_content_entity_redirect';
+  }
+
+  if ($alter_submit_handlers) {
     foreach (Element::children($form['actions']) as $name) {
       // Remove preview button as it redirects back to the wrong form.
-      if ($name == 'preview') {
+      if ($disallow_preview && $name == 'preview') {
         unset($form['actions'][$name]);
         continue;
       }
@@ -409,29 +444,19 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
         continue;
       }
 
-      // If we are using the wizard, we need to substitute the entity save
-      // handler in order to add the entity to the private temp store.
-      if ($wizard) {
+      // Replace the save handler if another one was specified.
+      if (!empty($alternate_save_handler)) {
         foreach ($submit as $key => $handler) {
           if ($handler == '::save') {
-            $form['actions'][$name]['#submit'][$key] = 'group_content_wizard_store';
+            $form['actions'][$name]['#submit'][$key] = $alternate_save_handler;
           }
         }
       }
-      // Otherwise, we can simply add our submit handler and be done with it.
-      else {
-        $form['actions'][$name]['#submit'][] = 'group_content_entity_submit';
-      }
-    }
 
-    // If we are using the wizard, we also add a cancel button to step 1.
-    if ($wizard) {
-      $form['actions']['cancel'] = [
-        '#type' => 'submit',
-        '#value' => t('Cancel'),
-        '#submit' => ['group_content_wizard_cancel'],
-        '#limit_validation_errors' => [],
-      ];
+      // Add in extra submit handlers if specified.
+      foreach ($extra_submit_handlers as $extra_handler) {
+        $form['actions'][$name]['#submit'][] = $extra_handler;
+      }
     }
   }
 }
@@ -489,18 +514,43 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 
   /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $form_state->get('group');
-  $group->addContent($entity, $form_state->get('group_content_enabler'));
 
-  // This submit handler is only called when creating new content within a group
-  // without using the 2-step wizard. We can therefore safely assume the user
-  // wants to see the entity itself and not the relationship (group content).
-  // This only applies if there was no destination GET parameter set in the URL.
-  if ($entity->access('view')) {
-    $form_state->setRedirectUrl($entity->toUrl());
+  $group_content = $group->addContent($entity, $form_state->get('group_content_enabler'));
+  $form_state->set('group_content', $group_content);
+}
+
+/**
+ * Redirects to an entity within a group scope.
+ *
+ * @see group_form_alter()
+ * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
+ */
+function group_content_entity_redirect($form, FormStateInterface $form_state) {
+  /** @var \Drupal\group\Entity\GroupInterface $group */
+  $group = $form_state->get('group');
+
+  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
+  $group_content = $form_state->get('group_content');
+
+  if ($form_state->getFormObject()->getOperation() == 'delete') {
+    $entity_access = FALSE;
   }
+  else {
+    $account = \Drupal::currentUser()->getAccount();
+    $entity_access = $group_content
+      ->getContentPlugin()
+      ->checkEntityAccess($group_content, 'view', $account);
+  }
+
+  // Try showing the entity inside the group scope first.
+  if (!empty($entity_access)) {
+    $form_state->setRedirectUrl($group_content->toUrl('entity-view'));
+  }
+  // If that fails, try to show the group homepage.
   elseif ($group->access('view')) {
     $form_state->setRedirectUrl($group->toUrl());
   }
+  // If all else fails, redirect to the front page.
   else {
     $form_state->setRedirect('<front>');
   }

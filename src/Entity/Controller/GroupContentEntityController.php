@@ -156,7 +156,11 @@ class GroupContentEntityController implements ContainerInjectionInterface {
    *   The extra form state values.
    */
   protected function getFormStateValues(GroupContentInterface $group_content, $operation) {
-    return [];
+    return [
+      'entity_form_in_group_scope' => TRUE,
+      'group_content' => $group_content,
+      'group' => $group_content->getGroup(),
+    ];
   }
 
 }
