@@ -160,17 +160,27 @@ class GroupContentListBuilder extends EntityListBuilder {
       $operations[$key]['query'] = $destination;
     }
 
-    // Check whether the user can view the entity in this group.
-    $view_access = $entity
-      ->getContentPlugin()
-      ->checkEntityAccess($entity, 'view', $this->currentUser);
-
-    // Add an operation to view the actual entity.
-    if ($view_access) {
-      $operations['view'] = [
+    // Add operations to view, update and delete the related entity.
+    $plugin = $entity->getContentPlugin();
+    if ($plugin->checkEntityAccess($entity, 'view', $this->currentUser)) {
+      $operations['view_entity'] = [
         'title' => $this->t('View related entity'),
         'weight' => 101,
         'url' => $entity->toUrl('entity-view'),
+      ];
+    }
+    if ($plugin->checkEntityAccess($entity, 'update', $this->currentUser)) {
+      $operations['update_entity'] = [
+        'title' => $this->t('Edit related entity'),
+        'weight' => 102,
+        'url' => $entity->toUrl('entity-edit-form'),
+      ];
+    }
+    if ($plugin->checkEntityAccess($entity, 'delete', $this->currentUser)) {
+      $operations['delete_entity'] = [
+        'title' => $this->t('Delete related entity'),
+        'weight' => 103,
+        'url' => $entity->toUrl('entity-delete-form'),
       ];
     }
 
