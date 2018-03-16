@@ -18,25 +18,6 @@ use Drupal\node\NodeTypeInterface;
 define('GNODE_MASTER_GRANT_ID', 1986);
 
 /**
- * Implements hook_entity_operation_alter().
- */
-function gnode_entity_operation_alter(array &$operations, EntityInterface $entity) {
-  if ($entity->getEntityTypeId() == 'group') {
-    $current_user = \Drupal::currentUser();
-
-    /** @var \Drupal\group\Entity\GroupInterface $entity */
-    if ($entity->hasPermission('access group_node overview', $current_user)) {
-      $route_params = ['group' => $entity->id()];
-      $operations['group_node'] = [
-        'title' => t('Nodes'),
-        'weight' => 103,
-        'url' => Url::fromRoute('view.group_nodes.page_1', $route_params),
-      ];
-    }
-  }
-}
-
-/**
  * Implements hook_ENTITY_TYPE_insert().
  */
 function gnode_node_type_insert(NodeTypeInterface $node_type) {
@@ -417,6 +398,29 @@ function gnode_node_access_records(NodeInterface $node) {
   $records[] = $anonymous_record;
 
   return $records;
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function gnode_entity_operation($entity) {
+  $operations = [];
+
+  /** @var \Drupal\group\Entity\GroupInterface $entity */
+  if ($entity->getEntityTypeId() == 'group' && \Drupal::moduleHandler()->moduleExists('views')) {
+    $current_user = \Drupal::currentUser();
+
+    if ($entity->hasPermission('access group_node overview', $current_user)) {
+      $route_params = ['group' => $entity->id()];
+      $operations['group_node'] = [
+        'title' => t('Nodes'),
+        'weight' => 103,
+        'url' => Url::fromRoute('view.group_nodes.page_1', $route_params),
+      ];
+    }
+  }
+
+  return $operations;
 }
 
 /**

@@ -112,9 +112,16 @@ function gnode_update_8004() {
 }
 
 /**
- * Update the group nodes view to use the new links. Deletes any customization!
+ * Flag node access for rebuild to reflect recent changes to node access realms.
  */
 function gnode_update_8005() {
+  node_access_needs_rebuild(TRUE);
+}
+
+/**
+ * Update the group nodes view to use the new links. Deletes any customization!
+ */
+function gnode_update_8006() {
   if (\Drupal::moduleHandler()->moduleExists('views')) {
     $name = 'views.view.group_nodes';
     $view = \Drupal::configFactory()->getEditable($name);
