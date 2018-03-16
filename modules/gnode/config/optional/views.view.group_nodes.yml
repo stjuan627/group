@@ -757,7 +757,7 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: false
+          value: '1'
           group: 1
           exposed: true
           expose:
