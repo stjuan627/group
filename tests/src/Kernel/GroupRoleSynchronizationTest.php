@@ -35,7 +35,7 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
    *   The ID of the user role to create. Label will be set to the ID with the
    *   first letter converted to upper case.
    *
-   * @return \Drupal\user\Entity\Role
+   * @return \Drupal\user\RoleInterface
    *   The created user role.
    */
   protected function createUserRole($id) {
@@ -49,9 +49,12 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
   }
 
   /**
-   * Tests whether a new global role syncs to group roles.
+   * Tests whether a new user role syncs to group roles.
+   *
+   * @covers \Drupal\group\Entity\Storage\GroupRoleStorage::createSynchronized
+   * @uses group_user_role_insert
    */
-  public function testGlobalRoleCreation() {
+  public function testUserRoleCreation() {
     $role = $this->createUserRole('editor');
     $defaultGroupRoleId = $this->groupRoleSynchronizer->getGroupRoleId('default', $role->id());
     $otherGroupRoleId = $this->groupRoleSynchronizer->getGroupRoleId('other', $role->id());
@@ -60,26 +63,32 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
     $this->assertArrayHasKey($defaultGroupRoleId, $group_roles, 'Synchronized role found for default group type');
     $this->assertArrayHasKey($otherGroupRoleId, $group_roles, 'Synchronized role found for other group type');
     $this->assertEquals($role->label(), $group_roles[$otherGroupRoleId]->label(), 'Synchronized roles share the same label');
+    $this->assertEquals($role->getWeight(), $group_roles[$otherGroupRoleId]->getWeight(), 'Synchronized roles share the same weight');
   }
 
   /**
-   * Tests whether an updated global role syncs to group roles.
+   * Tests whether an updated user role syncs to group roles.
+   *
+   * @covers \Drupal\group\Entity\Storage\GroupRoleStorage::updateSynchronizedLabels
+   * @depends testUserRoleCreation
+   * @uses group_user_role_update
    */
-  public function testGlobalRoleUpdate() {
+  public function testUserRoleUpdate() {
     $role = $this->createUserRole('editor');
-
     $role->set('label', 'Super-editor');
     $role->save();
+
     $defaultGroupRoleId = $this->groupRoleSynchronizer->getGroupRoleId('default', $role->id());
     $group_role = $this->entityTypeManager->getStorage('group_role')->load($defaultGroupRoleId);
-
     $this->assertEquals('Super-editor', $group_role->label(), 'Updated synchronized roles share the same label');
   }
 
   /**
-   * Tests whether a deleted global role syncs to group roles.
+   * Tests whether a deleted user role syncs to group roles.
+   *
+   * @coversNothing
    */
-  public function testGlobalRoleDelete() {
+  public function testUserRoleDelete() {
     $role = $this->createUserRole('editor');
 
     $role->delete();
@@ -91,6 +100,9 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
 
   /**
    * Tests whether a new group type receives synchronized group roles.
+   *
+   * @covers \Drupal\group\Entity\Storage\GroupRoleStorage::createSynchronized
+   * @uses \Drupal\group\Entity\GroupType::postSave
    */
   public function testGroupTypeCreation() {
     $role = $this->createUserRole('editor');
@@ -104,6 +116,23 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
     $group_role_id = $this->groupRoleSynchronizer->getGroupRoleId($group_type->id(), $role->id());
 
     $this->assertArrayHasKey($group_role_id, $group_roles, 'Synchronized role found for new group type');
+  }
+
+  /**
+   * Tests whether a module with user roles receives synchronized group roles.
+   *
+   * @covers \Drupal\group\Entity\Storage\GroupRoleStorage::createSynchronized
+   * @uses group_modules_installed
+   */
+  public function testModuleInstalled() {
+    $defaultGroupRoleId = $this->groupRoleSynchronizer->getGroupRoleId('default', 'test');
+    $otherGroupRoleId = $this->groupRoleSynchronizer->getGroupRoleId('other', 'test');
+    $group_roles = $this->entityTypeManager->getStorage('group_role')->loadMultiple();
+
+    $this->assertArrayHasKey($defaultGroupRoleId, $group_roles, 'Synchronized role found for default group type');
+    $this->assertArrayHasKey($otherGroupRoleId, $group_roles, 'Synchronized role found for other group type');
+    $this->assertEquals('Test', $group_roles[$otherGroupRoleId]->label(), 'Synchronized roles share the same label');
+    $this->assertEquals(99, $group_roles[$otherGroupRoleId]->getWeight(), 'Synchronized roles share the same weight');
   }
 
 }

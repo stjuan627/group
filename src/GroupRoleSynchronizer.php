@@ -54,11 +54,20 @@ class GroupRoleSynchronizer implements GroupRoleSynchronizerInterface {
    * {@inheritdoc}
    */
   public function getGroupRoleIdsByGroupType($group_type_id) {
+    return $this->getGroupRoleIdsByGroupTypes([$group_type_id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupRoleIdsByGroupTypes($group_type_ids) {
     $group_role_ids = [];
 
     $role_ids = $this->entityTypeManager->getStorage('user_role')->getQuery()->execute();
     foreach ($role_ids as $role_id) {
-      $group_role_ids[] = $this->getGroupRoleId($group_type_id, $role_id);
+      foreach ($group_type_ids as $group_type_id) {
+        $group_role_ids[] = $this->getGroupRoleId($group_type_id, $role_id);
+      }
     }
 
     return $group_role_ids;
@@ -68,11 +77,20 @@ class GroupRoleSynchronizer implements GroupRoleSynchronizerInterface {
    * {@inheritdoc}
    */
   public function getGroupRoleIdsByUserRole($role_id) {
+    return $this->getGroupRoleIdsByUserRoles([$role_id]);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupRoleIdsByUserRoles($role_ids) {
     $group_role_ids = [];
 
     $group_type_ids = $this->entityTypeManager->getStorage('group_type')->getQuery()->execute();
     foreach ($group_type_ids as $group_type_id) {
-      $group_role_ids[] = $this->getGroupRoleId($group_type_id, $role_id);
+      foreach ($role_ids as $role_id) {
+        $group_role_ids[] = $this->getGroupRoleId($group_type_id, $role_id);
+      }
     }
 
     return $group_role_ids;
