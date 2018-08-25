@@ -11,6 +11,17 @@ namespace Drupal\Tests\group\Kernel;
 class GroupTypeImportTest extends GroupKernelTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+
+    // The system.site key is required for import validation.
+    // See: https://www.drupal.org/project/drupal/issues/2995062
+    $this->installConfig(['system']);
+  }
+
+  /**
    * Tests special behavior during group type import.
    *
    * @covers ::postSave
