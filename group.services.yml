@@ -73,7 +73,7 @@ services:
 
   group.group_route_context:
     class: 'Drupal\group\Context\GroupRouteContext'
-    arguments: ['@current_route_match']
+    arguments: ['@current_route_match', '@string_translation']
     tags:
       - { name: 'context_provider' }
   group.membership_loader:

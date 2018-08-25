@@ -8,6 +8,7 @@ use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\Plugin\Context\ContextProviderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 
 /**
  * Sets the current group as a context on group routes.
@@ -22,9 +23,12 @@ class GroupRouteContext implements ContextProviderInterface {
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $current_route_match
    *   The current route match object.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
+   *   The string translation service.
    */
-  public function __construct(RouteMatchInterface $current_route_match) {
+  public function __construct(RouteMatchInterface $current_route_match, TranslationInterface $string_translation) {
     $this->currentRouteMatch = $current_route_match;
+    $this->stringTranslation = $string_translation;
   }
 
   /**
