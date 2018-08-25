@@ -135,4 +135,46 @@ class GroupRoleSynchronizationTest extends GroupKernelTestBase {
     $this->assertEquals(99, $group_roles[$otherGroupRoleId]->getWeight(), 'Synchronized roles share the same weight');
   }
 
+  /**
+   * Tests whether an imported group type receives synchronized group roles.
+   *
+   * @covers \Drupal\group\Entity\Storage\GroupRoleStorage::createSynchronized
+   * @uses \Drupal\group\EventSubscriber\ConfigSubscriber::onConfigImport
+   */
+  public function testConfigImport() {
+    $role = $this->createUserRole('editor');
+
+    // The system.site key is required for import validation.
+    // See: https://www.drupal.org/project/drupal/issues/2995062
+    $this->installConfig(['system']);
+
+    // Simulate config data to import.
+    $active = $this->container->get('config.storage');
+    $sync = $this->container->get('config.storage.sync');
+    $this->copyConfig($active, $sync);
+
+    // Manually add the 'import' group type to the synchronization directory.
+    $test_dir = __DIR__ . '/../../modules/group_test_config/sync';
+    $sync_dir = config_get_config_directory(CONFIG_SYNC_DIRECTORY);
+    $this->assertNotFalse(file_unmanaged_copy("$test_dir/group.type.import.yml", "$sync_dir/group.type.import.yml"), 'Copied the group type Yaml file to the sync dir.');
+    $this->assertNotFalse(file_unmanaged_copy("$test_dir/user.role.import.yml", "$sync_dir/user.role.import.yml"), 'Copied the user role Yaml file to the sync dir.');
+    $this->assertNotFalse(file_unmanaged_copy("$test_dir/group.role.import-eea2d6f47.yml", "$sync_dir/group.role.import-eea2d6f47.yml"), 'Copied the group role Yaml file to the sync dir.');
+
+    // Import the content of the sync directory.
+    $this->configImporter()->import();
+
+    // Check that the synchronized group roles give priority to the Yaml files.
+    $group_role_id = $this->groupRoleSynchronizer->getGroupRoleId('import', 'import');
+    /** @var \Drupal\group\Entity\GroupRoleInterface $from_yaml */
+    $from_yaml = $this->entityTypeManager
+      ->getStorage('group_role')
+      ->load($group_role_id);
+    $this->assertEquals(['view group'], $from_yaml->getPermissions(), 'Synchronized role was created from Yaml file.');
+
+    // Check that synchronized group roles are being created without Yaml files.
+    $group_roles = $this->entityTypeManager->getStorage('group_role')->loadMultiple();
+    $group_role_id = $this->groupRoleSynchronizer->getGroupRoleId('import', $role->id());
+    $this->assertArrayHasKey($group_role_id, $group_roles, 'Synchronized role found for imported group type');
+  }
+
 }

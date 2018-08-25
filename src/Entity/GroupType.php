@@ -254,8 +254,10 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       // important that we only run this code when we're not dealing with config
       // synchronization.
       //
-      // We do not create group roles or group content types for a synced group
-      // type because those should have been exported along with the group type.
+      // Any of the config entities created here could still be queued up for
+      // import in a combined config import. Therefore, we only create them in
+      // \Drupal\group\EventSubscriber\ConfigSubscriber after the entire import
+      // has finished.
       if (!$this->isSyncing()) {
         /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
         $group_role_storage = $this->entityTypeManager()->getStorage('group_role');

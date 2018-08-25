@@ -70,6 +70,11 @@ services:
     arguments: ['@config.factory']
     tags:
       - { name: 'event_subscriber' }
+  group.config_subscriber:
+    class: 'Drupal\group\EventSubscriber\ConfigSubscriber'
+    arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler']
+    tags:
+      - { name: 'event_subscriber' }
 
   group.group_route_context:
     class: 'Drupal\group\Context\GroupRouteContext'
