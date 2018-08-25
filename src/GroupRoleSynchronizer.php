@@ -78,7 +78,7 @@ class GroupRoleSynchronizer implements GroupRoleSynchronizerInterface {
     return $group_role_ids;
   }
 
-    /**
+  /**
    * {@inheritdoc}
    */
   public function createGroupRoles($group_type_ids = NULL, $role_ids = NULL) {
@@ -141,10 +141,7 @@ class GroupRoleSynchronizer implements GroupRoleSynchronizerInterface {
   }
 
   /**
-   * Updates the label of all group roles for a user role.
-   *
-   * @param \Drupal\User\RoleInterface $role
-   *   The user role to update the group role labels for.
+   * {@inheritdoc}
    */
   public function updateGroupRoleLabels(RoleInterface $role) {
     $group_roles = $this->entityTypeManager->getStorage('group_role')

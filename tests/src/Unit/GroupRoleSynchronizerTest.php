@@ -32,6 +32,9 @@ class GroupRoleSynchronizerTest extends UnitTestCase {
    */
   protected $groupRoleSynchronizer;
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUp() {
     parent::setUp();
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
