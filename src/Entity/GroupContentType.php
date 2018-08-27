@@ -32,7 +32,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *   static_cache = TRUE,
  *   entity_keys = {
  *     "id" = "id",
- *     "label" = "label"
+ *     "label" = "label",
  *   },
  *   config_export = {
  *     "id",
