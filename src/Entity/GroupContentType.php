@@ -41,6 +41,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "group_type",
  *     "content_plugin",
  *     "plugin_config",
+ *   },
+ *   links = {
+ *     "edit-form" = "/admin/group/content/manage/{group_content_type}",
  *   }
  * )
  */
