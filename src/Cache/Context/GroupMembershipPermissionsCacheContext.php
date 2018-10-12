@@ -19,6 +19,9 @@ use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
  * service. See an example at: \Drupal\group\Plugin\Block\GroupOperationsBlock.
  *
  * Cache context ID: 'group_membership.roles.permissions'.
+ *
+ * @deprecated in Group 1.0-rc3, will be removed before Group 1.0. Use
+ *   \Drupal\group\Cache\Context\GroupPermissionsCacheContext instead.
  */
 class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContextBase implements CacheContextInterface {
 
@@ -85,7 +88,7 @@ class GroupMembershipPermissionsCacheContext extends GroupMembershipCacheContext
       foreach ($group_roles as $group_role) {
         $group_role_cacheable_metadata = new CacheableMetadata();
         $group_role_cacheable_metadata->createFromObject($group_role);
-        $cacheable_metadata->merge($group_role_cacheable_metadata);
+        $cacheable_metadata = $cacheable_metadata->merge($group_role_cacheable_metadata);
       }
     }
 

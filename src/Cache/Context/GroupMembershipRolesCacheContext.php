@@ -22,6 +22,8 @@ use Drupal\Core\Cache\Context\CalculatedCacheContextInterface;
  * Calculated cache context ID: 'group_membership.roles:%group_role', e.g.
  * 'group_membership.roles:%administrator' (to vary by the presence or absence
  * of the 'administrator' group role).
+ *
+ * @deprecated in Group 1.0-rc3, will be removed before Group 1.0.
  */
 class GroupMembershipRolesCacheContext extends GroupMembershipCacheContextBase implements CalculatedCacheContextInterface {
 

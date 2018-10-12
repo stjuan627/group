@@ -36,12 +36,12 @@ services:
 
   cache_context.group:
     class: 'Drupal\group\Cache\Context\GroupCacheContext'
-    arguments: ['@current_route_match']
+    arguments: ['@current_route_match', '@entity_type.manager']
     tags:
       - { name: 'cache.context'}
   cache_context.group.type:
     class: 'Drupal\group\Cache\Context\GroupTypeCacheContext'
-    arguments: ['@current_route_match']
+    arguments: ['@current_route_match', '@entity_type.manager']
     tags:
       - { name: 'cache.context'}
   cache_context.group_membership:
@@ -64,6 +64,21 @@ services:
     arguments: ['@current_route_match', '@current_user', '@entity_type.manager', '@group.permissions_hash_generator']
     tags:
       - { name: 'cache.context'}
+  cache_context.route.group:
+    class: 'Drupal\group\Cache\Context\RouteGroupCacheContext'
+    arguments: ['@current_route_match', '@entity_type.manager']
+    tags:
+      - { name: 'cache.context'}
+  cache_context.user.group_permissions:
+    class: 'Drupal\group\Cache\Context\GroupPermissionsCacheContext'
+    arguments: ['@current_user', '@entity_type.manager', '@group.permissions_hash_generator', '@group.membership_loader']
+    tags:
+      - { name: 'cache.context'}
+  cache_context.user.is_group_member:
+    class: 'Drupal\group\Cache\Context\IsGroupMemberCacheContext'
+    arguments: ['@current_user', '@entity_type.manager', '@group.membership_loader']
+    tags:
+      - { name: 'cache.context'}
 
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
@@ -78,7 +93,7 @@ services:
 
   group.group_route_context:
     class: 'Drupal\group\Context\GroupRouteContext'
-    arguments: ['@current_route_match', '@string_translation']
+    arguments: ['@current_route_match', '@entity_type.manager', '@string_translation']
     tags:
       - { name: 'context_provider' }
   group.membership_loader:
@@ -89,7 +104,7 @@ services:
     arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_content_enabler']
   group.permissions_hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'
-    arguments: ['@private_key', '@cache.default', '@cache.static', '@entity_type.manager']
+    arguments: ['@private_key', '@cache.default', '@cache.static', '@entity_type.manager', '@group_role.synchronizer', '@group.membership_loader']
   group.uninstall_validator.group_content:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:

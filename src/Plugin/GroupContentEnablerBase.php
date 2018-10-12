@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupInterface;
@@ -182,6 +183,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getGroupOperations(GroupInterface $group) {
     return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupOperationsCacheableMetadata() {
+    return new CacheableMetadata();
   }
 
   /**

@@ -225,7 +225,7 @@ function group_update_8005() {
 
   foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
     $group_type = $config_factory->getEditable($group_type_config_name);
-    list(,,$group_type_id) = explode('.', $group_type_config_name);
+    list(, , $group_type_id) = explode('.', $group_type_config_name);
 
     // Make sure the group type ID is set in the plugin config.
     $plugins = $group_type->get('content');
@@ -247,7 +247,7 @@ function group_update_8006() {
   // Get the configuration from every group type.
   foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
     $group_type = $config_factory->getEditable($group_type_config_name);
-    list(,,$group_type_id) = explode('.', $group_type_config_name);
+    list(, , $group_type_id) = explode('.', $group_type_config_name);
 
     // Store the group type's plugin configuration in an array.
     $plugins = $group_type->get('content');
@@ -422,5 +422,32 @@ function group_update_8014() {
     $group_type = $config_factory->getEditable($group_type_config_name);
     $group_type->set('creator_wizard', TRUE);
     $group_type->save(TRUE);
+  }
+}
+
+/**
+ * Update the group members view to use the new cache group permissions context.
+ */
+function group_update_8015() {
+  if (\Drupal::moduleHandler()->moduleExists('views')) {
+    $view = \Drupal::configFactory()->getEditable('views.view.group_members');
+    if (!$view->isNew()) {
+      foreach (['default', 'page_1'] as $display) {
+        $cache_metadata_key = "display.$display.cache_metadata";
+        $cache_metadata = $view->get($cache_metadata_key);
+
+        // Remove the deprecated cache context and add the updated metadata.
+        if ($key = array_search('group_membership.roles.permissions', $cache_metadata['contexts'])) {
+          unset($cache_metadata['tags'][$key]);
+        }
+        $cache_metadata['max-age'] = -1;
+        $cache_metadata['contexts'][] = 'route.group';
+        $cache_metadata['contexts'][] = 'user.group_permissions';
+
+        $view->set($cache_metadata_key, $cache_metadata);
+      }
+
+      $view->save(TRUE);
+    }
   }
 }
