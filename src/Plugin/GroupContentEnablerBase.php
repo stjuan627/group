@@ -411,12 +411,15 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       case 'view':
         $result = $this->viewAccess($group_content, $account);
         break;
+
       case 'update':
         $result = $this->updateAccess($group_content, $account);
         break;
+
       case 'delete':
         $result = $this->deleteAccess($group_content, $account);
         break;
+
       default:
         $result = GroupAccessResult::neutral();
     }
@@ -492,7 +495,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     return [
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
-      'use_creation_wizard' => 1
+      'use_creation_wizard' => 1,
     ];
   }
 
