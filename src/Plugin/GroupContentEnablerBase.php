@@ -495,7 +495,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     return [
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
-      'use_creation_wizard' => 1,
+      'use_creation_wizard' => 0,
     ];
   }
 
