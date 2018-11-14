@@ -78,10 +78,26 @@ class GroupListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['gid'] = $this->t('Group ID');
-    $header['name'] = $this->t('Name');
-    $header['type'] = $this->t('Type');
-    $header['uid'] = $this->t('Owner');
+    $header = [
+      'gid' => [
+        'data' => $this->t('Group ID'),
+        'specifier' => 'id',
+        'field' => 'id',
+      ],
+      'label' => [
+        'data' => $this->t('Name'),
+        'specifier' => 'label',
+        'field' => 'label',
+      ],
+      'type' => [
+        'data' => $this->t('Type'),
+        'specifier' =>'type',
+        'field' => 'type',
+      ],
+      'uid' => [
+        'data' => $this->t('Owner'),
+      ],
+    ];
     return $header + parent::buildHeader();
   }
 
@@ -106,6 +122,24 @@ class GroupListBuilder extends EntityListBuilder {
     $build = parent::render();
     $build['table']['#empty'] = $this->t('There are no groups yet.');
     return $build;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEntityIds() {
+    $query = $this->getStorage()->getQuery();
+
+    // Add a simple table sort by header, see ::buildHeader().
+    $header = $this->buildHeader();
+    $query->tableSort($header);
+
+    // Only add the pager if a limit is specified.
+    if ($this->limit) {
+      $query->pager($this->limit);
+    }
+
+    return $query->execute();
   }
 
   /**
