@@ -6,4 +6,4 @@ version: 1.0
 core: '8.x'
 configure: 'group.settings'
 dependencies:
-  - 'options'
+  - 'drupal:options'
