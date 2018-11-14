@@ -227,7 +227,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     $permissions["create $plugin_id content"] = [
       'title' => "$prefix Add entity relation",
-      'description' => 'Allows you to relate an existing %entity_type entity to the group.',
+      'description' => 'Allows you to add an existing %entity_type entity to the group.',
     ] + $defaults;
 
     $permissions["update own $plugin_id content"] = [
@@ -277,7 +277,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
 
     $permissions["create $plugin_id entity"] = [
       'title' => "$prefix Add %entity_type entities",
-      'description' => 'Allows you to create a new %entity_type entity and relate it to the group.',
+      'description' => 'Allows you to add a new %entity_type entity and add it to the group.',
     ] + $defaults;
 
     $permissions["update own $plugin_id entity"] = [
