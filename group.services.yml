@@ -99,6 +99,7 @@ services:
   group.membership_loader:
     class: 'Drupal\group\GroupMembershipLoader'
     arguments: ['@entity_type.manager', '@current_user']
+  # @todo Rename to group_permission.builder in 8.2.0.
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
     arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_content_enabler']
