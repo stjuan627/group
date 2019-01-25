@@ -108,6 +108,9 @@ services:
   group_permission.calculator:
     class: 'Drupal\group\Access\GroupPermissionCalculator'
     arguments: ['@cache.default', '@cache.static', '@entity_type.manager', '@group_role.synchronizer', '@group.membership_loader']
+  group_permission.checker:
+    class: 'Drupal\group\Access\GroupPermissionChecker'
+    arguments: ['@group_permission.calculator']
   group.uninstall_validator.group_content:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:
