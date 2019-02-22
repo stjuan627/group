@@ -71,7 +71,7 @@ services:
       - { name: 'cache.context'}
   cache_context.user.group_permissions:
     class: 'Drupal\group\Cache\Context\GroupPermissionsCacheContext'
-    arguments: ['@current_user', '@group.permissions_hash_generator', '@group_permission.calculator']
+    arguments: ['@current_user', '@group.permissions_hash_generator']
     tags:
       - { name: 'cache.context'}
   cache_context.user.is_group_member:

@@ -4,6 +4,8 @@ namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\group\Access\CalculatedGroupPermissions;
+use Drupal\group\Access\CalculatedGroupPermissionsItem;
+use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,87 +34,58 @@ class CalculatedGroupPermissionsTest extends UnitTestCase {
   }
 
   /**
-   * Tests the setter for anonymous permissions.
+   * Tests the addition of a calculated permissions item.
    *
-   * @covers ::setAnonymousPermissions
-   * @covers ::getAnonymousPermissions
+   * @covers ::addItem
+   * @covers ::getItem
    */
-  public function testSetAnonymousPermissions() {
-    $permissions = ['foo' => ['baz'], 'alice' => ['bob', 'charlie']];
-    $this->calculatedPermissions->setAnonymousPermissions($permissions);
-    $this->assertSame($permissions, $this->calculatedPermissions->getAnonymousPermissions(), 'Managed to retrieve the full permission set.');
-    $this->assertSame($permissions['alice'], $this->calculatedPermissions->getAnonymousPermissions('alice'), 'Managed to retrieve a subset of permissions.');
-    $this->assertSame([], $this->calculatedPermissions->getAnonymousPermissions('404-key-not-found'), 'Requesting a non-existent set returns an empty array.');
+  public function testAddItem() {
+    $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+
+    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar']);
+    $this->calculatedPermissions->addItem($item);
+    $this->assertSame($item, $this->calculatedPermissions->getItem($scope, 'foo'), 'Managed to retrieve the calculated permissions item.');
+    $this->assertFalse($this->calculatedPermissions->getItem($scope, '404-id-not-found'), 'Requesting a non-existent identifier fails correctly.');
+
+    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['baz']);
+    $this->calculatedPermissions->addItem($item);
+    $this->assertEquals(['baz'], $this->calculatedPermissions->getItem($scope, 'foo')->getPermissions(), 'Adding a calculated permissions item that was already in the list overwrites the old one.');
   }
 
   /**
-   * Tests that additional anonymous permissions can be added to the list.
+   * Tests the retrieval of all calculated permissions items.
    *
-   * @covers ::addAnonymousPermissions
-   * @depends testSetAnonymousPermissions
+   * @covers ::getItems
+   * @depends testAddItem
    */
-  public function testAddAnonymousPermissions() {
-    $permissions = ['foo' => ['baz'], 'alice' => ['bob', 'charlie']];
-    $this->calculatedPermissions->setAnonymousPermissions($permissions);
-    $permissions['additional'] = ['cat', 'dog'];
-    $this->calculatedPermissions->addAnonymousPermissions('additional', $permissions['additional']);
-    $this->assertSame($permissions, $this->calculatedPermissions->getAnonymousPermissions(), 'Permissions were properly added to the list.');
+  public function testGetItems() {
+    $scope_gt = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+    $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
+
+    $item_a = new CalculatedGroupPermissionsItem($scope_gt, 'foo', ['baz']);
+    $item_b = new CalculatedGroupPermissionsItem($scope_g, 1, ['bob', 'charlie']);
+    $this->calculatedPermissions->addItem($item_a);
+    $this->calculatedPermissions->addItem($item_b);
+
+    $this->assertEquals([$item_a, $item_b], $this->calculatedPermissions->getItems(), 'Successfully retrieved all items regardless of scope.');
   }
 
   /**
-   * Tests the setter for outsider permissions.
+   * Tests the retrieval of all calculated permissions items by scope.
    *
-   * @covers ::setOutsiderPermissions
-   * @covers ::getOutsiderPermissions
+   * @covers ::getItemsByScope
+   * @depends testAddItem
    */
-  public function testSetOutsiderPermissions() {
-    $permissions = ['foo' => ['baz'], 'alice' => ['bob', 'charlie']];
-    $this->calculatedPermissions->setOutsiderPermissions($permissions);
-    $this->assertSame($permissions, $this->calculatedPermissions->getOutsiderPermissions(), 'Managed to retrieve the full permission set.');
-    $this->assertSame($permissions['alice'], $this->calculatedPermissions->getOutsiderPermissions('alice'), 'Managed to retrieve a subset of permissions.');
-    $this->assertSame([], $this->calculatedPermissions->getOutsiderPermissions('404-key-not-found'), 'Requesting a non-existent set returns an empty array.');
-  }
+  public function testGetItemsByScope() {
+    $scope_gt = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+    $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
 
-  /**
-   * Tests that additional outsider permissions can be added to the list.
-   *
-   * @covers ::addOutsiderPermissions
-   * @depends testSetOutsiderPermissions
-   */
-  public function testAddOutsiderPermissions() {
-    $permissions = ['foo' => ['baz'], 'alice' => ['bob', 'charlie']];
-    $this->calculatedPermissions->setOutsiderPermissions($permissions);
-    $permissions['additional'] = ['cat', 'dog'];
-    $this->calculatedPermissions->addOutsiderPermissions('additional', $permissions['additional']);
-    $this->assertSame($permissions, $this->calculatedPermissions->getOutsiderPermissions(), 'Permissions were properly added to the list.');
-  }
+    $item_a = new CalculatedGroupPermissionsItem($scope_gt, 'foo', ['baz']);
+    $item_b = new CalculatedGroupPermissionsItem($scope_g, 1, ['bob', 'charlie']);
+    $this->calculatedPermissions->addItem($item_a);
+    $this->calculatedPermissions->addItem($item_b);
 
-  /**
-   * Tests the setter for member permissions.
-   *
-   * @covers ::setMemberPermissions
-   * @covers ::getMemberPermissions
-   */
-  public function testSetMemberPermissions() {
-    $permissions = [24 => ['baz'], 10 => ['bob', 'charlie']];
-    $this->calculatedPermissions->setMemberPermissions($permissions);
-    $this->assertSame($permissions, $this->calculatedPermissions->getMemberPermissions(), 'Managed to retrieve the full permission set.');
-    $this->assertSame($permissions[10], $this->calculatedPermissions->getMemberPermissions(10), 'Managed to retrieve a subset of permissions.');
-    $this->assertSame([], $this->calculatedPermissions->getMemberPermissions(404), 'Requesting a non-existent set returns an empty array.');
-  }
-
-  /**
-   * Tests that additional member permissions can be added to the list.
-   *
-   * @covers ::addMemberPermissions
-   * @depends testSetMemberPermissions
-   */
-  public function testAddMemberPermissions() {
-    $permissions = [24 => ['baz'], 10 => ['bob', 'charlie']];
-    $this->calculatedPermissions->setMemberPermissions($permissions);
-    $permissions[1986] = ['cat', 'dog'];
-    $this->calculatedPermissions->addMemberPermissions(1986, $permissions[1986]);
-    $this->assertSame($permissions, $this->calculatedPermissions->getMemberPermissions(), 'Permissions were properly added to the list.');
+    $this->assertEquals([$item_a], $this->calculatedPermissions->getItemsByScope($scope_gt), 'Successfully retrieved all items by scope.');
   }
 
   /**
@@ -127,25 +100,29 @@ class CalculatedGroupPermissionsTest extends UnitTestCase {
     $container->get('cache_contexts_manager')->willReturn($cache_context_manager->reveal());
     \Drupal::setContainer($container->reveal());
 
+    $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+    $item_a = new CalculatedGroupPermissionsItem($scope, 'foo', ['baz']);
+    $item_b = new CalculatedGroupPermissionsItem($scope, 'foo', ['bob', 'charlie']);
+    $item_c = new CalculatedGroupPermissionsItem($scope, 'bar', []);
+    $item_d = new CalculatedGroupPermissionsItem($scope, 'baz', []);
+
     $this->calculatedPermissions
-      ->setAnonymousPermissions(['foo' => ['baz']])
-      ->setOutsiderPermissions(['foo' => ['baz']])
-      ->setMemberPermissions([1 => ['baz']])
+      ->addItem($item_a)
+      ->addItem($item_c)
       ->addCacheContexts(['foo'])
       ->addCacheTags(['foo']);
 
     $other = new CalculatedGroupPermissions();
     $other
-      ->setAnonymousPermissions(['bar' => ['baz']])
-      ->setOutsiderPermissions(['bar' => ['baz']])
-      ->setMemberPermissions([5 => ['baz']])
+      ->addItem($item_b)
+      ->addItem($item_d)
       ->addCacheContexts(['bar'])
       ->addCacheTags(['bar']);
 
     $this->calculatedPermissions->merge($other);
-    $this->assertSame(['foo' => ['baz'], 'bar' => ['baz']], $this->calculatedPermissions->getAnonymousPermissions(), 'Anonymous permissions were merged properly.');
-    $this->assertSame(['foo' => ['baz'], 'bar' => ['baz']], $this->calculatedPermissions->getOutsiderPermissions(), 'Outsider permissions were merged properly.');
-    $this->assertSame([1 => ['baz'], 5 => ['baz']], $this->calculatedPermissions->getMemberPermissions(), 'Member permissions were merged properly.');
+    $this->assertNotFalse($this->calculatedPermissions->getItem($scope, 'bar'), 'Original item that did not conflict was kept.');
+    $this->assertNotFalse($this->calculatedPermissions->getItem($scope, 'baz'), 'Incoming item that did not conflict was added.');
+    $this->assertSame(['baz', 'bob', 'charlie'], $this->calculatedPermissions->getItem($scope, 'foo')->getPermissions(), 'Permissions were merged properly.');
     $this->assertSame(['bar', 'foo'], $this->calculatedPermissions->getCacheContexts(), 'Cache contexts were merged properly');
     $this->assertSame(['bar', 'foo'], $this->calculatedPermissions->getCacheTags(), 'Cache tags were merged properly');
   }

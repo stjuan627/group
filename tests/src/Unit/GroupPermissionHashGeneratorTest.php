@@ -3,15 +3,18 @@
 namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\group\Access\CalculatedGroupPermissions;
+use Drupal\group\Access\CalculatedGroupPermissionsInterface;
+use Drupal\group\Access\CalculatedGroupPermissionsItem;
+use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
 use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGenerator;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\Argument;
 
 /**
  * Tests the group permission hash generator service.
@@ -43,6 +46,13 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
   protected $static;
 
   /**
+   * A dummy account to test with.
+   *
+   * @var \Drupal\Core\Session\AccountInterface|\Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $account;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -53,119 +63,66 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
     $this->static = $this->prophesize(CacheBackendInterface::class);
     $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
     $this->hashGenerator = new GroupPermissionsHashGenerator($private_key->reveal(), $this->static->reveal(), $this->permissionCalculator->reveal());
-  }
 
-  /**
-   * Tests the generation of the anonymous hash.
-   *
-   * @covers ::generateAnonymousHash
-   */
-  public function testGenerateAnonymousHash() {
-    $cid = 'group_anonymous_permissions_hash';
-    $original_permissions = [
-      'foo' => ['baz', 'bar'],
-      'alice' => ['bob'],
-    ];
-    $sorted_permissions = [
-      'alice' => ['bob'],
-      'foo' => ['bar', 'baz'],
-    ];
-    $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
-
-    $this->static->get($cid)->willReturn(FALSE);
-    $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
-    $calculated_permissions = new CalculatedGroupPermissions();
-    $calculated_permissions->setAnonymousPermissions($original_permissions);
-    $this->permissionCalculator->calculateAnonymousPermissions()->willReturn($calculated_permissions);
-    $this->assertEquals($expected_hash, $this->hashGenerator->generateAnonymousHash(), 'The anonymous hash was generated based on the sorted calculated permissions.');
-
-    $cache = (object) ['data' => 'foobar'];
-    $this->static->get($cid)->willReturn($cache);
-    $this->static->set($cid, 'foobar', Cache::PERMANENT, [])->shouldNotBeCalled();
-    $this->assertEquals('foobar', $this->hashGenerator->generateAnonymousHash(), 'The anonymous hash was retrieved from the static cache.');
-  }
-
-  /**
-   * Tests the generation of the authenticated hash.
-   *
-   * @covers ::generateAuthenticatedHash
-   */
-  public function testGenerateAuthenticatedHash() {
     $account = $this->prophesize(AccountInterface::class);
     $account->id()->willReturn(24101986);
-    $account = $account->reveal();
+    $this->account = $account->reveal();
+  }
 
-    $cid = 'group_authenticated_permissions_24101986';
-    $outsider_permissions = [
-      'foo' => ['baz', 'bar'],
-      'alice' => ['bob'],
-    ];
-    $member_permissions = [
-      16 => ['sweet'],
-    ];
+  /**
+   * Tests the generation of the account's hash.
+   *
+   * @covers ::generateHash
+   */
+  public function testGenerateHash() {
+    $scope_gt = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+    $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
+    $cid = 'group_permissions_hash_24101986';
+
+    $calculated_permissions = new CalculatedGroupPermissions();
+    $this->permissionCalculator->calculatePermissions($this->account)->willReturn($calculated_permissions);
+
     $sorted_permissions = [
       'alice' => ['bob'],
       'foo' => ['bar', 'baz'],
       16 => ['sweet'],
     ];
     $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
-
     $this->static->get($cid)->willReturn(FALSE);
     $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
-    $calculated_permissions = new CalculatedGroupPermissions();
-    $calculated_permissions->setOutsiderPermissions($outsider_permissions);
-    $calculated_permissions->setMemberPermissions($member_permissions);
-    $this->permissionCalculator->calculateAuthenticatedPermissions($account)->willReturn($calculated_permissions);
-    $this->assertEquals($expected_hash, $this->hashGenerator->generateAuthenticatedHash($account), 'The authenticated hash was generated based on the sorted calculated permissions.');
+
+    $calculated_permissions
+      ->addItem(new CalculatedGroupPermissionsItem($scope_gt, 'foo', ['baz', 'bar']))
+      ->addItem(new CalculatedGroupPermissionsItem($scope_gt, 'alice', ['bob']))
+      ->addItem(new CalculatedGroupPermissionsItem($scope_g, 16, ['sweet']));
+    $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash was generated based on the sorted calculated permissions.');
+
+    $sorted_permissions[100] = 'is-admin';
+    $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
+    $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
+    $calculated_permissions
+      ->addItem(new CalculatedGroupPermissionsItem($scope_g, 100, ['irrelevant'], TRUE));
+    $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash uses a simple flag instead of permissions for admin entries.');
 
     $cache = (object) ['data' => 'foobar'];
     $this->static->get($cid)->willReturn($cache);
     $this->static->set($cid, 'foobar', Cache::PERMANENT, [])->shouldNotBeCalled();
-    $this->assertEquals('foobar', $this->hashGenerator->generateAuthenticatedHash($account), 'The authenticated hash was retrieved from the static cache.');
+    $this->assertEquals('foobar', $this->hashGenerator->generateHash($this->account), 'The hash was retrieved from the static cache.');
   }
 
   /**
-   * Tests whether anonymous users and 'pure' outsiders can share a hash.
+   * Tests getting the cacheable metadata from the calculated permissions.
    *
-   * @depends testGenerateAnonymousHash
-   * @depends testGenerateAuthenticatedHash
+   * @covers ::getCacheableMetadata
    */
-  public function testAnonymousOutsiderHashReusability() {
-    $account = $this->prophesize(AccountInterface::class);
-    $account->id()->willReturn(24101986);
-    $account = $account->reveal();
-
-    $permissions_ao = [
-      'foo' => ['baz', 'bar'],
-      'alice' => ['bob'],
-    ];
-    $permissions_m = [
-      16 => ['sweet'],
-    ];
-
-    $calculated_permissions_anon = new CalculatedGroupPermissions();
-    $calculated_permissions_anon->setAnonymousPermissions($permissions_ao);
-    $calculated_permissions_auth = new CalculatedGroupPermissions();
-    $calculated_permissions_auth->setOutsiderPermissions($permissions_ao);
-    $calculated_permissions_auth->setMemberPermissions($permissions_m);
-    $this->permissionCalculator->calculateAnonymousPermissions()->willReturn($calculated_permissions_anon);
-    $this->permissionCalculator->calculateAuthenticatedPermissions($account)->willReturn($calculated_permissions_auth);
-
-    $this->static->get(Argument::any())->willReturn(FALSE);
-    $this->static->set(Argument::cetera())->willReturn(NULL);
-
-    $this->assertNotEquals(
-      $this->hashGenerator->generateAnonymousHash(),
-      $this->hashGenerator->generateAuthenticatedHash($account),
-      'Hashes for an anonymous and outsider user with different group permissions differ.'
-    );
-
-    $calculated_permissions_auth->setMemberPermissions([]);
-    $this->assertEquals(
-      $this->hashGenerator->generateAnonymousHash(),
-      $this->hashGenerator->generateAuthenticatedHash($account),
-      'Hashes for an anonymous and outsider user with the same group permissions are the same.'
-    );
+  public function testGetCacheableMetadata() {
+    $calculated_permissions = $this->prophesize(CalculatedGroupPermissionsInterface::class);
+    $calculated_permissions->getCacheContexts()->willReturn([]);
+    $calculated_permissions->getCacheTags()->willReturn(["config:group.role.foo-bar"]);
+    $calculated_permissions->getCacheMaxAge()->willReturn(-1);
+    $calculated_permissions = $calculated_permissions->reveal();
+    $this->permissionCalculator->calculatePermissions($this->account)->willReturn($calculated_permissions);
+    $this->assertEquals(CacheableMetadata::createFromObject($calculated_permissions), $this->hashGenerator->getCacheableMetadata($this->account));
   }
 
 }

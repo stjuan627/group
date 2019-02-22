@@ -33,75 +33,43 @@ class GroupPermissionsCacheContextTest extends UnitTestCase {
   protected $permissionsHashGenerator;
 
   /**
-   * The group permission calculator.
-   *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
-   */
-  protected $permissionCalculator;
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
     $this->currentUser = $this->prophesize(AccountProxyInterface::class);
     $this->permissionsHashGenerator = $this->prophesize(GroupPermissionsHashGeneratorInterface::class);
-    $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
   }
 
   /**
-   * Tests getting the context value for an anonymous user.
+   * Tests getting the context value for the current user.
    *
    * @covers ::getContext
    */
-  public function testGetContextForAnonymous() {
-    $this->currentUser->isAnonymous()->willReturn(TRUE);
-    $this->permissionsHashGenerator->generateAnonymousHash()->willReturn('anonymous');
-
+  public function testGetContext() {
+    $this->permissionsHashGenerator->generateHash($this->currentUser->reveal())->willReturn('foo');
     $cache_context = new GroupPermissionsCacheContext(
       $this->currentUser->reveal(),
-      $this->permissionsHashGenerator->reveal(),
-      $this->permissionCalculator->reveal()
+      $this->permissionsHashGenerator->reveal()
     );
-    $this->assertSame('anonymous', $cache_context->getContext());
+    $this->assertSame('foo', $cache_context->getContext(), 'The cache context gets its value directly from the hash generator.');
   }
 
   /**
-   * Tests getting the context value for an authenticated user.
-   *
-   * @covers ::getContext
-   */
-  public function testGetContextForAuthenticated() {
-    $this->currentUser->isAnonymous()->willReturn(FALSE);
-    $this->permissionsHashGenerator->generateAuthenticatedHash($this->currentUser->reveal())->willReturn('authenticated');
-
-    $cache_context = new GroupPermissionsCacheContext(
-      $this->currentUser->reveal(),
-      $this->permissionsHashGenerator->reveal(),
-      $this->permissionCalculator->reveal()
-    );
-    $this->assertSame('authenticated', $cache_context->getContext());
-  }
-
-  /**
-   * Tests getting the cacheable metadata from the calculated permissions.
+   * Tests getting the cacheable metadata from the hash generator.
    *
    * @covers ::getCacheableMetadata
    */
   public function testGetCacheableMetadata() {
-    $calculated_permissions = $this->prophesize(CalculatedGroupPermissionsInterface::class);
-    $calculated_permissions->getCacheContexts()->willReturn([]);
-    $calculated_permissions->getCacheTags()->willReturn(["config:group.role.foo-bar"]);
-    $calculated_permissions->getCacheMaxAge()->willReturn(-1);
-    $calculated_permissions = $calculated_permissions->reveal();
-    $this->permissionCalculator->calculatePermissions($this->currentUser->reveal())->willReturn($calculated_permissions);
+    $cacheable_metadata = new CacheableMetadata();
+    $cacheable_metadata->addCacheTags(["config:group.role.foo-bar"]);
+    $this->permissionsHashGenerator->getCacheableMetadata($this->currentUser->reveal())->willReturn($cacheable_metadata);
 
     $cache_context = new GroupPermissionsCacheContext(
       $this->currentUser->reveal(),
-      $this->permissionsHashGenerator->reveal(),
-      $this->permissionCalculator->reveal()
+      $this->permissionsHashGenerator->reveal()
     );
-    $this->assertEquals(CacheableMetadata::createFromObject($calculated_permissions), $cache_context->getCacheableMetadata());
+    $this->assertEquals($cacheable_metadata, $cache_context->getCacheableMetadata(), 'The cache context gets its cacheable metadata directly from the hash generator.');
   }
 
 }

@@ -14,131 +14,94 @@ class CalculatedGroupPermissions implements CalculatedGroupPermissionsInterface 
   use RefinableCacheableDependencyTrait;
 
   /**
-   * A list of anonymous permissions per group type.
+   * A list of calculated group permission items, keyed by scope and identifier.
    *
    * @var array
    */
-  protected $anonymousPermissions = [];
-
-  /**
-   * A list of outsider permissions per group type.
-   *
-   * @var array
-   */
-  protected $outsiderPermissions = [];
-
-  /**
-   * A list of member permissions per group.
-   *
-   * @var array
-   */
-  protected $memberPermissions = [];
+  protected $items = [];
 
   /**
    * {@inheritdoc}
    */
-  public function merge(CalculatedGroupPermissions $other) {
-    foreach ($other->getAnonymousPermissions() as $group_type_id => $permissions) {
-      $merged = array_merge($this->getAnonymousPermissions($group_type_id), $permissions);
-      $this->addAnonymousPermissions($group_type_id, array_unique($merged));
+  public function addItem(CalculatedGroupPermissionsItemInterface $item) {
+    $this->items[$item->getScope()][$item->getIdentifier()] = $item;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItem($scope, $identifier) {
+    return isset($this->items[$scope][$identifier])
+      ? $this->items[$scope][$identifier]
+      : FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItems() {
+    $items = [];
+    foreach ($this->items as $scope_items) {
+      foreach ($scope_items as $item) {
+        $items[] = $item;
+      }
     }
-    foreach ($other->getOutsiderPermissions() as $group_type_id => $permissions) {
-      $merged = array_merge($this->getOutsiderPermissions($group_type_id), $permissions);
-      $this->addOutsiderPermissions($group_type_id, array_unique($merged));
-    }
-    foreach ($other->getMemberPermissions() as $group_id => $permissions) {
-      $merged = array_merge($this->getMemberPermissions($group_id), $permissions);
-      $this->addMemberPermissions($group_id, array_unique($merged));
+    return $items;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getItemsByScope($scope) {
+    return isset($this->items[$scope])
+      ? array_values($this->items[$scope])
+      : [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function merge(CalculatedGroupPermissionsInterface $other) {
+    foreach ($other->getItems() as $theirs) {
+      if ($ours = $this->getItem($theirs->getScope(), $theirs->getIdentifier())) {
+        $this->addItem($this->mergeItems($ours, $theirs));
+      }
+      else {
+        $this->addItem($theirs);
+      }
     }
     $this->addCacheableDependency($other);
     return $this;
   }
 
   /**
-   * {@inheritdoc}
+   * Merges two items of identical scope and identifier.
+   *
+   * @param \Drupal\group\Access\CalculatedGroupPermissionsItemInterface $a
+   *   The first item to merge.
+   * @param \Drupal\group\Access\CalculatedGroupPermissionsItemInterface $b
+   *   The second item to merge.
+   *
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsItemInterface
+   *   A new item representing the merger of both items.
+   *
+   * @throws \LogicException
+   *   Exception thrown when someone somehow manages to call this method with
+   *   mismatching items.
    */
-  public function getAnonymousPermissions($group_type_id = NULL) {
-    if (isset($group_type_id)) {
-      // @todo Switch to ?? operator when minimum PHP support > 7.0.
-      return isset($this->anonymousPermissions[$group_type_id])
-        ? $this->anonymousPermissions[$group_type_id]
-        : [];
+  protected function mergeItems(CalculatedGroupPermissionsItemInterface $a, CalculatedGroupPermissionsItemInterface $b) {
+    if ($a->getScope() !== $b->getScope()) {
+      throw new \LogicException('Trying to merge two items of different scopes.');
     }
-    return $this->anonymousPermissions;
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function addAnonymousPermissions($group_type_id, array $permissions) {
-    $this->anonymousPermissions[$group_type_id] = $permissions;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAnonymousPermissions(array $permissions) {
-    $this->anonymousPermissions = $permissions;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOutsiderPermissions($group_type_id = NULL) {
-    if (isset($group_type_id)) {
-      // @todo Switch to ?? operator when minimum PHP support > 7.0.
-      return isset($this->outsiderPermissions[$group_type_id])
-        ? $this->outsiderPermissions[$group_type_id]
-        : [];
+    if ($a->getIdentifier() !== $b->getIdentifier()) {
+      throw new \LogicException('Trying to merge two items with different identifiers.');
     }
-    return $this->outsiderPermissions;
-  }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function addOutsiderPermissions($group_type_id, array $permissions) {
-    $this->outsiderPermissions[$group_type_id] = $permissions;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOutsiderPermissions(array $permissions) {
-    $this->outsiderPermissions = $permissions;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMemberPermissions($group_id = NULL) {
-    if (isset($group_id)) {
-      // @todo Switch to ?? operator when minimum PHP support > 7.0.
-      return isset($this->memberPermissions[$group_id])
-        ? $this->memberPermissions[$group_id]
-        : [];
-    }
-    return $this->memberPermissions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addMemberPermissions($group_id, array $permissions) {
-    $this->memberPermissions[$group_id] = $permissions;
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setMemberPermissions(array $permissions) {
-    $this->memberPermissions = $permissions;
-    return $this;
+    $permissions = array_merge($a->getPermissions(), $b->getPermissions());
+    // @todo In Group 8.2.x merge isAdmin flags and pass to constructor.
+    return new CalculatedGroupPermissionsItem($a->getScope(), $a->getIdentifier(), array_unique($permissions));
   }
 
 }

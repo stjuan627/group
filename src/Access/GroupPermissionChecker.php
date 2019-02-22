@@ -36,25 +36,17 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
       return TRUE;
     }
 
-    // Before anything else, check if the user can administer the group.
-    if ($permission != 'administer group' && $this->hasPermissionInGroup('administer group', $account, $group)) {
-      return TRUE;
+    $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
+
+    // If the user has member permissions for this group, check those, otherwise
+    // we need to check the group type permissions instead, i.e.: the ones for
+    // anonymous or outsider audiences.
+    $item = $calculated_permissions->getItem(CalculatedGroupPermissionsItemInterface::SCOPE_GROUP, $group->id());
+    if ($item === FALSE) {
+      $item = $calculated_permissions->getItem(CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE, $group->bundle());
     }
 
-    $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
-    if ($account->isAnonymous()) {
-      return in_array($permission, $calculated_permissions->getAnonymousPermissions($group->bundle()), TRUE);
-    }
-    else {
-      // If the user has member permissions for this group, check those.
-      if (array_key_exists($group->id(), $calculated_permissions->getMemberPermissions())) {
-        return in_array($permission, $calculated_permissions->getMemberPermissions($group->id()), TRUE);
-      }
-      // Otherwise, we need to check the outsider permissions instead.
-      else {
-        return in_array($permission, $calculated_permissions->getOutsiderPermissions($group->bundle()), TRUE);
-      }
-    }
+    return $item->hasPermission($permission);
   }
 
 }

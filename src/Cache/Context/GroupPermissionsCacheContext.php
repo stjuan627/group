@@ -2,10 +2,8 @@
 
 namespace Drupal\group\Cache\Context;
 
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
 
 /**
@@ -33,26 +31,16 @@ class GroupPermissionsCacheContext implements CacheContextInterface {
   protected $permissionsHashGenerator;
 
   /**
-   * The group permission calculator.
-   *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface
-   */
-  protected $groupPermissionCalculator;
-
-  /**
    * Constructs a new GroupMembershipPermissionsCacheContext class.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
    * @param \Drupal\group\Access\GroupPermissionsHashGeneratorInterface $hash_generator
    *   The permissions hash generator.
-   * @param \Drupal\group\Access\GroupPermissionCalculatorInterface $permission_calculator
-   *   The group permission calculator.
    */
-  public function __construct(AccountProxyInterface $current_user, GroupPermissionsHashGeneratorInterface $hash_generator, GroupPermissionCalculatorInterface $permission_calculator) {
+  public function __construct(AccountProxyInterface $current_user, GroupPermissionsHashGeneratorInterface $hash_generator) {
     $this->currentUser = $current_user;
     $this->permissionsHashGenerator = $hash_generator;
-    $this->groupPermissionCalculator = $permission_calculator;
   }
 
   /**
@@ -67,10 +55,7 @@ class GroupPermissionsCacheContext implements CacheContextInterface {
    */
   public function getContext() {
     // @todo Take bypass permission into account, delete permission in 8.2.x.
-    if ($this->currentUser->isAnonymous()) {
-      return $this->permissionsHashGenerator->generateAnonymousHash();
-    }
-    return $this->permissionsHashGenerator->generateAuthenticatedHash($this->currentUser);
+    return $this->permissionsHashGenerator->generateHash($this->currentUser);
   }
 
   /**
@@ -78,11 +63,7 @@ class GroupPermissionsCacheContext implements CacheContextInterface {
    */
   public function getCacheableMetadata() {
     // @todo Take bypass permission into account, delete permission in 8.2.x.
-    // The permission hash generator should use the calculated permissions to
-    // generate the permission hash with. Because we already define cacheable
-    // metadata while calculating the permissions, we can simply return said
-    // information here.
-    return CacheableMetadata::createFromObject($this->groupPermissionCalculator->calculatePermissions($this->currentUser));
+    return $this->permissionsHashGenerator->getCacheableMetadata($this->currentUser);
   }
 
 }

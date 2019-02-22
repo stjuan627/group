@@ -12,7 +12,7 @@ interface GroupPermissionCalculatorInterface {
   /**
    * Calculates the anonymous group permissions.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissions
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the anonymous group permissions.
    */
   public function calculateAnonymousPermissions();
@@ -23,7 +23,7 @@ interface GroupPermissionCalculatorInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account for which to retrieve the outsider permissions.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissions
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the outsider group permissions.
    */
   public function calculateOutsiderPermissions(AccountInterface $account);
@@ -34,7 +34,7 @@ interface GroupPermissionCalculatorInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account for which to retrieve the member permissions.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissions
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the member group permissions.
    */
   public function calculateMemberPermissions(AccountInterface $account);
@@ -47,7 +47,7 @@ interface GroupPermissionCalculatorInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account for which to retrieve the permissions.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissions
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the full authenticated group permissions.
    */
   public function calculateAuthenticatedPermissions(AccountInterface $account);
@@ -61,7 +61,7 @@ interface GroupPermissionCalculatorInterface {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account for which to retrieve the permissions.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissions
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the full group permissions.
    */
   public function calculatePermissions(AccountInterface $account);

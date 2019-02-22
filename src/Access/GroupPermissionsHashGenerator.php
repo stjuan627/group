@@ -3,6 +3,7 @@
 namespace Drupal\group\Access;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Session\AccountInterface;
@@ -53,8 +54,12 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
   /**
    * {@inheritdoc}
    */
-  public function generateAnonymousHash() {
-    $cid = 'group_anonymous_permissions_hash';
+  public function generateHash(AccountInterface $account) {
+    // We can use a simple per-user static cache here because we already cache
+    // the permissions more efficiently in the group permission calculator. On
+    // top of that, there is only a tiny chance of a hash being generated for
+    // more than one account during a single request.
+    $cid = 'group_permissions_hash_' . $account->id();
 
     // Retrieve the hash from the static cache if available.
     if ($static_cache = $this->static->get($cid)) {
@@ -62,14 +67,27 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
     }
     // Otherwise hash the permissions and store them in the static cache.
     else {
-      $calculated_permissions = $this->groupPermissionCalculator->calculateAnonymousPermissions();
-      $permissions = $calculated_permissions->getAnonymousPermissions();
+      $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
 
-      foreach (array_keys($permissions) as $key) {
-        // Sort the permissions by name to ensure we don't get mismatching
-        // hashes for people with the same permissions, just because the order
-        // of the permissions happened to differ.
-        sort($permissions[$key]);
+      $permissions = [];
+      foreach ($calculated_permissions->getItems() as $item) {
+        // If the calculated permissions item grants admin rights, we can
+        // simplify the entry by setting it to 'is-admin' rather than a list of
+        // permissions. This will ensure admins for the given scope item always
+        // match even if their list of permissions differs.
+        if ($item->isAdmin()) {
+          $item_permissions = 'is-admin';
+        }
+        else {
+          $item_permissions = $item->getPermissions();
+
+          // Sort the permissions by name to ensure we don't get mismatching
+          // hashes for people with the same permissions, just because the order
+          // of the permissions happened to differ.
+          sort($item_permissions);
+        }
+
+        $permissions[$item->getIdentifier()] = $item_permissions;
       }
 
       // Sort the result by key to ensure we don't get mismatching hashes for
@@ -86,39 +104,8 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
   /**
    * {@inheritdoc}
    */
-  public function generateAuthenticatedHash(AccountInterface $account) {
-    // We can use a simple per-user static cache here because we already cache
-    // the authenticated permissions more efficiently in the group permission
-    // calculator. On top of that, there is only a tiny chance of a hash being
-    // generated for more than one account during a single request.
-    $cid = 'group_authenticated_permissions_' . $account->id();
-
-    // Retrieve the hash from the static cache if available.
-    if ($static_cache = $this->static->get($cid)) {
-      return $static_cache->data;
-    }
-    // Otherwise hash the permissions and store them in the static cache.
-    else {
-      $calculated_permissions = $this->groupPermissionCalculator->calculateAuthenticatedPermissions($account);
-      $permissions = $calculated_permissions->getOutsiderPermissions();
-      $permissions += $calculated_permissions->getMemberPermissions();
-
-      foreach (array_keys($permissions) as $key) {
-        // Sort the permissions by name to ensure we don't get mismatching
-        // hashes for people with the same permissions, just because the order
-        // of the permissions happened to differ.
-        sort($permissions[$key]);
-      }
-
-      // Sort the result by key to ensure we don't get mismatching hashes for
-      // people with the same permissions, just because the order of the keys
-      // happened to differ.
-      ksort($permissions);
-
-      $hash = $this->hash(serialize($permissions));
-      $this->static->set($cid, $hash, Cache::PERMANENT, $calculated_permissions->getCacheTags());
-      return $hash;
-    }
+  public function getCacheableMetadata(AccountInterface $account) {
+    return CacheableMetadata::createFromObject($this->groupPermissionCalculator->calculatePermissions($account));
   }
 
   /**

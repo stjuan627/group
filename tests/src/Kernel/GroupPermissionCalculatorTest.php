@@ -5,6 +5,7 @@ namespace Drupal\Tests\group\Kernel;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\group\Access\CalculatedGroupPermissions;
+use Drupal\group\Access\CalculatedGroupPermissionsInterface;
 
 /**
  * Tests the calculation of group permissions.
@@ -57,7 +58,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateAnonymousPermissions();
-    $this->assertEquals($permissions, $calculated_permissions->getAnonymousPermissions(), 'Anonymous permissions are returned per group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Anonymous permissions are returned per group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Anonymous permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Anonymous permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Anonymous permissions have the right cache tags.');
@@ -67,7 +69,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     $permissions['default'][] = 'view group';
 
     $calculated_permissions = $this->permissionCalculator->calculateAnonymousPermissions();
-    $this->assertEquals($permissions, $calculated_permissions->getAnonymousPermissions(), 'Updated anonymous permissions are returned per group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Updated anonymous permissions are returned per group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Updated anonymous permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Updated anonymous permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Updated anonymous permissions have the right cache tags.');
@@ -78,7 +81,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateAnonymousPermissions();
-    $this->assertEquals($permissions, $calculated_permissions->getAnonymousPermissions(), 'Anonymous permissions are updated after introducing a new group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Anonymous permissions are updated after introducing a new group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Anonymous permissions have the right cache contexts after introducing a new group type.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Anonymous permissions have the right max cache age after introducing a new group type.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Anonymous permissions have the right cache tags after introducing a new group type.');
@@ -109,7 +113,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateOutsiderPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getOutsiderPermissions(), 'Outsider permissions are returned per group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Outsider permissions are returned per group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Outsider permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Outsider permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Outsider permissions have the right cache tags.');
@@ -119,7 +124,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     $permissions['other'][] = 'view group';
 
     $calculated_permissions = $this->permissionCalculator->calculateOutsiderPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getOutsiderPermissions(), 'Updated outsider permissions are returned per group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Updated outsider permissions are returned per group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Updated outsider permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Updated outsider permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Updated outsider permissions have the right cache tags.');
@@ -129,7 +135,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     $permissions['default'][] = 'edit group';
 
     $calculated_permissions = $this->permissionCalculator->calculateOutsiderPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getOutsiderPermissions(), 'Updated synchronized outsider permissions are returned per group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Updated synchronized outsider permissions are returned per group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Updated synchronized outsider permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Updated synchronized outsider permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Updated synchronized outsider permissions have the right cache tags.');
@@ -141,7 +148,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateOutsiderPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getOutsiderPermissions(), 'Outsider permissions are updated after introducing a new group type.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Outsider permissions are updated after introducing a new group type.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Outsider permissions have the right cache contexts after introducing a new group type.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Outsider permissions have the right max cache age after introducing a new group type.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Outsider permissions have the right cache tags after introducing a new group type.');
@@ -162,7 +170,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     $cache_tags = ['user:' . $account->id()];
 
     $calculated_permissions = $this->permissionCalculator->calculateMemberPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getMemberPermissions(), 'Member permissions are returned per group ID.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Member permissions are returned per group ID.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Member permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Member permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Member permissions have the right cache tags.');
@@ -175,7 +184,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     $cache_tags = Cache::mergeTags($cache_tags, $member->getCacheTags());
 
     $calculated_permissions = $this->permissionCalculator->calculateMemberPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getMemberPermissions(), 'Member permissions are returned per group ID after joining a group.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Member permissions are returned per group ID after joining a group.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Member permissions have the right cache contexts after joining a group.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Member permissions have the right max cache age after joining a group.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Member permissions have the right cache tags after joining a group.');
@@ -189,7 +199,8 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateMemberPermissions($account);
-    $this->assertEquals($permissions, $calculated_permissions->getMemberPermissions(), 'Updated member permissions are returned per group ID.', 0.0, 1, TRUE);
+    $converted = $this->convertCalculatedPermissionsToArray($calculated_permissions);
+    $this->assertEquals($permissions, $converted, 'Updated member permissions are returned per group ID.', 0.0, 1, TRUE);
     $this->assertSame([], $calculated_permissions->getCacheContexts(), 'Updated member permissions have the right cache contexts.');
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Updated member permissions have the right max cache age.');
     $this->assertSame($cache_tags, $calculated_permissions->getCacheTags(), 'Updated member permissions have the right cache tags.');
@@ -235,6 +246,64 @@ class GroupPermissionCalculatorTest extends GroupKernelTestBase {
       ->merge($this->permissionCalculator->calculateOutsiderPermissions($account))
       ->merge($this->permissionCalculator->calculateMemberPermissions($account));
     $this->assertEquals($calculated_permissions, $this->permissionCalculator->calculatePermissions($account), 'Calculated permissions for a member are returned as a merge of outsider and member permissions.');
+  }
+
+  /**
+   * Tests whether anonymous users and 'pure' outsiders can get the same result.
+   *
+   * This is important for hash generation based on the calculated permissions.
+   * If both audiences can get a similar result, it means they can share a hash
+   * and therefore cache objects.
+   *
+   * @depends testCalculateAnonymousPermissions
+   * @depends testCalculateAuthenticatedPermissions
+   */
+  public function testAnonymousAuthenticatedSameResult() {
+    // @todo Use a proper set-up instead of the one from GroupKernelTestBase?
+    $account = $this->createUser();
+
+    $this->assertNotEquals(
+      $this->convertCalculatedPermissionsToArray($this->permissionCalculator->calculateAnonymousPermissions()),
+      $this->convertCalculatedPermissionsToArray($this->permissionCalculator->calculateAuthenticatedPermissions($account)),
+      'Calculated permissions for an anonymous and outsider user with different group permissions differ.',
+      0.0,
+      1,
+      TRUE
+    );
+
+    // Update 'default' anonymous role to have same permissions as the
+    // 'default' outsider role.
+    $group_role = $this->entityTypeManager->getStorage('group_role')->load('default-anonymous');
+    $group_role->grantPermissions(['join group', 'view group'])->save();
+
+    $this->assertEquals(
+      $this->convertCalculatedPermissionsToArray($this->permissionCalculator->calculateAnonymousPermissions()),
+      $this->convertCalculatedPermissionsToArray($this->permissionCalculator->calculateAuthenticatedPermissions($account)),
+      'Calculated permissions for an anonymous and outsider user with the same group permissions are the same.',
+      0.0,
+      1,
+      TRUE
+    );
+  }
+
+  /**
+   * Converts a calculated permissions object into an array.
+   *
+   * This is done to make comparison assertions easier. Make sure you use the
+   * canonicalize option of assertEquals.
+   *
+   * @param \Drupal\group\Access\CalculatedGroupPermissionsInterface $calculated_permissions
+   *   The calculated permissions object to convert.
+   *
+   * @return string[]
+   *   The permissions, keyed by scope identifier.
+   */
+  protected function convertCalculatedPermissionsToArray(CalculatedGroupPermissionsInterface $calculated_permissions) {
+    $permissions = [];
+    foreach ($calculated_permissions->getItems() as $item) {
+      $permissions[$item->getIdentifier()] = $item->getPermissions();
+    }
+    return $permissions;
   }
 
 }

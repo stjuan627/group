@@ -108,6 +108,7 @@ class GroupPermissionCalculator implements GroupPermissionCalculatorInterface {
   protected function buildAnonymousPermissions() {
     $calculated_permissions = new CalculatedGroupPermissions();
 
+    // @todo Introduce group_role_list:audience:anonymous cache tag.
     // If a new group type is introduced, we need to recalculate the anonymous
     // permissions hash. Therefore, we need to introduce the group type list
     // cache tag.
@@ -117,7 +118,14 @@ class GroupPermissionCalculator implements GroupPermissionCalculatorInterface {
     $storage = $this->entityTypeManager->getStorage('group_type');
     foreach ($storage->loadMultiple() as $group_type_id => $group_type) {
       $group_role = $group_type->getAnonymousRole();
-      $calculated_permissions->addAnonymousPermissions($group_type_id, $group_role->getPermissions());
+
+      $item = new CalculatedGroupPermissionsItem(
+        CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
+        $group_type_id,
+        $group_role->getPermissions()
+      );
+
+      $calculated_permissions->addItem($item);
       $calculated_permissions->addCacheableDependency($group_role);
     }
 
@@ -175,6 +183,7 @@ class GroupPermissionCalculator implements GroupPermissionCalculatorInterface {
   protected function buildOutsiderPermissions(array $roles) {
     $calculated_permissions = new CalculatedGroupPermissions();
 
+    // @todo Introduce group_role_list:audience:outsider cache tag.
     // If a new group type is introduced, we need to recalculate the outsider
     // permissions. Therefore, we need to introduce the group type list cache
     // tag.
@@ -203,7 +212,13 @@ class GroupPermissionCalculator implements GroupPermissionCalculatorInterface {
       }
 
       // Make sure the permissions only appear once per group type.
-      $calculated_permissions->addOutsiderPermissions($group_type_id, array_unique($permissions));
+      $item = new CalculatedGroupPermissionsItem(
+        CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
+        $group_type_id,
+        array_unique($permissions)
+      );
+
+      $calculated_permissions->addItem($item);
     }
 
     return $calculated_permissions;
@@ -275,7 +290,13 @@ class GroupPermissionCalculator implements GroupPermissionCalculatorInterface {
       }
 
       // Make sure the permissions only appear once per group.
-      $calculated_permissions->addMemberPermissions($group_id, array_unique($permissions));
+      $item = new CalculatedGroupPermissionsItem(
+        CalculatedGroupPermissionsItemInterface::SCOPE_GROUP,
+        $group_id,
+        array_unique($permissions)
+      );
+
+      $calculated_permissions->addItem($item);
     }
 
     return $calculated_permissions;
