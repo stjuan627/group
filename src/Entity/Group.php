@@ -39,6 +39,7 @@ use Drupal\user\UserInterface;
  *       "delete" = "Drupal\group\Entity\Form\GroupDeleteForm",
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
+ *     "query_access" = "Drupal\group\Entity\Access\GroupQueryAccessHandler",
  *   },
  *   admin_permission = "administer group",
  *   base_table = "groups",

@@ -8,3 +8,4 @@ configure: 'group.settings'
 dependencies:
   - 'drupal:options'
   - 'drupal:system (>=8.5.0)'
+  - 'entity:entity (>=8.x-1.0-rc1)'
