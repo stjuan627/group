@@ -24,6 +24,10 @@ use Drupal\group\GroupMembershipLoaderInterface;
  * site's performance with fire.
  *
  * Calculated cache context ID: 'user.is_group_member:%group_id'.
+ *
+ * @todo With the new VariationCache's CacheRedirect system, this could actually
+ * be used on the GroupOperationsBlock as it no longer expands into a really
+ * long cache ID but simply adds another CacheRedirect.
  */
 class IsGroupMemberCacheContext implements CalculatedCacheContextInterface {
 

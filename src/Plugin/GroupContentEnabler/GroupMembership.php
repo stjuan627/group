@@ -67,6 +67,7 @@ class GroupMembership extends GroupContentEnablerBase {
     // block, which is shown for most likely every group in the system. Instead,
     // we cache per user, meaning the block will be auto-placeholdered in most
     // set-ups.
+    // @todo With the new VariationCache, we can use the above context.
     $cacheable_metadata = new CacheableMetadata();
     $cacheable_metadata->setCacheContexts(['user']);
     return $cacheable_metadata;
