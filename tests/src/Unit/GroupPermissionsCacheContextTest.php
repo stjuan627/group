@@ -4,8 +4,6 @@ namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\group\Access\CalculatedGroupPermissionsInterface;
-use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
 use Drupal\group\Cache\Context\GroupPermissionsCacheContext;
 use Drupal\Tests\UnitTestCase;
