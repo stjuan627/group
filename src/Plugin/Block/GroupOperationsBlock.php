@@ -30,7 +30,7 @@ class GroupOperationsBlock extends BlockBase {
     // implement that. This block will then inherit the appropriate cacheable
     // metadata from the context, as set by the context provider.
     $cacheable_metadata = new CacheableMetadata();
-    $cacheable_metadata->setCacheTags(['user.group_permissions']);
+    $cacheable_metadata->setCacheContexts(['user.group_permissions']);
 
     /** @var \Drupal\group\Entity\GroupInterface $group */
     if (($group = $this->getContextValue('group')) && $group->id()) {
