@@ -25,10 +25,10 @@ class CalculatedGroupPermissionsItemTest extends UnitTestCase {
    */
   public function testConstructor() {
     $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
-    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar'], FALSE);
+    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar', 'baz', 'bar'], FALSE);
     $this->assertEquals($scope, $item->getScope(), 'Scope name was set correctly.');
     $this->assertEquals('foo', $item->getIdentifier(), 'Scope identifier was set correctly.');
-    $this->assertEquals(['bar'], $item->getPermissions(), 'Permissions were set correctly.');
+    $this->assertEquals(['bar', 'baz'], $item->getPermissions(), 'Permissions were made unique and set correctly.');
     $this->assertFalse($item->isAdmin(), 'Admin flag was set correctly');
   }
 

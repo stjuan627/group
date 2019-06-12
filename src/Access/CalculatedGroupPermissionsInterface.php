@@ -2,22 +2,12 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\CacheableDependencyInterface;
 
 /**
  * Defines the calculated group permissions interface.
  */
-interface CalculatedGroupPermissionsInterface extends RefinableCacheableDependencyInterface {
-
-  /**
-   * Adds a calculated permission item.
-   *
-   * @param \Drupal\group\Access\CalculatedGroupPermissionsItemInterface $item
-   *   The calculated permission item.
-   *
-   * @return $this
-   */
-  public function addItem(CalculatedGroupPermissionsItemInterface $item);
+interface CalculatedGroupPermissionsInterface extends CacheableDependencyInterface {
 
   /**
    * Retrieves a single calculated permission item from a given scope.
@@ -27,8 +17,8 @@ interface CalculatedGroupPermissionsInterface extends RefinableCacheableDependen
    * @param $identifier
    *   The scope identifier to retrieve the item for.
    *
-   * @return \Drupal\group\Access\CalculatedGroupPermissionsItemInterface
-   *   The calculated permission item.
+   * @return \Drupal\group\Access\CalculatedGroupPermissionsItemInterface|false
+   *   The calculated permission item or FALSE if it could not be found.
    */
   public function getItem($scope, $identifier);
 
@@ -50,17 +40,5 @@ interface CalculatedGroupPermissionsInterface extends RefinableCacheableDependen
    *   A list of calculated permission items for the given scope.
    */
   public function getItemsByScope($scope);
-
-  /**
-   * Merge another calculated group permissions object into this one.
-   *
-   * This merges (not replaces) all permissions and cacheable metadata.
-   *
-   * @param \Drupal\group\Access\CalculatedGroupPermissionsInterface $other
-   *   The other calculated group permissions object to merge into this one.
-   *
-   * @return $this
-   */
-  public function merge(CalculatedGroupPermissionsInterface $other);
 
 }

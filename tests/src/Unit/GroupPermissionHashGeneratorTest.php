@@ -8,12 +8,12 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
-use Drupal\group\Access\CalculatedGroupPermissions;
 use Drupal\group\Access\CalculatedGroupPermissionsInterface;
 use Drupal\group\Access\CalculatedGroupPermissionsItem;
 use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
-use Drupal\group\Access\GroupPermissionCalculatorInterface;
+use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGenerator;
+use Drupal\group\Access\RefinableCalculatedGroupPermissions;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -34,7 +34,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $permissionCalculator;
 
@@ -61,7 +61,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
     $private_key = $this->prophesize(PrivateKey::class);
     $private_key->get()->willReturn('');
     $this->static = $this->prophesize(CacheBackendInterface::class);
-    $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
+    $this->permissionCalculator = $this->prophesize(ChainGroupPermissionCalculatorInterface::class);
     $this->hashGenerator = new GroupPermissionsHashGenerator($private_key->reveal(), $this->static->reveal(), $this->permissionCalculator->reveal());
 
     $account = $this->prophesize(AccountInterface::class);
@@ -79,7 +79,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
     $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
     $cid = 'group_permissions_hash_24101986';
 
-    $calculated_permissions = new CalculatedGroupPermissions();
+    $calculated_permissions = new RefinableCalculatedGroupPermissions();
     $this->permissionCalculator->calculatePermissions($this->account)->willReturn($calculated_permissions);
 
     $sorted_permissions = [

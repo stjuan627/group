@@ -5,7 +5,7 @@ namespace Drupal\group\Access;
 /**
  * Represents a single entry for the calculated group permissions.
  *
- * @see \Drupal\group\Access\GroupPermissionCalculator
+ * @see \Drupal\group\Access\ChainGroupPermissionCalculator
  */
 class CalculatedGroupPermissionsItem implements CalculatedGroupPermissionsItemInterface {
 
@@ -52,7 +52,7 @@ class CalculatedGroupPermissionsItem implements CalculatedGroupPermissionsItemIn
   public function __construct($scope, $identifier, $permissions, $is_admin = NULL) {
     $this->scope = $scope;
     $this->identifier = $identifier;
-    $this->permissions = $permissions;
+    $this->permissions = array_unique($permissions);
 
     // @todo Rework for group 8.2.x to no longer use the admin permission.
     // @todo Do make flag default to FALSE and pass role's isAdmin flag instead.

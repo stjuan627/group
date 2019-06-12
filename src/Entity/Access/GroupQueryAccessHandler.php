@@ -75,7 +75,7 @@ class GroupQueryAccessHandler implements EntityHandlerInterface, QueryAccessHand
       $entity_type,
       $container->get('event_dispatcher'),
       $container->get('current_user'),
-      $container->get('group_permission.calculator')
+      $container->get('group_permission.chain_calculator')
     );
   }
 

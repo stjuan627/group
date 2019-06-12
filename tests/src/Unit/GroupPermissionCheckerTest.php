@@ -3,11 +3,11 @@
 namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Access\CalculatedGroupPermissions;
 use Drupal\group\Access\CalculatedGroupPermissionsItem;
 use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
-use Drupal\group\Access\GroupPermissionCalculatorInterface;
+use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionChecker;
+use Drupal\group\Access\RefinableCalculatedGroupPermissions;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Tests\UnitTestCase;
 
@@ -22,7 +22,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $permissionCalculator;
 
@@ -38,7 +38,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
    */
   public function setUp() {
     parent::setUp();
-    $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
+    $this->permissionCalculator = $this->prophesize(ChainGroupPermissionCalculatorInterface::class);
     $this->permissionChecker = new GroupPermissionChecker($this->permissionCalculator->reveal());
   }
 
@@ -74,7 +74,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scope_gt = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
     $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
-    $calculated_permissions = new CalculatedGroupPermissions();
+    $calculated_permissions = new RefinableCalculatedGroupPermissions();
     foreach ($group_type_permissions as $identifier => $permissions) {
       $calculated_permissions->addItem(new CalculatedGroupPermissionsItem($scope_gt, $identifier, $permissions));
     }

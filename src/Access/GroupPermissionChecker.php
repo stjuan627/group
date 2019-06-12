@@ -13,17 +13,17 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface
+   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface
    */
   protected $groupPermissionCalculator;
 
   /**
    * Constructs a GroupPermissionChecker object.
    *
-   * @param \Drupal\group\Access\GroupPermissionCalculatorInterface $permission_calculator
+   * @param \Drupal\group\Access\ChainGroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
    */
-  public function __construct(GroupPermissionCalculatorInterface $permission_calculator) {
+  public function __construct(ChainGroupPermissionCalculatorInterface $permission_calculator) {
     $this->groupPermissionCalculator = $permission_calculator;
   }
 
