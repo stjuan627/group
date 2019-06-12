@@ -17,7 +17,7 @@
   ],
   "support": {
     "issues": "https://drupal.org/project/issues/group",
-    "source": "https://cgit.drupalcode.org/group"
+    "source": "https://git.drupalcode.org/project/group"
   },
   "license": "GPL-2.0+",
   "minimum-stability": "dev",
