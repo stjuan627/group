@@ -34,6 +34,13 @@ services:
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
 
+  cache.group_permission:
+    class: 'Drupal\Core\Cache\CacheBackendInterface'
+    factory: 'cache_factory:get'
+    arguments: ['group_permission']
+    tags:
+      - { name: 'cache.bin' }
+
   cache_context.group:
     class: 'Drupal\group\Cache\Context\GroupCacheContext'
     arguments: ['@current_route_match', '@entity_type.manager']
@@ -172,10 +179,11 @@ services:
   corefix_variation_cache_factory:
     class: Drupal\group\CoreFix\Cache\VariationCacheFactory
     arguments: ['@request_stack', '@cache_factory', '@cache_contexts_manager']
+  # @todo Rename to variation_cache.group_permission
   variation_cache.group_default:
     class: Drupal\group\CoreFix\Cache\VariationCacheBackendInterface
     factory: corefix_variation_cache_factory:get
-    arguments: [default]
+    arguments: [group_permission]
   variation_cache.corefix_static_no_serialize:
     class: Drupal\group\CoreFix\Cache\VariationCacheBackendInterface
     factory: corefix_variation_cache_factory:get
