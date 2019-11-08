@@ -293,12 +293,12 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     // E.g.: A list of all memberships anywhere can be flushed with this.
     $tags[] = "group_content_list:plugin:$plugin_id";
 
-    // A specific entity gets added to any group using a specific plugin.
-    // E.g.: A user's list of memberships can be flushed with this.
-    $tags[] = "group_content_list:plugin:$plugin_id:group:$group_id";
-
     // A specific group gets any content using a specific plugin.
     // E.g.: A group's list of members can be flushed with this.
+    $tags[] = "group_content_list:plugin:$plugin_id:group:$group_id";
+
+    // A specific entity gets added to any group using a specific plugin.
+    // E.g.: A user's list of memberships can be flushed with this.
     $tags[] = "group_content_list:plugin:$plugin_id:entity:$entity_id";
 
     return $tags;
