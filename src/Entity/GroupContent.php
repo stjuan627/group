@@ -28,6 +28,7 @@ use Drupal\user\UserInterface;
  *   bundle_label = @Translation("Group content type"),
  *   handlers = {
  *     "storage" = "Drupal\group\Entity\Storage\GroupContentStorage",
+ *     "storage_schema" = "Drupal\group\Entity\Storage\GroupContentStorageSchema",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\group\Entity\Views\GroupContentViewsData",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupContentListBuilder",
