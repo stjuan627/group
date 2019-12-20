@@ -111,7 +111,7 @@ services:
     arguments: ['@private_key', '@cache.static', '@group_permission.chain_calculator']
   group_permission.chain_calculator:
     class: 'Drupal\group\Access\ChainGroupPermissionCalculator'
-    arguments: ['@variation_cache.group_default', '@variation_cache.corefix_static_no_serialize', '@cache.corefix_static_no_serialize']
+    arguments: ['@variation_cache.group_default', '@variation_cache.corefix_static_no_serialize', '@cache.corefix_static_no_serialize', '@account_switcher']
     tags:
       - { name: service_collector, call: addCalculator, tag: group_permission_calculator }
   group_permission.checker:
