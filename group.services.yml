@@ -132,7 +132,7 @@ services:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:
       - { name: 'module_install.uninstall_validator' }
-    arguments: ['@string_translation', '@entity.query', '@plugin.manager.group_content_enabler']
+    arguments: ['@string_translation', '@entity_type.manager', '@plugin.manager.group_content_enabler']
     lazy: 'true'
 
   group_content_type.breadcrumb:
