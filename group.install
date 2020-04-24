@@ -453,3 +453,18 @@ function group_update_8017() {
   $entity_type->setHandlerClass('storage_schema', GroupContentStorageSchema::class);
   $manager->updateEntityType($entity_type);
 }
+
+/**
+ * Set the 'owner' entity key and update the owner field.
+ */
+function group_update_8018() {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  foreach (['group', 'group_content'] as $entity_type_id) {
+    $entity_type = $definition_update_manager->getEntityType($entity_type_id);
+    $keys = $entity_type->getKeys();
+    $keys['owner'] = 'uid';
+    $entity_type->set('entity_keys', $keys);
+    $definition_update_manager->updateEntityType($entity_type);
+    $definition_update_manager->updateFieldStorageDefinition($definition_update_manager->getFieldStorageDefinition('uid', $entity_type_id));
+  }
+}
