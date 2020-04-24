@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\Entity\GroupTypeInterface;
+
 /**
  * Tests the creation of group type entities.
  *
@@ -26,7 +28,7 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
         'description' => $this->randomMachineName(),
       ]);
 
-    $this->assertTrue($group_type, 'Group type was created successfully.');
+    $this->assertInstanceOf(GroupTypeInterface::class, $group_type);
     $this->assertEquals(SAVED_NEW, $group_type->save(), 'Group type was saved successfully.');
 
     // Check that the special group roles were created.

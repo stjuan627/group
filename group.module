@@ -402,7 +402,7 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // forms for the process to work properly.
   if ($form_state->has('group_wizard') && $form_state->get('group_wizard_id') == 'group_entity') {
     if ($wizard = $form_state->get('group_wizard')) {
-      $store = \Drupal::service('user.private_tempstore')->get($form_state->get('group_wizard_id'));
+      $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
       $store_id = $form_state->get('store_id');
 
       // Bail out if we are on step 2 of the wizard. We only want to alter the
@@ -468,7 +468,7 @@ function group_content_wizard_store($form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
 
   // Store the unsaved entity in the temp store.
-  $store = \Drupal::service('user.private_tempstore')->get($form_state->get('group_wizard_id'));
+  $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
   $store_id = $form_state->get('store_id');
   $store->set("$store_id:entity", $entity);
   $store->set("$store_id:step", 2);
@@ -486,7 +486,7 @@ function group_content_wizard_store($form, FormStateInterface $form_state) {
  * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
  */
 function group_content_wizard_cancel($form, FormStateInterface $form_state) {
-  $store = \Drupal::service('user.private_tempstore')->get($form_state->get('group_wizard_id'));
+  $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
   $store_id = $form_state->get('store_id');
   $store->delete("$store_id:entity");
   $store->delete("$store_id:step");

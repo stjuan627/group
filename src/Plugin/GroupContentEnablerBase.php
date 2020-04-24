@@ -214,7 +214,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     // and target entity type name in their titles and descriptions.
     $t_args = [
       '%plugin_name' => $this->getLabel(),
-      '%entity_type' => $this->getEntityType()->getLowercaseLabel(),
+      '%entity_type' => $this->getEntityType()->getSingularLabel(),
     ];
     $defaults = ['title_args' => $t_args, 'description_args' => $t_args];
 
@@ -264,7 +264,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     // target entity type labels in their titles and descriptions.
     $t_args = [
       '%plugin_name' => $this->getLabel(),
-      '%entity_type' => $this->getEntityType()->getLowercaseLabel(),
+      '%entity_type' => $this->getEntityType()->getSingularLabel(),
     ];
     $defaults = ['title_args' => $t_args, 'description_args' => $t_args];
 

@@ -93,7 +93,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     if (!isset($this->loadByEntityCache[$entity->getEntityTypeId()][$entity->id()])) {
       /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-      $storage = $this->entityManager->getStorage('group_content_type');
+      $storage = $this->entityTypeManager->getStorage('group_content_type');
       $group_content_types = $storage->loadByEntityTypeId($entity->getEntityTypeId());
 
 
@@ -124,7 +124,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   public function loadByContentPluginId($plugin_id) {
     // If no responsible group content types were found, we return nothing.
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-    $storage = $this->entityManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
     $group_content_types = $storage->loadByContentPluginId($plugin_id);
     if (empty($group_content_types)) {
       return [];

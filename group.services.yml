@@ -17,12 +17,12 @@ services:
       - { name: 'access_check', applies_to: '_group_owns_content' }
   access_check.group_content.create:
     class: 'Drupal\group\Access\GroupContentCreateAccessCheck'
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_access' }
   access_check.group_content.create_any:
     class: 'Drupal\group\Access\GroupContentCreateAnyAccessCheck'
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_access' }
   access_check.group_content.create_entity:
