@@ -18,7 +18,7 @@ use Drupal\group\Entity\Storage\GroupContentStorageSchema;
 function group_update_8001(&$sandbox) {
   // Set up the batch by retrieving all of the group content IDs.
   if (!isset($sandbox['progress'])) {
-    /** @var \Drupal\Core\Entity\EntityTypeManager $entity_type_manager */
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = \Drupal::service('entity_type.manager');
     $storage_handler = $entity_type_manager->getStorage('group_content');
 

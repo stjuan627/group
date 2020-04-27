@@ -503,7 +503,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\Core\Entity\EntityTypeManager $entity_type_manager */
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = \Drupal::service('entity_type.manager');
 
     $replace = [
