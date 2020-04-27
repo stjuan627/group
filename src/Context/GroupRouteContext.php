@@ -6,6 +6,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Context\Context;
 use Drupal\Core\Plugin\Context\ContextProviderInterface;
+use Drupal\Core\Plugin\Context\EntityContext;
 use Drupal\Core\Plugin\Context\EntityContextDefinition;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -58,10 +59,7 @@ class GroupRouteContext implements ContextProviderInterface {
    * {@inheritdoc}
    */
   public function getAvailableContexts() {
-    $context_definition = EntityContextDefinition::fromEntityTypeId('group')
-      ->setLabel($this->t('Group from URL'));
-    $context = new Context($context_definition);
-    return ['group' => $context];
+    return ['group' => EntityContext::fromEntityTypeId('group', $this->t('Group from URL'))];
   }
 
 }
