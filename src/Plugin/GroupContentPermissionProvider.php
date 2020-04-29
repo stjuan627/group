@@ -189,7 +189,7 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
-  public function getPermissions() {
+  public function buildPermissions() {
     $permissions = [];
 
     // Provide permissions for the relation (i.e.: The group content entity).

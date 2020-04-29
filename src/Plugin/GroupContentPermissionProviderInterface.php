@@ -128,6 +128,6 @@ interface GroupContentPermissionProviderInterface {
    *
    * @see GroupPermissionHandlerInterface::getPermissions()
    */
-  public function getPermissions();
+  public function buildPermissions();
 
 }

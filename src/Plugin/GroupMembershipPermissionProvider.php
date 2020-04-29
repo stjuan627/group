@@ -37,8 +37,8 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
     return FALSE;
   }
 
-  public function getPermissions() {
-    $permissions = parent::getPermissions();
+  public function buildPermissions() {
+    $permissions = parent::buildPermissions();
 
     $permissions['join group'] = [
       'title' => 'Join group',
