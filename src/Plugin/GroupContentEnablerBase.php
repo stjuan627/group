@@ -32,6 +32,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   protected $groupTypeId;
 
   /**
+   * Backwards compatible permission array.
+   *
+   * @var array
+   */
+  private $_permissions;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
@@ -206,47 +213,11 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   An array of group permissions, see ::getPermissions for more info.
    *
    * @see GroupContentEnablerInterface::getPermissions()
+   *
+   * @deprecated in Group 1.0, will be removed before Group 2.0.
    */
   protected function getGroupContentPermissions() {
-    $plugin_id = $this->getPluginId();
-
-    // Allow permissions here and in child classes to easily use the plugin name
-    // and target entity type name in their titles and descriptions.
-    $t_args = [
-      '%plugin_name' => $this->getLabel(),
-      '%entity_type' => $this->getEntityType()->getSingularLabel(),
-    ];
-    $defaults = ['title_args' => $t_args, 'description_args' => $t_args];
-
-    // Use the same title prefix to keep permissions sorted properly.
-    $prefix = 'Relationship:';
-
-    $permissions["view $plugin_id content"] = [
-      'title' => "$prefix View entity relations",
-    ] + $defaults;
-
-    $permissions["create $plugin_id content"] = [
-      'title' => "$prefix Add entity relation",
-      'description' => 'Allows you to add an existing %entity_type entity to the group.',
-    ] + $defaults;
-
-    $permissions["update own $plugin_id content"] = [
-      'title' => "$prefix Edit own entity relations",
-    ] + $defaults;
-
-    $permissions["update any $plugin_id content"] = [
-      'title' => "$prefix Edit any entity relation",
-    ] + $defaults;
-
-    $permissions["delete own $plugin_id content"] = [
-      'title' => "$prefix Delete own entity relations",
-    ] + $defaults;
-
-    $permissions["delete any $plugin_id content"] = [
-      'title' => "$prefix Delete any entity relation",
-    ] + $defaults;
-
-    return $permissions;
+    return $this->_permissions;
   }
 
   /**
@@ -256,58 +227,36 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   An array of group permissions, see ::getPermissions for more info.
    *
    * @see GroupContentEnablerInterface::getPermissions()
+   *
+   * @deprecated in Group 1.0, will be removed before Group 2.0.
    */
   protected function getTargetEntityPermissions() {
-    $plugin_id = $this->getPluginId();
-
-    // Allow permissions here and in child classes to easily use the plugin and
-    // target entity type labels in their titles and descriptions.
-    $t_args = [
-      '%plugin_name' => $this->getLabel(),
-      '%entity_type' => $this->getEntityType()->getSingularLabel(),
-    ];
-    $defaults = ['title_args' => $t_args, 'description_args' => $t_args];
-
-    // Use the same title prefix to keep permissions sorted properly.
-    $prefix = 'Entity:';
-
-    $permissions["view $plugin_id entity"] = [
-      'title' => "$prefix View %entity_type entities",
-    ] + $defaults;
-
-    $permissions["create $plugin_id entity"] = [
-      'title' => "$prefix Add %entity_type entities",
-      'description' => 'Allows you to add a new %entity_type entity and add it to the group.',
-    ] + $defaults;
-
-    $permissions["update own $plugin_id entity"] = [
-      'title' => "$prefix Edit own %entity_type entities",
-    ] + $defaults;
-
-    $permissions["update any $plugin_id entity"] = [
-      'title' => "$prefix Edit any %entity_type entities",
-    ] + $defaults;
-
-    $permissions["delete own $plugin_id entity"] = [
-      'title' => "$prefix Delete own %entity_type entities",
-    ] + $defaults;
-
-    $permissions["delete any $plugin_id entity"] = [
-      'title' => "$prefix Delete any %entity_type entities",
-    ] + $defaults;
-
-    return $permissions;
+    return $this->_permissions;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPermissions() {
-    $permissions = $this->getGroupContentPermissions();
-    if ($this->definesEntityAccess()) {
-      $permissions += $this->getTargetEntityPermissions();
+    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
+    $manager = \Drupal::service('plugin.manager.group_content_enabler');
+
+    // Backwards compatibility layer:
+    // - Use the declared permission provider if available.
+    if ($manager->hasHandler($this->pluginId, 'permission_provider')) {
+      return $manager->getPermissionProvider($this->pluginId)->getPermissions();
     }
-    return $permissions;
+
+    // Backwards compatibility layer:
+    // - Fall back to the default permission provider if none was found.
+    // - Still call the protected methods so old code can alter the permissions.
+    $permission_provider = $manager->createHandlerInstance('Drupal\group\Plugin\GroupContentPermissionProvider', $this->pluginDefinition);
+    $this->_permissions = $permission_provider->getPermissions();
+    $this->_permissions = $this->getGroupContentPermissions();
+    if ($this->definesEntityAccess()) {
+      $this->_permissions = $this->getTargetEntityPermissions();
+    }
+    return $this->_permissions;
   }
 
   /**

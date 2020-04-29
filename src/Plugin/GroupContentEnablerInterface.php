@@ -229,6 +229,9 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
    *   the structure of a group permission.
    *
    * @see GroupPermissionHandlerInterface::getPermissions()
+   *
+   * @deprecated in Group 1.0, will be removed before Group 2.0. Retrieve the
+   *   permission_provider handler from the plugin manager instead.
    */
   public function getPermissions();
 
