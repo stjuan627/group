@@ -189,6 +189,43 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getPermission($operation, $target, $scope = 'any') {
+    assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
+    assert(in_array($scope, ['any', 'own'], TRUE), '$target must be either "relation" or "entity"');
+
+    if ($target === 'relation') {
+      switch ($operation) {
+        case 'view':
+          return $this->getRelationViewPermission($scope);
+        case 'update':
+          return $this->getRelationUpdatePermission($scope);
+        case 'delete':
+          return $this->getRelationDeletePermission($scope);
+        case 'create':
+          return $this->getRelationCreatePermission();
+      }
+    }
+    elseif ($target === 'entity') {
+      switch ($operation) {
+        case 'view':
+          return $this->getEntityViewPermission($scope);
+        case 'view unpublished':
+          return $this->getEntityViewUnpublishedPermission($scope);
+        case 'update':
+          return $this->getEntityUpdatePermission($scope);
+        case 'delete':
+          return $this->getEntityDeletePermission($scope);
+        case 'create':
+          return $this->getEntityCreatePermission();
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildPermissions() {
     $permissions = [];
 

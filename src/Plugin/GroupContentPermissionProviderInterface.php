@@ -116,6 +116,22 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityCreatePermission();
 
   /**
+   * Gets the name of the permission for the given operation, target and scope.
+   *
+   * @param string $operation
+   *   The permission operation. Usually "create", "view", "update" or "delete".
+   * @param string $target
+   *   The target of the operation. Can be 'relation' or 'entity'.
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getPermission($operation, $target, $scope = 'any');
+
+  /**
    * Provides a list of group permissions the plugin exposes.
    *
    * If you have some group permissions that would only make sense when your
