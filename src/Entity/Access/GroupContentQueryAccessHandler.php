@@ -41,15 +41,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
   }
 
   /**
-   * Builds the conditions for the given operation and account.
-   *
-   * @param string $operation
-   *   The access operation. Usually one of "view", "update" or "delete".
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to restrict access.
-   *
-   * @return \Drupal\entity\QueryAccess\ConditionGroup
-   *   The conditions.
+   * {@inheritdoc}
    */
   protected function buildConditions($operation, AccountInterface $account) {
     $conditions = new ConditionGroup('OR');
@@ -105,16 +97,16 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
       }
     }
 
-    // We might see multiple values in the $all_ids variable because we looped
-    // over all calculated permissions multiple times.
-    if (!empty($all_ids[CGPII::SCOPE_GROUP])) {
-      $all_ids[CGPII::SCOPE_GROUP] = array_unique($all_ids[CGPII::SCOPE_GROUP]);
-    }
-
     // If no group type or group gave access, we deny access altogether.
     if (empty($allowed_any_ids) && empty($allowed_own_ids)) {
       $conditions->alwaysFalse();
       return $conditions;
+    }
+
+    // We might see multiple values in the $all_ids variable because we looped
+    // over all calculated permissions multiple times.
+    if (!empty($all_ids[CGPII::SCOPE_GROUP])) {
+      $all_ids[CGPII::SCOPE_GROUP] = array_unique($all_ids[CGPII::SCOPE_GROUP]);
     }
 
     // Add the allowed group types to the query (if any).
