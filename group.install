@@ -22,7 +22,7 @@ function group_update_8001(&$sandbox) {
     $entity_type_manager = \Drupal::service('entity_type.manager');
     $storage_handler = $entity_type_manager->getStorage('group_content');
 
-    $sandbox['ids'] = $storage_handler->getQuery()->execute();
+    $sandbox['ids'] = $storage_handler->getQuery()->accessCheck(FALSE)->execute();
     $sandbox['max'] = count($sandbox['ids']);
     $sandbox['progress'] = 0;
   }

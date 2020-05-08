@@ -81,6 +81,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
 
     $entity_count = $this->entityTypeManager->getStorage('group_content')
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('type', $group_content_types, 'IN')
       ->count()
       ->execute();

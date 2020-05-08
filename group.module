@@ -289,6 +289,7 @@ function group_user_cancel($edit, $account, $method) {
   if ($method == 'user_cancel_reassign') {
     $storage = \Drupal::entityTypeManager()->getStorage('group');
     $gids = $storage->getQuery()
+      ->accessCheck(FALSE)
       ->condition('uid', $account->id())
       ->execute();
 

@@ -210,6 +210,7 @@ function gnode_node_grants(AccountInterface $account, $op) {
   foreach ($calculated_permissions->getItemsByScope(CGPII::SCOPE_GROUP_TYPE) as $item) {
     // Get the IDs of all the groups the user is not part of for the group type.
     $query = $entity_type_manager->getStorage('group')->getQuery();
+    $query->accessCheck(FALSE);
     $query->condition('type', $item->getIdentifier());
     if (!empty($member_gids)) {
       $query->condition('id', $member_gids, 'NOT IN');
