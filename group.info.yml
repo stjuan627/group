@@ -7,3 +7,4 @@ configure: 'group.settings'
 dependencies:
   - 'drupal:options'
   - 'entity:entity'
+  - 'variationcache:variationcache'

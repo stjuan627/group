@@ -172,20 +172,19 @@ services:
     arguments: [corefix_static_no_serialize]
 
   # Core also has a tendency to not allow people to vary their caches by cache
-  # contexts unless they abuse the render cache's built-in tools. we've fixed
+  # contexts unless they abuse the render cache's built-in tools. We've fixed
   # this in core, but it's taking a while to get reviewed and we simply can no
-  # allow it to block further Group releases. So into the CoreFix folder it
-  # goes. We'll swap it out with the real deal once that lands.
+  # allow it to block further Group releases. So we created the VariationCache
+  # module on drupal.org for now and will swap it out with the real deal once
+  # the core issue lands.
+  # See https://www.drupal.org/project/variationcache
   # See https://www.drupal.org/project/drupal/issues/2551419
-  corefix_variation_cache_factory:
-    class: Drupal\group\CoreFix\Cache\VariationCacheFactory
-    arguments: ['@request_stack', '@cache_factory', '@cache_contexts_manager']
-  # @todo Rename to variation_cache.group_permission
+  # @todo Rename to variation_cache.group_permission in 8.2.0.
   variation_cache.group_default:
-    class: Drupal\group\CoreFix\Cache\VariationCacheBackendInterface
-    factory: corefix_variation_cache_factory:get
+    class: Drupal\variationcache\Cache\VariationCacheInterface
+    factory: variation_cache_factory:get
     arguments: [group_permission]
   variation_cache.corefix_static_no_serialize:
-    class: Drupal\group\CoreFix\Cache\VariationCacheBackendInterface
-    factory: corefix_variation_cache_factory:get
+    class: Drupal\variationcache\Cache\VariationCacheInterface
+    factory: variation_cache_factory:get
     arguments: [corefix_static_no_serialize]

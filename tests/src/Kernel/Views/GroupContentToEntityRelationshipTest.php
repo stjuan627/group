@@ -18,7 +18,7 @@ class GroupContentToEntityRelationshipTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group', 'options', 'entity', 'field', 'text', 'group_test_config', 'group_test_plugin', 'group_test_views'];
+  public static $modules = ['group', 'options', 'entity', 'variationcache', 'field', 'text', 'group_test_config', 'group_test_plugin', 'group_test_views'];
 
   /**
    * Views used by this test.
