@@ -24,6 +24,9 @@ interface GroupContentHandlerInterface {
    *
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    *   The service container this object should use.
+   * @param string $plugin_id
+   *   The ID of the plugin the handler is for. This will contain the derivative
+   *   ID when present, whereas the definition will contain only the base ID.
    * @param array $definition
    *   The group content enabler definition.
    *
@@ -39,6 +42,6 @@ interface GroupContentHandlerInterface {
    *   the base handlers shipped with this module. If not, you'll need to update
    *   your implementations when 2.0 lands.
    */
-  public static function createInstance(ContainerInterface $container, array $definition);
+  public static function createInstance(ContainerInterface $container, $plugin_id, array $definition);
 
 }

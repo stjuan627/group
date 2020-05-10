@@ -57,16 +57,18 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * Constructs a GroupContentPermissionProvider object.
    *
+   * @param string $plugin_id
+   *   The plugin ID.
    * @param array $definition
    *   The group content enabler definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(array $definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct($plugin_id, array $definition, EntityTypeManagerInterface $entity_type_manager) {
+    $this->pluginId = $plugin_id;
     $this->definition = $definition;
     $this->entityType = $entity_type_manager->getDefinition($definition['entity_type_id']);
 
-    $this->pluginId = $definition['id'];
     $this->implementsOwnerInterface = $this->entityType->entityClassImplements(EntityOwnerInterface::class);
     $this->implementsPublishedInterface = $this->entityType->entityClassImplements(EntityPublishedInterface::class);
     $this->definesEntityPermissions = !empty($definition['entity_access']);
@@ -75,8 +77,9 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
-  public static function createInstance(ContainerInterface $container, array $definition) {
+  public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
     return new static(
+      $plugin_id,
       $definition,
       $container->get('entity_type.manager')
     );

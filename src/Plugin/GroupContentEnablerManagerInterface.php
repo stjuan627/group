@@ -56,6 +56,8 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
    *
    * @param mixed $class
    *   The handler class to instantiate.
+   * @param string $plugin_id
+   *   The ID of the plugin the handler is for.
    * @param array $definition
    *   The plugin definition.
    *
@@ -67,7 +69,7 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
    *   a future release to further mimic the entity type system. Do not call
    *   this directly.
    */
-  public function createHandlerInstance($class, array $definition = NULL);
+  public function createHandlerInstance($class, $plugin_id, array $definition = NULL);
 
   /**
    * Creates a new permission provider instance.

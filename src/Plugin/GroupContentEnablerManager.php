@@ -138,7 +138,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
       if (!isset($definition['handlers'][$handler_type])) {
         throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler.', $plugin_id, $handler_type));
       }
-      $this->handlers[$handler_type][$plugin_id] = $this->createHandlerInstance($definition['handlers'][$handler_type], $definition);
+      $this->handlers[$handler_type][$plugin_id] = $this->createHandlerInstance($definition['handlers'][$handler_type], $plugin_id, $definition);
     }
 
     return $this->handlers[$handler_type][$plugin_id];
@@ -147,12 +147,12 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * {@inheritdoc}
    */
-  public function createHandlerInstance($class, array $definition = NULL) {
+  public function createHandlerInstance($class, $plugin_id, array $definition = NULL) {
     if (is_subclass_of($class, 'Drupal\group\Plugin\GroupContentHandlerInterface')) {
-      $handler = $class::createInstance($this->container, $definition);
+      $handler = $class::createInstance($this->container, $plugin_id, $definition);
     }
     else {
-      $handler = new $class($definition);
+      $handler = new $class($plugin_id, $definition);
     }
 
     if (method_exists($handler, 'setModuleHandler')) {
