@@ -19,13 +19,6 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   public static $modules = ['group', 'options', 'entity', 'variationcache', 'group_test_config'];
 
   /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The content enabler plugin manager.
    *
    * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
@@ -38,26 +31,13 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->pluginManager = $this->container->get('plugin.manager.group_content_enabler');
 
     $this->installEntitySchema('group');
-    $this->installEntitySchema('group_type');
     $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
     $this->installConfig(['group', 'group_test_config']);
 
     $this->setCurrentUser($this->createUser());
-  }
-
-  /**
-   * Sets the current user so group creation can rely on it.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The account to set as the current user.
-   */
-  protected function setCurrentUser(AccountInterface $account) {
-    $this->container->get('current_user')->setAccount($account);
   }
 
   /**
