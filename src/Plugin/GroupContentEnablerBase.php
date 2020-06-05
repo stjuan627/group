@@ -251,7 +251,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     // - Fall back to the default permission provider if none was found.
     // - Still call the protected methods so old code can alter the permissions.
     /** @var \Drupal\group\plugin\GroupContentPermissionProviderInterface $permission_provider */
-    $permission_provider = $manager->createHandlerInstance('Drupal\group\Plugin\GroupContentPermissionProvider', $this->pluginDefinition);
+    $permission_provider = $manager->createHandlerInstance('Drupal\group\Plugin\GroupContentPermissionProvider', $this->pluginId, $this->pluginDefinition);
     $this->_permissions = $permission_provider->buildPermissions();
     $this->_permissions = $this->getGroupContentPermissions();
     if ($this->definesEntityAccess()) {
