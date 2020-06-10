@@ -89,7 +89,7 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
    * {@inheritdoc}
    */
   public function getAdminPermission() {
-    return $this->definition['admin_permission'] ?? FALSE;
+    return $this->definition['admin_permission'];
   }
 
   /**

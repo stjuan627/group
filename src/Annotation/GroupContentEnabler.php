@@ -109,4 +109,11 @@ class GroupContentEnabler extends Plugin {
    */
   public $enforced = FALSE;
 
+  /**
+   * (optional) The admin permission for this plugin.
+   *
+   * @var string|false
+   */
+  public $admin_permission = FALSE;
+
 }
