@@ -110,6 +110,13 @@ class GroupContentEnabler extends Plugin {
   public $enforced = FALSE;
 
   /**
+   * (optional) A list of handlers this plugin implements.
+   *
+   * @var string[]
+   */
+  public $handlers = [];
+
+  /**
    * (optional) The admin permission for this plugin.
    *
    * @var string|false
