@@ -51,11 +51,6 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
         $case = $scenario;
         $case['expected'] = $case['definition']['admin_permission'];
         $cases[] = $case;
-
-        $case = $scenario;
-        unset($case['definition']['admin_permission']);
-        $case['expected'] = FALSE;
-        $cases[] = $case;
     }
     return $cases;
   }
