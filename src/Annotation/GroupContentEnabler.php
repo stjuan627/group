@@ -110,6 +110,18 @@ class GroupContentEnabler extends Plugin {
   public $enforced = FALSE;
 
   /**
+   * (optional) Whether this plugin can only be (un)installed through code.
+   *
+   * This is useful for plugins that should not be enabled by choice, but rather
+   * when certain conditions are met throughout the site. When that happens, you
+   * should install the plugin on a group type through code, at which point it
+   * will show up in the plugin overview as enabled.
+   *
+   * @var bool
+   */
+  public $code_only = FALSE;
+
+  /**
    * (optional) A list of handlers this plugin implements.
    *
    * @var string[]

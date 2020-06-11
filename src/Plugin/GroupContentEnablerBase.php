@@ -152,6 +152,13 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
   /**
    * {@inheritdoc}
    */
+  public function isCodeOnly() {
+    return $this->pluginDefinition['code_only'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContentLabel(GroupContentInterface $group_content) {
     return $group_content->getEntity()->label();
   }

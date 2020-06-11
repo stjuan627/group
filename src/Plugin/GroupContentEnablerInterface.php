@@ -120,6 +120,14 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   public function isEnforced();
 
   /**
+   * Returns whether this plugin can only be (un)installed through code.
+   *
+   * @return bool
+   *   The 'code_only' status.
+   */
+  public function isCodeOnly();
+
+  /**
    * Retrieves the label for a piece of group content.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
