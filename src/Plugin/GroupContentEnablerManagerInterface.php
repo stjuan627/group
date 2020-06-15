@@ -72,6 +72,22 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
   public function createHandlerInstance($class, $plugin_id, array $definition = NULL);
 
   /**
+   * Creates a new access control handler instance.
+   *
+   * @param string $plugin_id
+   *   The plugin ID for this access control handler.
+   *
+   * @return \Drupal\group\plugin\GroupContentAccessControlHandlerInterface
+   *   An access control handler instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the plugin doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the access control handler couldn't be loaded.
+   */
+  public function getAccessControlHandler($plugin_id);
+
+  /**
    * Creates a new permission provider instance.
    *
    * @param string $plugin_id

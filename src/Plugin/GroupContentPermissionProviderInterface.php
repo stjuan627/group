@@ -3,7 +3,7 @@
 namespace Drupal\group\Plugin;
 
 /**
- * Provides a common interface for group content permission provides.
+ * Provides a common interface for group content permission providers.
  */
 interface GroupContentPermissionProviderInterface {
 

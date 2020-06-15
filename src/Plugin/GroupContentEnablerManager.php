@@ -165,6 +165,13 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * {@inheritdoc}
    */
+  public function getAccessControlHandler($plugin_id) {
+    return $this->getHandler($plugin_id, 'access');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermissionProvider($plugin_id) {
     return $this->getHandler($plugin_id, 'permission_provider');
   }

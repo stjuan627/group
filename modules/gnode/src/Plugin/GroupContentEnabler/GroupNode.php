@@ -21,6 +21,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   reference_description = @Translation("The title of the node to add to the group"),
  *   deriver = "Drupal\gnode\Plugin\GroupContentEnabler\GroupNodeDeriver",
  *   handlers = {
+ *     "access" = "Drupal\group\Plugin\GroupContentAccessControlHandler",
  *     "permission_provider" = "Drupal\gnode\Plugin\GroupNodePermissionProvider",
  *   }
  * )

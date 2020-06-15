@@ -271,6 +271,17 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function createEntityAccess(GroupInterface $group, AccountInterface $account) {
+    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
+    $manager = \Drupal::service('plugin.manager.group_content_enabler');
+
+    // Backwards compatibility layer:
+    // - Use the declared access control handler if available.
+    if ($manager->hasHandler($this->pluginId, 'access')) {
+      return $manager->getAccessControlHandler($this->pluginId)->entityCreateAccess($group, $account, TRUE);
+    }
+
+    // Backwards compatibility layer:
+    // - Run the old code if there is no access control handler.
     // You cannot create target entities if the plugin does not support it.
     if (!$this->definesEntityAccess()) {
       return AccessResult::neutral();
@@ -284,6 +295,17 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function createAccess(GroupInterface $group, AccountInterface $account) {
+    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
+    $manager = \Drupal::service('plugin.manager.group_content_enabler');
+
+    // Backwards compatibility layer:
+    // - Use the declared access control handler if available.
+    if ($manager->hasHandler($this->pluginId, 'access')) {
+      return $manager->getAccessControlHandler($this->pluginId)->relationCreateAccess($group, $account, TRUE);
+    }
+
+    // Backwards compatibility layer:
+    // - Run the old code if there is no access control handler.
     $plugin_id = $this->getPluginId();
     return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "create $plugin_id content");
   }
@@ -364,6 +386,17 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account) {
+    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
+    $manager = \Drupal::service('plugin.manager.group_content_enabler');
+
+    // Backwards compatibility layer:
+    // - Use the declared access control handler if available.
+    if ($manager->hasHandler($this->pluginId, 'access')) {
+      return $manager->getAccessControlHandler($this->pluginId)->relationAccess($group_content, $operation, $account, TRUE);
+    }
+
+    // Backwards compatibility layer:
+    // - Run the old code if there is no access control handler.
     switch ($operation) {
       case 'view':
         $result = $this->viewAccess($group_content, $account);

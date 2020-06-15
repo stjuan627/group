@@ -28,6 +28,7 @@ use Drupal\Core\Session\AccountInterface;
  *   reference_description = @Translation("The user you want to make a member"),
  *   enforced = TRUE,
  *   handlers = {
+ *     "access" = "Drupal\group\Plugin\GroupContentAccessControlHandler",
  *     "permission_provider" = "Drupal\group\Plugin\GroupMembershipPermissionProvider",
  *   },
  *   admin_permission = "administer members"
@@ -75,45 +76,6 @@ class GroupMembership extends GroupContentEnablerBase {
     $cacheable_metadata = new CacheableMetadata();
     $cacheable_metadata->setCacheContexts(['user']);
     return $cacheable_metadata;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function createAccess(GroupInterface $group, AccountInterface $account) {
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'administer members');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function viewAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-    $permissions = ['view group_membership content', 'administer members'];
-    return GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $permissions, 'OR');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function updateAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-
-    // Allow members to edit their own membership data.
-    if ($group_content->entity_id->entity->id() == $account->id()) {
-      $permissions = ['update own group_membership content', 'administer members'];
-      return GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $permissions, 'OR');
-    }
-
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'administer members');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function deleteAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, 'administer members');
   }
 
   /**
