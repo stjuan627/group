@@ -7,23 +7,11 @@ use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
-use Drupal\Core\Entity\EntityHandlerBase;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Exception\InvalidLinkTemplateException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\group\Plugin\GroupContentEnablerCollection;
 use Drupal\group\Plugin\GroupContentEnablerManager;
 use Drupal\group\Plugin\GroupContentHandlerBase;
-use Drupal\group\Plugin\GroupContentHandlerInterface;
-use Drupal\group\Plugin\GroupContentPermissionProviderInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -42,6 +30,13 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @var \Drupal\group\Plugin\GroupContentEnablerManager
    */
   protected $groupContentEnablerManager;
+
+  /**
+   * The service container.
+   *
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface|\Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $container;
 
   /**
    * The plugin discovery.
@@ -90,12 +85,16 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
     $this->entityTypeManager->getStorage('group_type')->willReturn($storage->reveal());
 
     $this->groupContentEnablerManager = new TestGroupContentEnablerManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
+
     $this->discovery = $this->prophesize(DiscoveryInterface::class);
     $this->groupContentEnablerManager->setDiscovery($this->discovery->reveal());
+
+    $this->container = $this->prophesize(ContainerInterface::class);
+    $this->groupContentEnablerManager->setContainer($this->container->reveal());
   }
 
   /**
-   * Sets up the entity type manager to be tested.
+   * Sets up the group content enabler manager to be tested.
    *
    * @param array $definitions
    *   (optional) An array of group content enabler definitions.
@@ -130,11 +129,7 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @dataProvider providerTestHasHandler
    */
   public function testHasHandler($plugin_id, $expected) {
-    $apple = [
-      'handlers' => [
-        'foo_handler' => $this->getTestHandlerClass(),
-      ],
-    ];
+    $apple = ['handlers' => ['foo_handler' => TestGroupContentHandler::class]];
     $banana = ['handlers' => ['foo_handler' => FALSE]];
     $this->setUpPluginDefinitions(['apple' => $apple, 'banana' => $banana]);
     $this->assertSame($expected, $this->groupContentEnablerManager->hasHandler($plugin_id, 'foo_handler'));
@@ -155,29 +150,81 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
   }
 
   /**
-   * Tests the getHandler() method.
+   * Tests the createHandlerInstance() method.
    *
-   * @covers ::getHandler
    * @covers ::createHandlerInstance
    */
-  public function testGetHandler() {
-    $class = $this->getTestHandlerClass();
-    $apple = ['handlers' => ['foo_handler' => $class]];
-    $this->setUpPluginDefinitions(['apple' => $apple]);
-    $handler = $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
-    $this->assertInstanceOf($class, $handler);
-    $this->assertAttributeInstanceOf(ModuleHandlerInterface::class, 'moduleHandler', $handler);
+  public function testCreateHandlerInstance() {
+    $handler = $this->groupContentEnablerManager->createHandlerInstance(TestGroupContentHandler::class, 'some_plugin', []);
+    $this->assertInstanceOf(GroupContentHandlerBase::class, $handler);
+    $this->assertInstanceOf(ModuleHandlerInterface::class, $handler->getModuleHandler());
   }
 
   /**
-   * Tests the getHandler() method when no controller is defined.
+   * Tests exception thrown when a handler does not implement the interface.
+   *
+   * @covers ::createHandlerInstance
+   */
+  public function testCreateHandlerInstanceNoInterface() {
+    $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage('Trying to instantiate a handler that does not implement \Drupal\group\Plugin\GroupContentHandlerInterface.');
+    $this->groupContentEnablerManager->createHandlerInstance(TestGroupContentHandlerWithoutInterface::class, 'some_plugin', []);
+  }
+
+  /**
+   * Tests the getHandler() method.
+   *
+   * @covers ::getHandler
+   * @depends testCreateHandlerInstance
+   */
+  public function testGetHandler() {
+    $apple = ['handlers' => ['foo_handler' => TestGroupContentHandler::class]];
+    $this->setUpPluginDefinitions(['apple' => $apple]);
+
+    $first_call_result = $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
+    $second_call_result = $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
+    $direct_call_result = $this->groupContentEnablerManager->createHandlerInstance($apple['handlers']['foo_handler'], 'apple', $apple);
+
+    $this->assertEquals(
+      $first_call_result,
+      $direct_call_result,
+      'Got the same result as if createHandlerInstance() were called directly.'
+    );
+
+    $this->assertSame(
+      $first_call_result,
+      $second_call_result,
+      'Got the exact same handler instance when called another time.'
+    );
+
+    $this->assertNotSame(
+      $first_call_result,
+      $direct_call_result,
+      'Calling createHandlerInstance() creates a fresh copy regardless of internal cache.'
+    );
+  }
+
+  /**
+   * Tests exception thrown when a plugin has not defined the requested handler.
    *
    * @covers ::getHandler
    */
   public function testGetHandlerMissingHandler() {
     $this->setUpPluginDefinitions(['apple' => ['handlers' => []]]);
     $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage('The "apple" plugin did not specify a foo_handler handler.');
     $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
+  }
+
+  /**
+   * Tests the getAccessControlHandler() method.
+   *
+   * @covers ::getAccessControlHandler
+   */
+  public function testGetAccessControlHandler() {
+    $apple = ['handlers' => ['access' => TestGroupContentHandler::class]];
+    $this->setUpPluginDefinitions(['apple' => $apple]);
+    $this->assertInstanceOf(GroupContentHandlerBase::class, $this->groupContentEnablerManager->getAccessControlHandler('apple'));
   }
 
   /**
@@ -186,20 +233,9 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @covers ::getPermissionProvider
    */
   public function testGetPermissionProvider() {
-    $class = $this->getTestHandlerClass();
-    $apple = ['handlers' => ['permission_provider' => $class]];
+    $apple = ['handlers' => ['permission_provider' => TestGroupContentHandler::class]];
     $this->setUpPluginDefinitions(['apple' => $apple]);
-    $this->assertInstanceOf($class, $this->groupContentEnablerManager->getPermissionProvider('apple'));
-  }
-
-  /**
-   * Gets a mock controller class name.
-   *
-   * @return string
-   *   A mock controller class name.
-   */
-  protected function getTestHandlerClass() {
-    return get_class($this->getMockForAbstractClass(GroupContentHandlerBase::class));
+    $this->assertInstanceOf(GroupContentHandlerBase::class, $this->groupContentEnablerManager->getPermissionProvider('apple'));
   }
 
 }
@@ -215,5 +251,20 @@ class TestGroupContentEnablerManager extends GroupContentEnablerManager {
   public function setDiscovery(DiscoveryInterface $discovery) {
     $this->discovery = $discovery;
   }
+
+}
+
+class TestGroupContentHandler extends GroupContentHandlerBase {
+
+  /**
+   * Returns the protected moduleHandler property.
+   */
+  public function getModuleHandler() {
+    return $this->moduleHandler;
+  }
+
+}
+
+class TestGroupContentHandlerWithoutInterface {
 
 }

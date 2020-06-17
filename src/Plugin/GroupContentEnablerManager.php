@@ -148,17 +148,14 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
    * {@inheritdoc}
    */
   public function createHandlerInstance($class, $plugin_id, array $definition = NULL) {
-    if (is_subclass_of($class, 'Drupal\group\Plugin\GroupContentHandlerInterface')) {
-      $handler = $class::createInstance($this->container, $plugin_id, $definition);
-    }
-    else {
-      $handler = new $class($plugin_id, $definition);
+    if (!is_subclass_of($class, 'Drupal\group\Plugin\GroupContentHandlerInterface')) {
+      throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\GroupContentHandlerInterface.');
     }
 
+    $handler = $class::createInstance($this->container, $plugin_id, $definition);
     if (method_exists($handler, 'setModuleHandler')) {
       $handler->setModuleHandler($this->moduleHandler);
     }
-
     return $handler;
   }
 

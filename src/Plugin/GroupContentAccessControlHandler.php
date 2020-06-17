@@ -15,41 +15,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentAccessControlHandler extends GroupContentHandlerBase implements GroupContentAccessControlHandlerInterface {
 
   /**
-   * The group content enabler definition.
-   *
-   * @var array
-   */
-  protected $definition;
-
-  /**
-   * The plugin ID as read from the definition.
-   *
-   * @var string
-   */
-  protected $pluginId;
-
-  /**
    * The plugin's permission provider.
    *
    * @var \Drupal\group\Plugin\GroupContentPermissionProviderInterface
    */
   protected $permissionProvider;
-
-  /**
-   * Constructs a GroupContentAccessControlHandler object.
-   *
-   * @param string $plugin_id
-   *   The plugin ID.
-   * @param array $definition
-   *   The group content enabler definition.
-   * @param \Drupal\group\Plugin\GroupContentPermissionProviderInterface $permission_provider
-   *   The plugin's permission provider.
-   */
-  public function __construct($plugin_id, array $definition, GroupContentPermissionProviderInterface $permission_provider) {
-    $this->pluginId = $plugin_id;
-    $this->definition = $definition;
-    $this->permissionProvider = $permission_provider;
-  }
 
   /**
    * {@inheritdoc}
@@ -61,11 +31,10 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       throw new \LogicException('Cannot use an "access" handler without a "permission_provider" handler.');
     }
 
-    return new static(
-      $plugin_id,
-      $definition,
-      $manager->getPermissionProvider($plugin_id)
-    );
+    /** @var static $instance */
+    $instance = parent::createInstance($container, $plugin_id, $definition);
+    $instance->permissionProvider = $manager->getPermissionProvider($plugin_id);
+    return $instance;
   }
 
   /**

@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\group\Plugin\GroupContentPermissionProvider;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tests the default GroupContentEnabler permission_provider handler.
@@ -664,7 +665,10 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getDefinition($definition['entity_type_id'])->willReturn($entity_type->reveal());
 
-    return new GroupContentPermissionProvider($plugin_id, $definition, $entity_type_manager->reveal());
+    $container = $this->prophesize(ContainerInterface::class);
+    $container->get('entity_type.manager')->willReturn($entity_type_manager->reveal());
+
+    return GroupContentPermissionProvider::createInstance($container->reveal(), $plugin_id, $definition);
   }
 
 }

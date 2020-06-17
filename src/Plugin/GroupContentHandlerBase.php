@@ -3,13 +3,28 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a base class for group content handlers.
  *
  * @ingroup group
  */
-abstract class GroupContentHandlerBase {
+abstract class GroupContentHandlerBase implements GroupContentHandlerInterface {
+
+  /**
+   * The group content enabler definition.
+   *
+   * @var array
+   */
+  protected $definition;
+
+  /**
+   * The plugin ID as read from the definition.
+   *
+   * @var string
+   */
+  protected $pluginId;
 
   /**
    * The module handler to invoke hooks on.
@@ -17,6 +32,29 @@ abstract class GroupContentHandlerBase {
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
+
+  /**
+   * Constructs a GroupContentHandlerBase object.
+   *
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param array $definition
+   *   The group content enabler definition.
+   */
+  public function __construct($plugin_id, array $definition) {
+    $this->pluginId = $plugin_id;
+    $this->definition = $definition;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
+    return new static(
+      $plugin_id,
+      $definition
+    );
+  }
 
   /**
    * Gets the module handler.

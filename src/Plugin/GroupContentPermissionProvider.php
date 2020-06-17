@@ -10,14 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides group permissions for GroupContent entities.
  */
-class GroupContentPermissionProvider extends GroupContentHandlerBase implements GroupContentPermissionProviderInterface, GroupContentHandlerInterface {
-
-  /**
-   * The group content enabler definition.
-   *
-   * @var array
-   */
-  protected $definition;
+class GroupContentPermissionProvider extends GroupContentHandlerBase implements GroupContentPermissionProviderInterface {
 
   /**
    * The entity type the enabler is for.
@@ -25,13 +18,6 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
    * @var \Drupal\Core\Entity\EntityTypeInterface
    */
   protected $entityType;
-
-  /**
-   * The plugin ID as read from the definition.
-   *
-   * @var string
-   */
-  protected $pluginId;
 
   /**
    * Whether the target entity type implements the EntityOwnerInterface.
@@ -55,34 +41,20 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   protected $definesEntityPermissions;
 
   /**
-   * Constructs a GroupContentPermissionProvider object.
-   *
-   * @param string $plugin_id
-   *   The plugin ID.
-   * @param array $definition
-   *   The group content enabler definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   */
-  public function __construct($plugin_id, array $definition, EntityTypeManagerInterface $entity_type_manager) {
-    $this->pluginId = $plugin_id;
-    $this->definition = $definition;
-    $this->entityType = $entity_type_manager->getDefinition($definition['entity_type_id']);
-
-    $this->implementsOwnerInterface = $this->entityType->entityClassImplements(EntityOwnerInterface::class);
-    $this->implementsPublishedInterface = $this->entityType->entityClassImplements(EntityPublishedInterface::class);
-    $this->definesEntityPermissions = !empty($definition['entity_access']);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
-    return new static(
-      $plugin_id,
-      $definition,
-      $container->get('entity_type.manager')
-    );
+    /** @var EntityTypeManagerInterface $entity_type_manager */
+    $entity_type_manager = $container->get('entity_type.manager');
+    $entity_type = $entity_type_manager->getDefinition($definition['entity_type_id']);
+
+    /** @var static $instance */
+    $instance = parent::createInstance($container, $plugin_id, $definition);
+    $instance->entityType = $entity_type;
+    $instance->implementsOwnerInterface = $entity_type->entityClassImplements(EntityOwnerInterface::class);
+    $instance->implementsPublishedInterface = $entity_type->entityClassImplements(EntityPublishedInterface::class);
+    $instance->definesEntityPermissions = !empty($definition['entity_access']);
+    return $instance;
   }
 
   /**
