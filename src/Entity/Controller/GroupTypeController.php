@@ -278,7 +278,7 @@ class GroupTypeController extends ControllerBase {
       '#type' => 'operations',
       '#links' => $this->getOperations($plugin, $is_installed),
     ];
-
+    uasort($build['#links'], '\Drupal\Component\Utility\SortArray::sortByWeightElement');
     return $build;
   }
 
