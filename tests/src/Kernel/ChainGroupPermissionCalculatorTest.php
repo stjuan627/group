@@ -183,6 +183,7 @@ class ChainGroupPermissionCalculatorTest extends GroupKernelTestBase {
     $permissions[$group->id()][] = 'view group';
     $permissions[$group->id()][] = 'leave group';
     $cache_tags[] = 'config:group.role.default-member';
+    $cache_tags = array_unique(array_merge($member->getCacheTags(), $cache_tags));
     sort($cache_tags);
 
     $calculated_permissions = $this->permissionCalculator->calculateMemberPermissions($account);
