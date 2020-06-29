@@ -84,7 +84,7 @@ class GroupTypeController extends ControllerBase {
   public function content(GroupTypeInterface $group_type) {
     $this->groupType = $group_type;
 
-    $rows = [];
+    $rows['installed'] = $rows['available'] = [];
     $installed_ids = $this->pluginManager->getInstalledIds($group_type);
     foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
       $is_installed = FALSE;
