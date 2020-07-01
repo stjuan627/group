@@ -468,3 +468,23 @@ function group_update_8018() {
     $definition_update_manager->updateFieldStorageDefinition($definition_update_manager->getFieldStorageDefinition('uid', $entity_type_id));
   }
 }
+
+/**
+ * Make sure Entity API is installed.
+ */
+function group_update_8019() {
+  if (!\Drupal::moduleHandler()->moduleExists('entity')) {
+    \Drupal::service('module_installer')->install(['entity']);
+    return t('The "Entity API" module has been installed.');
+  }
+}
+
+/**
+ * Make sure VariationCache is installed.
+ */
+function group_update_8020() {
+  if (!\Drupal::moduleHandler()->moduleExists('variationcache')) {
+    \Drupal::service('module_installer')->install(['variationcache']);
+    return t('The "VariationCache" module has been installed.');
+  }
+}
