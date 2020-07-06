@@ -147,14 +147,6 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
   public function getInstalledIds(GroupTypeInterface $group_type = NULL);
 
   /**
-   * Clears static and persistent installed plugin ID caches.
-   *
-   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
-   *   ::clearCachedPluginMaps() instead.
-   */
-  public function clearCachedInstalledIds();
-
-  /**
    * Installs all plugins which are marked as enforced.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
@@ -181,14 +173,6 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
    *   An array of group content type ID arrays, keyed by plugin ID.
    */
   public function getPluginGroupContentTypeMap();
-
-  /**
-   * Clears static and persistent group content type ID map caches.
-   *
-   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
-   *   ::clearCachedPluginMaps() instead.
-   */
-  public function clearCachedGroupContentTypeIdMap();
 
   /**
    * Retrieves a list of plugin IDs per group type ID.

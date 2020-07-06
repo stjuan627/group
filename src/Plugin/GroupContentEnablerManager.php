@@ -307,13 +307,6 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * {@inheritdoc}
    */
-  public function clearCachedInstalledIds() {
-    $this->clearCachedPluginMaps();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function installEnforced(GroupTypeInterface $group_type = NULL) {
     $enforced = [];
 
@@ -367,13 +360,6 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
     }
 
     return $map;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function clearCachedGroupContentTypeIdMap() {
-    $this->clearCachedPluginMaps();
   }
 
   /**
