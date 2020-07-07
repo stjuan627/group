@@ -240,7 +240,7 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
-        'type' => 'hidden',
+        'region' => 'hidden',
         'weight' => 0,
       ])
       ->setDisplayConfigurable('view', TRUE);
@@ -251,7 +251,7 @@ class Group extends ContentEntityBase implements GroupInterface {
       ->setTranslatable(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'hidden',
-        'type' => 'hidden',
+        'region' => 'hidden',
         'weight' => 0,
       ])
       ->setDisplayConfigurable('view', TRUE);
