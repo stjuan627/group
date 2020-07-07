@@ -43,7 +43,11 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
 
   $plugin_id = 'group_node:' . $node->bundle();
 
-  // Load all of the group content for this node.
+  /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
+  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+  $permission_provider = $plugin_manager->getPermissionProvider($plugin_id);
+
+    // Load all of the group content for this node.
   $group_contents = \Drupal::entityTypeManager()
     ->getStorage('group_content')
     ->loadByEntity($node);
@@ -66,11 +70,11 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
     case 'view':
       foreach ($groups as $group) {
         if ($node->isPublished()) {
-          if ($group->hasPermission("view $plugin_id entity", $account)) {
+          if ($group->hasPermission($permission_provider->getEntityViewPermission(), $account)) {
             return AccessResult::allowed();
           }
         }
-        elseif ($group->hasPermission("view unpublished $plugin_id entity", $account)) {
+        elseif ($group->hasPermission($permission_provider->getEntityViewUnpublishedPermission(), $account)) {
           return AccessResult::allowed();
         }
       }
@@ -79,10 +83,10 @@ function gnode_node_access(NodeInterface $node, $op, AccountInterface $account) 
     case 'update':
     case 'delete':
       foreach ($groups as $group) {
-        if ($group->hasPermission("$op any $plugin_id entity", $account)) {
+        if ($group->hasPermission($permission_provider->getPermission($op, 'entity'), $account)) {
           return AccessResult::allowed();
         }
-        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission("$op own $plugin_id entity", $account)) {
+        elseif ($account->id() == $node->getOwnerId() && $group->hasPermission($permission_provider->getPermission($op, 'entity', 'own'), $account)) {
           return AccessResult::allowed();
         }
       }
