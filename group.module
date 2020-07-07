@@ -40,6 +40,13 @@ function group_element_info_alter(array &$types) {
 }
 
 /**
+ * Implements hook_config_translation_info_alter().
+ */
+function group_config_translation_info_alter(&$info) {
+  $info['group_role']['class'] = 'Drupal\group\ConfigTranslation\GroupRoleMapper';
+}
+
+/**
  * Implements hook_theme().
  */
 function group_theme() {
