@@ -23,7 +23,7 @@
   "minimum-stability": "dev",
   "require": {
     "drupal/core": "^8.8 || ^9",
-    "drupal/entity": "^1.0-rc1",
+    "drupal/entity": "1.x-dev",
     "drupal/variationcache": "^1.0"
   }
 }

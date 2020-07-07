@@ -307,6 +307,19 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * {@inheritdoc}
    */
+  public function getPluginIdsByEntityTypeAccess($entity_type_id) {
+    $plugin_ids = [];
+    foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
+      if (!empty($plugin_info['entity_access']) && $plugin_info['entity_type_id'] == $entity_type_id) {
+        $plugin_ids[] = $plugin_id;
+      }
+    }
+    return $plugin_ids;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function installEnforced(GroupTypeInterface $group_type = NULL) {
     $enforced = [];
 

@@ -37,6 +37,8 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
     $this->installEntitySchema('group_content');
     $this->installConfig(['group', 'group_test_config']);
 
+    // Make sure we do not use user 1.
+    $this->createUser();
     $this->setCurrentUser($this->createUser());
   }
 

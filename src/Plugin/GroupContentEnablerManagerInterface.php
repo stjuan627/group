@@ -147,6 +147,17 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
   public function getInstalledIds(GroupTypeInterface $group_type = NULL);
 
   /**
+   * Returns the ID of all plugins that define access for a given entity type.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   *
+   * @return string[]
+   *   The plugin IDs.
+   */
+  public function getPluginIdsByEntityTypeAccess($entity_type_id);
+
+  /**
    * Installs all plugins which are marked as enforced.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type

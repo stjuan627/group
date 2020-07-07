@@ -82,11 +82,13 @@ abstract class QueryAccessHandlerBase implements EntityHandlerInterface, QueryAc
    */
   public function getConditions($operation, AccountInterface $account = NULL) {
     $account = $account ?: $this->currentUser;
+    $entity_type_id = $this->entityType->id();
     $conditions = $this->buildConditions($operation, $account);
 
     // Allow other modules to modify the conditions before they are used.
-    $event = new QueryAccessEvent($conditions, $operation, $account);
-    $this->eventDispatcher->dispatch('entity.query_access.' . $this->entityType->id(), $event);
+    $event = new QueryAccessEvent($conditions, $operation, $account, $entity_type_id);
+    $this->eventDispatcher->dispatch("entity.query_access", $event);
+    $this->eventDispatcher->dispatch("entity.query_access.{$entity_type_id}", $event);
 
     return $conditions;
   }
