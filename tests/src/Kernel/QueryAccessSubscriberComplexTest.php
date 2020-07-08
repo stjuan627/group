@@ -33,11 +33,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
   protected $nodeStorage;
 
   /**
-   * The group type to use in testing.
+   * The first group type to use in testing.
    *
    * @var \Drupal\group\Entity\GroupTypeInterface
    */
-  protected $groupType;
+  protected $groupTypeA;
+
+  /**
+   * The second group type to use in testing.
+   *
+   * @var \Drupal\group\Entity\GroupTypeInterface
+   */
+  protected $groupTypeB;
 
   /**
    * {@inheritdoc}
@@ -50,12 +57,17 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
 
     $this->nodeStorage = $this->entityTypeManager->getStorage('node');
     $this->createNodeType(['type' => 'page']);
+    $this->createNodeType(['type' => 'article']);
 
-    $this->groupType = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
+    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
 
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $storage->save($storage->createFromPlugin($this->groupType, 'node_as_content:page'));
+    $storage->save($storage->createFromPlugin($this->groupTypeA, 'node_as_content:page'));
+    $storage->save($storage->createFromPlugin($this->groupTypeA, 'node_as_content:article'));
+    $storage->save($storage->createFromPlugin($this->groupTypeB, 'node_as_content:page'));
+    $storage->save($storage->createFromPlugin($this->groupTypeB, 'node_as_content:article'));
   }
 
   /**
@@ -76,7 +88,7 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
 
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
 
     $ids = $this->nodeStorage->getQuery()->execute();
@@ -90,8 +102,8 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
 
-    $this->groupType->getMemberRole()->grantPermission('administer node_as_content:page')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getMemberRole()->grantPermission('administer node_as_content:page')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
     $group->addMember($this->getCurrentUser());
 
@@ -106,10 +118,10 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
 
-    $this->groupType->getOutsiderRole()->grantPermission('administer node_as_content:page')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getOutsiderRole()->grantPermission('administer node_as_content:page')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
-    $this->createGroup(['type' => $this->groupType->id()]);
+    $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id()], array_keys($ids), 'Outsiders can see grouped nodes');
@@ -124,12 +136,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
 
-    $this->groupType->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
-    $group->addContent($node_3, 'node_as_content:page');
-    $group->addMember($this->getCurrentUser());
-    $group->addMember($account);
+    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_3, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id(), $node_3->id()], array_keys($ids), 'Members can see any published nodes.');
@@ -152,12 +170,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
 
-    $this->groupType->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
-    $group->addContent($node_3, 'node_as_content:page');
-    $group->addMember($this->getCurrentUser());
-    $group->addMember($account);
+    $this->groupTypeA->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_3, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id()], array_keys($ids), 'Members can see their own published nodes.');
@@ -180,12 +204,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
 
-    $this->groupType->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
-    $group->addContent($node_3, 'node_as_content:page');
-    $group->addMember($this->getCurrentUser());
-    $group->addMember($account);
+    $this->groupTypeA->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_3, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id(), $node_3->id()], array_keys($ids), 'Members can see any unpublished nodes.');
@@ -210,12 +240,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
 
-    $this->groupType->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
-    $group->addContent($node_3, 'node_as_content:page');
-    $group->addMember($this->getCurrentUser());
-    $group->addMember($account);
+    $this->groupTypeA->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_3, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id()], array_keys($ids), 'Members can see their own unpublished nodes.');
@@ -243,13 +279,18 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $node_5 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
     $node_6 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
 
-    $this->groupType->getMemberRole()->grantPermission('administer node_as_content:page')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($node_3, 'node_as_content:page');
-    $group->addContent($node_4, 'node_as_content:page');
-    $group->addContent($node_5, 'node_as_content:page');
-    $group->addContent($node_6, 'node_as_content:page');
-    $group->addMember($this->getCurrentUser());
+    $this->groupTypeA->getMemberRole()->grantPermission('administer node_as_content:page')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('administer node_as_content:page')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_3, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_5, 'node_as_content:page');
+    $group_b->addContent($node_6, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $expected = [
@@ -269,8 +310,8 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
   public function testNewGroupContent() {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
-    $this->groupType->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id()], array_keys($ids), 'Outsiders can see ungrouped nodes');
@@ -297,7 +338,7 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
   public function testNewPermission() {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
     $group->addMember($this->getCurrentUser());
 
@@ -305,7 +346,7 @@ class QueryAccessSubscriberComplexTest extends GroupKernelTestBase {
     $this->assertEquals([$node_2->id()], array_keys($ids), 'Members can only see ungrouped nodes');
 
     // This should trigger a different set of conditions.
-    $this->groupType->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
 
     $ids = $this->nodeStorage->getQuery()->execute();
     $this->assertEquals([$node_1->id(), $node_2->id()], array_keys($ids), 'Outsiders can see grouped nodes');

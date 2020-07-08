@@ -114,7 +114,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
     $grouped_entity_ids = $this->database
       ->select('group_content_field_data', 'gc')
       ->fields('gc', ['entity_id'])
-      ->condition('type', $group_content_type_ids)
+      ->condition('type', $group_content_type_ids, 'IN')
       ->execute()
       ->fetchCol();
 
@@ -142,6 +142,9 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
 
     $allowed_any_ids = $allowed_own_ids = $allowed_any_by_status_ids = $allowed_own_by_status_ids = $all_ids = [];
     foreach ($plugin_ids as $plugin_id) {
+      if (!isset($plugin_id_map[$plugin_id])) {
+        continue;
+      }
       foreach ($plugin_id_map[$plugin_id] as $group_content_type_id) {
         // For backwards compatibility reasons, if the group content enabler
         // plugin used by the group content type does not specify a permission
@@ -221,7 +224,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
     // Add the allowed group types to the query (if any).
     if (!empty($allowed_any_ids[CGPII::SCOPE_GROUP_TYPE])) {
       $sub_condition = $any_query->andConditionGroup();
-      $sub_condition->condition('type', $allowed_any_ids[CGPII::SCOPE_GROUP_TYPE]);
+      $sub_condition->condition('type', $allowed_any_ids[CGPII::SCOPE_GROUP_TYPE], 'IN');
 
       // If the user had memberships, we need to make sure they are excluded
       // from group type based matches as the memberships' permissions take
@@ -236,7 +239,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
 
     // Add the memberships with access to the query (if any).
     if (!empty($allowed_any_ids[CGPII::SCOPE_GROUP])) {
-      $any_query->condition('gid', $allowed_any_ids[CGPII::SCOPE_GROUP]);
+      $any_query->condition('gid', $allowed_any_ids[CGPII::SCOPE_GROUP], 'IN');
       $any_query_modified = TRUE;
     }
 
@@ -276,7 +279,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
       // Add the allowed owner group types to the query (if any).
       if (!empty($allowed_own_ids[CGPII::SCOPE_GROUP_TYPE])) {
         $sub_condition = $own_query->andConditionGroup();
-        $sub_condition->condition('type', $allowed_own_ids[CGPII::SCOPE_GROUP_TYPE]);
+        $sub_condition->condition('type', $allowed_own_ids[CGPII::SCOPE_GROUP_TYPE], 'IN');
 
         // If the user had memberships, we need to make sure they are excluded
         // from group type based matches as the memberships' permissions take
@@ -293,7 +296,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
       // Add the owner memberships with access to the query (if any).
       if (!empty($allowed_own_ids[CGPII::SCOPE_GROUP])) {
         $conditions->addCacheContexts(['user']);
-        $own_query->condition('gid', $allowed_own_ids[CGPII::SCOPE_GROUP]);
+        $own_query->condition('gid', $allowed_own_ids[CGPII::SCOPE_GROUP], 'IN');
         $own_query_modified = TRUE;
       }
 
@@ -315,7 +318,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
         // Add the allowed group types to the query (if any).
         if (!empty($allowed_any_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status])) {
           $sub_condition = $any_query->andConditionGroup();
-          $sub_condition->condition('type', $allowed_any_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status]);
+          $sub_condition->condition('type', $allowed_any_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status], 'IN');
 
           // If the user had memberships, we need to make sure they are excluded
           // from group type based matches as the memberships' permissions take
@@ -330,7 +333,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
 
         // Add the memberships with access to the query (if any).
         if (!empty($allowed_any_by_status_ids[CGPII::SCOPE_GROUP][$status])) {
-          $any_query->condition('gid', $allowed_any_by_status_ids[CGPII::SCOPE_GROUP][$status]);
+          $any_query->condition('gid', $allowed_any_by_status_ids[CGPII::SCOPE_GROUP][$status], 'IN');
           $any_query_modified = TRUE;
         }
 
@@ -342,7 +345,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
         // Add the allowed owner group types to the query (if any).
         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status])) {
           $sub_condition = $own_query->andConditionGroup();
-          $sub_condition->condition('type', $allowed_own_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status]);
+          $sub_condition->condition('type', $allowed_own_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status], 'IN');
 
           // If the user had memberships, we need to make sure they are excluded
           // from group type based matches as the memberships' permissions take
@@ -359,7 +362,7 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
         // Add the owner memberships with access to the query (if any).
         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status])) {
           $conditions->addCacheContexts(['user']);
-          $own_query->condition('gid', $allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]);
+          $own_query->condition('gid', $allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status], 'IN');
           $own_query_modified = TRUE;
         }
 

@@ -29,11 +29,18 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
   protected $shortcutStorage;
 
   /**
-   * The group type to use in testing.
+   * The first group type to use in testing.
    *
    * @var \Drupal\group\Entity\GroupTypeInterface
    */
-  protected $groupType;
+  protected $groupTypeA;
+
+  /**
+   * The second group type to use in testing.
+   *
+   * @var \Drupal\group\Entity\GroupTypeInterface
+   */
+  protected $groupTypeB;
 
   /**
    * {@inheritdoc}
@@ -45,11 +52,13 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $this->installConfig(['link', 'shortcut']);
 
     $this->shortcutStorage = $this->entityTypeManager->getStorage('shortcut');
-    $this->groupType = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
+    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
 
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $storage->save($storage->createFromPlugin($this->groupType, 'shortcut_as_content'));
+    $storage->save($storage->createFromPlugin($this->groupTypeA, 'shortcut_as_content'));
+    $storage->save($storage->createFromPlugin($this->groupTypeB, 'shortcut_as_content'));
   }
 
   /**
@@ -70,7 +79,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $shortcut_1 = $this->createShortcut();
     $shortcut_2 = $this->createShortcut();
 
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($shortcut_1, 'shortcut_as_content');
 
     $ids = $this->shortcutStorage->getQuery()->execute();
@@ -84,8 +93,8 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $shortcut_1 = $this->createShortcut();
     $shortcut_2 = $this->createShortcut();
 
-    $this->groupType->getMemberRole()->grantPermission('administer shortcut_as_content')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getMemberRole()->grantPermission('administer shortcut_as_content')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($shortcut_1, 'shortcut_as_content');
     $group->addMember($this->getCurrentUser());
 
@@ -100,10 +109,10 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $shortcut_1 = $this->createShortcut();
     $shortcut_2 = $this->createShortcut();
 
-    $this->groupType->getOutsiderRole()->grantPermission('administer shortcut_as_content')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getOutsiderRole()->grantPermission('administer shortcut_as_content')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($shortcut_1, 'shortcut_as_content');
-    $this->createGroup(['type' => $this->groupType->id()]);
+    $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
     $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
@@ -118,12 +127,18 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $shortcut_2 = $this->createShortcut();
     $shortcut_3 = $this->createShortcut();
 
-    $this->groupType->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($shortcut_1, 'shortcut_as_content');
-    $group->addContent($shortcut_3, 'shortcut_as_content');
-    $group->addMember($this->getCurrentUser());
-    $group->addMember($account);
+    $this->groupTypeA->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($shortcut_1, 'shortcut_as_content');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($shortcut_3, 'shortcut_as_content');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
     $this->assertEquals([$shortcut_1->id(), $shortcut_2->id(), $shortcut_3->id()], array_keys($ids), 'Members can see any shortcuts.');
@@ -143,8 +158,8 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
   public function testNewGroupContent() {
     $shortcut_1 = $this->createShortcut();
     $shortcut_2 = $this->createShortcut();
-    $this->groupType->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $this->groupTypeA->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
     $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see ungrouped shortcuts');
@@ -171,7 +186,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
   public function testNewPermission() {
     $shortcut_1 = $this->createShortcut();
     $shortcut_2 = $this->createShortcut();
-    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($shortcut_1, 'shortcut_as_content');
     $group->addMember($this->getCurrentUser());
 
@@ -179,7 +194,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $this->assertEquals([$shortcut_2->id()], array_keys($ids), 'Members can only see ungrouped shortcuts');
 
     // This should trigger a different set of conditions.
-    $this->groupType->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
+    $this->groupTypeA->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
 
     $ids = $this->shortcutStorage->getQuery()->execute();
     $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
