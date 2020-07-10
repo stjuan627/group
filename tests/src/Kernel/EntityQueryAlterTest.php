@@ -5,16 +5,12 @@ namespace Drupal\Tests\group\Kernel;
 /**
  * Tests that Group properly checks access for grouped entities.
  *
- * Until Entity API commits https://www.drupal.org/project/entity/issues/3134160
- * we can only support 'view' operations. As soon as the above issue lands, we
- * should also test queries with operations other than 'view'.
+ * @todo Test operations other than view.
  *
- * @todo Keep an eye on the above issue.
- *
- * @coversDefaultClass \Drupal\group\EventSubscriber\QueryAccessSubscriber
+ * @coversDefaultClass \Drupal\group\QueryAccess\EntityQueryAlter
  * @group group
  */
-class QueryAccessSubscriberTest extends GroupKernelTestBase {
+class EntityQueryAlterTest extends GroupKernelTestBase {
 
   /**
    * {@inheritdoc}
@@ -69,7 +65,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $shortcut_2 = $this->createShortcut();
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Regular shortcut query access still works.');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Regular shortcut query access still works.');
   }
 
   /**
@@ -83,7 +79,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $group->addContent($shortcut_1, 'shortcut_as_content');
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_2->id()], array_keys($ids), 'Only the ungrouped shortcut shows up.');
+    $this->assertEqualsCanonicalizing([$shortcut_2->id()], array_keys($ids), 'Only the ungrouped shortcut shows up.');
   }
 
   /**
@@ -99,7 +95,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $group->addMember($this->getCurrentUser());
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Members can see grouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Members can see grouped shortcuts');
   }
 
   /**
@@ -115,7 +111,7 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
   }
 
   /**
@@ -141,15 +137,15 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $group_b->addMember($account);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id(), $shortcut_3->id()], array_keys($ids), 'Members can see any shortcuts.');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id(), $shortcut_3->id()], array_keys($ids), 'Members can see any shortcuts.');
 
     $this->setCurrentUser($account);
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id(), $shortcut_3->id()], array_keys($ids), 'Members can see any shortcuts.');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id(), $shortcut_3->id()], array_keys($ids), 'Members can see any shortcuts.');
 
     $this->setCurrentUser($this->createUser());
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_2->id()], array_keys($ids), 'Only the ungrouped shortcut shows up.');
+    $this->assertEqualsCanonicalizing([$shortcut_2->id()], array_keys($ids), 'Only the ungrouped shortcut shows up.');
   }
 
   /**
@@ -162,13 +158,13 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see ungrouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see ungrouped shortcuts');
 
     // This should clear the cache.
     $group->addContent($shortcut_1, 'shortcut_as_content');
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_2->id()], array_keys($ids), 'Outsiders can see ungrouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_2->id()], array_keys($ids), 'Outsiders can see ungrouped shortcuts');
   }
 
   /**
@@ -191,13 +187,13 @@ class QueryAccessSubscriberTest extends GroupKernelTestBase {
     $group->addMember($this->getCurrentUser());
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_2->id()], array_keys($ids), 'Members can only see ungrouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_2->id()], array_keys($ids), 'Members can only see ungrouped shortcuts');
 
     // This should trigger a different set of conditions.
     $this->groupTypeA->getMemberRole()->grantPermission('view shortcut_as_content entity')->save();
 
     $ids = $this->shortcutStorage->getQuery()->execute();
-    $this->assertEquals([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
+    $this->assertEqualsCanonicalizing([$shortcut_1->id(), $shortcut_2->id()], array_keys($ids), 'Outsiders can see grouped shortcuts');
   }
 
   /**

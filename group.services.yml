@@ -67,11 +67,6 @@ services:
     arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler']
     tags:
       - { name: 'event_subscriber' }
-  group.query_access_subscriber:
-    class: 'Drupal\group\EventSubscriber\QueryAccessSubscriber'
-    arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler', '@group_permission.chain_calculator', '@database']
-    tags:
-      - { name: 'event_subscriber' }
 
   group.group_route_context:
     class: 'Drupal\group\Context\GroupRouteContext'
