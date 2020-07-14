@@ -18,6 +18,10 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
    * @covers ::postSave
    */
   public function testCreate() {
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $group_content_type_storage */
+    $group_content_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    $this->assertCount(2, $group_content_type_storage->loadByEntityTypeId('user'));
+
     // Check that the group type was created and saved properly.
     /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager
@@ -49,10 +53,8 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
     $plugin_config = ['group_type_id' => 'dummy', 'id' => 'group_membership'];
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
 
-    $group_content_type = $this->entityTypeManager
-      ->getStorage('group_content_type')
-      ->load($plugin->getContentTypeConfigId());
-
+    $this->assertCount(3, $group_content_type_storage->loadByEntityTypeId('user'));
+    $group_content_type = $group_content_type_storage->load($plugin->getContentTypeConfigId());
     $this->assertNotNull($group_content_type, 'Enforced plugins were installed on the group type.');
   }
 
