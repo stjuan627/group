@@ -488,3 +488,37 @@ function group_update_8020() {
     return t('The "VariationCache" module has been installed.');
   }
 }
+
+/**
+ * Updates base field definitions that use the old default value callback.
+ */
+function group_update_8021() {
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('core.base_field_override.') as $config_name) {
+    $base_field_override = $config_factory->getEditable($config_name);
+
+    if ($base_field_override->get('field_name') !== 'uid') {
+      continue;
+    }
+
+    switch ($base_field_override->get('entity_type')) {
+      case 'group':
+        $class = 'Drupal\group\Entity\Group';
+        break;
+
+      case 'group_content':
+        $class = 'Drupal\group\Entity\GroupContent';
+        break;
+
+      default:
+        continue 2;
+    }
+
+    if ($base_field_override->get('default_value_callback') !== $class . '::getCurrentUserId') {
+      continue;
+    }
+
+    $base_field_override->set('default_value_callback', $class . '::getDefaultEntityOwner');
+    $base_field_override->save(TRUE);
+  }
+}
