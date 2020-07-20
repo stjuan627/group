@@ -502,14 +502,19 @@ class EntityQueryAlter implements ContainerInjectionInterface {
    */
   protected function ensureDataTable($base_table, SelectInterface $query, EntityTypeInterface $entity_type) {
     if ($this->dataTableAlias === FALSE) {
-      $data_table = $entity_type->getDataTable();
-      $data_table_found = FALSE;
+      if (!$data_table = $entity_type->getDataTable()) {
+        $data_table = $base_table;
+        $data_table_found = TRUE;
+      }
+      else {
+        $data_table_found = FALSE;
 
-      foreach ($query->getTables() as $alias => $table) {
-        if (!$data_table_found && ($table['join type'] === 'INNER' || $alias === $base_table) && $table['table'] === $data_table) {
-          $data_table = $alias;
-          $data_table_found = TRUE;
-          break;
+        foreach ($query->getTables() as $alias => $table) {
+          if (!$data_table_found && ($table['join type'] === 'INNER' || $alias === $base_table) && $table['table'] === $data_table) {
+            $data_table = $alias;
+            $data_table_found = TRUE;
+            break;
+          }
         }
       }
 

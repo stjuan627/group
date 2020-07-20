@@ -29,9 +29,6 @@ class GroupToGroupContentRelationshipTest extends ViewsKernelTestBase {
     'group_test_config',
     'group_test_plugin',
     'group_test_views',
-    // The following need to be enabled for group_test_plugin.
-    'node',
-    'shortcut',
   ];
 
   /**

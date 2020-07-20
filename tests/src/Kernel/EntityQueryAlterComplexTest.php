@@ -24,14 +24,14 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node', 'shortcut', 'views'];
+  public static $modules = ['group_test_plugin', 'node', 'views'];
 
   /**
-   * The node storage to use in testing.
+   * The grouped storage to use in testing.
    *
    * @var \Drupal\node\NodeStorageInterface
    */
-  protected $nodeStorage;
+  protected $storage;
 
   /**
    * The first group type to use in testing.
@@ -57,7 +57,7 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $this->installSchema('node', ['node_access']);
     $this->installEntitySchema('node');
 
-    $this->nodeStorage = $this->entityTypeManager->getStorage('node');
+    $this->storage = $this->entityTypeManager->getStorage('node');
     $this->createNodeType(['type' => 'page']);
     $this->createNodeType(['type' => 'article']);
 
@@ -507,7 +507,7 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
    *   The message for the assertion.
    */
   protected function assertQueryAccessResult($expected, $message) {
-    $ids = $this->nodeStorage->getQuery()->execute();
+    $ids = $this->storage->getQuery()->execute();
     $this->assertEqualsCanonicalizing($expected, array_keys($ids), $message);
 
     $views_expected = [];
@@ -529,11 +529,11 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
    *   The created node entity.
    */
   protected function createNode(array $values = []) {
-    $node = $this->nodeStorage->create($values + [
+    $node = $this->storage->create($values + [
       'title' => $this->randomString(),
     ]);
     $node->enforceIsNew();
-    $this->nodeStorage->save($node);
+    $this->storage->save($node);
     return $node;
   }
 
