@@ -93,6 +93,12 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $group->addMember($this->getCurrentUser());
 
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped node shows up.');
+
+    // Extra hardening: Re-confirm result when another group type does grant
+    // access but does not contain the node.
+    $this->groupTypeB->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->createGroup(['type' => $this->groupTypeB->id()])->addMember($this->getCurrentUser());
+    $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped node shows up.');
   }
 
   /**
@@ -105,6 +111,12 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
 
+    $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped node shows up.');
+
+    // Extra hardening: Re-confirm result when another group type does grant
+    // access but does not contain the node.
+    $this->groupTypeB->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->createGroup(['type' => $this->groupTypeB->id()]);
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped node shows up.');
   }
 

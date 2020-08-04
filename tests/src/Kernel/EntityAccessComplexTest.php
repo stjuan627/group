@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\Core\Session\AnonymousUserSession;
+
 /**
  * Tests that Group properly checks access for "complex" grouped entities.
  *
@@ -65,7 +67,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->installConfig('group_test_plugin');
+    $this->installConfig(['user', 'group_test_plugin']);
     $this->installSchema('node', ['node_access']);
     $this->installEntitySchema('node');
     
@@ -165,11 +167,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch unpublished nodes.
+    $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
@@ -178,19 +181,31 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see any published grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see any published grouped nodes without permission.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+
+    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
   }
 
   /**
@@ -202,30 +217,79 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch unpublished nodes.
+    $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
     $group_b->addContent($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see any published grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see any published grouped nodes without permission.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+  }
+
+  /**
+   * Tests the viewing of any published grouped entities for anonymous.
+   */
+  public function testAnonymousViewAnyPublishedAccess() {
+    $this->entityTypeManager->getStorage('user_role')->load('anonymous')->grantPermission('access content')->save();
+
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page']);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    // Sanity check: Verify that we don't touch unpublished nodes.
+    $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+
+    $this->setCurrentUser(new AnonymousUserSession());
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Anonymous cannot see published grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Anonymous cannot see published grouped nodes without permission.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'Anonymous can see published ungrouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+
+    $this->groupTypeA->getAnonymousRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->groupTypeB->getAnonymousRole()->grantPermission('view any node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Anonymous can see any published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Anonymous can see any published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'Anonymous can see published ungrouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
   }
 
   /**
@@ -237,11 +301,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch unpublished nodes.
+    $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
@@ -250,19 +315,31 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see their own published grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes they do not own.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+
+    $this->groupTypeA->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see their own published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see their own published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
   }
 
   /**
@@ -274,30 +351,43 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch unpublished nodes.
+    $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
     $group_b->addContent($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see their own published grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see their own published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
   }
 
   /**
@@ -309,11 +399,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch published nodes.
+    $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
@@ -322,19 +413,31 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see any unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see any unpublished grouped nodes without permission.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+
+    $this->groupTypeA->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see any unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
   }
 
   /**
@@ -346,30 +449,79 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch published nodes.
+    $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
     $group_b->addContent($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see any unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see any unpublished grouped nodes without permission.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+  }
+
+  /**
+   * Tests the viewing of any unpublished grouped entities for anonymous.
+   */
+  public function testAnonymousViewAnyUnpublishedAccess() {
+    $this->entityTypeManager->getStorage('user_role')->load('anonymous')->grantPermission('access content')->save();
+
+    $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
+    $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
+
+    // Sanity check: Verify that we don't touch published nodes.
+    $node_4 = $this->createNode(['type' => 'page']);
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+
+    $this->setCurrentUser(new AnonymousUserSession());
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Anonymous cannot see unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Anonymous cannot see unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'Anonymous cannot see unpublished ungrouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+
+    $this->groupTypeA->getAnonymousRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getAnonymousRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Anonymous can see any unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Anonymous can see any unpublished grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'Anonymous cannot see unpublished ungrouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
   }
 
   /**
@@ -381,11 +533,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch published nodes.
+    $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
@@ -394,19 +547,31 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see their own unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes they do not own.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+
+    $this->groupTypeA->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see their own unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see unpublished grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Members can see their own unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
   }
 
   /**
@@ -418,30 +583,43 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    // Sanity check: Verify that we don't touch published nodes.
+    $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addContent($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
     $group_b->addContent($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see their own unpublished grouped nodes without permission.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $this->accessControlHandler->resetCache();
+
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see their own unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($this->createUser([], $this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
+    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
   }
 
   /**
