@@ -237,7 +237,10 @@ class EntityQueryAlter implements ContainerInjectionInterface {
     $this->cacheableMetadata->addCacheContexts(['user.group_permissions']);
     $calculated_permissions = $this->permissionCalculator->calculatePermissions($this->currentUser);
 
-    $check_published = $entity_type->entityClassImplements(EntityPublishedInterface::class);
+    // We only check unpublished vs published for "view" right now. If we ever
+    // start supporting other operations, we need to remove the "view" check.
+    $check_published = $operation === 'view' && $entity_type->entityClassImplements(EntityPublishedInterface::class);
+
     $owner_key = $entity_type->getKey('owner');
     $published_key = $entity_type->getKey('published');
 

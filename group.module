@@ -325,7 +325,10 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral()->addCacheTags($plugin_cache_tags);
   }
 
-  $check_published = $entity->getEntityType()->entityClassImplements(EntityPublishedInterface::class);
+  // We only check unpublished vs published for "view" right now. If we ever
+  // start supporting other operations, we need to remove the "view" check.
+  $check_published = $operation === 'view'
+    && $entity->getEntityType()->entityClassImplements(EntityPublishedInterface::class);
 
   // Index the group content per plugin ID.
   $plugin_content = [];
