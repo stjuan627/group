@@ -171,7 +171,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       $result->addCacheableDependency($entity);
     }
 
-    return $result;
+    return $return_as_object ? $result : $result->isAllowed();
   }
 
   /**
@@ -180,7 +180,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
   public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
     // You cannot create target entities if the plugin does not support it.
     if (empty($this->definition['entity_access'])) {
-      return AccessResult::neutral();
+      return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
     $permission = $this->permissionProvider->getEntityCreatePermission();
