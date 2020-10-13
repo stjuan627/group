@@ -138,6 +138,14 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getMembers($roles = NULL);
 
   /**
+   * Get whether the group is private.
+   *
+   * @return bool
+   *   TRUE if the group is private or FALSE if it is public.
+   */
+  public function isPrivate();
+
+  /**
    * Checks whether a user has the requested permission.
    *
    * @param string $permission
