@@ -1,0 +1,14 @@
+services:
+  group_jsonapi.routes_subscriber:
+    class: Drupal\group_jsonapi\EventSubscriber\RoutesSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  group_jsonapi.jsonapi_group_content_entity.create:
+    class: Drupal\group_jsonapi\Access\JsonApiGroupContentEntityCreateAccessCheck
+    arguments:
+      - '@entity_type.manager'
+      - '@serialization.json'
+      - '@request_stack'
+    tags:
+      - { name: 'access_check', applies_to: '_group_jsonapi_content_create_access' }
