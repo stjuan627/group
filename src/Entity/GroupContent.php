@@ -80,6 +80,14 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   use EntityOwnerTrait;
 
   /**
+   * Whether entity validation is required before saving the entity.
+   *
+   * @var bool
+   * @see https://www.drupal.org/project/drupal/issues/2847319
+   */
+  protected $validationRequired = TRUE;
+
+  /**
    * {@inheritdoc}
    */
   public function getGroupContentType() {
