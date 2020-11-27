@@ -123,8 +123,8 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       $is_owner = $entity->getOwnerId() === $account->id();
     }
 
-    // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [$this->permissionProvider->getAdminPermission()];
+    // Build the operation specific permission list.
+    $permissions = [];
     if (!$check_published || $entity->isPublished()) {
       $permissions[] = $this->permissionProvider->getPermission($operation, 'entity', 'any');
       $own_permission = $this->permissionProvider->getPermission($operation, 'entity', 'own');
@@ -141,10 +141,16 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     }
     $permissions = array_filter($permissions);
 
-    // If there are no permissions to check, remain neutral, this is an
+    // If there are no specific permissions to check, remain neutral, this is an
     // operation that is not controlled by the group integration.
     if (!$permissions) {
       return AccessResult::neutral();
+    }
+
+    // Add the admin permission if there are any permissions for the given
+    // permission.
+    if ($this->permissionProvider->getAdminPermission()) {
+      $permissions[] = $this->permissionProvider->getAdminPermission();
     }
 
     foreach ($group_contents as $group_content) {
