@@ -141,6 +141,12 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     }
     $permissions = array_filter($permissions);
 
+    // If there are no permissions to check, remain neutral, this is an
+    // operation that is not controlled by the group integration.
+    if (!$permissions) {
+      return AccessResult::neutral();
+    }
+
     foreach ($group_contents as $group_content) {
       $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
       if ($result->isAllowed()) {
