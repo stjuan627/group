@@ -234,6 +234,12 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       "$base_table.$id_key=gcfd.entity_id AND gcfd.type IN (:group_content_type_ids_in_use[])",
       [':group_content_type_ids_in_use[]' => $group_content_type_ids_in_use]
     );
+    // Join to groups_field_data so we can exclude private group content later.
+    $query->leftJoin(
+      'groups_field_data',
+      'gfd',
+      "gcfd.gid=gfd.id"
+    );
 
     $this->cacheableMetadata->addCacheContexts(['user.group_permissions']);
     $calculated_permissions = $this->permissionCalculator->calculatePermissions($this->currentUser);
@@ -418,6 +424,11 @@ class EntityQueryAlter implements ContainerInjectionInterface {
           $sub_condition->condition('gcfd.gid', $member_group_ids, 'NOT IN');
         }
 
+        // Exclude private groups from the group type based check.
+        // Group members will be granted access based on the
+        // overall $owner_group_conditions.
+        $sub_condition->condition('gfd.is_private', FALSE);
+
         $owner_group_conditions->condition($sub_condition);
       }
 
@@ -455,6 +466,11 @@ class EntityQueryAlter implements ContainerInjectionInterface {
           if (!empty($member_group_ids)) {
             $sub_condition->condition('gcfd.gid', $member_group_ids, 'NOT IN');
           }
+
+          // Exclude private groups from the group type based check.
+          // Group members will be granted access based on the
+          // overall $status_group_conditions.
+          $sub_condition->condition('gfd.is_private', FALSE);
 
           $status_group_conditions->condition($sub_condition);
         }
