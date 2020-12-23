@@ -11,6 +11,9 @@ edit group:
 delete group:
   title: 'Delete group'
   description: 'Delete the group'
+translate group:
+  title: 'Translate group'
+  description: 'Translate the group'
 access content overview:
   title: 'Access all entities overview'
   description: 'View all of the entity relations for the group'
