@@ -70,7 +70,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->installConfig(['user', 'group_test_plugin']);
     $this->installSchema('node', ['node_access']);
     $this->installEntitySchema('node');
-    
+
     $this->storage = $this->entityTypeManager->getStorage('node');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('node');
     $this->createNodeType(['type' => 'page']);
@@ -321,13 +321,14 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
     $this->groupTypeA->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    $this->groupTypeA->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
     $this->groupTypeB->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see their own published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
-    $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
+    $this->assertTrue($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node can be viewed.');
 
     $this->setCurrentUser($account);
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes they do not own.');
@@ -785,7 +786,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'update'), 'Members cannot update unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'update'), 'The ungrouped node can be updated.');
   }
-  
+
   /**
    * Tests the deleting of any grouped entities for members.
    */

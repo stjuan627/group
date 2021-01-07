@@ -297,8 +297,8 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$node_1->id(), $node_2->id(), $node_3->id()], 'Members can see any unpublished nodes.');
 
-    // This is actually a core issue, but for now unpublished nodes show up in
-    // entity queries when there are no node grants defining modules.
+    // This is a core issue (#2971902), but for now unpublished nodes show up
+    // in entity queries when there are no node grants defining modules.
     $this->setCurrentUser($this->createUser());
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped unpublished node shows up.');
   }
@@ -328,8 +328,8 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $this->setCurrentUser($this->createUser());
     $this->assertQueryAccessResult([$node_1->id(), $node_2->id(), $node_3->id()], 'Non-members can see any unpublished nodes.');
 
-    // This is actually a core issue, but for now unpublished nodes show up in
-    // entity queries when there are no node grants defining modules.
+    // This is a core issue (#2971902), but for now unpublished nodes show up
+    // in entity queries when there are no node grants defining modules.
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped unpublished node shows up.');
   }
@@ -361,8 +361,8 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$node_2->id(), $node_3->id()], 'Members can see their own unpublished nodes.');
 
-    // This is actually a core issue, but for now unpublished nodes show up in
-    // entity queries when there are no node grants defining modules.
+    // This is a core issue (#2971902), but for now unpublished nodes show up
+    // in entity queries when there are no node grants defining modules.
     $this->setCurrentUser($this->createUser());
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped unpublished node shows up.');
   }
@@ -392,8 +392,8 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
     $this->setCurrentUser($this->createUser());
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped unpublished node shows up.');
 
-    // This is actually a core issue, but for now unpublished nodes show up in
-    // entity queries when there are no node grants defining modules.
+    // This is a core issue (#2971902), but for now unpublished nodes show up
+    // in entity queries when there are no node grants defining modules.
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$node_2->id()], 'Only the ungrouped unpublished node shows up.');
   }

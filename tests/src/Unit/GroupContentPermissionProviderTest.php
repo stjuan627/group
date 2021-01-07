@@ -315,8 +315,10 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
         if ($case['definition']['entity_access'] && $case['implements_published']) {
-          // View own unpublished entity is not implemented yet.
           if ($scope === 'any') {
+            $case['expected'] = "view $scope unpublished {$scenario['plugin_id']} entity";
+          }
+          if ($scope === 'own' && $case['implements_owner']) {
             $case['expected'] = "view $scope unpublished {$scenario['plugin_id']} entity";
           }
         }
@@ -530,7 +532,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
           break;
       }
     }
-    
+
     $this->assertEquals($expected, $permission_provider->getPermission($operation, $target, $scope));
   }
 
