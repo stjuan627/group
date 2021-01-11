@@ -209,10 +209,11 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
         \Drupal::service('views.views_data')->clear();
       }
 
-      // While installation from existing config (and maybe during "normal" config
-      // import as well) the content plugin might not be available and causing
-      // an exception. As postInstall() only creates config objects while config
-      // import is not in progress, lets only call it when it actually will run.
+      // While installation from existing config (and maybe during "normal"
+      // config import as well) the content plugin might not be available and
+      // causing an exception. As postInstall() only creates config objects
+      // while config import is not in progress, lets only call it when it
+      // actually will run.
       if (!\Drupal::isConfigSyncing()) {
         // Run the post install tasks on the plugin.
         $this->getContentPlugin()->postInstall();
