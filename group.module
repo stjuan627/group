@@ -256,8 +256,10 @@ function group_query_entity_query_alter(SelectInterface $query) {
  */
 function group_query_views_entity_query_alter(SelectInterface $query) {
   $entity_type_id = $query->getMetaData('entity_type');
-  $query->addTag($entity_type_id . '_access');
-  group_query_entity_query_alter($query);
+  if ($entity_type_id !== NULL) {
+    $query->addTag($entity_type_id . '_access');
+    group_query_entity_query_alter($query);
+  }
 }
 
 /**
