@@ -37,7 +37,7 @@ use Drupal\user\UserInterface;
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupForm",
  *       "edit" = "Drupal\group\Entity\Form\GroupForm",
- *       "delete" = "Drupal\group\Entity\Form\GroupDeleteForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
  *     "query_access" = "Drupal\group\Entity\Access\GroupQueryAccessHandler",
