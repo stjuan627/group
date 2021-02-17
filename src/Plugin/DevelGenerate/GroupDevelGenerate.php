@@ -110,7 +110,7 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
       $this->setMessage($this->t(
         'You do not have any group types that can be generated. <a href=":create-type">Go create a new group type</a>',
         [':create-type' => Url::fromRoute('entity.group_type.add_form')]
-      ), 'error', FALSE);
+      ), 'error');
       return;
     }
 
