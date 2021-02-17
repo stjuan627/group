@@ -330,7 +330,7 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
    */
   public function validateDrushParams(array $args, array $options = []) {
     if (!empty($options['languages'])) {
-      $add_language = explode(',', str_replace(' ', '', $options['languages'));
+      $add_language = explode(',', str_replace(' ', '', $options['languages']));
       // Intersect with the enabled languages to make sure the language args
       // passed are actually enabled.
       $values['values']['add_language'] = array_intersect(
