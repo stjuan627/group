@@ -12,6 +12,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\group\Entity\Group;
+use Drush\Utils\StringUtils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -327,8 +328,8 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function validateDrushParams($args) {
-    $add_language = drush_get_option('languages');
+  public function validateDrushParams(array $args, array $options = []) {
+    $add_language = $options['languages'];
     if (!empty($add_language)) {
       $add_language = explode(',', str_replace(' ', '', $add_language));
       // Intersect with the enabled languages to make sure the language args
@@ -339,17 +340,17 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
       );
     }
 
-    $values['kill'] = drush_get_option('kill');
+    $values['kill'] = $options['kill'];
     $values['label_length'] = 6;
     $values['num'] = array_shift($args);
 
-    $selected_types = _convert_csv_to_array(drush_get_option('types'));
+    $selected_types = StringUtils::csvToArray($options['types']);
 
     $values['group_types'] = array_combine($selected_types, $selected_types);
     $group_types = array_filter($values['group_types']);
 
     if (!empty($values['kill']) && empty($group_types)) {
-      return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Please provide group type (--types) in which you want to delete the groups.'));
+      throw new \Exception(dt('Please provide group type (--types) in which you want to delete the groups.'));
     }
 
     return $values;
