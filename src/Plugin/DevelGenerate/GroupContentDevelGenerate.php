@@ -262,10 +262,12 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
   /**
    * {@inheritdoc}
    */
-  public function validateDrushParams($args) {
+  public function validateDrushParams(array $args, array $options = []) {
     // Drush doesn't provide the option to choose types but assumes all.
     $values['group_content_types'] = array_keys(GroupContentType::loadMultiple());
-    $values['kill'] = drush_get_option('kill');
+    if (isset($options['kill'])) {
+      $values['kill'] = $options['kill'];
+    }
     return $values;
   }
 
