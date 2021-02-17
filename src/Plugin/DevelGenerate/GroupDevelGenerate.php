@@ -329,9 +329,8 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function validateDrushParams(array $args, array $options = []) {
-    $add_language = $options['languages'];
-    if (!empty($add_language)) {
-      $add_language = explode(',', str_replace(' ', '', $add_language));
+    if (!empty($options['languages'])) {
+      $add_language = explode(',', str_replace(' ', '', $options['languages'));
       // Intersect with the enabled languages to make sure the language args
       // passed are actually enabled.
       $values['values']['add_language'] = array_intersect(
@@ -340,11 +339,14 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
       );
     }
 
-    $values['kill'] = $options['kill'];
+    if (isset($options['kill'])) {
+      $values['kill'] = $options['kill'];
+    }
+
     $values['label_length'] = 6;
     $values['num'] = array_shift($args);
 
-    $selected_types = StringUtils::csvToArray($options['types']);
+    $selected_types = isset($options['types']) ? StringUtils::csvToArray($options['types']) : [];
 
     $values['group_types'] = array_combine($selected_types, $selected_types);
     $group_types = array_filter($values['group_types']);
