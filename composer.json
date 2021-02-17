@@ -20,5 +20,8 @@
     "drupal/core": "^8.9 || ^9",
     "drupal/entity": "^1.2",
     "drupal/variationcache": "^1.0"
+  },
+  "conflict": {
+    "drupal/devel": "<4.0.0"
   }
 }
