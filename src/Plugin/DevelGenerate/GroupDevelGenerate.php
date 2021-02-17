@@ -362,8 +362,7 @@ class GroupDevelGenerate extends DevelGenerateBase implements ContainerFactoryPl
    * @param array $values
    *   The input values from the settings form.
    */
-  protected function removeGeneratedGroups($values) {
-    /** @var \Drupal\Core\Entity\EntityStorageInterface $group_storage */
+  protected function removeGeneratedGroups(array $values) {
     $group_storage = $this->entityTypeManager->getStorage('group');
     $group_ids = $group_storage->getQuery()
       ->condition('type', $values['group_types'], 'IN')
