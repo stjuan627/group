@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Plugin\DevelGenerate;
 
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -9,6 +10,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\GroupContentTypeInterface;
+use Drupal\user\EntityOwnerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -135,7 +137,7 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
 
     $form['kill'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Before generating, first delete all group content of these types.'),
+      '#title' => $this->t('Before generating, first delete all group content of these types (does not affect actual content, only relations to groups).'),
       '#default_value' => $this->getSetting('kill'),
       '#weight' => 2,
     ];
@@ -205,13 +207,9 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
     if ($values['kill']) {
       $batch['operations'][] = [
         'devel_generate_operation',
-        [$this, 'batchGroupsKill', $values],
+        [$this, 'batchGroupContentKill', $values],
       ];
     }
-    $batch['operations'][] = [
-      'devel_generate_operation',
-      [$this, 'batchPreGroup', $values],
-    ];
 
     $groupContentTypes = array_filter($values['group_content_types']) ?: array_keys($this->countContentOfTypes());
 
@@ -228,19 +226,6 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
   }
 
   /**
-   * The method responsible for creating groups.
-   *
-   * @param array $values
-   *   The input values from the settings form.
-   * @param array $context
-   *   An array of contextual key/value information for rebuild batch process.
-   */
-  public function batchPreGroup(array $values, array &$context) {
-    $context['results'] = $values;
-    $context['results']['num'] = 0;
-  }
-
-  /**
    * Delete existing groupContent of the given types.
    *
    * @param array $values
@@ -249,10 +234,10 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    *   An array of contextual key/value information for rebuild batch process.
    */
   public function batchGroupContentKill(array $values, array &$context) {
-    foreach (GroupContentType::loadMultiple($vars['group_content_types']) as $contentType) {
+    foreach (GroupContentType::loadMultiple($values['group_content_types']) as $contentType) {
       $content_items = GroupContent::loadByContentPluginId($contentType->id());
     }
-    foreach ($vars['group_content_types'] as $contentTypeId) {
+    foreach ($values['group_content_types'] as $contentTypeId) {
       $vars = ['group_content_types' => [$contentTypeId]];
       $this->groupContentKill($vars);
     }
@@ -286,6 +271,9 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
   /**
    * Put all content of one type into as many groups as it will support.
    *
+   * We use the finished return value in the context to indicate if we have
+   * finished.
+   *
    * @param array $values
    *   The input values from the settings form with some additional data needed
    *   for the generation. Should at least contain value 'content_type'.
@@ -293,70 +281,172 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    *   The batch context.
    */
   public function batchAddGroupContent(array $values, array &$context) {
-    $this->addGroupContent($values);
+    if (empty($context['results'])) {
+      $context['results'] = $values;
+      $context['results']['num'] = 0;
+    }
+
+    // The GroupContentType plugin tells us which groupType(s) we need.
+    $groupContentType = GroupContentType::load($values['content_type']);
+    $entityTypeId = $groupContentType->getContentPlugin()->getEntityTypeId();
+    $entityStorage = $this->entityTypeManager->getStorage($entityTypeId);
+    $groupStorage = $this->entityTypeManager->getStorage('group');
+
+    // If we do not have a working set of IDs yet, build it using an entity
+    // query.
+    $sandbox = &$context['sandbox'];
+    if (empty($sandbox)) {
+      if (!$this->setUpBatchSandbox($groupContentType, $sandbox)) {
+        return;
+      }
+
+      // Say that we haven't even started yet. This setup will have already
+      // taken some time, so better safe than sorry and start the actual
+      // processing on the next iteration.
+      $context['finished'] = 0;
+      return;
+    }
+
+    // Load our entity.
+    $entity = $entityStorage->load($sandbox['content_ids'][$sandbox['current']]);
+
+    // Find out how many groups we may add the content to.
+    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    $plugin = $groupContentType->getContentPlugin();
+    $groupCardinality = $plugin->getGroupCardinality();
+
+    // If the cardinality is unlimited (0) or larger than 50, limit to 50.
+    if ($groupCardinality == 0 || $groupCardinality > 50) {
+      $groupCardinality = 50;
+    }
+
+    // Keep track of the groups we assigned the entity to.
+    $groupsAssigned = [];
+
+    if ($entity) {
+      for ($i = 0; $i < $groupCardinality; $i++) {
+        // Pick a random index for the group.
+        $groupIndex = random_int(0, count($sandbox['group_ids']) - 1);
+
+        if (in_array($groupIndex, $groupsAssigned)) {
+          // Do not attempt to add the content to the same group twice.
+          continue;
+        }
+
+        $groupsAssigned[] = $groupIndex;
+
+        $groupId = $sandbox['group_ids'][$groupIndex];
+        $group = $groupStorage->load($groupId);
+
+        if (!$group) {
+          continue;
+        }
+
+        $group->addContent(
+          $entity,
+          $plugin->getPluginId(),
+          ['uid' => $entity instanceof EntityOwnerInterface ? $entity->getOwnerId() : 1]
+        );
+
+        // If we are adding users as members then add one random role to the
+        // newly created membership as well.
+        if ($sandbox['roles']) {
+          $roleIndex = random_int(0, count($sandbox['roles']) - 1);
+          $this->membershipLoader
+            ->load($group, $entity)
+            ->getGroupContent()
+            ->set('group_roles', [$sandbox['roles'][$roleIndex]])
+            ->save();
+        }
+      }
+    }
+
+    $sandbox['current']++;
+
+    $current = $sandbox['current'];
+    $total = $sandbox['total_content_items'];
+    $finished = $current >= $total ? 1 : ($current / $total);
+    $context['finished'] = $finished;
     $context['results']['num']++;
   }
 
   /**
-   * Put all content of one type into all groups that support it.
+   * Helper function to set up the sandbox for a single group content type.
    *
-   * @param array $values
-   *   The input values from the settings form with some additional data needed
-   *   for the generation.
+   * @param \Drupal\group\Entity\GroupContentType $groupContentType
+   *   The group content type to set up for.
+   * @param array $sandbox
+   *   The batch sandbox.
+   *
+   * @return bool
+   *   True when succesful, false when there was a problem. Calling method
+   *   should return on false.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function addGroupContent($values) {
-    // The GroupContentType plugin tells us which groupType(s) we need.
-    $groupContentType = GroupContentType::load($values['content_type']);
-    $entity_type_id = $groupContentType->getContentPlugin()->getEntityTypeId();
-    $group_type_id = $groupContentType->getGroupTypeId();
-    // Load all the groups of this type.
-    $groups = $this->entityTypeManager->getStorage('group')
-      ->loadByProperties(['type' => $group_type_id]);
-    if (empty($groups)) {
-      \Drupal::logger('groupcontent')->warning(
-        'No %group_type_id groups to which to addGroupContent %type',
-        ['%group_type_id' => $group_type_id, '%type' => $values['content_type']]
-      );
-      return;
-    }
-    // Load all the entities of this type
-    $content = $this->entityTypeManager->getStorage($entity_type_id)->loadMultiple();
-    \Drupal::logger('groupcontent')->notice(
-      "Adding %count groupContent using plugin: %plugin",
-      ['%count' => count($content), '%plugin' => $values['content_type']]
-    );
-    $groups = array_values($groups);
-    $plugin_id = $groupContentType->getContentPlugin()->getPluginId();
+  private function setUpBatchSandbox(GroupContentType $groupContentType, array &$sandbox) {
+    $entityTypeId = $groupContentType->getContentPlugin()->getEntityTypeId();
+    $groupTypeId = $groupContentType->getGroupTypeId();
+    $groupContentTypeId = $groupContentType->id();
 
-    if($plugin_id == 'group_membership') {
-      // Get the roles for this group-type
+    // Load all the groups of this type.
+    $groupIds = $this->entityTypeManager->getStorage('group')
+      ->getQuery()->condition('type', $groupTypeId)
+      ->execute();
+    if (empty($groupIds)) {
+      $message = $this->t(
+        'No %group_type_id groups to which to add GroupContent %type.',
+        [
+          '%group_type_id' => $groupTypeId,
+          '%type' => $groupContentTypeId,
+        ]
+      );
+      $this->setMessage($message, MessengerInterface::TYPE_WARNING);
+      return FALSE;
+    }
+    $sandbox['group_ids'] = array_values($groupIds);
+
+    $contentPlugin = $groupContentType->getContentPlugin();
+
+    if ($contentPlugin->getPluginId() == 'group_membership') {
+      // Get the roles for this group-type.
       $roles = \Drupal::entityQuery('group_role')
-        ->condition('group_type', $group_type_id, '=')
+        ->condition('group_type', $groupTypeId, '=')
         ->condition('internal', 0, '=')
         ->execute();
+      $sandbox['roles'] = $roles;
     }
 
-    // Loop around the groups adding one entity at a time until all entities are
-    // added
-    $i = 0;
-    while ($entity = array_pop($content)) {
-      $group = $groups[$i % count($groups)];
-      $group->addContent(
-        $entity,
-        $plugin_id,
-        ['uid' => $entity instanceof \Drupal\user\EntityOwnerInterface ? $entity->getOwnerId() : 1]
-      );
-      // If we are adding users as members then add one random role to the newly
-      // created membership as well;
-      if ($roles) {
-        $this->membershipLoader
-          ->load($group, $entity)
-          ->getGroupContent()
-          ->set('group_roles', (array)$roles[$i % count($roles)])
-          ->save();
-      }
-      $i++;
+    // Load all relevant content entities.
+    $query = $this->entityTypeManager->getStorage($entityTypeId)->getQuery();
+
+    $bundleId = $contentPlugin->getEntityBundle();
+    if ($bundleId) {
+      $entityType = $this->entityTypeManager->getDefinition($entityTypeId);
+      $bundleField = $entityType->getKey('bundle');
+      $query->condition($bundleField, $bundleId);
     }
+
+    $contentIds = $query->execute();
+
+    if (empty($contentIds)) {
+      $message = $this->t(
+        'No %type content to add to %group_type_id groups.',
+        [
+          '%group_type_id' => $groupTypeId,
+          '%type' => $groupContentTypeId,
+        ]
+      );
+      $this->setMessage($message, MessengerInterface::TYPE_WARNING);
+      return FALSE;
+    }
+
+    $sandbox['content_ids'] = array_values($contentIds);
+    $sandbox['total_content_items'] = count($contentIds);
+    $sandbox['current'] = 0;
+
+    return TRUE;
   }
 
 }
