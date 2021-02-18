@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -93,7 +94,7 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
       $sentences[] = $this->t("If content has an owner, it will only be placed in groups of which the owner is a member.");
       $form['intro'] = [
         '#markup' => implode(' ', $sentences),
-        '#weight' => -1
+        '#weight' => -1,
       ];
     }
     else {
@@ -101,33 +102,32 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
       $this->setMessage($this->t(
         'You do not have any group content types because you do not have any group types. <a href=":create-type">Go create a new group type</a>',
         [':create-type' => $create_url]
-      ), 'error', FALSE);
+      ), 'error');
       return;
     }
-
-    $options = [];
 
     $form['group_content_types'] = [
       '#title' => $this->t('Group content types'),
       '#description' => $this->t('Check none to include all'),
       '#type' => 'checkboxes',
       '#options' => [],
-      '#weight' => 1
+      '#weight' => 1,
     ];
+
     // Get the number of existing items for each plugin, and disable the
-    // checkboxes with none
+    // checkboxes with none.
+    $summary = [];
     foreach (GroupContentType::loadMultiple() as $id => $groupContentType) {
       $form['group_content_types']['#options'][$id] = $groupContentType->label();
       list($plugin, $entity_type_id, $entity_type, $bundle) = $this->parsePlugin($groupContentType);
       $quant = count($types_count[$id]);
       if ($bundle) {
         $bundle_label = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type_id)[$bundle]['label'];
-        $summary[$bundle] = $bundle_label .':'.$quant;
+        $summary[$bundle] = $bundle_label . ':' . $quant;
       }
       else {
-        $summary[$entity_type_id] = $entity_type->getLabel() .':'.$quant;
+        $summary[$entity_type_id] = $entity_type->getLabel() . ':' . $quant;
       }
-      //$form['group_content_types']['#options'][$id] .= ' ('.count($content_ids).')';
       $form['group_content_types'][$id]['#disabled'] = empty($types_count[$id]);
     }
 
@@ -137,7 +137,7 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
       '#type' => 'checkbox',
       '#title' => $this->t('Before generating, first delete all group content of these types.'),
       '#default_value' => $this->getSetting('kill'),
-      '#weight' => 2
+      '#weight' => 2,
     ];
 
     $form['#redirect'] = FALSE;
@@ -145,6 +145,14 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
     return $form;
   }
 
+  /**
+   * Helper function to count the items of each type of group content.
+   *
+   * @return array
+   *   Array keyed by group content IDs. Values are arrays of content IDs.
+   *
+   * @todo Either rename this method or make it do what its name promises.
+   */
   private function countContentOfTypes() {
     foreach (GroupContentType::loadMultiple() as $id => $groupContentType) {
       // Check if any of this content actually exists.
@@ -158,14 +166,25 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
     return $content_ids;
   }
 
-  private function parsePlugin($groupContentType) {
+  /**
+   * Helper function to retrieve key information about group content plugins.
+   *
+   * @param \Drupal\group\Entity\GroupContentTypeInterface $groupContentType
+   *   The group content type to get the information for.
+   *
+   * @return array
+   *   Array of information.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  private function parsePlugin(GroupContentTypeInterface $groupContentType) {
     $plugin = $groupContentType->getContentPlugin();
     $entity_type_id = $plugin->getEntitytypeId();
     return [
       $plugin,
       $entity_type_id,
       \Drupal::entityTypeManager()->getDefinition($entity_type_id),
-      $plugin->getEntityBundle()
+      $plugin->getEntityBundle(),
     ];
   }
 
@@ -223,7 +242,7 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    * @param array $context
    *   An array of contextual key/value information for rebuild batch process.
    */
-  public function batchPreGroup($values, &$context) {
+  public function batchPreGroup(array $values, array &$context) {
     $context['results'] = $values;
     $context['results']['num'] = 0;
   }
@@ -236,7 +255,7 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    * @param array $context
    *   An array of contextual key/value information for rebuild batch process.
    */
-  public function batchGroupContentKill($values, &$context) {
+  public function batchGroupContentKill(array $values, array &$context) {
     foreach (GroupContentType::loadMultiple($vars['group_content_types']) as $contentType) {
       $content_items = GroupContent::loadByContentPluginId($contentType->id());
     }
@@ -250,9 +269,9 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    * Delete existing groupContent of the given type.
    *
    * @param array $values
-   *   The input values from the settings form or batch
+   *   The input values from the settings form or batch.
    */
-  public function GroupContentKill($values) {
+  public function groupContentKill(array $values) {
     $contentTypeId = reset($values['group_content_types']);
     foreach (GroupContent::loadByContentPluginId($contentTypeId) as $item) {
       $item->delete();
@@ -271,7 +290,16 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
     return $values;
   }
 
-  public function batchAddGroupContent($values, &$context) {
+  /**
+   * Put all content of one type into as many groups as it will support.
+   *
+   * @param array $values
+   *   The input values from the settings form with some additional data needed
+   *   for the generation. Should at least contain value 'content_type'.
+   * @param array $context
+   *   The batch context.
+   */
+  public function batchAddGroupContent(array $values, array &$context) {
     $this->addGroupContent($values);
     $context['results']['num']++;
   }
@@ -282,8 +310,6 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    * @param array $values
    *   The input values from the settings form with some additional data needed
    *   for the generation.
-   * @param string $groupContentTypeId
-   *   the id of the groupContentType e.g. clubs-events
    */
   public function addGroupContent($values) {
     // The GroupContentType plugin tells us which groupType(s) we need.
@@ -338,8 +364,6 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
       }
       $i++;
     }
-
-
   }
 
 }
