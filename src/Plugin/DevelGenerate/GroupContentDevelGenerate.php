@@ -192,46 +192,39 @@ class GroupContentDevelGenerate extends DevelGenerateBase implements ContainerFa
    * {@inheritdoc}
    */
   protected function generateElements(array $values) {
-    $groupContentTypes = array_filter($values['group_content_types']) ?: array_keys($this->countContentOfTypes());
-    if (count($groupContentTypes) == 1) {
-      if ($values['kill']) {
+    // Always do this in a batch. The number of operations can quickly baloon
+    // with a lot of content and a lot of groups, even with a single type of
+    // relation.
+    $batch = [
+      'title' => $this->t('Generating group content'),
+      'finished' => 'devel_generate_batch_finished',
+      'file' => drupal_get_path('module', 'devel_generate') . '/devel_generate.batch.inc',
+    ];
 
-      }
-      $this->addGroupContent($values + $values + ['content_type' => reset($values['group_content_types'])]);
-    }
-    else {
-      // Start the batch.
-      $batch = [
-        'title' => $this->t('Generating group content'),
-        'finished' => 'devel_generate_batch_finished',
-        'file' => drupal_get_path('module', 'devel_generate') . '/devel_generate.batch.inc',
-      ];
-
-      // Add the kill operation.
-      if ($values['kill']) {
-        $batch['operations'][] = [
-          'devel_generate_operation',
-          [$this, 'batchGroupsKill', $values],
-        ];
-      }
+    // Add the kill operation.
+    if ($values['kill']) {
       $batch['operations'][] = [
         'devel_generate_operation',
-        [$this, 'batchPreGroup', $values],
+        [$this, 'batchGroupsKill', $values],
       ];
-
-      $groupContentTypes = array_filter($values['group_content_types']) ?: array_keys($this->countContentOfTypes());
-
-      // Add the operations to create the groups.
-      foreach (array_filter($groupContentTypes) as $type) {
-        $batch['operations'][] = [
-          'devel_generate_operation',
-          [$this, 'batchAddGroupContent', $values + ['content_type' => $type]],
-        ];
-      }
-
-      // Should we make a batchPostGroup?
-      batch_set($batch);
     }
+    $batch['operations'][] = [
+      'devel_generate_operation',
+      [$this, 'batchPreGroup', $values],
+    ];
+
+    $groupContentTypes = array_filter($values['group_content_types']) ?: array_keys($this->countContentOfTypes());
+
+    // Add the operations to create the groups.
+    foreach (array_filter($groupContentTypes) as $type) {
+      $batch['operations'][] = [
+        'devel_generate_operation',
+        [$this, 'batchAddGroupContent', $values + ['content_type' => $type]],
+      ];
+    }
+
+    // Should we make a batchPostGroup?
+    batch_set($batch);
   }
 
   /**
