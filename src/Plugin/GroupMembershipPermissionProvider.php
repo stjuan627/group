@@ -32,6 +32,17 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
   /**
    * {@inheritdoc}
    */
+  public function getRelationTranslatePermission($scope = 'any') {
+    // Translate any is handled by the admin permission.
+    if ($scope === 'own') {
+      return parent::getRelationTranslatePermission($scope);
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getRelationCreatePermission() {
     // Create is handled by the admin permission.
     return FALSE;
@@ -53,10 +64,12 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
     $permissions[$this->getRelationViewPermission()]['title'] = 'View individual group members';
     $permissions[$this->getRelationUpdatePermission('own')]['title'] = 'Edit own membership';
     $permissions[$this->getRelationDeletePermission('own')]['title'] = 'Leave group';
+    $permissions[$this->getRelationTranslatePermission('own')]['title'] = 'Translate own membership';
 
     // Update the audience of the default permissions.
     $permissions[$this->getRelationUpdatePermission('own')]['allowed for'] = ['member'];
     $permissions[$this->getRelationDeletePermission('own')]['allowed for'] = ['member'];
+    $permissions[$this->getRelationTranslatePermission('own')]['allowed for'] = ['member'];
 
     return $permissions;
   }
