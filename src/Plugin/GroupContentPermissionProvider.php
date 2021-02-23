@@ -100,6 +100,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getRelationTranslatePermission($scope = 'any') {
+    return "translate $scope $this->pluginId content";
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEntityViewPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
       // @todo Implement view own permission.
@@ -164,6 +171,18 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getEntityTranslatePermission($scope = 'any') {
+    if ($this->definesEntityPermissions && $this->entityType->isTranslatable()) {
+      if ($this->implementsOwnerInterface || $scope === 'any') {
+        return "translate $scope $this->pluginId entity";
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermission($operation, $target, $scope = 'any') {
     assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
     assert(in_array($scope, ['any', 'own'], TRUE), '$target must be either "relation" or "entity"');
@@ -178,6 +197,8 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getRelationDeletePermission($scope);
         case 'create':
           return $this->getRelationCreatePermission();
+        case 'translate':
+          return $this->getRelationTranslatePermission($scope);
       }
     }
     elseif ($target === 'entity') {
@@ -192,6 +213,8 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getEntityDeletePermission($scope);
         case 'create':
           return $this->getEntityCreatePermission();
+        case 'translate':
+          return $this->getEntityTranslatePermission($scope);
       }
     }
 
@@ -237,6 +260,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
       );
     }
 
+    if ($name = $this->getRelationTranslatePermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Translate any entity relations");
+    }
+    if ($name = $this->getRelationTranslatePermission('own')) {
+      $permissions[$name] = $this->buildPermission("$prefix Translate own entity relations");
+    }
+
     // Provide permissions for the actual entity being added to the group.
     $prefix = 'Entity:';
     if ($name = $this->getEntityViewPermission()) {
@@ -269,6 +299,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
         "$prefix Add %entity_type entities",
         'Allows you to create a new %entity_type entity and add it to the group.'
       );
+    }
+
+    if ($name = $this->getEntityTranslatePermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Translate any %entity_type entities");
+    }
+    if ($name = $this->getEntityTranslatePermission('own')) {
+      $permissions[$name] = $this->buildPermission("$prefix Translate own %entity_type entities");
     }
 
     return $permissions;
