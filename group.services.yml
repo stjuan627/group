@@ -33,16 +33,23 @@ services:
     class: 'Drupal\group\Access\GroupContentCreateAnyEntityAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
+
+  # We need to decorate the content_translation access services because they do
+  # not use entity access checks, but rather route access checks. As such, we
+  # cannot simply declare our own 'access_check' tagged services, because even
+  # if we were to grant access, a neutral result from the original service
+  # would still lead to an access denied. See core issue:
+  # https://www.drupal.org/project/drupal/issues/2991698
   access_check.group_content.entity_translation_manage:
+    public: 'false'
     class: 'Drupal\group\Access\GroupContentEntityTranslationManageAccess'
-    arguments: ['@entity_type.manager', '@language_manager']
-    tags:
-      - { name: 'access_check', applies_to: '_access_content_translation_manage' }
+    decorates: 'content_translation.manage_access'
+    arguments: ['@access_check.group_content.entity_translation_manage.inner']
   access_check.group_content.entity_translation_overview:
+    public: 'false'
     class: 'Drupal\group\Access\GroupContentEntityTranslationOverviewAccess'
-    arguments: ['@entity_type.manager', '@language_manager']
-    tags:
-      - { name: 'access_check', applies_to: '_access_content_translation_overview' }
+    decorates: 'content_translation.overview_access'
+    arguments: ['@access_check.group_content.entity_translation_overview.inner']
 
   cache.group_permission:
     class: 'Drupal\Core\Cache\CacheBackendInterface'
