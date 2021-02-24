@@ -253,6 +253,9 @@ class EntityQueryAlter implements ContainerInjectionInterface {
     }
 
     $allowed_any_ids = $allowed_own_ids = $allowed_any_by_status_ids = $allowed_own_by_status_ids = $member_group_ids = [];
+    // Indicates whether the BC layer for handling missing permission provider
+    // definition on group plugins is active or not.
+    $is_bc_layer_active = TRUE;
     foreach ($plugin_ids as $plugin_id) {
       // If the plugin is not installed, skip it.
       if (!isset($plugin_id_map[$plugin_id])) {
@@ -265,8 +268,13 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       // 8.2.x all group content types will get a permission handler by
       // default, so this check can be safely removed then.
       if (!$this->pluginManager->hasHandler($plugin_id, 'permission_provider')) {
+        @trigger_error(sprintf('The "%s" plugin does not have a permission provider. The backward compatibility layer that handles this case will be removed before group:2.0.0.', $plugin_id). E_USER_DEPRECATED);
         continue;
       }
+
+      // Disable the BC layer because there is at least one plugin which
+      // can decide access.
+      $is_bc_layer_active = FALSE;
 
       foreach ($plugin_id_map[$plugin_id] as $group_content_type_id) {
         // If the group content type has no content, skip it.
@@ -327,6 +335,10 @@ class EntityQueryAlter implements ContainerInjectionInterface {
           }
         }
       }
+    }
+
+    if ($is_bc_layer_active) {
+      return;
     }
 
     // If no group type or group gave access, we deny access altogether.
