@@ -34,23 +34,6 @@ services:
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
 
-  # We need to decorate the content_translation access services because they do
-  # not use entity access checks, but rather route access checks. As such, we
-  # cannot simply declare our own 'access_check' tagged services, because even
-  # if we were to grant access, a neutral result from the original service
-  # would still lead to an access denied. See core issue:
-  # https://www.drupal.org/project/drupal/issues/2991698
-  access_check.group_content.entity_translation_manage:
-    public: 'false'
-    class: 'Drupal\group\Access\GroupContentEntityTranslationManageAccess'
-    decorates: 'content_translation.manage_access'
-    arguments: ['@access_check.group_content.entity_translation_manage.inner']
-  access_check.group_content.entity_translation_overview:
-    public: 'false'
-    class: 'Drupal\group\Access\GroupContentEntityTranslationOverviewAccess'
-    decorates: 'content_translation.overview_access'
-    arguments: ['@access_check.group_content.entity_translation_overview.inner']
-
   cache.group_permission:
     class: 'Drupal\Core\Cache\CacheBackendInterface'
     factory: 'cache_factory:get'
@@ -73,6 +56,28 @@ services:
     arguments: ['@current_user', '@entity_type.manager', '@group.membership_loader']
     tags:
       - { name: 'cache.context'}
+
+  # We need to decorate the content_translation access services because they do
+  # not use entity access checks, but rather route access checks. As such, we
+  # cannot simply declare our own 'access_check' tagged services, because even
+  # if we were to grant access, a neutral result from the original service
+  # would still lead to an access denied. See core issue:
+  # https://www.drupal.org/project/drupal/issues/2991698
+  decorator.group_content.content_translation.manage_access:
+    public: 'false'
+    class: 'Drupal\group\Decorator\GroupContentEntityTranslationManageAccess'
+    decorates: 'content_translation.manage_access'
+    arguments: ['@decorator.group_content.content_translation.manage_access.inner']
+  decorator.group_content.content_translation.overview_access:
+    public: 'false'
+    class: 'Drupal\group\Decorator\GroupContentEntityTranslationOverviewAccess'
+    decorates: 'content_translation.overview_access'
+    arguments: ['@decorator.group_content.content_translation.overview_access.inner']
+  decorator.group_content.entity_type.manager:
+    public: 'false'
+    class: 'Drupal\group\Decorator\EntityTypeManagerDecorator'
+    decorates: 'entity_type.manager'
+    arguments: ['@decorator.group_content.entity_type.manager.inner']
 
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
