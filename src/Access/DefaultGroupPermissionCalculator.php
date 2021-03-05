@@ -116,9 +116,6 @@ class DefaultGroupPermissionCalculator extends GroupPermissionCalculatorBase {
     $calculated_permissions->addCacheTags(['group_content_list:plugin:group_membership:entity:' . $account->id()]);
 
     foreach ($this->membershipLoader->loadByUser($account) as $group_membership) {
-      // If the member's roles change, so do the permissions.
-      $calculated_permissions->addCacheableDependency($group_membership);
-
       $permission_sets = [];
       foreach ($group_membership->getRoles() as $group_role) {
         $permission_sets[] = $group_role->getPermissions();
