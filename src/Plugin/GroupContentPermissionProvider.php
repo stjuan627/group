@@ -100,13 +100,6 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
-  public function getRelationTranslatePermission($scope = 'any') {
-    return "translate $scope $this->pluginId content";
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getEntityViewPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
       // @todo Implement view own permission.
@@ -171,10 +164,37 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
-  public function getEntityTranslatePermission($scope = 'any') {
-    if ($this->definesEntityPermissions && $this->entityType->isTranslatable()) {
-      if ($this->implementsOwnerInterface || $scope === 'any') {
-        return "translate $scope $this->pluginId entity";
+  public function getEntityUpdateTranslationPermission($scope = 'any') {
+    // Core has no notion of any vs own for translations (yet?).
+    if ($scope === 'any') {
+      if ($this->definesEntityPermissions && $this->entityType->isTranslatable()) {
+        return "update $this->pluginId entity translation";
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityDeleteTranslationPermission($scope = 'any') {
+    // Core has no notion of any vs own for translations (yet?).
+    if ($scope === 'any') {
+      if ($this->definesEntityPermissions && $this->entityType->isTranslatable()) {
+        return "delete $this->pluginId entity translation";
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityCreateTranslationPermission($scope = 'any') {
+    // Core has no notion of any vs own for translations (yet?).
+    if ($scope === 'any') {
+      if ($this->definesEntityPermissions && $this->entityType->isTranslatable()) {
+        return "create $this->pluginId entity translation";
       }
     }
     return FALSE;
@@ -197,8 +217,6 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getRelationDeletePermission($scope);
         case 'create':
           return $this->getRelationCreatePermission();
-        case 'translate':
-          return $this->getRelationTranslatePermission($scope);
       }
     }
     elseif ($target === 'entity') {
@@ -213,8 +231,12 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getEntityDeletePermission($scope);
         case 'create':
           return $this->getEntityCreatePermission();
-        case 'translate':
-          return $this->getEntityTranslatePermission($scope);
+        case 'update translation':
+          return $this->getEntityUpdateTranslationPermission($scope);
+        case 'delete translation':
+          return $this->getEntityDeleteTranslationPermission($scope);
+        case 'create translation':
+          return $this->getEntityCreateTranslationPermission($scope);
       }
     }
 
@@ -260,13 +282,6 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
       );
     }
 
-    if ($name = $this->getRelationTranslatePermission()) {
-      $permissions[$name] = $this->buildPermission("$prefix Translate any entity relations");
-    }
-    if ($name = $this->getRelationTranslatePermission('own')) {
-      $permissions[$name] = $this->buildPermission("$prefix Translate own entity relations");
-    }
-
     // Provide permissions for the actual entity being added to the group.
     $prefix = 'Entity:';
     if ($name = $this->getEntityViewPermission()) {
@@ -301,11 +316,14 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
       );
     }
 
-    if ($name = $this->getEntityTranslatePermission()) {
-      $permissions[$name] = $this->buildPermission("$prefix Translate any %entity_type entities");
+    if ($name = $this->getEntityUpdateTranslationPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Edit %entity_type entity translations");
     }
-    if ($name = $this->getEntityTranslatePermission('own')) {
-      $permissions[$name] = $this->buildPermission("$prefix Translate own %entity_type entities");
+    if ($name = $this->getEntityDeleteTranslationPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Delete %entity_type entity translations");
+    }
+    if ($name = $this->getEntityCreateTranslationPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Add %entity_type entity translations");
     }
 
     return $permissions;

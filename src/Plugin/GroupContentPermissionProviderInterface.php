@@ -60,7 +60,7 @@ interface GroupContentPermissionProviderInterface {
   public function getRelationCreatePermission();
 
   /**
-   * Gets the name of the view permission for the relation.
+   * Gets the name of the view permission for the entity.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -72,7 +72,7 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityViewPermission($scope = 'any');
 
   /**
-   * Gets the name of the view unpublished permission for the relation.
+   * Gets the name of the view unpublished permission for the entity.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -84,7 +84,7 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityViewUnpublishedPermission($scope = 'any');
 
   /**
-   * Gets the name of the update permission for the relation.
+   * Gets the name of the update permission for the entity.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -96,7 +96,7 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityUpdatePermission($scope = 'any');
 
   /**
-   * Gets the name of the delete permission for the relation.
+   * Gets the name of the delete permission for the entity.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -108,12 +108,48 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityDeletePermission($scope = 'any');
 
   /**
-   * Gets the name of the create permission for the relation.
+   * Gets the name of the create permission for the entity.
    *
    * @return string|false
    *   The permission name or FALSE if it does not apply.
    */
   public function getEntityCreatePermission();
+
+  /**
+   * Gets the name of the update translation permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityUpdateTranslationPermission($scope = 'any');
+
+  /**
+   * Gets the name of the delete translation permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityDeleteTranslationPermission($scope = 'any');
+
+  /**
+   * Gets the name of the create translation permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityCreateTranslationPermission($scope = 'any');
 
   /**
    * Gets the name of the permission for the given operation, target and scope.

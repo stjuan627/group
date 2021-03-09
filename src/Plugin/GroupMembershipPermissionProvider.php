@@ -64,12 +64,10 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
     $permissions[$this->getRelationViewPermission()]['title'] = 'View individual group members';
     $permissions[$this->getRelationUpdatePermission('own')]['title'] = 'Edit own membership';
     $permissions[$this->getRelationDeletePermission('own')]['title'] = 'Leave group';
-    $permissions[$this->getRelationTranslatePermission('own')]['title'] = 'Translate own membership';
 
     // Update the audience of the default permissions.
     $permissions[$this->getRelationUpdatePermission('own')]['allowed for'] = ['member'];
     $permissions[$this->getRelationDeletePermission('own')]['allowed for'] = ['member'];
-    $permissions[$this->getRelationTranslatePermission('own')]['allowed for'] = ['member'];
 
     return $permissions;
   }
