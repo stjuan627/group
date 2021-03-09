@@ -32,17 +32,6 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
   /**
    * {@inheritdoc}
    */
-  public function getRelationTranslatePermission($scope = 'any') {
-    // Translate any is handled by the admin permission.
-    if ($scope === 'own') {
-      return parent::getRelationTranslatePermission($scope);
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getRelationCreatePermission() {
     // Create is handled by the admin permission.
     return FALSE;
