@@ -31,12 +31,14 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    *
    * @covers ::getAdminPermission
    * @dataProvider adminPermissionProvider
    */
-  public function testGetAdminPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetAdminPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getAdminPermission());
   }
 
@@ -69,14 +71,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getRelationViewPermission
    * @dataProvider relationViewPermissionProvider
    */
-  public function testGetRelationViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetRelationViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getRelationViewPermission($scope));
   }
 
@@ -117,14 +121,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getRelationUpdatePermission
    * @dataProvider relationUpdatePermissionProvider
    */
-  public function testGetRelationUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetRelationUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getRelationUpdatePermission($scope));
   }
 
@@ -160,14 +166,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getRelationDeletePermission
    * @dataProvider relationDeletePermissionProvider
    */
-  public function testGetRelationDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetRelationDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getRelationDeletePermission($scope));
   }
 
@@ -203,12 +211,14 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    *
    * @covers ::getRelationCreatePermission
    * @dataProvider relationCreatePermissionProvider
    */
-  public function testGetRelationCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetRelationCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getRelationCreatePermission());
   }
 
@@ -241,14 +251,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getEntityViewPermission
    * @dataProvider entityViewPermissionProvider
    */
-  public function testGetEntityViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetEntityViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getEntityViewPermission($scope));
   }
 
@@ -290,14 +302,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getEntityViewUnpublishedPermission
    * @dataProvider entityViewUnpublishedPermissionProvider
    */
-  public function testGetEntityViewUnpublishedPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetEntityViewUnpublishedPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getEntityViewUnpublishedPermission($scope));
   }
 
@@ -339,14 +353,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getEntityUpdatePermission
    * @dataProvider entityUpdatePermissionProvider
    */
-  public function testGetEntityUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetEntityUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getEntityUpdatePermission($scope));
   }
 
@@ -387,14 +403,16 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $scope
    *   The $scope parameter for the tested method.
    *
    * @covers ::getEntityDeletePermission
    * @dataProvider entityDeletePermissionProvider
    */
-  public function testGetEntityDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetEntityDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getEntityDeletePermission($scope));
   }
 
@@ -435,12 +453,14 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    *
    * @covers ::getEntityCreatePermission
    * @dataProvider entityCreatePermissionProvider
    */
-  public function testGetEntityCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetEntityCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $this->assertEquals($expected, $permission_provider->getEntityCreatePermission());
   }
 
@@ -464,6 +484,156 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
   }
 
   /**
+   * Tests the entity update translation permission name.
+   *
+   * @param mixed $expected
+   *   The expected return value.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param array $definition
+   *   The plugin definition.
+   * @param bool $implements_owner
+   *   Whether the plugin's entity type deals with ownership.
+   * @param bool $implements_published
+   *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
+   * @param string $scope
+   *   The $scope parameter for the tested method.
+   *
+   * @covers ::getEntityUpdateTranslationPermission
+   * @dataProvider entityUpdateTranslationPermissionProvider
+   */
+  public function testGetEntityUpdateTranslationPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
+    $this->assertEquals($expected, $permission_provider->getEntityUpdateTranslationPermission($scope));
+  }
+
+  /**
+   * Data provider for testGetEntityUpdateTranslationPermission().
+   *
+   * @return array
+   *   A list of testGetEntityUpdateTranslationPermission method arguments.
+   */
+  public function entityUpdateTranslationPermissionProvider() {
+    $cases = [];
+    foreach ($this->getPermissionProviderScenarios() as $scenario) {
+      foreach (['any', 'own'] as $scope) {
+        $case = $scenario;
+        $case['scope'] = $scope;
+        $case['expected'] = FALSE;
+        if ($case['definition']['entity_access']) {
+          if ($case['is_translatable'] && $scope === 'any') {
+            $case['expected'] = "update {$scenario['plugin_id']} entity translation";
+          }
+        }
+        $cases[] = $case;
+      }
+    }
+    return $cases;
+  }
+
+  /**
+   * Tests the entity delete translation permission name.
+   *
+   * @param mixed $expected
+   *   The expected return value.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param array $definition
+   *   The plugin definition.
+   * @param bool $implements_owner
+   *   Whether the plugin's entity type deals with ownership.
+   * @param bool $implements_published
+   *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
+   * @param string $scope
+   *   The $scope parameter for the tested method.
+   *
+   * @covers ::getEntityDeleteTranslationPermission
+   * @dataProvider entityDeleteTranslationPermissionProvider
+   */
+  public function testGetEntityDeleteTranslationPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
+    $this->assertEquals($expected, $permission_provider->getEntityDeleteTranslationPermission($scope));
+  }
+
+  /**
+   * Data provider for testGetEntityDeleteTranslationPermission().
+   *
+   * @return array
+   *   A list of testGetEntityDeleteTranslationPermission method arguments.
+   */
+  public function entityDeleteTranslationPermissionProvider() {
+    $cases = [];
+    foreach ($this->getPermissionProviderScenarios() as $scenario) {
+      foreach (['any', 'own'] as $scope) {
+        $case = $scenario;
+        $case['scope'] = $scope;
+        $case['expected'] = FALSE;
+        if ($case['definition']['entity_access']) {
+          if ($case['is_translatable'] && $scope === 'any') {
+            $case['expected'] = "delete {$scenario['plugin_id']} entity translation";
+          }
+        }
+        $cases[] = $case;
+      }
+    }
+    return $cases;
+  }
+
+  /**
+   * Tests the entity create translation permission name.
+   *
+   * @param mixed $expected
+   *   The expected return value.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param array $definition
+   *   The plugin definition.
+   * @param bool $implements_owner
+   *   Whether the plugin's entity type deals with ownership.
+   * @param bool $implements_published
+   *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
+   * @param string $scope
+   *   The $scope parameter for the tested method.
+   *
+   * @covers ::getEntityCreateTranslationPermission
+   * @dataProvider entityCreateTranslationPermissionProvider
+   */
+  public function testGetEntityCreateTranslationPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
+    $this->assertEquals($expected, $permission_provider->getEntityCreateTranslationPermission($scope));
+  }
+
+  /**
+   * Data provider for testGetEntityCreateTranslationPermission().
+   *
+   * @return array
+   *   A list of testGetEntityCreateTranslationPermission method arguments.
+   */
+  public function entityCreateTranslationPermissionProvider() {
+    $cases = [];
+    foreach ($this->getPermissionProviderScenarios() as $scenario) {
+      foreach (['any', 'own'] as $scope) {
+        $case = $scenario;
+        $case['scope'] = $scope;
+        $case['expected'] = FALSE;
+        if ($case['definition']['entity_access']) {
+          if ($case['is_translatable'] && $scope === 'any') {
+            $case['expected'] = "create {$scenario['plugin_id']} entity translation";
+          }
+        }
+        $cases[] = $case;
+      }
+    }
+    return $cases;
+  }
+
+  /**
    * Tests the permission name getter.
    *
    * @param string $plugin_id
@@ -474,6 +644,8 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    * @param string $operation
    *   The $operation parameter for the tested method.
    * @param string $target
@@ -484,8 +656,8 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider getPermissionProvider
    */
-  public function testGetPermission($plugin_id, array $definition, $implements_owner, $implements_published, $operation, $target, $scope) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testGetPermission($plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable, $operation, $target, $scope) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $expected = FALSE;
 
     if ($target === 'relation') {
@@ -530,7 +702,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
           break;
       }
     }
-    
+
     $this->assertEquals($expected, $permission_provider->getPermission($operation, $target, $scope));
   }
 
@@ -570,12 +742,14 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    *   Whether the plugin's entity type deals with ownership.
    * @param bool $implements_published
    *   Whether the plugin's entity type deals with publishing of entities.
+   * @param bool $is_translatable
+   *   Whether the plugin's entity type is translatable.
    *
    * @covers ::buildPermissions
    * @dataProvider buildPermissionsProvider
    */
-  public function testBuildPermissions($plugin_id, array $definition, $implements_owner, $implements_published) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+  public function testBuildPermissions($plugin_id, array $definition, $implements_owner, $implements_published, $is_translatable) {
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable);
     $permissions = $permission_provider->buildPermissions();
 
     // Test the admin permission being restricted.
@@ -626,20 +800,23 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
       foreach ([TRUE, FALSE] as $implements_published) {
         foreach ([TRUE, FALSE] as $entity_access) {
           foreach (['administer foo', FALSE] as $admin_permission) {
-            $scenarios[] = [
-              'expected' => NULL,
-              // We use a derivative ID to prove these work.
-              'plugin_id' => 'foo:baz',
-              'definition' => [
-                'id' => 'foo',
-                'label' => 'Foo',
-                'entity_type_id' => 'bar',
-                'entity_access' => $entity_access,
-                'admin_permission' => $admin_permission,
-              ],
-              'implements_owner' => $implements_owner,
-              'implements_published' => $implements_published,
-            ];
+            foreach ([TRUE, FALSE] as $is_translatable) {
+              $scenarios[] = [
+                'expected' => NULL,
+                // We use a derivative ID to prove these work.
+                'plugin_id' => 'foo:baz',
+                'definition' => [
+                  'id' => 'foo',
+                  'label' => 'Foo',
+                  'entity_type_id' => 'bar',
+                  'entity_access' => $entity_access,
+                  'admin_permission' => $admin_permission,
+                ],
+                'implements_owner' => $implements_owner,
+                'implements_published' => $implements_published,
+                'is_translatable' => $is_translatable,
+              ];
+            }
           }
         }
       }
@@ -654,13 +831,14 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
    * @return \Drupal\group\Plugin\GroupContentPermissionProvider
    *   The default permission provider handler.
    */
-  protected function createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published) {
+  protected function createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $is_translatable) {
     $this->assertNotEmpty($definition['entity_type_id']);
 
     $entity_type = $this->prophesize(EntityTypeInterface::class);
     $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($implements_owner);
     $entity_type->entityClassImplements(EntityPublishedInterface::class)->willReturn($implements_published);
     $entity_type->getSingularLabel()->willReturn('Bar');
+    $entity_type->isTranslatable()->willReturn($is_translatable);
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getDefinition($definition['entity_type_id'])->willReturn($entity_type->reveal());
