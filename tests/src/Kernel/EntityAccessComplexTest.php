@@ -17,7 +17,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  public static $modules = ['group_test_plugin', 'node', 'language', 'content_translation'];
 
   /**
    * The node storage to use in testing.
@@ -59,6 +59,11 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     'edit any page content',
     'delete any page content',
     'delete any page content',
+    // @todo Move this and its tests to submodule when issue #3203186 lands.
+    'translate any entity',
+    'update content translations',
+    'delete content translations',
+    'create content translations',
   ];
 
   /**
@@ -67,10 +72,10 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->installConfig(['user', 'group_test_plugin']);
+    $this->installConfig(['user', 'group_test_plugin', 'language', 'content_translation']);
     $this->installSchema('node', ['node_access']);
     $this->installEntitySchema('node');
-    
+
     $this->storage = $this->entityTypeManager->getStorage('node');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('node');
     $this->createNodeType(['type' => 'page']);
@@ -785,7 +790,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'update'), 'Members cannot update unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'update'), 'The ungrouped node can be updated.');
   }
-  
+
   /**
    * Tests the deleting of any grouped entities for members.
    */
@@ -948,6 +953,222 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_3, 'delete'), 'Members cannot delete published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'delete'), 'Members cannot delete unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'delete'), 'The ungrouped node can be deleted.');
+  }
+
+  /**
+   * Tests the updating of grouped entity translations for members.
+   */
+  public function testMemberUpdateTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 1]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getMemberRole()->grantPermission('update node_as_content:page entity translation')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('update node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'update translation'), 'Members can update the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'update translation'), 'Members can update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+
+    $this->setCurrentUser($account);
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'update translation'), 'Members can update the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'update translation'), 'Members can update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'update translation'), 'Non-members cannot update the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'update translation'), 'Non-members cannot update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+  }
+
+  /**
+   * Tests the updating of grouped entity translations for non-members.
+   */
+  public function testNonMemberUpdateTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('update node_as_content:page entity translation')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('update node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'update translation'), 'Non-members can update the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'update translation'), 'Non-members can update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'update translation'), 'Non-members can update the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'update translation'), 'Non-members can update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+
+    $this->setCurrentUser($account);
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'update translation'), 'Members cannot update the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'update translation'), 'Members cannot update the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'update translation'), 'The translation for ungrouped nodes can be updated.');
+  }
+
+  /**
+   * Tests the deleting of grouped entity translations for members.
+   */
+  public function testMemberDeleteTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 1]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getMemberRole()->grantPermission('delete node_as_content:page entity translation')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('delete node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'delete translation'), 'Members can delete the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'delete translation'), 'Members can delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+
+    $this->setCurrentUser($account);
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'delete translation'), 'Members can delete the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'delete translation'), 'Members can delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'delete translation'), 'Non-members cannot delete the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'delete translation'), 'Non-members cannot delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+  }
+
+  /**
+   * Tests the deleting of grouped entity translations for non-members.
+   */
+  public function testNonMemberDeleteTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('delete node_as_content:page entity translation')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('delete node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'delete translation'), 'Non-members can delete the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'delete translation'), 'Non-members can delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'delete translation'), 'Non-members can delete the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'delete translation'), 'Non-members can delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+
+    $this->setCurrentUser($account);
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'delete translation'), 'Members cannot delete the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'delete translation'), 'Members cannot delete the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'delete translation'), 'The translation for ungrouped nodes can be deleted.');
+  }
+
+  /**
+   * Tests the creating of grouped entity translations for members.
+   */
+  public function testMemberCreateTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 1]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getMemberRole()->grantPermission('create node_as_content:page entity translation')->save();
+    $this->groupTypeB->getMemberRole()->grantPermission('create node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($this->getCurrentUser());
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($this->getCurrentUser());
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'create translation'), 'Members can create the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'create translation'), 'Members can create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
+
+    $this->setCurrentUser($account);
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'create translation'), 'Members can create the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'create translation'), 'Members can create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'create translation'), 'Non-members cannot create the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'create translation'), 'Non-members cannot create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
+  }
+
+  /**
+   * Tests the creating of grouped entity translations for non-members.
+   */
+  public function testNonMemberCreateTranslationAccess() {
+    $account = $this->createUser([], $this->permissions);
+    $node_1 = $this->createNode(['type' => 'page']);
+    $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
+    $node_3 = $this->createNode(['type' => 'page']);
+
+    $this->groupTypeA->getOutsiderRole()->grantPermission('create node_as_content:page entity translation')->save();
+    $this->groupTypeB->getOutsiderRole()->grantPermission('create node_as_content:page entity translation')->save();
+
+    $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addMember($account);
+
+    $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
+    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addMember($account);
+
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'create translation'), 'Non-members can create the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'create translation'), 'Non-members can create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
+
+    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->assertTrue($this->accessControlHandler->access($node_1, 'create translation'), 'Non-members can create the translation for published grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_2, 'create translation'), 'Non-members can create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
+
+    $this->setCurrentUser($account);
+    $this->assertFalse($this->accessControlHandler->access($node_1, 'create translation'), 'Members cannot create the translation for published grouped nodes.');
+    $this->assertFalse($this->accessControlHandler->access($node_2, 'create translation'), 'Members cannot create the translation for unpublished grouped nodes.');
+    $this->assertTrue($this->accessControlHandler->access($node_3, 'create translation'), 'The translation for ungrouped nodes can be created.');
   }
 
   /**
