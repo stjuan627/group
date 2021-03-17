@@ -230,7 +230,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     $result = AccessResult::neutral();
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions[] = $this->permissionProvider->getAdminPermission();
+    array_unshift($permissions, $this->permissionProvider->getAdminPermission());
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.
