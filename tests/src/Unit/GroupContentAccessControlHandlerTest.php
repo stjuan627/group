@@ -94,7 +94,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
     $permission_provider = $this->prophesize(GroupContentPermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
-    $permission_provider->getPermission($operation, 'relation', 'any')->willReturn($permission);
+    $permission_provider->getPermission($operation, 'relation')->willReturn($permission);
     $permission_provider->getPermission($operation, 'relation', 'own')->willReturn($own_permission);
 
     $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
@@ -335,11 +335,11 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
     $check_published = $operation === 'view' && $is_publishable;
     if (!$check_published || $is_published) {
-      $permission_provider->getPermission($operation, 'entity', 'any')->willReturn($permission);
+      $permission_provider->getPermission($operation, 'entity')->willReturn($permission);
       $permission_provider->getPermission($operation, 'entity', 'own')->willReturn($own_permission);
     }
-    elseif ($check_published && !$is_published) {
-      $permission_provider->getPermission("$operation unpublished", 'entity', 'any')->willReturn($permission);
+    else {
+      $permission_provider->getPermission("$operation unpublished", 'entity')->willReturn($permission);
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
     }
 
