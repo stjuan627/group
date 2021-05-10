@@ -4,7 +4,11 @@ administer group:
   description: 'Administer the group, its content and members'
   restrict access: TRUE
 view group:
-  title: 'View group'
+  title: 'View published group'
+view any unpublished group:
+  title: 'View any unpublished group'
+view own unpublished group:
+  title: 'View own unpublished group'
 edit group:
   title: 'Edit group'
   description: 'Edit the group information'
