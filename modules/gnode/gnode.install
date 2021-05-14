@@ -147,7 +147,9 @@ function gnode_update_8007(&$sandbox) {
     $group_types = array_keys(\Drupal::entityTypeManager()->getStorage('group_type')->loadMultiple());
     $gcm = \Drupal::service('plugin.manager.group_content_enabler');
     $definitions = $gcm->getDefinitions();
-    $definitions = \array_filter($definitions, static fn ($definition) => $definition['id'] === 'group_node');
+    $definitions = \array_filter($definitions, function($definition) {
+      return $definition['id'] === 'group_node';
+    });
     // We have to add the status field for every node type and every group type.
     $group_content_type_ids = [];
     foreach (array_keys($definitions) as $plugin_id) {
