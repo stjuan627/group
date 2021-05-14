@@ -1,0 +1,17 @@
+langcode: 'en'
+status: TRUE
+dependencies:
+  module:
+    - 'group'
+id: 'group_content.status'
+field_name: 'status'
+entity_type: 'group_content'
+type: 'boolean'
+settings: {}
+module: 'core'
+locked: TRUE
+cardinality: 1
+translatable: FALSE
+indexes: {}
+persist_with_no_fields: TRUE
+custom_storage: FALSE
