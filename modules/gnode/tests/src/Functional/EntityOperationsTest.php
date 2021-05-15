@@ -52,9 +52,7 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
     $cases = [
       ['status' => 0, 'relation_status' => 0],
       ['status' => 1, 'relation_status' => 0],
-      // For now we skip the case where node is unpublished and relation
-      // published as group currently displays an empty page instead of
-      // 403 in such a case.
+      ['status' => 0, 'relation_status' => 1],
       ['status' => 1, 'relation_status' => 1],
     ];
 
@@ -67,7 +65,7 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
     $this->entityTypeManager->getStorage('group_content_type')->createFromPlugin(
       $group_type,
       $plugin_id,
-      []
+      [],
     )->save();
 
     // Grant permissions and create an outsider user.

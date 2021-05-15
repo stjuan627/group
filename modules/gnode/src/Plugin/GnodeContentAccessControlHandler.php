@@ -15,13 +15,19 @@ class GnodeContentAccessControlHandler extends GroupContentAccessControlHandler 
    * {@inheritdoc}
    */
   public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+    $permission = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
+    if (!$permission) {
+      return parent::relationAccess($group_content, $operation, $account, $return_as_object);
+    }
+
     // Grant access to unpublished relation (and entity) only if the user has
     // permission to perform the operation on the entity.
     // Effect: a user can view group content node only if the entity and
     // relation is published or if that user has permission to view unpublished
     // group content entities.
-    $permission = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
-    if (!$group_content->get('status')->value && $permission) {
+    // @todo Should the second condition be implemented in the parent class
+    // instead with implenents EntityPublishedInterface check?
+    if (!$group_content->get('status')->value || !$group_content->getEntity()->isPublished()) {
       $result = $this->combinedGroupContentPermissionsCheck($group_content, $account, [$permission], $operation);
     }
     else {
