@@ -575,3 +575,16 @@ function group_update_8022() {
 
   return t('The published field has been added to groups.');
 }
+
+/**
+ * Add the 'new_revision' property to all group types.
+ */
+function group_update_8023() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type = $config_factory->getEditable($group_type_config_name);
+    $group_type->set('new_revision', FALSE);
+    $group_type->save(TRUE);
+  }
+}

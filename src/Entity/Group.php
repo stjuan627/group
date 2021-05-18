@@ -2,7 +2,7 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EditorialContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityPublishedTrait;
@@ -47,6 +47,9 @@ use Drupal\user\UserInterface;
  *   admin_permission = "administer group",
  *   base_table = "groups",
  *   data_table = "groups_field_data",
+ *   revision_table = "groups_revision",
+ *   revision_data_table = "groups_field_revision",
+ *   show_revision_ui = TRUE,
  *   translatable = TRUE,
  *   entity_keys = {
  *     "id" = "id",
@@ -55,7 +58,13 @@ use Drupal\user\UserInterface;
  *     "langcode" = "langcode",
  *     "bundle" = "type",
  *     "label" = "label",
- *     "published" = "status"
+ *     "published" = "status",
+ *     "revision" = "revision_id",
+ *   },
+ *   revision_metadata_keys = {
+ *     "revision_user" = "revision_user",
+ *     "revision_created" = "revision_created",
+ *     "revision_log_message" = "revision_log_message",
  *   },
  *   links = {
  *     "add-form" = "/group/add/{group_type}",
@@ -70,11 +79,9 @@ use Drupal\user\UserInterface;
  *   permission_granularity = "bundle"
  * )
  */
-class Group extends ContentEntityBase implements GroupInterface {
+class Group extends EditorialContentEntityBase implements GroupInterface {
 
-  use EntityChangedTrait;
   use EntityOwnerTrait;
-  use EntityPublishedTrait;
 
   /**
    * Gets the group membership loader.
@@ -218,7 +225,6 @@ class Group extends ContentEntityBase implements GroupInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
     $fields += static::ownerBaseFieldDefinitions($entity_type);
-    $fields += static::publishedBaseFieldDefinitions($entity_type);
 
     // @todo Remove the usage of StatusItem in
     //   https://www.drupal.org/project/drupal/issues/2936864.
@@ -248,13 +254,15 @@ class Group extends ContentEntityBase implements GroupInterface {
         'weight' => -5,
       ])
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayConfigurable('form', TRUE);
+      ->setDisplayConfigurable('form', TRUE)
+      ->setRevisionable(TRUE);
 
     $fields['uid']
       ->setLabel(t('Group creator'))
       ->setDescription(t('The username of the group creator.'))
       ->setDisplayConfigurable('view', TRUE)
-      ->setDisplayConfigurable('form', TRUE);
+      ->setDisplayConfigurable('form', TRUE)
+      ->setRevisionable(TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created on'))
@@ -265,7 +273,8 @@ class Group extends ContentEntityBase implements GroupInterface {
         'region' => 'hidden',
         'weight' => 0,
       ])
-      ->setDisplayConfigurable('view', TRUE);
+      ->setDisplayConfigurable('view', TRUE)
+      ->setRevisionable(TRUE);
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed on'))
@@ -276,7 +285,8 @@ class Group extends ContentEntityBase implements GroupInterface {
         'region' => 'hidden',
         'weight' => 0,
       ])
-      ->setDisplayConfigurable('view', TRUE);
+      ->setDisplayConfigurable('view', TRUE)
+      ->setRevisionable(TRUE);
 
     if (\Drupal::moduleHandler()->moduleExists('path')) {
       $fields['path'] = BaseFieldDefinition::create('path')

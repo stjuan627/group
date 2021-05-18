@@ -33,6 +33,13 @@ services:
     class: 'Drupal\group\Access\GroupContentCreateAnyEntityAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
+  access_check.group_latest_revision:
+    class: 'Drupal\group\Access\GroupLatestRevisionCheck'
+    arguments: ['@entity_type.manager']
+    calls:
+      - [setContentModerationInfo, ['@?content_moderation.moderation_information']]
+    tags:
+      - { name: 'access_check', applies_to: '_group_moderation_latest_version' }
 
   cache.group_permission:
     class: 'Drupal\Core\Cache\CacheBackendInterface'
@@ -60,6 +67,10 @@ services:
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
     arguments: ['@config.factory']
+    tags:
+      - { name: 'event_subscriber' }
+  group.latest_revision.route_subscriber:
+    class: 'Drupal\group\Routing\LatestRevisionRouteSubscriber'
     tags:
       - { name: 'event_subscriber' }
   group.config_subscriber:

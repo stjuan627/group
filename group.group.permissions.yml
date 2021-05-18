@@ -9,6 +9,9 @@ view any unpublished group:
   title: 'View any unpublished group'
 view own unpublished group:
   title: 'View own unpublished group'
+view latest group version:
+  title: 'View the latest group version'
+  description: 'Requires that you can view unpublished groups (through permissions or other access modules)'
 edit group:
   title: 'Edit group'
   description: 'Edit the group information'
