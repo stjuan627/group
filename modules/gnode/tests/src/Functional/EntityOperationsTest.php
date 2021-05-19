@@ -65,7 +65,7 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
     $this->entityTypeManager->getStorage('group_content_type')->createFromPlugin(
       $group_type,
       $plugin_id,
-      [],
+      []
     )->save();
 
     // Grant permissions and create an outsider user.
