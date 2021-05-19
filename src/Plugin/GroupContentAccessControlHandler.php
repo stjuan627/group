@@ -66,7 +66,8 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     // A user can view group content node only if the entity and
     // relation is published or if that user has permission to view unpublished
     // group content entities.
-    if (!$group_content->get('status')->value || !$group_content->getEntity()->isPublished()) {
+    $entity = $group_content->getEntity();
+    if ($entity instanceof EntityPublishedInterface && (!$group_content->get('status')->value || !$entity->isPublished())) {
       $any_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
       $permissions[] = $any_unpublished ?: $any_permissions;
       $own_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'own');
@@ -129,11 +130,11 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     // We only check unpublished vs published for "view" right now. If we ever
     // start supporting other operations, we need to remove the "view" check.
     $check_published = $operation === 'view'
-      && $entity->getEntityType()->entityClassImplements(EntityPublishedInterface::class);
+      && $entity instanceof EntityPublishedInterface;
 
     // Check if the account is the owner and an owner permission is supported.
     $is_owner = FALSE;
-    if ($entity->getEntityType()->entityClassImplements(EntityOwnerInterface::class)) {
+    if ($entity instanceof EntityOwnerInterface) {
       $is_owner = $entity->getOwnerId() === $account->id();
     }
 
