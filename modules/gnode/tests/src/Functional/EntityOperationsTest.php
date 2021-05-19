@@ -102,14 +102,6 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
         'created' => $time,
         'changed' => $time,
         'status' => $values['status'],
-        // We have to provide body as group content with access denied
-        // displays an empty page with just a title by default.
-        'body' => [
-          [
-            'value' => "Node $i body",
-            'format' => filter_default_format(),
-          ],
-        ],
       ]);
 
       $group->addContent($node, $plugin_id, ['status' => $values['relation_status']]);
