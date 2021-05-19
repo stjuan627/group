@@ -83,14 +83,11 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       $permissions[] = $own_permission;
     }
 
+    $permissions = array_filter($permissions);
+
     // If we still have permissions left, check for access.
     if (!empty($permissions)) {
       $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
-
-      // Adding this line makes the unit tests pass, but is it the right way,
-      // since previously that wasn't here and tests passed?
-      // @todo Feedback appreciated.
-      $result->addCacheContexts(['user.group_permissions']);
     }
 
     // If there was an owner permission to check, the result needs to vary per
@@ -234,10 +231,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     $result = AccessResult::neutral();
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [
-      $permission,
-      $this->permissionProvider->getAdminPermission(),
-    ];
+    $permissions = [$permission, $this->permissionProvider->getAdminPermission()];
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.
