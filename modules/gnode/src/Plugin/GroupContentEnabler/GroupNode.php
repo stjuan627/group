@@ -4,12 +4,9 @@ namespace Drupal\gnode\Plugin\GroupContentEnabler;
 
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\node\Entity\NodeType;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Provides a content enabler for nodes.
@@ -29,61 +26,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  *   }
  * )
  */
-class GroupNode extends GroupContentEnablerBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The current user object.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
-   */
-  protected $currentUser;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Constructs a new GroupContentEnablerBase object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin ID for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user object.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   */
-  public function __construct(
-    array $configuration,
-    $plugin_id,
-    $plugin_definition,
-    AccountInterface $current_user,
-    EntityTypeManagerInterface $entity_type_manager
-  ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->currentUser = $current_user;
-    $this->entityTypeManager = $entity_type_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('current_user'),
-      $container->get('entity_type.manager')
-    );
-  }
+class GroupNode extends GroupContentEnablerBase {
 
   /**
    * Retrieves the node type this plugin supports.
@@ -92,18 +35,19 @@ class GroupNode extends GroupContentEnablerBase implements ContainerFactoryPlugi
    *   The node type this plugin supports.
    */
   protected function getNodeType() {
-    return $this->entityTypeManager->getStorage('node_type')->load($this->getEntityBundle());
+    return NodeType::load($this->getEntityBundle());
   }
 
   /**
    * {@inheritdoc}
    */
   public function getGroupOperations(GroupInterface $group) {
+    $account = \Drupal::currentUser();
     $plugin_id = $this->getPluginId();
     $type = $this->getEntityBundle();
     $operations = [];
 
-    if ($group->hasPermission("create $plugin_id entity", $this->currentUser)) {
+    if ($group->hasPermission("create $plugin_id entity", $account)) {
       $route_params = ['group' => $group->id(), 'plugin_id' => $plugin_id];
       $operations["gnode-create-$type"] = [
         'title' => $this->t('Add @type', ['@type' => $this->getNodeType()->label()]),
