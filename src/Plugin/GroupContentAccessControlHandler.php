@@ -213,7 +213,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    *   The group to check for access.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user for which to check access.
-   * @param array $permission
+   * @param array $permissions
    *   The names of the permissions to check for.
    * @param bool $return_as_object
    *   Whether to return the result as an object or boolean.
@@ -260,7 +260,9 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
    *
-   * @deprecated in Group 1.4, will be removed before Group 2.0.
+   * @deprecated in 1.4 and is removed from 2.0.
+   *
+   * @see https://www.drupal.org/node/3214851
    */
   protected function combinedPermissionCheck(GroupInterface $group, AccountInterface $account, $permission, $return_as_object) {
     // Add in the admin permission and filter out the unsupported permissions.
