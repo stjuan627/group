@@ -209,8 +209,15 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
         \Drupal::service('views.views_data')->clear();
       }
 
+      $plugin = $this->getContentPlugin();
+      // Add status field if applicable.
+      $gcfi = \Drupal::service('group.group_content_fields_installer');
+      if ($gcfi->shouldInstallStatus($plugin)) {
+        $gcfi->installStatusField($plugin);
+      }
+
       // Run the post install tasks on the plugin.
-      $this->getContentPlugin()->postInstall();
+      $plugin->postInstall();
 
       // We need to reset the plugin ID map cache as it will be out of date now.
       $this->getContentEnablerManager()->clearCachedPluginMaps();

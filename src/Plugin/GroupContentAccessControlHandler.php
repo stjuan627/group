@@ -52,24 +52,35 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    * {@inheritdoc}
    */
   public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
-    $result = AccessResult::neutral();
-
     // Check if the account is the owner.
     $is_owner = $group_content->getOwnerId() === $account->id();
 
     // Add in the admin permission and filter out the unsupported permissions.
     $permissions = [$this->permissionProvider->getAdminPermission()];
-    $permissions[] = $this->permissionProvider->getPermission($operation, 'relation', 'any');
+    $any_permissions = $this->permissionProvider->getPermission($operation, 'relation', 'any');
     $own_permission = $this->permissionProvider->getPermission($operation, 'relation', 'own');
+
+    // If the target entity or group content is unpublished, try to rely
+    // on unpublished permissions where available. If not available, fallback
+    // to standard ones.
+    // A user can view group content node only if the entity and
+    // relation is published or if that user has permission to view unpublished
+    // group content entities.
+    if (!$group_content->get('status')->value || !$group_content->getEntity()->isPublished()) {
+      $any_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
+      $permissions[] = $any_unpublished ?: $any_permissions;
+      $own_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'own');
+      $own_permission = $own_unpublished ?: $own_permission;
+    }
+    else {
+      $permissions[] = $any_permissions;
+    }
+
     if ($is_owner) {
       $permissions[] = $own_permission;
     }
-    $permissions = array_filter($permissions);
 
-    // If we still have permissions left, check for access.
-    if (!empty($permissions)) {
-      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
-    }
+    $result = $this->combinedGroupContentPermissionsCheck($group_content, $account, $permissions, $operation);
 
     // If there was an owner permission to check, the result needs to vary per
     // user. We also need to add the relation as a dependency because if its
@@ -86,8 +97,11 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    * {@inheritdoc}
    */
   public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    $permission = $this->permissionProvider->getRelationCreatePermission();
-    return $this->combinedPermissionCheck($group, $account, $permission, $return_as_object);
+    $permissions = [
+      $this->permissionProvider->getRelationCreatePermission(),
+      $this->permissionProvider->getAdminPermission(),
+    ];
+    return $this->combinedGroupPermissionsCheck($group, $account, $permissions, $return_as_object);
   }
 
   /**
@@ -139,10 +153,9 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
         $permissions[] = $own_permission;
       }
     }
-    $permissions = array_filter($permissions);
 
     foreach ($group_contents as $group_content) {
-      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
+      $result = $this->combinedGroupContentPermissionsCheck($group_content, $account, $permissions, $operation);
       if ($result->isAllowed()) {
         break;
       }
@@ -183,8 +196,71 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
-    $permission = $this->permissionProvider->getEntityCreatePermission();
-    return $this->combinedPermissionCheck($group, $account, $permission, $return_as_object);
+    $permissions = [
+      $this->permissionProvider->getEntityCreatePermission(),
+      $this->permissionProvider->getAdminPermission(),
+    ];
+    return $this->combinedGroupPermissionsCheck($group, $account, $permissions, $return_as_object);
+  }
+
+  /**
+   * Checks the provided permissions.
+   *
+   * Important: Only one permission needs to match.
+   *
+   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   *   The group content to check for access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   * @param array $permissions
+   *   The names of the permissions to check for.
+   * @param string $operation
+   *   The operation.
+   *
+   * @return bool|\Drupal\Core\Access\AccessResult
+   *   The access result. Returns a boolean if $return_as_object is FALSE (this
+   *   is the default) and otherwise an AccessResultInterface object.
+   *   When a boolean is returned, the result of AccessInterface::isAllowed() is
+   *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
+   *   access is either explicitly forbidden or "no opinion".
+   */
+  protected function combinedGroupContentPermissionsCheck(GroupContentInterface $group_content, AccountInterface $account, array $permissions, $operation) {
+    return $this->combinedGroupPermissionsCheck($group_content->getGroup(), $account, $permissions, TRUE);
+  }
+
+  /**
+   * Checks the provided permissions.
+   *
+   * Important: Only one permission needs to match.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group to check for access.
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user for which to check access.
+   * @param array $permissions
+   *   The names of the permissions to check for.
+   * @param bool $return_as_object
+   *   Whether to return the result as an object or boolean.
+   *
+   * @return bool|\Drupal\Core\Access\AccessResult
+   *   The access result. Returns a boolean if $return_as_object is FALSE (this
+   *   is the default) and otherwise an AccessResultInterface object.
+   *   When a boolean is returned, the result of AccessInterface::isAllowed() is
+   *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
+   *   access is either explicitly forbidden or "no opinion".
+   */
+  protected function combinedGroupPermissionsCheck(GroupInterface $group, AccountInterface $account, array $permissions, $return_as_object) {
+    $result = AccessResult::neutral();
+
+    // Add in the admin permission and filter out the unsupported permissions.
+    $permissions = array_filter($permissions);
+
+    // If we still have permissions left, check for access.
+    if (!empty($permissions)) {
+      $result = GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $permissions, 'OR');
+    }
+
+    return $return_as_object ? $result : $result->isAllowed();
   }
 
   /**
@@ -207,12 +283,17 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    *   When a boolean is returned, the result of AccessInterface::isAllowed() is
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
+   *
+   * @deprecated in Group 1.4, will be removed before Group 2.0.
    */
   protected function combinedPermissionCheck(GroupInterface $group, AccountInterface $account, $permission, $return_as_object) {
     $result = AccessResult::neutral();
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [$permission, $this->permissionProvider->getAdminPermission()];
+    $permissions = [
+      $permission,
+      $this->permissionProvider->getAdminPermission(),
+    ];
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.

@@ -524,6 +524,7 @@ function group_update_8021() {
 }
 
 /**
+<<<<<<< HEAD
  * Add the status field to group entity type.
  */
 function group_update_8022() {
@@ -586,5 +587,57 @@ function group_update_8023() {
     $group_type = $config_factory->getEditable($group_type_config_name);
     $group_type->set('new_revision', FALSE);
     $group_type->save(TRUE);
+  }
+}
+
+/**
+ * Add status fields on applicable group content types, update existing data.
+ */
+function group_update_8024() {
+  $group_content_storage = \Drupal::entityTypeManager()->getStorage('group_content');
+
+  if (!isset($sandbox['progress'])) {
+    $gcfi = \Drupal::service('group.group_content_fields_installer');
+    // Install status field on node group_content bundles.
+    $group_types = array_keys(\Drupal::entityTypeManager()->getStorage('group_type')->loadMultiple());
+    $gcem = \Drupal::service('plugin.manager.group_content_enabler');
+    $definitions = $gcem->getDefinitions();
+    // We have to add the status field for every publishable entity type in
+    // every group type.
+    $group_content_type_ids = [];
+    foreach (array_keys($definitions) as $plugin_id) {
+      // Check here instead of using $gcfi->shouldInstallStatus to save
+      // overhead on some plugin instance creating.
+      $entity_type = \Drupal::entityTypeManager()->getDefinition($definition['entity_type_id']);
+      if (!$entity_type->entityClassImplements(EntityPublishedInterface::class)) {
+        continue;
+      }
+
+      foreach ($group_types as $group_type_id) {
+        $plugin = $gcem->createInstance($plugin_id, [
+          'group_type_id' => $group_type_id,
+        ]);
+        $group_content_type_ids[] = $plugin->getContentTypeConfigId();
+        $gcfi->installStatusField($plugin);
+      }
+    }
+
+    $sandbox['current'] = 0;
+    $query = $group_content_storage->getQuery();
+    $query->condition($group_content_storage->getEntityType()->getKey('bundle'), $group_content_type_ids, 'IN');
+    $sandbox['ids'] = array_values($query->execute());
+    $sandbox['total'] = count($sandbox['ids']);
+  }
+
+  // Publish all existing group content as that's the default value.
+  // Resaving will do the trick.
+  if (!empty($sandbox['ids']) && isset($sandbox['ids'][$sandbox['current']])) {
+    $group_content_entity = $group_content_storage->load($sandbox['ids'][$sandbox['current']]);
+    if ($group_content_entity) {
+      $group_content_entity->status->value = TRUE;
+      $group_content_entity->save();
+    }
+    $sandbox['current']++;
+    $sandbox['#finished'] = $sandbox['current'] / $sandbox['total'];
   }
 }
