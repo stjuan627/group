@@ -82,7 +82,6 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
     if ($is_owner) {
       $permissions[] = $own_permission;
     }
-
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.
