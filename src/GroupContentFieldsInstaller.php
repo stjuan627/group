@@ -89,13 +89,20 @@ class GroupContentFieldsInstaller implements GroupContentFieldsInstallerInterfac
       $storage_config = $field_storage->create(static::STATUS_FIELD_CONFIG);
       $storage_config->save();
     }
-    $field_config = $this->entityTypeManager->getStorage('field_config');
-    $field_config->create([
-      'field_storage' => $storage_config,
+
+    $field_config_storage = $this->entityTypeManager->getStorage('field_config');
+    if (!$field_config_storage->loadByProperties([
+      'entity_type' => static::ENTITY_TYPE_ID,
       'bundle' => $group_content_type_id,
-      'label' => $this->t('Status'),
-      'default_value' => [0 => ['value' => TRUE]],
-    ])->save();
+      'field_name' => static::STATUS_FIELD,
+    ])) {
+      $field_config_storage->create([
+        'field_storage' => $storage_config,
+        'bundle' => $group_content_type_id,
+        'label' => $this->t('Status'),
+        'default_value' => [0 => ['value' => TRUE]],
+      ])->save();
+    }
 
     // Build or retrieve the 'default' form mode.
     $form_display_storage = $this->entityTypeManager->getStorage('entity_form_display');
