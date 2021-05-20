@@ -49,13 +49,6 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
   public function testGroupNodeAccess() {
     $group = $this->createGroup();
 
-    $cases = [
-      ['status' => 0, 'relation_status' => 0],
-      ['status' => 1, 'relation_status' => 0],
-      ['status' => 0, 'relation_status' => 1],
-      ['status' => 1, 'relation_status' => 1],
-    ];
-
     // Create group content type, install plugin.
     $node_type_id = 'article';
     $plugin_id = 'group_node:' . $node_type_id;
@@ -90,6 +83,15 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
     $group->addMember($outsider, [
       'group_roles' => [$group_type->getOutsiderRoleId()],
     ]);
+
+    // Define test cases as a numerical array, each case being an array
+    // containing node status and relation status keys.
+    $cases = [
+      ['status' => 0, 'relation_status' => 0],
+      ['status' => 1, 'relation_status' => 0],
+      ['status' => 0, 'relation_status' => 1],
+      ['status' => 1, 'relation_status' => 1],
+    ];
 
     // Create test nodes and add them to the test group.
     $time = $this->container->get('datetime.time')->getRequestTime();
