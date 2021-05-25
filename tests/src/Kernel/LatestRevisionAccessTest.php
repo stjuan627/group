@@ -68,7 +68,6 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
    * Tests access to the revision tab.
    */
   public function testAccess() {
-    $storage = $this->entityTypeManager->getStorage('group');
     $moderation_info = $this->container->get('content_moderation.moderation_information');
 
     // Create two accounts to test with.
@@ -129,7 +128,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
 
     // Use a fresh copy of the group for new requests because Drupal otherwise
     // won't find the pending revision properly.
-    $group = $storage->load($group->id());
+    $group = $this->reloadEntity($group);
     $this->assertTrue($moderation_info->hasPendingRevision($group));
 
     // Check access when there is a pending revision.
