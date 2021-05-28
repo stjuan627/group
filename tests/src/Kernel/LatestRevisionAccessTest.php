@@ -66,6 +66,9 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
 
   /**
    * Tests access to the revision tab.
+   *
+   * @todo Rewrite like RevisionUiAccessTest. Data providers means less noise
+   *   from resetting code.
    */
   public function testAccess() {
     $moderation_info = $this->container->get('content_moderation.moderation_information');
@@ -113,11 +116,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
       ])
       ->grantPermission('administer group')
       ->save();
-    $group->addMember($admin);
-    // @todo This displays a desperate need for addRole() and removeRole().
-    $membership = $group->getMember($admin)->getGroupContent();
-    $membership->group_roles[] = 'revision_test-admin';
-    $membership->save();
+    $group->addMember($admin, ['group_roles' => ['revision_test-admin']]);
     $this->assertFalse($this->accessManager->checkRequest($request, $admin), 'An admin has no access if there is no pending revision.');
 
     // Create a pending revision of the original group.

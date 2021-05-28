@@ -1,14 +1,14 @@
 <?php
 
-namespace Drupal\group\Routing;
+namespace Drupal\group\Entity\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
- * Swaps out the revision page access callback.
+ * Swaps out the latest revision page access callback.
  */
-class LatestRevisionRouteSubscriber extends RouteSubscriberBase {
+class GroupLatestRevisionRouteSubscriber extends RouteSubscriberBase {
 
   /**
    * {@inheritdoc}
@@ -17,7 +17,7 @@ class LatestRevisionRouteSubscriber extends RouteSubscriberBase {
     if ($route = $collection->get('entity.group.latest_version')) {
       $requirements = $route->getRequirements();
       unset($requirements['_content_moderation_latest_version']);
-      $requirements['_group_moderation_latest_version'] = 'TRUE';
+      $requirements['_group_latest_revision'] = 'TRUE';
       $route->setRequirements($requirements);
     }
   }

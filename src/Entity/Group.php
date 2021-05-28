@@ -4,8 +4,6 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Entity\EditorialContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityChangedTrait;
-use Drupal\Core\Entity\EntityPublishedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -30,11 +28,13 @@ use Drupal\user\UserInterface;
  *   ),
  *   bundle_label = @Translation("Group type"),
  *   handlers = {
+ *     "storage" = "Drupal\group\Entity\Storage\GroupStorage",
  *     "view_builder" = "Drupal\group\Entity\ViewBuilder\GroupViewBuilder",
  *     "views_data" = "Drupal\group\Entity\Views\GroupViewsData",
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupListBuilder",
  *     "route_provider" = {
  *       "html" = "Drupal\group\Entity\Routing\GroupRouteProvider",
+ *       "revision" = "\Drupal\entity\Routing\RevisionRouteProvider",
  *     },
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupForm",
@@ -72,7 +72,11 @@ use Drupal\user\UserInterface;
  *     "canonical" = "/group/{group}",
  *     "collection" = "/admin/group",
  *     "edit-form" = "/group/{group}/edit",
- *     "delete-form" = "/group/{group}/delete"
+ *     "delete-form" = "/group/{group}/delete",
+ *     "version-history" = "/group/{group}/revisions",
+ *     "revision" = "/group/{group}/revisions/{group_revision}/view",
+ *     "revision-revert-form" = "/group/{group}/revisions/{group_revision}/revert",
+ *     "revision-delete-form" = "/group/{group}/revisions/{group_revision}/delete",
  *   },
  *   bundle_entity_type = "group_type",
  *   field_ui_base_route = "entity.group_type.edit_form",
@@ -301,6 +305,54 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     }
 
     return $fields;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function urlRouteParameters($rel) {
+    $uri_route_parameters = parent::urlRouteParameters($rel);
+    if (in_array($rel, ['revision-revert-form', 'revision-delete-form'], TRUE)) {
+      $uri_route_parameters['group_revision'] = $this->getRevisionId();
+    }
+    return $uri_route_parameters;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Core needs to make sure this happens for all entities as this piece of
+    // code is currently copy-pasted between Node, Media, Block, etc.
+    // @todo Keep an eye on this from time to time and see if we can remove it.
+    //   See: https://www.drupal.org/project/drupal/issues/2869056.
+    if (!$this->getRevisionUser()) {
+      $this->setRevisionUserId($this->getOwnerId());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preSaveRevision(EntityStorageInterface $storage, \stdClass $record) {
+    parent::preSaveRevision($storage, $record);
+
+    // Core needs to make sure this happens for all entities as this piece of
+    // code is currently copy-pasted between Node, Media, Block, etc.
+    // @todo Keep an eye on this from time to time and see if we can remove it.
+    if (!$this->isNewRevision() && isset($this->original) && empty($record->revision_log_message)) {
+      // If we are updating an existing group without adding a new revision, we
+      // need to make sure $entity->revision_log is reset whenever it is empty.
+      // Therefore, this code allows us to avoid clobbering an existing log
+      // entry with an empty one.
+      $record->revision_log_message = $this->original->revision_log_message->value;
+    }
+
+    if ($this->isNewRevision() && empty($record->revision_created)) {
+      $record->revision_created = \Drupal::time()->getRequestTime();
+    }
   }
 
   /**

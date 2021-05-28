@@ -177,6 +177,14 @@ class GroupListBuilder extends EntityListBuilder {
       }
     }
 
+    if ($entity->getGroupType()->shouldCreateNewRevision() && $entity->hasPermission('view group revisions', $this->currentUser)) {
+      $operations['revisions'] = [
+        'title' => $this->t('Revisions'),
+        'weight' => 20,
+        'url' => $entity->toUrl('version-history'),
+      ];
+    }
+
     // Add the current path or destination as a redirect to the operation links.
     $destination = $this->redirectDestination->getAsArray();
     foreach ($operations as $key => $operation) {

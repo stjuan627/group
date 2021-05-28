@@ -10,6 +10,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupContentType;
+use Drupal\group\Entity\Storage\GroupStorage;
 use Drupal\user\Entity\Role;
 
 /**
@@ -88,10 +89,14 @@ function group_post_update_make_group_revisionable(&$sandbox) {
   ];
   $entity_type->set('revision_metadata_keys', $revision_metadata_keys);
 
+  // Some revision data does not get set by core properly, this fixes it.
+  $entity_type->setHandlerClass('storage', GroupStorage::class);
+
   // Update the field storage definitions and add the new ones required by a
   // revisionable entity type.
   $field_storage_definitions['label']->setRevisionable(TRUE);
   $field_storage_definitions['uid']->setRevisionable(TRUE);
+  $field_storage_definitions['langcode']->setRevisionable(TRUE);
   $field_storage_definitions['created']->setRevisionable(TRUE);
   $field_storage_definitions['changed']->setRevisionable(TRUE);
 

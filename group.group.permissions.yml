@@ -18,6 +18,14 @@ edit group:
 delete group:
   title: 'Delete group'
   description: 'Delete the group'
+view group revisions:
+  title: 'Revisioning: View revisions'
+revert group revisions:
+  title: 'Revisioning: Revert revisions'
+  description: 'Requires the "Edit group" permission'
+delete group revisions:
+  title: 'Revisioning: Delete revisions'
+  description: 'Requires the "Delete group" permission'
 access content overview:
   title: 'Access all entities overview'
   description: 'View all of the entity relations for the group'
