@@ -53,6 +53,11 @@ function group_token_info() {
     'description' => t('The URL of the group.'),
   ];
 
+  $tokens['group']['alias'] = [
+    'name' => t('Alias'),
+    'description' => t('The alias used by the parent group'),
+  ];
+
   $tokens['group']['edit-url'] = [
     'name' => t('Edit URL'),
     'description' => t("The URL of the group's edit page."),
@@ -121,6 +126,39 @@ function group_token_info() {
     'description' => t('A prettier way of labeling group content of the same plugin type.'),
   ];
 
+  $tokens['group_content']['label'] = [
+    'name' => t('Group content entity label'),
+    'description' => t('The label of the entity object referenced in the group content.'),
+  ];
+
+  // Build per entity type chained tokens.
+  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+  if ($plugin_manager) {
+    $content_entity_types = [];
+    foreach ($plugin_manager->getAll() as $plugin_id => $plugin) {
+      $entity_type_id = $plugin->getEntityTypeId();
+      if (!isset($content_entity_types[$entity_type_id])) {
+        $entity_type_object = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
+        if ($entity_type_object) {
+          $content_entity_types[$entity_type_id] = $entity_type_object->getLabel();
+        }
+      }
+    }
+
+    foreach ($content_entity_types as $content_entity_type_id => $content_entity_type_label) {
+      $tokens['group_content'][$content_entity_type_id] = [
+        'type' => $content_entity_type_id,
+        'name' => t('Group content entity: @label', [
+          '@label' => $content_entity_type_label,
+        ]),
+        'description' => t('The @label (@type) entity object for the group content.', [
+          '@label' => $content_entity_type_label,
+          '@type' => $content_entity_type_id,
+        ]),
+      ];
+    }
+  }
+
   return ['types' => $types, 'tokens' => $tokens];
 }
 
@@ -174,6 +212,11 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
           $replacements[$original] = $group->toUrl('canonical', $url_options)->toString();
           break;
 
+        case 'alias':
+          $group_alias = \Drupal::service('path.alias_manager')->getAliasByPath('/group/' . $group->id());
+          $replacements[$original] = $group_alias;
+          break;
+
         case 'edit-url':
           $replacements[$original] = $group->toUrl('edit-form', $url_options)->toString();
           break;
@@ -215,6 +258,8 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
   elseif ($type == 'group_content' && !empty($data[$type])) {
     /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $data['group_content'];
+    $content_entity = $group_content->getEntity();
+    $content_entity_type = $content_entity->getEntityTypeId();
 
     foreach ($tokens as $name => $original) {
       switch ($name) {
@@ -256,6 +301,19 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
           $bubbleable_metadata->addCacheableDependency($date_format);
           $replacements[$original] = \Drupal::service('date.formatter')->format($group_content->getChangedTime(), 'medium', '', NULL, $langcode);
           break;
+
+        case 'label':
+          $replacements[$original] = $group_content->label();
+          break;
+
+        case $content_entity_type:
+          // Entity chained references.
+          // Add cache dependency.
+          $bubbleable_metadata->addCacheableDependency($content_entity);
+
+          // Provide a string for tokens that are not chained.
+          $replacements[$original] = $content_entity->label();
+          break;
       }
 
       // Actual chaining of tokens handled below.
@@ -269,6 +327,17 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
 
       if ($changed_tokens = $token_service->findWithPrefix($tokens, 'changed')) {
         $replacements += $token_service->generate('date', $changed_tokens, ['date' => $group_content->getChangedTime()], $options, $bubbleable_metadata);
+      }
+
+      // Content entity chaining of tokens.
+      // Example: "group_content:node:field_cool_value".
+      if ($content_entity && $content_entity_type) {
+        if ($content_entity_tokens = $token_service->findWithPrefix($tokens, $content_entity_type)) {
+          $bubbleable_metadata->addCacheableDependency($content_entity);
+          $replacements += $token_service->generate($content_entity_type, $content_entity_tokens, [
+            $content_entity_type => $content_entity,
+          ], $options, $bubbleable_metadata);
+        }
       }
     }
   }
