@@ -146,6 +146,22 @@ services:
     tags:
       - { name: plugin_manager_cache_clear }
 
+  # Default group relation plugin handlers.
+  group.plugin_handler.access_control:
+    class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl.php'
+    arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler']
+    shared: 'FALSE'
+  group.plugin_handler.permission_provider:
+    class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider.php'
+    arguments: ['@entity_type.manager']
+    shared: 'FALSE'
+
+  # Specific group relation plugin handlers.
+  group.plugin_handler.access_control.group_membership:
+    class: '\Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider.php'
+    arguments: ['@group.plugin_handler.permission_provider', '@entity_type.manager']
+    shared: 'FALSE'
+
   # Recently, core introduced a new static cache that does not serialize its
   # data, unlike the cache.static service. This entity.memory_cache service has
   # two major drawbacks: First of all, it is named confusingly as it can work
