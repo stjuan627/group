@@ -4,8 +4,8 @@ namespace Drupal\group\Entity\Controller;
 
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\GroupContentEnablerInterface;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
+use Drupal\group\Plugin\GroupRelationManagerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -27,7 +27,7 @@ class GroupTypeController extends ControllerBase {
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -52,10 +52,10 @@ class GroupTypeController extends ControllerBase {
    *   The module handler.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, GroupContentEnablerManagerInterface $plugin_manager) {
+  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {
     $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
@@ -141,17 +141,17 @@ class GroupTypeController extends ControllerBase {
   }
 
   /**
-   * Builds a row for a content enabler plugin.
+   * Builds a row for a group relation plugin.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
-   *   The content enabler plugin to build operation links for.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
+   *   The group relation plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
    *
    * @return array
    *   A render array to use as a table row.
    */
-  public function buildRow(GroupContentEnablerInterface $plugin, $is_installed) {
+  public function buildRow(GroupRelationInterface $plugin, $is_installed) {
     $status = $is_installed ? $this->t('Installed') : $this->t('Available');
 
     $install_type = $this->t('Manual');
@@ -192,7 +192,7 @@ class GroupTypeController extends ControllerBase {
   /**
    * Provides an array of information to build a list of operation links.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
    *   The content enabler plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
@@ -211,7 +211,7 @@ class GroupTypeController extends ControllerBase {
   /**
    * Gets the group type's content plugin's default operation links.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
    *   The content enabler plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
@@ -265,7 +265,7 @@ class GroupTypeController extends ControllerBase {
   /**
    * Builds operation links for the group type's content plugins.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerInterface $plugin
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
    *   The content enabler plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.

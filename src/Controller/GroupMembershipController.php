@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides group membership route controllers.
  *
  * This only controls the routes that are not supported out of the box by the
- * plugin base \Drupal\group\Plugin\GroupContentEnablerBase.
+ * plugin base \Drupal\group\Plugin\Group\Relation\GroupRelationBase.
  */
 class GroupMembershipController extends ControllerBase {
 
@@ -23,14 +23,14 @@ class GroupMembershipController extends ControllerBase {
    * @var \Drupal\Core\Session\AccountInterface
    */
   protected $currentUser;
-  
+
   /**
    * The entity form builder.
    *
    * @var \Drupal\Core\Entity\EntityFormBuilderInterface
    */
   protected $entityFormBuilder;
-  
+
   /**
    * Constructs a new GroupMembershipController.
    *
@@ -64,7 +64,7 @@ class GroupMembershipController extends ControllerBase {
    *   A group join form.
    */
   public function join(GroupInterface $group) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin('group_membership');
 
     // Pre-populate a group membership with the current user.

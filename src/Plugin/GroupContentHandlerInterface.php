@@ -28,7 +28,7 @@ interface GroupContentHandlerInterface {
    *   The ID of the plugin the handler is for. This will contain the derivative
    *   ID when present, whereas the definition will contain only the base ID.
    * @param array $definition
-   *   The group content enabler definition.
+   *   The group relation definition.
    *
    * @return static
    *   A new instance of the group content handler.

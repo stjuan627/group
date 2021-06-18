@@ -342,6 +342,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     // Core needs to make sure this happens for all entities as this piece of
     // code is currently copy-pasted between Node, Media, Block, etc.
     // @todo Keep an eye on this from time to time and see if we can remove it.
+    //   See: https://www.drupal.org/project/drupal/issues/2869056.
     if (!$this->isNewRevision() && isset($this->original) && empty($record->revision_log_message)) {
       // If we are updating an existing group without adding a new revision, we
       // need to make sure $entity->revision_log is reset whenever it is empty.

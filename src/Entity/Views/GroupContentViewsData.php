@@ -12,9 +12,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentViewsData extends EntityViewsData {
 
   /**
-   * The group content enabler plugin manager.
+   * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $pluginManager;
 

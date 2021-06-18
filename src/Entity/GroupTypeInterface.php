@@ -127,7 +127,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   /**
    * Returns the installed content enabler plugins for this group type.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @return \Drupal\group\Plugin\GroupRelationCollection
    *   The group content plugin collection.
    */
   public function getInstalledContentPlugins();
@@ -153,8 +153,8 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    * @param string $plugin_id
    *   The ID of the content enabler plugin.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The installed content enabler plugin for the group type.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The installed group relation plugin for the group type.
    */
   public function getContentPlugin($plugin_id);
 

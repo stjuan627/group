@@ -7,7 +7,7 @@ use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\GroupRelationManagerInterface;
 
 class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
 
@@ -23,7 +23,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -34,10 +34,10 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
    *   The string translation service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    */
-  public function __construct(TranslationInterface $string_translation, EntityTypeManagerInterface $entity_type_manager, GroupContentEnablerManagerInterface $plugin_manager) {
+  public function __construct(TranslationInterface $string_translation, EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {
     $this->stringTranslation = $string_translation;
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
@@ -49,7 +49,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   public function validate($module) {
     $reasons = $plugin_names = [];
 
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
       if ($plugin->getProvider() == $module && $this->hasGroupContent($plugin_id)) {
         $plugin_names[] = $plugin->getLabel();
@@ -67,7 +67,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
    * Determines if there is any group content for a content enabler plugin.
    *
    * @param string $plugin_id
-   *   The group content enabler plugin ID to check for group content.
+   *   The group relation plugin ID to check for group content.
    *
    * @return bool
    *   Whether there are group content entities for the given plugin ID.

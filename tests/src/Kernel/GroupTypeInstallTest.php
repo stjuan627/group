@@ -38,7 +38,7 @@ class GroupTypeInstallTest extends GroupKernelTestBase {
     $this->assertNotNull($anonymous, 'Anonymous role was created without a Yaml file.');
 
     // Check that the enforced plugins give priority to the Yaml files.
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin = $group_type->getContentPlugin('group_membership');
     $config = $plugin->getConfiguration();
     $this->assertEquals('99', $config['group_cardinality'], 'Enforced group_membership plugin was created from Yaml file.');

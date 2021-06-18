@@ -38,7 +38,7 @@ class GroupContentCreateAnyEntityAccessCheck implements AccessInterface {
 
     // Find out which ones allow the user to create a target entity.
     foreach ($plugins as $plugin) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
       if ($plugin->createEntityAccess($group, $account)->isAllowed()) {
         // Allow access if the route flag was set to 'TRUE'.
         return AccessResult::allowedIf($needs_access);

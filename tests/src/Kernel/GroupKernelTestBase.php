@@ -21,7 +21,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   /**
    * The content enabler plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $pluginManager;
 

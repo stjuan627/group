@@ -12,9 +12,9 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentStorageInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\GroupContentAccessControlHandler;
-use Drupal\group\Plugin\GroupContentEnablerInterface;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\GroupRelationManagerInterface;
 use Drupal\group\Plugin\GroupContentPermissionProviderInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
@@ -55,7 +55,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
    * Tests the exception thrown when there is no permission provider.
    */
   public function testCreateInstanceException() {
-    $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
+    $manager = $this->prophesize(GroupRelationManagerInterface::class);
     $manager->hasHandler('foo', 'permission_provider')->willReturn(FALSE);
     $this->container->get('plugin.manager.group_content_enabler')->willReturn($manager->reveal());
 
@@ -97,7 +97,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getPermission($operation, 'relation', 'any')->willReturn($permission);
     $permission_provider->getPermission($operation, 'relation', 'own')->willReturn($own_permission);
 
-    $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
+    $manager = $this->prophesize(GroupRelationManagerInterface::class);
     $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_content_enabler')->willReturn($manager->reveal());
@@ -227,7 +227,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
     $permission_provider->getRelationCreatePermission()->willReturn($permission);
 
-    $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
+    $manager = $this->prophesize(GroupRelationManagerInterface::class);
     $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_content_enabler')->willReturn($manager->reveal());
@@ -343,7 +343,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
     }
 
-    $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
+    $manager = $this->prophesize(GroupRelationManagerInterface::class);
     $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_content_enabler')->willReturn($manager->reveal());
@@ -380,13 +380,13 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
       $group = $this->prophesize(GroupInterface::class);
       $group_content = $this->prophesize(GroupContentInterface::class);
       $group_content->getGroup()->willReturn($group->reveal());
-      $group_content_plugin = $this->prophesize(GroupContentEnablerInterface::class);
+      $group_content_plugin = $this->prophesize(GroupRelationInterface::class);
       $group_content_plugin->getPluginId()->willReturn('foo:baz');
       $group_content->getContentPlugin()->willReturn($group_content_plugin->reveal());
       $group_content = $group_content->reveal();
 
       $group_content_2 = $this->prophesize(GroupContentInterface::class);
-      $group_content_plugin_2 = $this->prophesize(GroupContentEnablerInterface::class);
+      $group_content_plugin_2 = $this->prophesize(GroupRelationInterface::class);
       $group_content_plugin_2->getPluginId()->willReturn('cat:dog');
       $group_content_2->getContentPlugin()->willReturn($group_content_plugin_2->reveal());
       $group_content_2 = $group_content_2->reveal();
@@ -542,7 +542,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
     $permission_provider->getEntityCreatePermission()->willReturn($permission);
 
-    $manager = $this->prophesize(GroupContentEnablerManagerInterface::class);
+    $manager = $this->prophesize(GroupRelationManagerInterface::class);
     $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_content_enabler')->willReturn($manager->reveal());

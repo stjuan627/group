@@ -15,7 +15,7 @@ function group_views_data_alter(array &$data) {
   // Get the data table for GroupContent entities.
   $data_table = $entity_types['group_content']->getDataTable();
 
-  /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
+  /** @var \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
 
   // Add views data for all defined plugins so modules can provide default

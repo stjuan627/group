@@ -8,7 +8,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\GroupRelationManagerInterface;
 
 /**
  * Provides the available permissions based on yml files.
@@ -71,9 +71,9 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   protected $controllerResolver;
 
   /**
-   * The group content enabler plugin manager.
+   * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -86,10 +86,10 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *   The string translation.
    * @param \Drupal\Core\Controller\ControllerResolverInterface $controller_resolver
    *   The controller resolver.
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
-   *   The group content enabler plugin manager.
+   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   *   The group relation plugin manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupContentEnablerManagerInterface $plugin_manager) {
+  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationManagerInterface $plugin_manager) {
     $this->moduleHandler = $module_handler;
     $this->stringTranslation = $string_translation;
     $this->controllerResolver = $controller_resolver;
@@ -120,7 +120,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     // configuration but can't because their plugins may not be installed along
     // with the module itself (i.e.: non-enforced plugins).
     if ($include_plugins) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
       foreach ($this->pluginManager->getAll() as $plugin) {
         $provider = $plugin->getProvider();
         $section = $plugin->getLabel()->__toString();
@@ -146,7 +146,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
       $provider = $plugin->getProvider();
       $section = $plugin->getLabel()->__toString();
 
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
+      // @todo 2.0.0 CALL HANDLER.
       foreach ($plugin->getPermissions() as $permission_name => $permission) {
         $permission += ['provider' => $provider, 'section' => $section];
         $all_permissions[$permission_name] = $this->completePermission($permission);

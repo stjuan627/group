@@ -27,7 +27,7 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group in which the content should be created.
    * @param string $plugin_id
-   *   The group content enabler ID to use for the group content entity.
+   *   The group relation ID to use for the group content entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.

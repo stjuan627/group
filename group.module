@@ -300,7 +300,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
+  /** @var \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
 
   // Find all of the group content plugins that define access.
@@ -337,11 +337,11 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
 
   $access = AccessResult::neutral();
   foreach ($plugin_ids as $plugin_id) {
-    // For backwards compatibility reasons, if the group content enabler plugin
+    // For backwards compatibility reasons, if the group relation plugin
     // used by the group content type does not specify an access handler, we do
-    // not check access for that group content type. In 8.2.x all group content
-    // enabler plugins will get a permission handler by default, so this check
-    // can be safely removed then.
+    // not check access for that group content type. In 8.2.x all group relation
+    // plugins will get a permission handler by default, so this check can be
+    // safely removed then.
     if (!$plugin_manager->hasHandler($plugin_id, 'access')) {
       continue;
     }
@@ -706,10 +706,10 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
  */
 
 /**
- * Gets the group content enabler plugin manager.
+ * Gets the group relation plugin manager.
  *
- * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
- *   The group content enabler plugin manager.
+ * @return \Drupal\group\Plugin\GroupRelationManagerInterface
+ *   The group relation plugin manager.
  *
  * @internal Try to properly inject the service when possible.
  */

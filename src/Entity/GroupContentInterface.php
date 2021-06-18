@@ -37,7 +37,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
   /**
    * Returns the content enabler plugin that handles the group content.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    */
   public function getContentPlugin();
 

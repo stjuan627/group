@@ -38,7 +38,7 @@ trait RelationHandlerTrait {
   /**
    * The group relation manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $groupRelationManager;
 
@@ -66,7 +66,7 @@ trait RelationHandlerTrait {
   /**
    * Gets the group relation manager service.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @return \Drupal\group\Plugin\GroupRelationManagerInterface
    *   The group relation manager service.
    */
   protected function groupRelationManager() {

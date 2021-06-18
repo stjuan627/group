@@ -67,7 +67,7 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $this->assertNotNull($anonymous, 'Anonymous role was created without a Yaml file.');
 
     // Check that enforced plugins were installed.
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin_config = ['group_type_id' => 'import', 'id' => 'group_membership'];
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
     $group_content_type = $this->entityTypeManager

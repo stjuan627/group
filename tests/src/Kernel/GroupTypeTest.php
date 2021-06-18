@@ -56,7 +56,7 @@ class GroupTypeTest extends GroupKernelTestBase {
    */
   public function testGetInstalledContentPlugins() {
     $plugins = $this->groupType->getInstalledContentPlugins();
-    $this->assertInstanceOf('\Drupal\group\Plugin\GroupContentEnablerCollection', $plugins, 'Loaded the installed plugin collection.');
+    $this->assertInstanceOf('\Drupal\group\Plugin\GroupRelationCollection', $plugins, 'Loaded the installed plugin collection.');
     $this->assertCount(1, $plugins, 'Plugin collection has one plugin instance.');
   }
 
@@ -77,7 +77,7 @@ class GroupTypeTest extends GroupKernelTestBase {
    */
   public function testGetInstalledContentPlugin() {
     $plugin = $this->groupType->getContentPlugin('group_membership');
-    $this->assertInstanceOf('\Drupal\group\Plugin\GroupContentEnablerInterface', $plugin, 'Loaded the group_membership plugin.');
+    $this->assertInstanceOf('\Drupal\group\Plugin\Relation\GroupRelationInterface', $plugin, 'Loaded the group_membership plugin.');
   }
 
   /**

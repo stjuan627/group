@@ -27,10 +27,10 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
   public function getGroupTypeId();
 
   /**
-   * Gets the content enabler plugin the content type uses.
+   * Gets the group relation plugin the content type uses.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The content enabler plugin the content type uses.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The group relation plugin the content type uses.
    */
   public function getContentPlugin();
 
@@ -44,7 +44,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
 
   /**
    * Updates the configuration of the content enabler plugin.
-   * 
+   *
    * Any keys that were left out will be reset to the default.
    *
    * @param array $configuration
@@ -75,5 +75,5 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    *   An array of group content type entities which serve the given entity.
    */
   public static function loadByEntityTypeId($entity_type_id);
-  
+
 }

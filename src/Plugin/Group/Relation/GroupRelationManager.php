@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\group\Plugin;
+namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Cache\Cache;
@@ -13,15 +13,15 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Manages GroupContentEnabler plugin implementations.
+ * Manages GroupRelation plugin implementations.
  *
  * @see hook_group_content_info_alter()
- * @see \Drupal\group\Annotation\GroupContentEnabler
- * @see \Drupal\group\Plugin\GroupContentEnablerInterface
- * @see \Drupal\group\Plugin\GroupContentEnablerBase
+ * @see \Drupal\group\Annotation\GroupRelation
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationBase
  * @see plugin_api
  */
-class GroupContentEnablerManager extends DefaultPluginManager implements GroupContentEnablerManagerInterface, ContainerAwareInterface {
+class GroupRelationManager extends DefaultPluginManager implements GroupRelationManagerInterface, ContainerAwareInterface {
 
   use ContainerAwareTrait;
 
@@ -56,14 +56,14 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * A collection of vanilla instances of all content enabler plugins.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @var \Drupal\group\Plugin\GroupRelationCollection
    */
   protected $allPlugins;
 
   /**
    * An list each group type's installed plugins as plugin collections.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerCollection[]
+   * @var \Drupal\group\Plugin\GroupRelationCollection[]
    */
   protected $groupTypeInstalled = [];
 
@@ -109,7 +109,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
    *   The entity type manager.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct('Plugin/GroupContentEnabler', $namespaces, $module_handler, 'Drupal\group\Plugin\GroupContentEnablerInterface', 'Drupal\group\Annotation\GroupContentEnabler');
+    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelation');
     $this->alterInfo('group_content_info');
     $this->setCacheBackend($cache_backend, 'group_content_enablers');
     $this->entityTypeManager = $entity_type_manager;
@@ -204,7 +204,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
    */
   public function getAll() {
     if (!isset($this->allPlugins)) {
-      $collection = new GroupContentEnablerCollection($this, []);
+      $collection = new GroupRelationCollection($this, []);
 
       // Add every known plugin to the collection with a vanilla configuration.
       foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
@@ -230,7 +230,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
   /**
    * Retrieves a vanilla instance of every installed plugin.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @return \Drupal\group\Plugin\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every installed plugin.
    */
   protected function getVanillaInstalled() {
@@ -241,7 +241,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
     $installed = $this->getInstalledIds();
 
     // Remove uninstalled plugins from the collection.
-    /** @var \Drupal\group\Plugin\GroupContentEnablerCollection $plugins */
+    /** @var \Drupal\group\Plugin\GroupRelationCollection $plugins */
     foreach ($plugins as $plugin_id => $plugin) {
       if (!in_array($plugin_id, $installed)) {
         $plugins->removeInstanceId($plugin_id);
@@ -257,7 +257,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type to instantiate the installed plugins for.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @return \Drupal\group\Plugin\GroupRelationCollection
    *   A plugin collection with fully instantiated plugins for the group type.
    */
   protected function getGroupTypeInstalled(GroupTypeInterface $group_type) {
@@ -280,7 +280,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
         $configurations[$plugin_id] = $configuration;
       }
 
-      $plugins = new GroupContentEnablerCollection($this, $configurations);
+      $plugins = new GroupRelationCollection($this, $configurations);
       $plugins->sort();
 
       $this->groupTypeInstalled[$group_type->id()] = $plugins;

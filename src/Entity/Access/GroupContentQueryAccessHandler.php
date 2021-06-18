@@ -23,9 +23,9 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
   protected $entityTypeManager;
 
   /**
-   * The group content enabler manager.
+   * The group relation manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
    */
   protected $groupContentEnablerManager;
 
@@ -63,7 +63,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     foreach ($group_content_types as $group_content_type_id => $group_content_type) {
       $plugin_id = $group_content_type->getContentPluginId();
 
-      // For backwards compatibility reasons, if the group content enabler
+      // For backwards compatibility reasons, if the group relation
       // plugin used by the group content type does not specify a permission
       // provider, we do not alter the query for that group content type. In
       // 8.2.x all group content types will get a permission handler by default,

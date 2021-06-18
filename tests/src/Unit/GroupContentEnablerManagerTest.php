@@ -10,7 +10,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\group\Plugin\GroupContentEnablerManager;
+use Drupal\group\Plugin\GroupRelationManager;
 use Drupal\group\Plugin\GroupContentHandlerBase;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
@@ -19,15 +19,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Tests the GroupContentEnabler plugin manager.
  *
- * @coversDefaultClass \Drupal\group\Plugin\GroupContentEnablerManager
+ * @coversDefaultClass \Drupal\group\Plugin\GroupRelationManager
  * @group group
  */
 class GroupContentEnablerManagerTest extends UnitTestCase {
 
   /**
-   * The group content enabler manager under test.
+   * The group relation manager under test.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManager
+   * @var \Drupal\group\Plugin\GroupRelationManager
    */
   protected $groupContentEnablerManager;
 
@@ -84,7 +84,7 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
     $storage = $this->prophesize(ConfigEntityStorageInterface::class);
     $this->entityTypeManager->getStorage('group_type')->willReturn($storage->reveal());
 
-    $this->groupContentEnablerManager = new TestGroupContentEnablerManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
+    $this->groupContentEnablerManager = new TestGroupRelationManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
 
     $this->discovery = $this->prophesize(DiscoveryInterface::class);
     $this->groupContentEnablerManager->setDiscovery($this->discovery->reveal());
@@ -94,10 +94,10 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
   }
 
   /**
-   * Sets up the group content enabler manager to be tested.
+   * Sets up the group relation manager to be tested.
    *
    * @param array $definitions
-   *   (optional) An array of group content enabler definitions.
+   *   (optional) An array of group relation definitions.
    */
   protected function setUpPluginDefinitions($definitions = []) {
     $this->discovery->getDefinition(Argument::cetera())
@@ -240,7 +240,7 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
 
 }
 
-class TestGroupContentEnablerManager extends GroupContentEnablerManager {
+class TestGroupRelationManager extends GroupRelationManager {
 
   /**
    * Sets the discovery for the manager.

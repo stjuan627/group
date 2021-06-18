@@ -5,20 +5,20 @@ namespace Drupal\group\Annotation;
 use Drupal\Component\Annotation\Plugin;
 
 /**
- * Defines a GroupContentEnabler annotation object.
+ * Defines a GroupRelation annotation object.
  *
- * Plugin Namespace: Plugin\GroupContentEnabler
+ * Plugin Namespace: Plugin\Group\Relation
  *
  * For a working example, see
- * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
+ * \Drupal\group\Plugin\Group\Relation\GroupMembership
  *
- * @see \Drupal\group\Plugin\GroupContentEnablerInterface
- * @see \Drupal\group\Plugin\GroupContentEnablerManager
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationManager
  * @see plugin_api
  *
  * @Annotation
  */
-class GroupContentEnabler extends Plugin {
+class GroupRelation extends Plugin {
 
   /**
    * The plugin ID.
@@ -28,7 +28,7 @@ class GroupContentEnabler extends Plugin {
   public $id;
 
   /**
-   * The human-readable name of the GroupContentEnabler plugin.
+   * The human-readable name of the GroupRelation plugin.
    *
    * @var \Drupal\Core\Annotation\Translation
    *
@@ -37,7 +37,7 @@ class GroupContentEnabler extends Plugin {
   public $label;
 
   /**
-   * A short description of the GroupContentEnabler plugin.
+   * A short description of the GroupRelation plugin.
    *
    * @var \Drupal\Core\Annotation\Translation
    *

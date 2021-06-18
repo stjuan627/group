@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class GroupContentHandlerBase implements GroupContentHandlerInterface {
 
   /**
-   * The group content enabler definition.
+   * The group relation definition.
    *
    * @var array
    */
@@ -39,7 +39,7 @@ abstract class GroupContentHandlerBase implements GroupContentHandlerInterface {
    * @param string $plugin_id
    *   The plugin ID.
    * @param array $definition
-   *   The group content enabler definition.
+   *   The group relation definition.
    */
   public function __construct($plugin_id, array $definition) {
     $this->pluginId = $plugin_id;

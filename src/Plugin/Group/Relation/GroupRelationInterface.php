@@ -1,25 +1,24 @@
 <?php
 
-namespace Drupal\group\Plugin;
+namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
- * Defines an interface for pluggable GroupContentEnabler back-ends.
+ * Defines an interface for pluggable GroupRelation back-ends.
  *
- * @see \Drupal\group\Annotation\GroupContentEnabler
- * @see \Drupal\group\GroupContentEnablerManager
- * @see \Drupal\group\Plugin\GroupContentEnablerBase
+ * @see \Drupal\group\Annotation\GroupRelation
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationBase
  * @see plugin_api
  */
-interface GroupContentEnablerInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
+interface GroupRelationInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
 
   /**
    * Returns the plugin provider.
@@ -107,7 +106,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
    * @return bool
    *   Whether this plugin defines entity access.
    *
-   * @see \Drupal\group\Annotation\GroupContentEnabler::$entity_access
+   * @see \Drupal\group\Annotation\GroupRelation::$entity_access
    */
   public function definesEntityAccess();
 
@@ -224,84 +223,6 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
    *   - weight: The weight of this operation.
    */
   public function getOperations();
-
-  /**
-   * Provides a list of group permissions the plugin exposes.
-   *
-   * If you have some group permissions that would only make sense when your
-   * plugin is installed, you may define those here. They will not be shown on
-   * the permission configuration form unless the plugin is installed.
-   *
-   * @return array
-   *   An array of group permissions, see GroupPermissionHandlerInterface for
-   *   the structure of a group permission.
-   *
-   * @see GroupPermissionHandlerInterface::getPermissions()
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0. Retrieve the
-   *   permission_provider handler from the plugin manager instead.
-   */
-  public function getPermissions();
-
-  /**
-   * Performs access check for the create target entity operation.
-   *
-   * This method is supposed to be overwritten by extending classes that
-   * do their own custom access checking.
-   *
-   * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group to check for target entity creation access.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0. Retrieve the
-   *   access handler from the plugin manager instead.
-   */
-  public function createEntityAccess(GroupInterface $group, AccountInterface $account);
-
-  /**
-   * Performs access check for the create operation.
-   *
-   * This method is supposed to be overwritten by extending classes that
-   * do their own custom access checking.
-   *
-   * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group to check for content creation access.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0. Retrieve the
-   *   access handler from the plugin manager instead.
-   */
-  public function createAccess(GroupInterface $group, AccountInterface $account);
-
-  /**
-   * Checks access to an operation on a given group content entity.
-   *
-   * Use \Drupal\group\Plugin\GroupContentEnablerInterface::createAccess() to
-   * check access to create a group content entity.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content for which to check access.
-   * @param string $operation
-   *   The operation access should be checked for. Usually one of "view",
-   *   "update" or "delete".
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user session for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0. Retrieve the
-   *   access handler from the plugin manager instead.
-   */
-  public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account);
 
   /**
    * Returns the label for the entity reference field.

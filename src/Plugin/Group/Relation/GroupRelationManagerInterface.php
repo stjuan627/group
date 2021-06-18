@@ -1,16 +1,15 @@
 <?php
 
-namespace Drupal\group\Plugin;
+namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**
- * Provides a common interface for group content enabler managers.
+ * Provides a common interface for group relation managers.
  */
-interface GroupContentEnablerManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
+interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
 
   /**
    * Checks whether a certain plugin has a certain handler.
@@ -50,7 +49,7 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
   /**
    * Creates new handler instance.
    *
-   * \Drupal\group\Plugin\GroupContentEnablerManagerInterface::getHandler() is
+   * \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface::getHandler() is
    * preferred since that method has additional checking that the class exists
    * and has static caches.
    *
@@ -112,7 +111,7 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
    * ::getInstalled() while providing a group type argument to get fully
    * configured instances of the plugins.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @return \Drupal\group\Plugin\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every known plugin.
    */
   public function getAll();
@@ -127,7 +126,7 @@ interface GroupContentEnablerManagerInterface extends PluginManagerInterface, Ca
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   (optional) The group type to retrieve installed plugin for.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerCollection
+   * @return \Drupal\group\Plugin\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every installed plugin. If
    *   $group_type was provided, the collection will contain fully instantiated
    *   plugins for the provided group type.

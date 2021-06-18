@@ -140,7 +140,7 @@ services:
     arguments: ['@entity_type.manager']
 
   plugin.manager.group_content_enabler:
-    class: 'Drupal\group\Plugin\GroupContentEnablerManager'
+    class: 'Drupal\group\Plugin\Group\Relation\GroupRelationManager'
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     parent: container.trait
     tags:
@@ -158,6 +158,10 @@ services:
 
   # Specific group relation plugin handlers.
   group.plugin_handler.access_control.group_membership:
+    class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
+    arguments: ['@group.plugin_handler.access_control']
+    shared: 'FALSE'
+  group.plugin_handler.permission_provider.group_membership:
     class: '\Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider.php'
     arguments: ['@group.plugin_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'

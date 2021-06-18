@@ -35,7 +35,7 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
+    /** @var \Drupal\group\Plugin\GroupRelationManagerInterface $manager */
     $manager = $container->get('plugin.manager.group_content_enabler');
     if (!$manager->hasHandler($plugin_id, 'permission_provider')) {
       throw new \LogicException('Cannot use an "access" handler without a "permission_provider" handler.');

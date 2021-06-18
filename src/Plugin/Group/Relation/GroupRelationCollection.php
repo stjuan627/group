@@ -1,18 +1,18 @@
 <?php
 
-namespace Drupal\group\Plugin;
+namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
- * A collection of group content plugins.
+ * A collection of group relation plugins.
  */
-class GroupContentEnablerCollection extends DefaultLazyPluginCollection {
+class GroupRelationCollection extends DefaultLazyPluginCollection {
 
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

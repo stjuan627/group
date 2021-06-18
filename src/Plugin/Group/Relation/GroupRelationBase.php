@@ -1,10 +1,8 @@
 <?php
 
-namespace Drupal\group\Plugin;
+namespace Drupal\group\Plugin\Group\Relation;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
@@ -12,17 +10,16 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
  *
- * @see \Drupal\group\Annotation\GroupContentEnabler
- * @see \Drupal\group\GroupContentEnablerManager
- * @see \Drupal\group\Plugin\GroupContentEnablerInterface
+ * @see \Drupal\group\Annotation\GroupRelation
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
  * @see plugin_api
  */
-abstract class GroupContentEnablerBase extends PluginBase implements GroupContentEnablerInterface {
+abstract class GroupRelationBase extends PluginBase implements GroupRelationInterface {
 
   /**
    * The ID of group type this plugin was instantiated for.
@@ -211,210 +208,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    */
   public function getOperations() {
     return [];
-  }
-
-  /**
-   * Provides permissions for the group content entity; i.e. the relationship.
-   *
-   * @return array
-   *   An array of group permissions, see ::getPermissions for more info.
-   *
-   * @see GroupContentEnablerInterface::getPermissions()
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0.
-   */
-  protected function getGroupContentPermissions() {
-    return $this->_permissions;
-  }
-
-  /**
-   * Provides permissions for the actual entity being added to the group.
-   *
-   * @return array
-   *   An array of group permissions, see ::getPermissions for more info.
-   *
-   * @see GroupContentEnablerInterface::getPermissions()
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0.
-   */
-  protected function getTargetEntityPermissions() {
-    return $this->_permissions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPermissions() {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
-    $manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-    // Backwards compatibility layer:
-    // - Use the declared permission provider if available.
-    if ($manager->hasHandler($this->pluginId, 'permission_provider')) {
-      return $manager->getPermissionProvider($this->pluginId)->buildPermissions();
-    }
-
-    // Backwards compatibility layer:
-    // - Fall back to the default permission provider if none was found.
-    // - Still call the protected methods so old code can alter the permissions.
-    /** @var \Drupal\group\plugin\GroupContentPermissionProviderInterface $permission_provider */
-    $permission_provider = $manager->createHandlerInstance('Drupal\group\Plugin\GroupContentPermissionProvider', $this->pluginId, $this->pluginDefinition);
-    $this->_permissions = $permission_provider->buildPermissions();
-    $this->_permissions = $this->getGroupContentPermissions();
-    if ($this->definesEntityAccess()) {
-      $this->_permissions = $this->getTargetEntityPermissions();
-    }
-    return $this->_permissions;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function createEntityAccess(GroupInterface $group, AccountInterface $account) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
-    $manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-    // Backwards compatibility layer:
-    // - Use the declared access control handler if available.
-    if ($manager->hasHandler($this->pluginId, 'access')) {
-      return $manager->getAccessControlHandler($this->pluginId)->entityCreateAccess($group, $account, TRUE);
-    }
-
-    // Backwards compatibility layer:
-    // - Run the old code if there is no access control handler.
-    // You cannot create target entities if the plugin does not support it.
-    if (!$this->definesEntityAccess()) {
-      return AccessResult::neutral();
-    }
-
-    $plugin_id = $this->getPluginId();
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "create $plugin_id entity");
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function createAccess(GroupInterface $group, AccountInterface $account) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
-    $manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-    // Backwards compatibility layer:
-    // - Use the declared access control handler if available.
-    if ($manager->hasHandler($this->pluginId, 'access')) {
-      return $manager->getAccessControlHandler($this->pluginId)->relationCreateAccess($group, $account, TRUE);
-    }
-
-    // Backwards compatibility layer:
-    // - Run the old code if there is no access control handler.
-    $plugin_id = $this->getPluginId();
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "create $plugin_id content");
-  }
-
-  /**
-   * Performs access check for the view operation.
-   *
-   * This method is supposed to be overwritten by extending classes that
-   * do their own custom access checking.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content for which to check access.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  protected function viewAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-    $plugin_id = $this->getPluginId();
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "view $plugin_id content");
-  }
-
-  /**
-   * Performs access check for the update operation.
-   *
-   * This method is supposed to be overwritten by extending classes that
-   * do their own custom access checking.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content for which to check access.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  protected function updateAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-    $plugin_id = $this->getPluginId();
-
-    // Allow members to edit their own group content.
-    if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update own $plugin_id content");
-    }
-
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "update any $plugin_id content");
-  }
-
-  /**
-   * Performs access check for the delete operation.
-   *
-   * This method is supposed to be overwritten by extending classes that
-   * do their own custom access checking.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content for which to check access.
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user for which to check access.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  protected function deleteAccess(GroupContentInterface $group_content, AccountInterface $account) {
-    $group = $group_content->getGroup();
-    $plugin_id = $this->getPluginId();
-
-    // Allow members to delete their own group content.
-    if ($group_content->getOwnerId() == $account->id()) {
-      return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete own $plugin_id content");
-    }
-
-    return GroupAccessResult::allowedIfHasGroupPermission($group, $account, "delete any $plugin_id content");
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function checkAccess(GroupContentInterface $group_content, $operation, AccountInterface $account) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $manager */
-    $manager = \Drupal::service('plugin.manager.group_content_enabler');
-
-    // Backwards compatibility layer:
-    // - Use the declared access control handler if available.
-    if ($manager->hasHandler($this->pluginId, 'access')) {
-      return $manager->getAccessControlHandler($this->pluginId)->relationAccess($group_content, $operation, $account, TRUE);
-    }
-
-    // Backwards compatibility layer:
-    // - Run the old code if there is no access control handler.
-    switch ($operation) {
-      case 'view':
-        $result = $this->viewAccess($group_content, $account);
-        break;
-
-      case 'update':
-        $result = $this->updateAccess($group_content, $account);
-        break;
-
-      case 'delete':
-        $result = $this->deleteAccess($group_content, $account);
-        break;
-
-      default:
-        $result = GroupAccessResult::neutral();
-    }
-
-    return $result;
   }
 
   /**
