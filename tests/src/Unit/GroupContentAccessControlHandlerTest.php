@@ -13,6 +13,7 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
+use Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl;
 use Drupal\group\Plugin\GroupContentAccessControlHandler;
 use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\group\Plugin\GroupContentPermissionProviderInterface;
@@ -56,12 +57,11 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
    */
   public function testCreateInstanceException() {
     $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->hasHandler('foo', 'permission_provider')->willReturn(FALSE);
     $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
 
     $this->expectException(\LogicException::class);
     $this->expectExceptionMessage('Cannot use an "access" handler without a "permission_provider" handler.');
-    GroupContentAccessControlHandler::createInstance($this->container->reveal(), 'foo', []);
+    AccessControl::createInstance($this->container->reveal(), 'foo', []);
   }
 
   /**
@@ -98,7 +98,6 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getPermission($operation, 'relation', 'own')->willReturn($own_permission);
 
     $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
 
@@ -228,7 +227,6 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getRelationCreatePermission()->willReturn($permission);
 
     $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
 
@@ -344,7 +342,6 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     }
 
     $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
 
@@ -543,7 +540,6 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $permission_provider->getEntityCreatePermission()->willReturn($permission);
 
     $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->hasHandler($plugin_id, 'permission_provider')->willReturn(TRUE);
     $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
     $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
 

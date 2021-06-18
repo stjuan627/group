@@ -181,7 +181,7 @@ class GroupTypeController extends ControllerBase {
       'operations' => $this->buildOperations($plugin, $is_installed),
     ];
 
-    // Show the content enabler description if toggled on.
+    // Show the group relation description if toggled on.
     if (!system_admin_compact_mode()) {
       $row['info']['#context']['description'] = $plugin->getDescription();
     }
@@ -193,7 +193,7 @@ class GroupTypeController extends ControllerBase {
    * Provides an array of information to build a list of operation links.
    *
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
-   *   The content enabler plugin to build operation links for.
+   *   The group relation plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
    *
@@ -212,7 +212,7 @@ class GroupTypeController extends ControllerBase {
    * Gets the group type's content plugin's default operation links.
    *
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
-   *   The content enabler plugin to build operation links for.
+   *   The group relation plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
    *
@@ -266,7 +266,7 @@ class GroupTypeController extends ControllerBase {
    * Builds operation links for the group type's content plugins.
    *
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin
-   *   The content enabler plugin to build operation links for.
+   *   The group relation plugin to build operation links for.
    * @param bool $is_installed
    *   Whether the plugin is installed.
    *

@@ -12,19 +12,6 @@ use Drupal\group\Entity\GroupTypeInterface;
 interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
 
   /**
-   * Checks whether a certain plugin has a certain handler.
-   *
-   * @param string $plugin_id
-   *   The plugin ID for this handler.
-   * @param string $handler_type
-   *   The name of the handler.
-   *
-   * @return bool
-   *   Returns TRUE if the plugin has the handler, else FALSE.
-   */
-  public function hasHandler($plugin_id, $handler_type);
-
-  /**
    * Returns a handler instance for the given plugin and handler.
    *
    * Entity handlers are instantiated once per entity type and then cached
@@ -47,18 +34,14 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getHandler($plugin_id, $handler_type);
 
   /**
-   * Creates new handler instance.
+   * Creates a new handler instance.
    *
-   * \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface::getHandler() is
-   * preferred since that method has additional checking that the class exists
-   * and has static caches.
+   * Using ::getHandler() is preferred since that method has static caches.
    *
-   * @param mixed $class
-   *   The handler class to instantiate.
    * @param string $plugin_id
-   *   The ID of the plugin the handler is for.
-   * @param array $definition
-   *   The plugin definition.
+   *   The plugin ID for this handler.
+   * @param string $handler_type
+   *   The handler type to create an instance for.
    *
    * @return object
    *   A handler instance.
@@ -68,7 +51,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
    *   a future release to further mimic the entity type system. Do not call
    *   this directly.
    */
-  public function createHandlerInstance($class, $plugin_id, array $definition = NULL);
+  public function createHandlerInstance($plugin_id, $handler_type);
 
   /**
    * Creates a new access control handler instance.
@@ -76,7 +59,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
    * @param string $plugin_id
    *   The plugin ID for this access control handler.
    *
-   * @return \Drupal\group\plugin\GroupContentAccessControlHandlerInterface
+   * @return \Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface
    *   An access control handler instance.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -92,7 +75,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
    * @param string $plugin_id
    *   The plugin ID for this permission provider.
    *
-   * @return \Drupal\group\plugin\GroupContentPermissionProviderInterface
+   * @return \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
    *   A permission provider instance.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -103,7 +86,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getPermissionProvider($plugin_id);
 
   /**
-   * Returns a plugin collection of all available content enablers.
+   * Returns a plugin collection of all available group relations.
    *
    * This collection will not have anything set in the individual plugins'
    * configuration. Do not use any methods on the plugin that require a group
@@ -117,7 +100,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getAll();
 
   /**
-   * Returns a plugin collection of all installed content enablers.
+   * Returns a plugin collection of all installed group relations.
    *
    * Warning: When called without a $group_type argument, this will return a
    * collection of vanilla plugin instances. See ::getAll() for details about
@@ -134,13 +117,13 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getInstalled(GroupTypeInterface $group_type = NULL);
 
   /**
-   * Returns the plugin ID of all content enablers in use.
+   * Returns the plugin ID of all group relations in use.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   (optional) The group type to retrieve plugin IDs for.
    *
    * @return string[]
-   *   A list of all installed content enabler plugin IDs. If $group_type was
+   *   A list of all installed group relation plugin IDs. If $group_type was
    *   provided, this will only return the installed IDs for that group type.
    */
   public function getInstalledIds(GroupTypeInterface $group_type = NULL);

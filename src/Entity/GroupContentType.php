@@ -135,7 +135,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   }
 
   /**
-   * Returns the content enabler plugin manager.
+   * Returns the group relation plugin manager.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    *   The group content plugin manager.
@@ -243,7 +243,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     // type is deleted along with the group type.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
 
-    // Add the dependencies of the responsible content enabler plugin.
+    // Add the dependencies of the responsible group relation plugin.
     $this->addDependencies($this->getContentPlugin()->calculateDependencies());
   }
 

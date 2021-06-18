@@ -125,7 +125,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   public function getCreatorRoleIds();
 
   /**
-   * Returns the installed content enabler plugins for this group type.
+   * Returns the installed group relation plugins for this group type.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   The group content plugin collection.
@@ -133,25 +133,25 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   public function getInstalledContentPlugins();
 
   /**
-   * Checks whether a content enabler plugin is installed for this group type.
+   * Checks whether a group relation plugin is installed for this group type.
    *
    * @param string $plugin_id
-   *   The ID of the content enabler plugin to check for.
+   *   The ID of the group relation plugin to check for.
    *
    * @return bool
-   *   Whether the content enabler plugin is installed.
+   *   Whether the group relation plugin is installed.
    */
   public function hasContentPlugin($plugin_id);
 
   /**
-   * Gets an installed content enabler plugin for this group type.
+   * Gets an installed group relation plugin for this group type.
    *
    * Warning: In places where the plugin may not be installed on the group type,
    * you should always run ::hasContentPlugin() first or you may risk ending up
    * with crashes or unreliable data.
    *
    * @param string $plugin_id
-   *   The ID of the content enabler plugin.
+   *   The ID of the group relation plugin.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The installed group relation plugin for the group type.

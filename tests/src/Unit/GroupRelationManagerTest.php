@@ -119,38 +119,6 @@ class GroupRelationManagerTest extends UnitTestCase {
   }
 
   /**
-   * Tests the hasHandler() method.
-   *
-   * @param string $plugin_id
-   *   The ID of the plugin to check the handler for.
-   * @param bool $expected
-   *   Whether the handler is expected to be found.
-   *
-   * @covers ::hasHandler
-   * @dataProvider providerTestHasHandler
-   */
-  public function testHasHandler($plugin_id, $expected) {
-    $apple = ['handlers' => ['foo_handler' => TestGroupRelationHandler::class]];
-    $banana = ['handlers' => ['foo_handler' => FALSE]];
-    $this->setUpPluginDefinitions(['apple' => $apple, 'banana' => $banana]);
-    $this->assertSame($expected, $this->groupRelationManager->hasHandler($plugin_id, 'foo_handler'));
-  }
-
-  /**
-   * Provides test data for testHasHandler().
-   *
-   * @return array
-   *   Test data.
-   */
-  public function providerTestHasHandler() {
-    return [
-      ['apple', TRUE],
-      ['banana', FALSE],
-      ['pear', FALSE],
-    ];
-  }
-
-  /**
    * Tests the createHandlerInstance() method.
    *
    * @covers ::createHandlerInstance

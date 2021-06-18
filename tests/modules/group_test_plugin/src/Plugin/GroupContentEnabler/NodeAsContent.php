@@ -5,7 +5,7 @@ namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 
 /**
- * Provides a content enabler for nodes.
+ * Provides a group relation for nodes.
  *
  * @GroupContentEnabler(
  *   id = "node_as_content",

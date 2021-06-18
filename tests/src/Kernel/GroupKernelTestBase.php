@@ -19,7 +19,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   public static $modules = ['group', 'options', 'entity', 'variationcache', 'group_test_config'];
 
   /**
-   * The content enabler plugin manager.
+   * The group relation plugin manager.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */

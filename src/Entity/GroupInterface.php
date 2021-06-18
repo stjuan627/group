@@ -38,7 +38,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The content entity to add to the group.
    * @param string $plugin_id
-   *   The ID of the content enabler plugin to add the entity with.
+   *   The ID of the group relation plugin to add the entity with.
    * @param array $values
    *   (optional) Extra values to add to the group content relationship. You
    *   cannot overwrite the group ID (gid) or entity ID (entity_id).
@@ -49,7 +49,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * Retrieves all GroupContent entities for the group.
    *
    * @param string $plugin_id
-   *   (optional) A content enabler plugin ID to filter on.
+   *   (optional) A group relation plugin ID to filter on.
    * @param array $filters
    *   (optional) An associative array of extra filters where the keys are
    *   property or field names and the values are the value to filter on.
@@ -63,7 +63,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * Retrieves all GroupContent entities for a specific entity.
    *
    * @param string $plugin_id
-   *   A content enabler plugin ID to filter on.
+   *   A group relation plugin ID to filter on.
    * @param int $id
    *   The ID of the entity to retrieve the GroupContent entities for.
    *
@@ -79,7 +79,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * entities that were added to the group through GroupContent entities.
    *
    * @param string $plugin_id
-   *   (optional) A content enabler plugin ID to filter on.
+   *   (optional) A group relation plugin ID to filter on.
    * @param array $filters
    *   (optional) An associative array of extra filters where the keys are
    *   property or field names and the values are the value to filter on.

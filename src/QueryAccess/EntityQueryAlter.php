@@ -259,15 +259,6 @@ class EntityQueryAlter implements ContainerInjectionInterface {
         continue;
       }
 
-      // For backwards compatibility reasons, if the group relation
-      // plugin used by the group content type does not specify a permission
-      // provider, we do not alter the query for that group content type. In
-      // 8.2.x all group content types will get a permission handler by
-      // default, so this check can be safely removed then.
-      if (!$this->pluginManager->hasHandler($plugin_id, 'permission_provider')) {
-        continue;
-      }
-
       foreach ($plugin_id_map[$plugin_id] as $group_content_type_id) {
         // If the group content type has no content, skip it.
         if (!in_array($group_content_type_id, $group_content_type_ids_in_use)) {

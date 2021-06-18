@@ -9,7 +9,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a content enabler for nodes.
+ * Provides a group relation for nodes.
  *
  * @GroupContentEnabler(
  *   id = "group_node",
@@ -72,7 +72,7 @@ class GroupNode extends GroupRelationBase {
 
     // Disable the entity cardinality field as the functionality of this module
     // relies on a cardinality of 1. We don't just hide it, though, to keep a UI
-    // that's consistent with other content enabler plugins.
+    // that's consistent with other group relation plugins.
     $info = $this->t("This field has been disabled by the plugin to guarantee the functionality that's expected of it.");
     $form['entity_cardinality']['#disabled'] = TRUE;
     $form['entity_cardinality']['#description'] .= '<br /><em>' . $info . '</em>';

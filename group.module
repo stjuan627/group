@@ -337,15 +337,6 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
 
   $access = AccessResult::neutral();
   foreach ($plugin_ids as $plugin_id) {
-    // For backwards compatibility reasons, if the group relation plugin
-    // used by the group content type does not specify an access handler, we do
-    // not check access for that group content type. In 8.2.x all group relation
-    // plugins will get a permission handler by default, so this check can be
-    // safely removed then.
-    if (!$plugin_manager->hasHandler($plugin_id, 'access')) {
-      continue;
-    }
-
     $handler = $plugin_manager->getAccessControlHandler($plugin_id);
     $access = $access->orIf($handler->entityAccess($entity, $operation, $account, TRUE));
   }

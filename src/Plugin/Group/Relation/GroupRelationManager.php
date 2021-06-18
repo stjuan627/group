@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -54,7 +55,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   protected $groupContentTypeStorage;
 
   /**
-   * A collection of vanilla instances of all content enabler plugins.
+   * A collection of vanilla instances of all group relation plugins.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    */
@@ -110,7 +111,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelation');
-    $this->alterInfo('group_content_info');
+    $this->alterInfo('group_relation_info');
     $this->setCacheBackend($cache_backend, 'group_relations');
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupContentTypeMapCacheKey = $this->cacheKey . '_GCT_map';
@@ -120,42 +121,30 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   /**
    * {@inheritdoc}
    */
-  public function hasHandler($plugin_id, $handler_type) {
-    if ($definition = $this->getDefinition($plugin_id, FALSE)) {
-      if (isset($definition['handlers'][$handler_type])) {
-        return class_exists($definition['handlers'][$handler_type]);
-      }
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getHandler($plugin_id, $handler_type) {
     if (!isset($this->handlers[$handler_type][$plugin_id])) {
-      $definition = $this->getDefinition($plugin_id);
-      if (!isset($definition['handlers'][$handler_type])) {
-        throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler.', $plugin_id, $handler_type));
-      }
-      $this->handlers[$handler_type][$plugin_id] = $this->createHandlerInstance($definition['handlers'][$handler_type], $plugin_id, $definition);
+      $this->handlers[$handler_type][$plugin_id] = $this->createHandlerInstance($plugin_id, $handler_type);
     }
-
     return $this->handlers[$handler_type][$plugin_id];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function createHandlerInstance($class, $plugin_id, array $definition = NULL) {
-    if (!is_subclass_of($class, 'Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface')) {
+  public function createHandlerInstance($plugin_id, $handler_type) {
+    $definition = $this->getDefinition($plugin_id);
+    $service_name = "group.plugin_handler.$handler_type.{$definition['id']}";
+
+    if (!$this->container->has($service_name)) {
+      throw new PluginNotFoundException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));
+    }
+    $handler = $this->container->get($service_name);
+
+    if (!is_subclass_of($handler, 'Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface')) {
       throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
     }
+    $handler->init($plugin_id, $definition);
 
-    $handler = $class::createInstance($this->container, $plugin_id, $definition);
-    if (method_exists($handler, 'setModuleHandler')) {
-      $handler->setModuleHandler($this->moduleHandler);
-    }
     return $handler;
   }
 
@@ -163,7 +152,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    * {@inheritdoc}
    */
   public function getAccessControlHandler($plugin_id) {
-    return $this->getHandler($plugin_id, 'access');
+    return $this->getHandler($plugin_id, 'access_control');
   }
 
   /**
@@ -234,10 +223,10 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    *   A plugin collection with a vanilla instance of every installed plugin.
    */
   protected function getVanillaInstalled() {
-    // Retrieve a vanilla instance of all known content enabler plugins.
+    // Retrieve a vanilla instance of all known group relation plugins.
     $plugins = clone $this->getAll();
 
-    // Retrieve all installed content enabler plugin IDs.
+    // Retrieve all installed group relation plugin IDs.
     $installed = $this->getInstalledIds();
 
     // Remove uninstalled plugins from the collection.

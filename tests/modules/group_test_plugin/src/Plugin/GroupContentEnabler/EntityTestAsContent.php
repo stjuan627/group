@@ -5,7 +5,7 @@ namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 
 /**
- * Provides a content enabler for test entities.
+ * Provides a group relation for test entities.
  *
  * @GroupContentEnabler(
  *   id = "entity_test_as_content",

@@ -209,7 +209,7 @@ interface GroupRelationInterface extends PluginInspectionInterface, DerivativeIn
   public function getGroupOperationsCacheableMetadata();
 
   /**
-   * Provides a list of operations for the content enabler plugin.
+   * Provides a list of operations for the group relation plugin.
    *
    * These operations will be merged with the ones already available on the
    * group type content configuration page: (un)install, manage fields, etc.

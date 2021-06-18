@@ -5,7 +5,7 @@ namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 
 /**
- * Provides a content enabler for users.
+ * Provides a group relation for users.
  *
  * @GroupContentEnabler(
  *   id = "user_as_content",

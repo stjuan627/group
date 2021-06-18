@@ -64,7 +64,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   }
 
   /**
-   * Determines if there is any group content for a content enabler plugin.
+   * Determines if there is any group content for a group relation plugin.
    *
    * @param string $plugin_id
    *   The group relation plugin ID to check for group content.
