@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\Controller\GroupContentController;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,14 +19,14 @@ class GroupNodeController extends GroupContentController {
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
   /**
    * Constructs a new GroupNodeController.
    *
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
    *   The private store factory.
@@ -47,7 +47,7 @@ class GroupNodeController extends GroupContentController {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_content_enabler'),
+      $container->get('plugin.manager.group_relation'),
       $container->get('tempstore.private'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),

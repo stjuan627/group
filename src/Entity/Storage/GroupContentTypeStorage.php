@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -23,7 +23,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -39,7 +39,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group relation manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
@@ -61,7 +61,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('plugin.manager.group_content_enabler'),
+      $container->get('plugin.manager.group_relation'),
       $container->get('config.factory'),
       $container->get('uuid'),
       $container->get('language_manager'),

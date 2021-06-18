@@ -5,7 +5,7 @@ namespace Drupal\group\Entity\Controller;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -27,7 +27,7 @@ class GroupTypeController extends ControllerBase {
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -52,7 +52,7 @@ class GroupTypeController extends ControllerBase {
    *   The module handler.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    */
   public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {
@@ -68,7 +68,7 @@ class GroupTypeController extends ControllerBase {
     return new static(
       $container->get('module_handler'),
       $container->get('entity_type.manager'),
-      $container->get('plugin.manager.group_content_enabler')
+      $container->get('plugin.manager.group_relation')
     );
   }
 

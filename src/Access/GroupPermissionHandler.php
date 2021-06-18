@@ -8,7 +8,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 
 /**
  * Provides the available permissions based on yml files.
@@ -73,7 +73,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   /**
    * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -86,7 +86,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *   The string translation.
    * @param \Drupal\Core\Controller\ControllerResolverInterface $controller_resolver
    *   The controller resolver.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group relation plugin manager.
    */
   public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationManagerInterface $plugin_manager) {

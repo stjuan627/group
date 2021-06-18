@@ -12,7 +12,7 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -27,7 +27,7 @@ class AccessControl implements AccessControlInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $groupRelationManager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $groupRelationManager
    *   The group relation manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $groupRelationManager) {

@@ -14,7 +14,7 @@ class GroupContentViewsData extends EntityViewsData {
   /**
    * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -24,7 +24,7 @@ class GroupContentViewsData extends EntityViewsData {
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     /** @var static $views_data */
     $views_data = parent::createInstance($container, $entity_type);
-    $views_data->pluginManager = $container->get('plugin.manager.group_content_enabler');
+    $views_data->pluginManager = $container->get('plugin.manager.group_relation');
     return $views_data;
   }
 

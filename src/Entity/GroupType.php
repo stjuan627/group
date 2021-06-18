@@ -307,11 +307,11 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * Returns the content enabler plugin manager.
    *
-   * @return \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    *   The group content plugin manager.
    */
   protected function getContentEnablerManager() {
-    return \Drupal::service('plugin.manager.group_content_enabler');
+    return \Drupal::service('plugin.manager.group_relation');
   }
 
   /**

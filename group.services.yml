@@ -84,7 +84,7 @@ services:
       - { name: 'event_subscriber' }
   group.config_subscriber:
     class: 'Drupal\group\EventSubscriber\ConfigSubscriber'
-    arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler']
+    arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
     tags:
       - { name: 'event_subscriber' }
 
@@ -99,7 +99,7 @@ services:
   # @todo Rename to group_permission.builder in 8.2.0.
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
-    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_content_enabler']
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_relation']
   # @todo Rename to group_permission.hash_generator in 8.2.0.
   group.permissions_hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'
@@ -127,7 +127,7 @@ services:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:
       - { name: 'module_install.uninstall_validator' }
-    arguments: ['@string_translation', '@entity_type.manager', '@plugin.manager.group_content_enabler']
+    arguments: ['@string_translation', '@entity_type.manager', '@plugin.manager.group_relation']
     lazy: 'true'
 
   group_content_type.breadcrumb:
@@ -139,7 +139,7 @@ services:
     class: 'Drupal\group\GroupRoleSynchronizer'
     arguments: ['@entity_type.manager']
 
-  plugin.manager.group_content_enabler:
+  plugin.manager.group_relation:
     class: 'Drupal\group\Plugin\Group\Relation\GroupRelationManager'
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     parent: container.trait
@@ -149,7 +149,7 @@ services:
   # Default group relation plugin handlers.
   group.plugin_handler.access_control:
     class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl.php'
-    arguments: ['@entity_type.manager', '@plugin.manager.group_content_enabler']
+    arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
     shared: 'FALSE'
   group.plugin_handler.permission_provider:
     class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider.php'
@@ -163,7 +163,7 @@ services:
     shared: 'FALSE'
   group.plugin_handler.permission_provider.group_membership:
     class: '\Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider.php'
-    arguments: ['@group.plugin_handler.permission_provider', '@entity_type.manager']
+    arguments: ['@group.plugin_handler.permission_provider']
     shared: 'FALSE'
 
   # Recently, core introduced a new static cache that does not serialize its

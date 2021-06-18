@@ -273,7 +273,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    */
   public function defaultConfiguration() {
     // Warning: For every key defined here you need to have a matching config
-    // schema entry following the pattern group_content_enabler.config.MY_KEY!
+    // schema entry following the pattern group_relation.config.MY_KEY!
     // @see group.schema.yml
     return [
       'group_cardinality' => 0,

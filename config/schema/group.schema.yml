@@ -37,15 +37,15 @@ group.type.*:
         type: 'string'
         label: 'Group role ID'
 
-group_content_enabler.config.group_cardinality:
+group_relation.config.group_cardinality:
   type: 'integer'
   label: 'Group cardinality'
 
-group_content_enabler.config.entity_cardinality:
+group_relation.config.entity_cardinality:
   type: 'integer'
   label: 'Entity cardinality'
 
-group_content_enabler.config.use_creation_wizard:
+group_relation.config.use_creation_wizard:
   type: 'boolean'
   label: 'Use creation wizard'
 
@@ -105,7 +105,7 @@ group_content_type:
       type: 'sequence'
       label: 'Plugin configuration'
       sequence:
-        type: 'group_content_enabler.config.[%key]'
+        type: 'group_relation.config.[%key]'
 
 # Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID.
 # Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID.

@@ -111,7 +111,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
    * ::getInstalled() while providing a group type argument to get fully
    * configured instances of the plugins.
    *
-   * @return \Drupal\group\Plugin\GroupRelationCollection
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every known plugin.
    */
   public function getAll();
@@ -126,7 +126,7 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   (optional) The group type to retrieve installed plugin for.
    *
-   * @return \Drupal\group\Plugin\GroupRelationCollection
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every installed plugin. If
    *   $group_type was provided, the collection will contain fully instantiated
    *   plugins for the provided group type.

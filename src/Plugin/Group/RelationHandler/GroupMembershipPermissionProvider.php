@@ -2,8 +2,6 @@
 
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-
 /**
  * Provides group permissions for the group_membership relation plugin.
  */
@@ -23,12 +21,9 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
    *
    * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $default
    *   The default permission provider.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
    */
-  public function __construct(PermissionProviderInterface $default, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(PermissionProviderInterface $default) {
     $this->default = $default;
-    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**

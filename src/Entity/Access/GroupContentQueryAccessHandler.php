@@ -25,7 +25,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
   /**
    * The group relation manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $groupContentEnablerManager;
 
@@ -36,7 +36,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     /** @var static $instance */
     $instance = parent::createInstance($container, $entity_type);
     $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->groupContentEnablerManager = $container->get('plugin.manager.group_content_enabler');
+    $instance->groupContentEnablerManager = $container->get('plugin.manager.group_relation');
     return $instance;
   }
 

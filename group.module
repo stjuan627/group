@@ -184,7 +184,7 @@ function template_preprocess_group_content(&$variables) {
  * Implements hook_rebuild().
  */
 function group_rebuild() {
-  _group_content_enabler_manager()->installEnforced();
+  _group_relation_manager()->installEnforced();
 
   /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
   $storage = \Drupal::entityTypeManager()->getStorage('group_role');
@@ -198,7 +198,7 @@ function group_rebuild() {
 function group_modules_installed($modules) {
   // Only create config objects while config import is not in progress.
   if (!\Drupal::isConfigSyncing()) {
-    _group_content_enabler_manager()->installEnforced();
+    _group_relation_manager()->installEnforced();
 
     /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_role');
@@ -300,8 +300,8 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  /** @var \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager */
-  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
+  $plugin_manager = \Drupal::service('plugin.manager.group_relation');
 
   // Find all of the group content plugins that define access.
   $plugin_ids = $plugin_manager->getPluginIdsByEntityTypeAccess($entity->getEntityTypeId());
@@ -656,7 +656,7 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 
   /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $form_state->get('group');
-  $group->addContent($entity, $form_state->get('group_content_enabler'));
+  $group->addContent($entity, $form_state->get('group_relation'));
 
   // This submit handler is only called when creating new content within a group
   // without using the 2-step wizard. We can therefore safely assume the user
@@ -708,13 +708,13 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 /**
  * Gets the group relation plugin manager.
  *
- * @return \Drupal\group\Plugin\GroupRelationManagerInterface
+ * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
  *   The group relation plugin manager.
  *
  * @internal Try to properly inject the service when possible.
  */
-function _group_content_enabler_manager() {
-  return \Drupal::service('plugin.manager.group_content_enabler');
+function _group_relation_manager() {
+  return \Drupal::service('plugin.manager.group_relation');
 }
 
 /**

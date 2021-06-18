@@ -15,7 +15,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\CalculatedGroupPermissionsItemInterface as CGPII;
 use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -41,7 +41,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
   /**
    * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -99,7 +99,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group relation plugin manager.
    * @param \Drupal\group\Access\ChainGroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
@@ -129,7 +129,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('plugin.manager.group_content_enabler'),
+      $container->get('plugin.manager.group_relation'),
       $container->get('group_permission.chain_calculator'),
       $container->get('database'),
       $container->get('renderer'),

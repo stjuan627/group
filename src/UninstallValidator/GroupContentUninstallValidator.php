@@ -7,7 +7,7 @@ use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 
 class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
 
@@ -23,7 +23,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -34,7 +34,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
    *   The string translation service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    */
   public function __construct(TranslationInterface $string_translation, EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {

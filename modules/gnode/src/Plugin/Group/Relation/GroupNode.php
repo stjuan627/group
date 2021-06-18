@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\gnode\Plugin\GroupContentEnabler;
+namespace Drupal\gnode\Plugin\Group\Relation;
 
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 use Drupal\node\Entity\NodeType;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
@@ -19,14 +19,10 @@ use Drupal\Core\Form\FormStateInterface;
  *   entity_access = TRUE,
  *   reference_label = @Translation("Title"),
  *   reference_description = @Translation("The title of the node to add to the group"),
- *   deriver = "Drupal\gnode\Plugin\GroupContentEnabler\GroupNodeDeriver",
- *   handlers = {
- *     "access" = "Drupal\group\Plugin\GroupContentAccessControlHandler",
- *     "permission_provider" = "Drupal\gnode\Plugin\GroupNodePermissionProvider",
- *   }
+ *   deriver = "Drupal\gnode\Plugin\Group\Relation\GroupNodeDeriver",
  * )
  */
-class GroupNode extends GroupContentEnablerBase {
+class GroupNode extends GroupRelationBase {
 
   /**
    * Retrieves the node type this plugin supports.

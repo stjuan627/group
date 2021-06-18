@@ -10,26 +10,27 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\group\Plugin\GroupRelationManager;
-use Drupal\group\Plugin\GroupContentHandlerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManager;
+use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface;
+use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Tests the GroupContentEnabler plugin manager.
+ * Tests the group relation plugin manager.
  *
- * @coversDefaultClass \Drupal\group\Plugin\GroupRelationManager
+ * @coversDefaultClass \Drupal\group\Plugin\Group\Relation\GroupRelationManager
  * @group group
  */
-class GroupContentEnablerManagerTest extends UnitTestCase {
+class GroupRelationManagerTest extends UnitTestCase {
 
   /**
    * The group relation manager under test.
    *
-   * @var \Drupal\group\Plugin\GroupRelationManager
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManager
    */
-  protected $groupContentEnablerManager;
+  protected $groupRelationManager;
 
   /**
    * The service container.
@@ -84,13 +85,13 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
     $storage = $this->prophesize(ConfigEntityStorageInterface::class);
     $this->entityTypeManager->getStorage('group_type')->willReturn($storage->reveal());
 
-    $this->groupContentEnablerManager = new TestGroupRelationManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
+    $this->groupRelationManager = new TestGroupRelationManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
 
     $this->discovery = $this->prophesize(DiscoveryInterface::class);
-    $this->groupContentEnablerManager->setDiscovery($this->discovery->reveal());
+    $this->groupRelationManager->setDiscovery($this->discovery->reveal());
 
     $this->container = $this->prophesize(ContainerInterface::class);
-    $this->groupContentEnablerManager->setContainer($this->container->reveal());
+    $this->groupRelationManager->setContainer($this->container->reveal());
   }
 
   /**
@@ -129,10 +130,10 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @dataProvider providerTestHasHandler
    */
   public function testHasHandler($plugin_id, $expected) {
-    $apple = ['handlers' => ['foo_handler' => TestGroupContentHandler::class]];
+    $apple = ['handlers' => ['foo_handler' => TestGroupRelationHandler::class]];
     $banana = ['handlers' => ['foo_handler' => FALSE]];
     $this->setUpPluginDefinitions(['apple' => $apple, 'banana' => $banana]);
-    $this->assertSame($expected, $this->groupContentEnablerManager->hasHandler($plugin_id, 'foo_handler'));
+    $this->assertSame($expected, $this->groupRelationManager->hasHandler($plugin_id, 'foo_handler'));
   }
 
   /**
@@ -155,8 +156,8 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @covers ::createHandlerInstance
    */
   public function testCreateHandlerInstance() {
-    $handler = $this->groupContentEnablerManager->createHandlerInstance(TestGroupContentHandler::class, 'some_plugin', []);
-    $this->assertInstanceOf(GroupContentHandlerBase::class, $handler);
+    $handler = $this->groupRelationManager->createHandlerInstance(TestGroupRelationHandler::class, 'some_plugin', []);
+    $this->assertInstanceOf(RelationHandlerInterface::class, $handler);
     $this->assertInstanceOf(ModuleHandlerInterface::class, $handler->getModuleHandler());
   }
 
@@ -167,8 +168,8 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    */
   public function testCreateHandlerInstanceNoInterface() {
     $this->expectException(InvalidPluginDefinitionException::class);
-    $this->expectExceptionMessage('Trying to instantiate a handler that does not implement \Drupal\group\Plugin\GroupContentHandlerInterface.');
-    $this->groupContentEnablerManager->createHandlerInstance(TestGroupContentHandlerWithoutInterface::class, 'some_plugin', []);
+    $this->expectExceptionMessage('Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
+    $this->groupRelationManager->createHandlerInstance(TestGroupRelationHandlerWithoutInterface::class, 'some_plugin', []);
   }
 
   /**
@@ -178,12 +179,12 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @depends testCreateHandlerInstance
    */
   public function testGetHandler() {
-    $apple = ['handlers' => ['foo_handler' => TestGroupContentHandler::class]];
+    $apple = ['handlers' => ['foo_handler' => TestGroupRelationHandler::class]];
     $this->setUpPluginDefinitions(['apple' => $apple]);
 
-    $first_call_result = $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
-    $second_call_result = $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
-    $direct_call_result = $this->groupContentEnablerManager->createHandlerInstance($apple['handlers']['foo_handler'], 'apple', $apple);
+    $first_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
+    $second_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
+    $direct_call_result = $this->groupRelationManager->createHandlerInstance($apple['handlers']['foo_handler'], 'apple', $apple);
 
     $this->assertEquals(
       $first_call_result,
@@ -213,7 +214,7 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
     $this->setUpPluginDefinitions(['apple' => ['handlers' => []]]);
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "apple" plugin did not specify a foo_handler handler.');
-    $this->groupContentEnablerManager->getHandler('apple', 'foo_handler');
+    $this->groupRelationManager->getHandler('apple', 'foo_handler');
   }
 
   /**
@@ -222,9 +223,9 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @covers ::getAccessControlHandler
    */
   public function testGetAccessControlHandler() {
-    $apple = ['handlers' => ['access' => TestGroupContentHandler::class]];
+    $apple = ['handlers' => ['access' => TestGroupRelationHandler::class]];
     $this->setUpPluginDefinitions(['apple' => $apple]);
-    $this->assertInstanceOf(GroupContentHandlerBase::class, $this->groupContentEnablerManager->getAccessControlHandler('apple'));
+    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getAccessControlHandler('apple'));
   }
 
   /**
@@ -233,9 +234,9 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @covers ::getPermissionProvider
    */
   public function testGetPermissionProvider() {
-    $apple = ['handlers' => ['permission_provider' => TestGroupContentHandler::class]];
+    $apple = ['handlers' => ['permission_provider' => TestGroupRelationHandler::class]];
     $this->setUpPluginDefinitions(['apple' => $apple]);
-    $this->assertInstanceOf(GroupContentHandlerBase::class, $this->groupContentEnablerManager->getPermissionProvider('apple'));
+    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getPermissionProvider('apple'));
   }
 
 }
@@ -254,17 +255,10 @@ class TestGroupRelationManager extends GroupRelationManager {
 
 }
 
-class TestGroupContentHandler extends GroupContentHandlerBase {
-
-  /**
-   * Returns the protected moduleHandler property.
-   */
-  public function getModuleHandler() {
-    return $this->moduleHandler;
-  }
-
+class TestGroupRelationHandler implements RelationHandlerInterface {
+  use RelationHandlerTrait;
 }
 
-class TestGroupContentHandlerWithoutInterface {
+class TestGroupRelationHandlerWithoutInterface {
 
 }

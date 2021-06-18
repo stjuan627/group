@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\gnode\Plugin\GroupContentEnabler;
+namespace Drupal\gnode\Plugin\Group\Relation;
 
 use Drupal\node\Entity\NodeType;
 use Drupal\Component\Plugin\Derivative\DeriverBase;

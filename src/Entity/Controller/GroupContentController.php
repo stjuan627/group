@@ -313,7 +313,7 @@ class GroupContentController extends ControllerBase {
 
     // Pass the group, plugin ID and store ID to the form state as well.
     $extra['group'] = $group;
-    $extra['group_content_enabler'] = $plugin_id;
+    $extra['group_relation'] = $plugin_id;
     $extra['store_id'] = $store_id;
 
     // See if we are on the second step of the form.

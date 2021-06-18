@@ -137,11 +137,11 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * Returns the content enabler plugin manager.
    *
-   * @return \Drupal\group\Plugin\GroupRelationManagerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    *   The group content plugin manager.
    */
   protected function getContentEnablerManager() {
-    return \Drupal::service('plugin.manager.group_content_enabler');
+    return \Drupal::service('plugin.manager.group_relation');
   }
 
   /**
@@ -228,8 +228,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       \Drupal::service('views.views_data')->clear();
     }
 
-    /** @var \Drupal\group\Plugin\GroupRelationManagerInterface $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
 
     // We need to reset the plugin ID map cache as it will be out of date now.
     $plugin_manager->clearCachedPluginMaps();

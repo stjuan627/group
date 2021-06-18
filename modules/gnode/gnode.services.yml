@@ -1,0 +1,10 @@
+services:
+  # Group relation plugin handlers.
+  group.plugin_handler.access_control.group_node:
+    class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
+    arguments: ['@group.plugin_handler.access_control']
+    shared: 'FALSE'
+  group.plugin_handler.permission_provider.group_node:
+    class: '\Drupal\group\Plugin\Group\RelationHandler\GroupNodePermissionProvider.php'
+    arguments: ['@group.plugin_handler.permission_provider']
+    shared: 'FALSE'

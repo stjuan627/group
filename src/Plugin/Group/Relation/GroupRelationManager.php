@@ -56,14 +56,14 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   /**
    * A collection of vanilla instances of all content enabler plugins.
    *
-   * @var \Drupal\group\Plugin\GroupRelationCollection
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    */
   protected $allPlugins;
 
   /**
    * An list each group type's installed plugins as plugin collections.
    *
-   * @var \Drupal\group\Plugin\GroupRelationCollection[]
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection[]
    */
   protected $groupTypeInstalled = [];
 
@@ -96,7 +96,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   protected $groupTypePluginMapCacheKey;
 
   /**
-   * Constructs a GroupContentEnablerManager object.
+   * Constructs a GroupRelationManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -111,7 +111,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelation');
     $this->alterInfo('group_content_info');
-    $this->setCacheBackend($cache_backend, 'group_content_enablers');
+    $this->setCacheBackend($cache_backend, 'group_relations');
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupContentTypeMapCacheKey = $this->cacheKey . '_GCT_map';
     $this->groupTypePluginMapCacheKey = $this->cacheKey . '_GT_map';
@@ -148,8 +148,8 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    * {@inheritdoc}
    */
   public function createHandlerInstance($class, $plugin_id, array $definition = NULL) {
-    if (!is_subclass_of($class, 'Drupal\group\Plugin\GroupContentHandlerInterface')) {
-      throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\GroupContentHandlerInterface.');
+    if (!is_subclass_of($class, 'Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface')) {
+      throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
     }
 
     $handler = $class::createInstance($this->container, $plugin_id, $definition);
@@ -230,7 +230,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   /**
    * Retrieves a vanilla instance of every installed plugin.
    *
-   * @return \Drupal\group\Plugin\GroupRelationCollection
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   A plugin collection with a vanilla instance of every installed plugin.
    */
   protected function getVanillaInstalled() {
@@ -241,7 +241,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
     $installed = $this->getInstalledIds();
 
     // Remove uninstalled plugins from the collection.
-    /** @var \Drupal\group\Plugin\GroupRelationCollection $plugins */
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection $plugins */
     foreach ($plugins as $plugin_id => $plugin) {
       if (!in_array($plugin_id, $installed)) {
         $plugins->removeInstanceId($plugin_id);
@@ -257,7 +257,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type to instantiate the installed plugins for.
    *
-   * @return \Drupal\group\Plugin\GroupRelationCollection
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   A plugin collection with fully instantiated plugins for the group type.
    */
   protected function getGroupTypeInstalled(GroupTypeInterface $group_type) {
