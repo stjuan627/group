@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
-use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
  * Provides a group relation for test entities.
  *
- * @GroupContentEnabler(
+ * @GroupRelation(
  *   id = "entity_test_as_content",
  *   label = @Translation("Group test entity"),
  *   description = @Translation("Adds test entities to groups."),
@@ -16,12 +16,8 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
  *   pretty_path_key = "entity_test_with_owner",
  *   reference_label = @Translation("Test entity"),
  *   reference_description = @Translation("The name of the test entity you want to add to the group"),
- *   handlers = {
- *     "access" = "Drupal\group\Plugin\GroupContentAccessControlHandler",
- *     "permission_provider" = "Drupal\group_test_plugin\Plugin\GroupContentEnabler\FullEntityPermissionProvider",
- *   },
  *   admin_permission = "administer entity_test_as_content"
  * )
  */
-class EntityTestAsContent extends GroupContentEnablerBase {
+class EntityTestAsContent extends GroupRelationBase {
 }

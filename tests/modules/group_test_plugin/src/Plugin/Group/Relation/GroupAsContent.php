@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
-use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
  * Provides a group relation for groups.
  *
- * @GroupContentEnabler(
+ * @GroupRelation(
  *   id = "group_as_content",
  *   label = @Translation("Subgroup"),
  *   description = @Translation("Adds groups to groups as subgroups."),
@@ -18,5 +18,5 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
  *   reference_description = @Translation("The name of the group you want to add to the group")
  * )
  */
-class GroupAsContent extends GroupContentEnablerBase {
+class GroupAsContent extends GroupRelationBase {
 }

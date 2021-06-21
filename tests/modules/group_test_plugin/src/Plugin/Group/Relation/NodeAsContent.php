@@ -1,25 +1,21 @@
 <?php
 
-namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
-use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
  * Provides a group relation for nodes.
  *
- * @GroupContentEnabler(
+ * @GroupRelation(
  *   id = "node_as_content",
  *   label = @Translation("Node as content"),
  *   description = @Translation("Adds nodes to groups."),
  *   entity_type_id = "node",
  *   entity_access = TRUE,
  *   deriver = "Drupal\group_test_plugin\Plugin\GroupContentEnabler\NodeAsContentDeriver",
- *   handlers = {
- *     "access" = "Drupal\group\Plugin\GroupContentAccessControlHandler",
- *     "permission_provider" = "Drupal\group_test_plugin\Plugin\GroupContentEnabler\FullEntityPermissionProvider",
- *   },
  *   admin_permission = "administer node_as_content:page"
  * )
  */
-class NodeAsContent extends GroupContentEnablerBase {
+class NodeAsContent extends GroupRelationBase {
 }

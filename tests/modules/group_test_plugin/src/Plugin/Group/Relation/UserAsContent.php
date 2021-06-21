@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
-use Drupal\group\Plugin\GroupContentEnablerBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
  * Provides a group relation for users.
  *
- * @GroupContentEnabler(
+ * @GroupRelation(
  *   id = "user_as_content",
  *   label = @Translation("Group user"),
  *   description = @Translation("Adds users to groups without making them members."),
@@ -15,11 +15,8 @@ use Drupal\group\Plugin\GroupContentEnablerBase;
  *   pretty_path_key = "user",
  *   reference_label = @Translation("Username"),
  *   reference_description = @Translation("The name of the user you want to add to the group"),
- *   handlers = {
- *     "permission_provider" = "Drupal\group\Plugin\GroupContentPermissionProvider",
- *   },
  *   admin_permission = "administer user_as_content"
  * )
  */
-class UserAsContent extends GroupContentEnablerBase {
+class UserAsContent extends GroupRelationBase {
 }

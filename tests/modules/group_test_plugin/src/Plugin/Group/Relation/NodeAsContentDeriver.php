@@ -1,8 +1,7 @@
 <?php
 
-namespace Drupal\group_test_plugin\Plugin\GroupContentEnabler;
+namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
-use Drupal\node\Entity\NodeType;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 
 class NodeAsContentDeriver extends DeriverBase {
