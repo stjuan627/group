@@ -10,49 +10,37 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
  */
 class EmptyPermissionProvider implements PermissionProviderInterface {
 
-  /**
-   * The default plugin handler.
-   *
-   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
-   */
-  protected $default;
+  use RelationHandlerTrait;
 
   /**
    * Constructs a new EmptyPermissionProvider.
    *
-   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $default
-   *   The default permission provider.
+   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $parent
+   *   The parent permission provider.
    */
-  public function __construct(PermissionProviderInterface $default) {
-    $this->default = $default;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function init($plugin_id, array $definition) {
-    // Intentionally left blank.
+  public function __construct(PermissionProviderInterface $parent) {
+    $this->parent = $parent;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAdminPermission() {
-    return $this->default->getAdminPermission();
+    return $this->parent->getAdminPermission();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPermission($operation, $target, $scope = 'any') {
-    return $this->default->getPermission($operation, $target, $scope);
+    return $this->parent->getPermission($operation, $target, $scope);
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildPermissions() {
-    return $this->default->buildPermissions();
+    return $this->parent->buildPermissions();
   }
 
 }

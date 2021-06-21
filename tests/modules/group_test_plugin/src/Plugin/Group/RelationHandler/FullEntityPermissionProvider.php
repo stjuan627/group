@@ -14,22 +14,15 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
   use PermissionProviderTrait;
 
   /**
-   * The default permission provider.
-   *
-   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
-   */
-  protected $default;
-
-  /**
    * Constructs a new FullEntityPermissionProvider.
    *
-   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $default
-   *   The default permission provider.
+   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $parent
+   *   The parent permission provider.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(PermissionProviderInterface $default, EntityTypeManagerInterface $entity_type_manager) {
-    $this->default = $default;
+  public function __construct(PermissionProviderInterface $parent, EntityTypeManagerInterface $entity_type_manager) {
+    $this->parent = $parent;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -37,7 +30,7 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
    * {@inheritdoc}
    */
   public function getAdminPermission() {
-    return $this->default->getAdminPermission();
+    return $this->parent->getAdminPermission();
   }
 
   /**
@@ -54,14 +47,14 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
           return $this->getEntityViewOwnUnpublishedPermission();
       }
     }
-    return $this->default->getPermission($operation, $target, $scope);
+    return $this->parent->getPermission($operation, $target, $scope);
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildPermissions() {
-    $permissions = $this->default->buildPermissions();
+    $permissions = $this->parent->buildPermissions();
 
     // Support view own permissions.
     $prefix = 'Entity:';

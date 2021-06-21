@@ -148,21 +148,21 @@ services:
 
   # Default group relation plugin handlers.
   group.relation_handler.access_control:
-    class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl.php'
+    class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
     arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
     shared: 'FALSE'
   group.relation_handler.permission_provider:
-    class: '\Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider.php'
+    class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
     arguments: ['@entity_type.manager']
     shared: 'FALSE'
 
   # Specific group relation plugin handlers.
   group.relation_handler.access_control.group_membership:
-    class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
+    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
     arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
   group.relation_handler.permission_provider.group_membership:
-    class: '\Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider.php'
+    class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
     shared: 'FALSE'
 

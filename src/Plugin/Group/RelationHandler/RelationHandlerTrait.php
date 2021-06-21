@@ -13,6 +13,15 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
 trait RelationHandlerTrait {
 
   /**
+   * The parent relation handler in the decorator chain.
+   *
+   * You MUST set this when you are decorating an existing handler.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * The plugin ID as read from the definition.
    *
    * @var string
@@ -46,6 +55,9 @@ trait RelationHandlerTrait {
    * {@inheritdoc}
    */
   public function init($plugin_id, array $definition) {
+    if (isset($this->parent)) {
+      $this->parent->init($plugin_id, $definition);
+    }
     $this->pluginId = $plugin_id;
     $this->definition = $definition;
   }

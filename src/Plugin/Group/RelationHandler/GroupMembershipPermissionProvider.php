@@ -10,27 +10,20 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
   use RelationHandlerTrait;
 
   /**
-   * The default permission provider.
-   *
-   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
-   */
-  protected $default;
-
-  /**
    * Constructs a new GroupMembershipPermissionProvider.
    *
-   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $default
+   * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $parent
    *   The default permission provider.
    */
-  public function __construct(PermissionProviderInterface $default) {
-    $this->default = $default;
+  public function __construct(PermissionProviderInterface $parent) {
+    $this->parent = $parent;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAdminPermission() {
-    return $this->default->getAdminPermission();
+    return $this->parent->getAdminPermission();
   }
 
   /**
@@ -54,14 +47,14 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
           break;
       }
     }
-    return $this->default->getPermission($operation, $target, $scope);
+    return $this->parent->getPermission($operation, $target, $scope);
   }
 
   /**
    * {@inheritdoc}
    */
   public function buildPermissions() {
-    $permissions = $this->default->buildPermissions();
+    $permissions = $this->parent->buildPermissions();
 
     // Add in the join group permission.
     $permissions['join group'] = [
@@ -70,13 +63,13 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
     ];
 
     // Alter the update own permission.
-    if ($name = $this->default->getPermission('update', 'relation', 'own')) {
+    if ($name = $this->parent->getPermission('update', 'relation', 'own')) {
       $permissions[$name]['title'] = 'Edit own membership';
       $permissions[$name]['allowed for'] = ['member'];
     }
 
     // Alter and rename the delete own permission.
-    if ($name = $this->default->getPermission('delete', 'relation', 'own')) {
+    if ($name = $this->parent->getPermission('delete', 'relation', 'own')) {
       $permissions[$name]['title'] = 'Leave group';
       $permissions[$name]['allowed for'] = ['member'];
       $permissions[$this->getPermission('delete', 'relation', 'own')] = $permissions[$name];
@@ -85,7 +78,7 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
 
     // The following permissions are handled by the admin permission.
     foreach (['create', 'update', 'delete'] as $operation) {
-      if ($name = $this->default->getPermission($operation, 'relation')) {
+      if ($name = $this->parent->getPermission($operation, 'relation')) {
         unset($permissions[$name]);
       }
     }
