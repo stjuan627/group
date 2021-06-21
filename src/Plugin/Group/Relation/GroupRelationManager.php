@@ -133,7 +133,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    */
   public function createHandlerInstance($plugin_id, $handler_type) {
     $definition = $this->getDefinition($plugin_id);
-    $service_name = "group.plugin_handler.$handler_type.{$definition['id']}";
+    $service_name = "group.relation_handler.$handler_type.{$definition['id']}";
 
     if (!$this->container->has($service_name)) {
       throw new PluginNotFoundException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));

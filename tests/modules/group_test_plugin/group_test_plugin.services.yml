@@ -1,37 +1,37 @@
 services:
   # Group relation plugin handlers.
-  group.plugin_handler.access_control.entity_as_content:
+  group.relation_handler.access_control.entity_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
-    arguments: ['@group.plugin_handler.access_control']
+    arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
-  group.plugin_handler.permission_provider.entity_as_content:
+  group.relation_handler.permission_provider.entity_as_content:
     class: '\Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider.php'
-    arguments: ['@group.plugin_handler.permission_provider', '@entity_type.manager']
+    arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'
 
-  group.plugin_handler.access_control.group_as_content:
+  group.relation_handler.access_control.group_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
-    arguments: ['@group.plugin_handler.access_control']
+    arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
-  group.plugin_handler.permission_provider.group_as_content:
+  group.relation_handler.permission_provider.group_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider.php'
-    arguments: ['@group.plugin_handler.permission_provider']
+    arguments: ['@group.relation_handler.permission_provider']
     shared: 'FALSE'
 
-  group.plugin_handler.access_control.node_as_content:
+  group.relation_handler.access_control.node_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
-    arguments: ['@group.plugin_handler.access_control']
+    arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
-  group.plugin_handler.permission_provider.node_as_content:
+  group.relation_handler.permission_provider.node_as_content:
     class: '\Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider.php'
-    arguments: ['@group.plugin_handler.permission_provider', '@entity_type.manager']
+    arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'
 
-  group.plugin_handler.access_control.user_as_content:
+  group.relation_handler.access_control.user_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
-    arguments: ['@group.plugin_handler.access_control']
+    arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
-  group.plugin_handler.permission_provider.user_as_content:
+  group.relation_handler.permission_provider.user_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider.php'
-    arguments: ['@group.plugin_handler.permission_provider']
+    arguments: ['@group.relation_handler.permission_provider']
     shared: 'FALSE'
