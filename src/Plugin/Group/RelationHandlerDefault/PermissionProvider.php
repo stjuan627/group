@@ -144,7 +144,14 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the view permission for the relation.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationViewPermission($scope = 'any') {
     // @todo Implement view own permission.
@@ -156,28 +163,52 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the update permission for the relation.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationUpdatePermission($scope = 'any') {
     return "update $scope $this->pluginId content";
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the delete permission for the relation.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationDeletePermission($scope = 'any') {
     return "delete $scope $this->pluginId content";
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the create permission for the relation.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationCreatePermission() {
     return "create $this->pluginId content";
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the view permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityViewPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
@@ -191,7 +222,14 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the view unpublished permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityViewUnpublishedPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
@@ -207,7 +245,14 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the update permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityUpdatePermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
@@ -219,7 +264,14 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the delete permission for the entity.
+   *
+   * @param string $scope
+   *   (optional) Whether the 'any' or 'own' permission name should be returned.
+   *   Defaults to 'any'.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityDeletePermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
@@ -231,7 +283,10 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the create permission for the entity.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityCreatePermission() {
     if ($this->definesEntityPermissions) {

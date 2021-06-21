@@ -76,7 +76,10 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the view own permission for the entity.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityViewOwnPermission() {
     if ($this->definesEntityPermissions) {
@@ -88,7 +91,10 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets the name of the view own unpublished permission for the entity.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
    */
   protected function getEntityViewOwnUnpublishedPermission() {
     if ($this->definesEntityPermissions) {
