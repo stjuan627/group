@@ -133,7 +133,7 @@ class PermissionProvider implements PermissionProviderInterface {
       $permissions[$name] = $this->buildPermission("$prefix Delete own %entity_type entities");
     }
 
-    if ($name = $this->getPermission('create', 'entity')()) {
+    if ($name = $this->getPermission('create', 'entity')) {
       $permissions[$name] = $this->buildPermission(
         "$prefix Add %entity_type entities",
         'Allows you to create a new %entity_type entity and add it to the group.'
