@@ -1,37 +1,25 @@
 services:
   # Group relation plugin handlers.
   group.relation_handler.access_control.entity_test_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
-    arguments: ['@group.relation_handler.access_control']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.access_control'
   group.relation_handler.permission_provider.entity_test_as_content:
     class: 'Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'
 
   group.relation_handler.access_control.group_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
-    arguments: ['@group.relation_handler.access_control']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.access_control'
   group.relation_handler.permission_provider.group_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider'
-    arguments: ['@group.relation_handler.permission_provider']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.permission_provider'
 
   group.relation_handler.access_control.node_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
-    arguments: ['@group.relation_handler.access_control']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.access_control'
   group.relation_handler.permission_provider.node_as_content:
     class: 'Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'
 
   group.relation_handler.access_control.user_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
-    arguments: ['@group.relation_handler.access_control']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.access_control'
   group.relation_handler.permission_provider.user_as_content:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider'
-    arguments: ['@group.relation_handler.permission_provider']
-    shared: 'FALSE'
+    parent: 'group.empty_relation_handler_trait.permission_provider'

@@ -3,7 +3,6 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -136,7 +135,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
     $service_name = "group.relation_handler.$handler_type.{$definition['id']}";
 
     if (!$this->container->has($service_name)) {
-      throw new PluginNotFoundException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));
+      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));
     }
     $handler = $this->container->get($service_name);
 
