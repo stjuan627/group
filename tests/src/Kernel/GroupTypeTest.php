@@ -77,7 +77,7 @@ class GroupTypeTest extends GroupKernelTestBase {
    */
   public function testGetInstalledContentPlugin() {
     $plugin = $this->groupType->getContentPlugin('group_membership');
-    $this->assertInstanceOf('\Drupal\group\Plugin\Relation\GroupRelationInterface', $plugin, 'Loaded the group_membership plugin.');
+    $this->assertInstanceOf('\Drupal\group\Plugin\Group\Relation\GroupRelationInterface', $plugin, 'Loaded the group_membership plugin.');
   }
 
   /**

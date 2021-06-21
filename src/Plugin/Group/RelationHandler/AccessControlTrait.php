@@ -23,7 +23,7 @@ trait AccessControlTrait {
   /**
    * The plugin's permission provider.
    *
-   * @var \Drupal\group\Plugin\GroupContentPermissionProviderInterface
+   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
    */
   protected $permissionProvider;
 

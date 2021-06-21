@@ -10,7 +10,7 @@ use Drupal\group\Entity\GroupInterface;
 /**
  * Provides a common interface for group relation access control handlers.
  */
-interface AccessControlInterface {
+interface AccessControlInterface extends RelationHandlerInterface {
 
   /**
    * Checks access to an operation on the relation.
