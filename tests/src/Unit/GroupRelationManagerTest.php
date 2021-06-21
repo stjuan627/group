@@ -149,7 +149,7 @@ class GroupRelationManagerTest extends UnitTestCase {
    * @depends testCreateHandlerInstance
    */
   public function testGetHandler() {
-    $this->setUpPluginDefinitions(['apple' => []]);
+    $this->setUpPluginDefinitions(['apple' => ['id' => 'apple']]);
 
     $first_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
     $second_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
@@ -180,7 +180,7 @@ class GroupRelationManagerTest extends UnitTestCase {
    * @covers ::getHandler
    */
   public function testGetHandlerMissingHandler() {
-    $this->setUpPluginDefinitions(['apple' => []]);
+    $this->setUpPluginDefinitions(['apple' => ['id' => 'apple']]);
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "apple" plugin did not specify a foo_handler handler.');
     $this->groupRelationManager->getHandler('apple', 'foo_handler');
@@ -192,8 +192,7 @@ class GroupRelationManagerTest extends UnitTestCase {
    * @covers ::getAccessControlHandler
    */
   public function testGetAccessControlHandler() {
-    $apple = ['handlers' => ['access' => TestGroupRelationHandler::class]];
-    $this->setUpPluginDefinitions(['apple' => []]);
+    $this->setUpPluginDefinitions(['apple' => ['id' => 'apple']]);
     $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getAccessControlHandler('apple'));
   }
 
@@ -203,7 +202,7 @@ class GroupRelationManagerTest extends UnitTestCase {
    * @covers ::getPermissionProvider
    */
   public function testGetPermissionProvider() {
-    $this->setUpPluginDefinitions(['apple' => []]);
+    $this->setUpPluginDefinitions(['apple' => ['id' => 'apple']]);
     $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getPermissionProvider('apple'));
   }
 

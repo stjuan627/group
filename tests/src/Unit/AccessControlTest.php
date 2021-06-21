@@ -333,11 +333,12 @@ class AccessControlTest extends UnitTestCase {
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
     }
 
-    $manager = $this->prophesize(GroupRelationManagerInterface::class);
-    $manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
-    $this->container->get('plugin.manager.group_relation')->willReturn($manager->reveal());
+    $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
+    $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
+    $this->container->get('plugin.manager.group_relation')->willReturn($relation_manager->reveal());
 
-    $access_control_handler = new AccessControl($this->container->get('entity_type.manager'), $manager->reveal());
+    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
     $access_control_handler->init($plugin_id, $definition);
 
     $account_id = rand(1, 100);

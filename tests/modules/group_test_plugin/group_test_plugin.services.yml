@@ -1,10 +1,10 @@
 services:
   # Group relation plugin handlers.
-  group.relation_handler.access_control.entity_as_content:
+  group.relation_handler.access_control.entity_test_as_content:
     class: '\Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl.php'
     arguments: ['@group.relation_handler.access_control']
     shared: 'FALSE'
-  group.relation_handler.permission_provider.entity_as_content:
+  group.relation_handler.permission_provider.entity_test_as_content:
     class: '\Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider.php'
     arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
     shared: 'FALSE'
