@@ -44,11 +44,8 @@ class AccessControlTest extends UnitTestCase {
 
     $cache_context_manager = $this->prophesize(CacheContextsManager::class);
     $cache_context_manager->assertValidTokens(Argument::any())->willReturn(TRUE);
-    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $this->container = $this->prophesize(ContainerInterface::class);
-    // @todo Evaluate if this is still required.
     $this->container->get('cache_contexts_manager')->willReturn($cache_context_manager->reveal());
-    $this->container->get('entity_type.manager')->willReturn($entity_type_manager->reveal());
     \Drupal::setContainer($this->container->reveal());
   }
 
@@ -87,7 +84,6 @@ class AccessControlTest extends UnitTestCase {
 
     $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
-    $this->container->get('plugin.manager.group_relation')->willReturn($relation_manager->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
@@ -214,11 +210,10 @@ class AccessControlTest extends UnitTestCase {
   public function testRelationCreateAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
-    $permission_provider->getRelationCreatePermission()->willReturn($permission);
+    $permission_provider->getPermission('create', 'relation')->willReturn($permission);
 
     $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
-    $this->container->get('plugin.manager.group_relation')->willReturn($relation_manager->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
@@ -318,7 +313,6 @@ class AccessControlTest extends UnitTestCase {
     $storage = $this->prophesize(GroupContentStorageInterface::class);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getStorage('group_content')->willReturn($storage->reveal());
-    $this->container->get('entity_type.manager')->willReturn($entity_type_manager->reveal());
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
@@ -335,9 +329,7 @@ class AccessControlTest extends UnitTestCase {
 
     $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
-    $this->container->get('plugin.manager.group_relation')->willReturn($relation_manager->reveal());
 
-    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
     $access_control_handler->init($plugin_id, $definition);
 
@@ -531,11 +523,10 @@ class AccessControlTest extends UnitTestCase {
   public function testEntityCreateAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
-    $permission_provider->getEntityCreatePermission()->willReturn($permission);
+    $permission_provider->getPermission('create', 'entity')->willReturn($permission);
 
     $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
-    $this->container->get('plugin.manager.group_relation')->willReturn($relation_manager->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
