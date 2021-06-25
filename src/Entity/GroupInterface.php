@@ -2,12 +2,11 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\Core\Entity\EntityPublishedInterface;
-use Drupal\Core\Entity\RevisionLogInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -15,7 +14,7 @@ use Drupal\user\UserInterface;
  *
  * @ingroup group
  */
-interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface, EntityPublishedInterface, RevisionLogInterface {
+interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
    * Gets the group creation timestamp.
@@ -35,7 +34,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   /**
    * Adds a content entity as a group content entity.
    *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The content entity to add to the group.
    * @param string $plugin_id
    *   The ID of the content enabler plugin to add the entity with.
@@ -43,7 +42,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   (optional) Extra values to add to the group content relationship. You
    *   cannot overwrite the group ID (gid) or entity ID (entity_id).
    */
-  public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []);
+  public function addContent(EntityInterface $entity, $plugin_id, $values = []);
 
   /**
    * Retrieves all GroupContent entities for the group.
@@ -83,6 +82,14 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param array $filters
    *   (optional) An associative array of extra filters where the keys are
    *   property or field names and the values are the value to filter on.
+   * @param bool $limited
+   *   (optional) If results are to be limited.
+   * @param int $offset
+   *   (optional) Offset from where results are to be fetched.
+   *   Works only when $limited is set to true.
+   * @param int $limit
+   *   (optional) Number of results to be fetched.
+   *   Works only when $limited is set to true.
    *
    * @return \Drupal\Core\Entity\EntityInterface[]
    *   A list of entities matching the criteria. This list does not have keys
@@ -90,7 +97,32 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *
    * @see \Drupal\group\Entity\GroupInterface::getContent()
    */
-  public function getContentEntities($plugin_id = NULL, $filters = []);
+  public function getContentEntities($plugin_id = NULL, $filters = [], $limited = false, $offset = 0, $limit = 50);
+
+  /**
+   * Retrieves content entities for the group via query.
+   *
+   * Desolves bridge between content and group content load.
+   *
+   * @param string $content_type_config_id
+   *   (optional) Content type machine ID to filter.
+   * @param array $filters
+   *   (optional) An associative array of extra filters where the keys are
+   *   property or field names and the values are the value to filter on.
+   * @param bool $limited
+   *   (optional) If results are to be limited.
+   * @param int $offset
+   *   (optional) Offset from where results are to be fetched.
+   *   Works only when $limited is set to true.
+   * @param int $limit
+   *   (optional) Number of results to be fetched.
+   *   Works only when $limited is set to true.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface[]
+   *   A list of entities matching the criteria. This list does not have keys
+   *   that represent the entity IDs as we could have collisions that way.
+   */
+  public function getContentEntitiesByQuery($content_type_config_id = NULL, $filters = [], $limited = false, $offset = 0, $limit = 50);
 
   /**
    * Adds a user as a member of the group.
