@@ -15,7 +15,7 @@ use Drupal\group\Entity\GroupInterface;
  */
 class EmptyAccessControl implements AccessControlInterface {
 
-  use RelationHandlerTrait;
+  use AccessControlTrait;
 
   /**
    * Constructs a new EmptyAccessControl.
@@ -25,34 +25,6 @@ class EmptyAccessControl implements AccessControlInterface {
    */
   public function __construct(AccessControlInterface $parent) {
     $this->parent = $parent;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
-    return $this->parent->relationAccess($group_content, $operation, $account, $return_as_object);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    return $this->parent->relationCreateAccess($group, $account, $return_as_object);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account, $return_as_object = FALSE) {
-    return $this->parent->entityAccess($entity, $operation, $account, $return_as_object);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    return $this->parent->entityCreateAccess($group, $account, $return_as_object);
   }
 
 }

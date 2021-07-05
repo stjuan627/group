@@ -58,6 +58,36 @@ trait PermissionProviderTrait {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAdminPermission() {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using PermissionProviderTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->getAdminPermission();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPermission($operation, $target, $scope = 'any') {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using PermissionProviderTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->getPermission($operation, $target, $scope);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildPermissions() {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using PermissionProviderTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->buildPermissions();
+  }
+
+  /**
    * Builds a permission with common translation arguments predefined.
    *
    * @param string $title

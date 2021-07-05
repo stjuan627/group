@@ -3,6 +3,7 @@
 namespace Drupal\gnode\Plugin\Group\RelationHandler;
 
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
+use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderTrait;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 
 /**
@@ -10,7 +11,7 @@ use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
  */
 class GroupNodePermissionProvider implements PermissionProviderInterface {
 
-  use RelationHandlerTrait;
+  use PermissionProviderTrait;
 
   /**
    * Constructs a new GroupMembershipPermissionProvider.
@@ -20,13 +21,6 @@ class GroupNodePermissionProvider implements PermissionProviderInterface {
    */
   public function __construct(PermissionProviderInterface $parent) {
     $this->parent = $parent;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAdminPermission() {
-    return $this->parent->getAdminPermission();
   }
 
   /**

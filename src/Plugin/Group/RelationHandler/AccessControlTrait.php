@@ -3,8 +3,10 @@
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -33,6 +35,46 @@ trait AccessControlTrait {
   public function init($plugin_id, array $definition) {
     $this->traitInit($plugin_id, $definition);
     $this->permissionProvider = $this->groupRelationManager()->getPermissionProvider($plugin_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->relationAccess($group_content, $operation, $account, $return_as_object);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->relationCreateAccess($group, $account, $return_as_object);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account, $return_as_object = FALSE) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->entityAccess($entity, $operation, $account, $return_as_object);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->entityCreateAccess($group, $account, $return_as_object);
   }
 
   /**

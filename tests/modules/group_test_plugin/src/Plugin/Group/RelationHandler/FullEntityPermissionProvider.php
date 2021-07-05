@@ -29,13 +29,6 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAdminPermission() {
-    return $this->parent->getAdminPermission();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getPermission($operation, $target, $scope = 'any') {
     // The view permissions support all scopes here.
     if ($target === 'entity') {

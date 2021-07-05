@@ -7,7 +7,7 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
  */
 class GroupMembershipPermissionProvider implements PermissionProviderInterface {
 
-  use RelationHandlerTrait;
+  use PermissionProviderTrait;
 
   /**
    * Constructs a new GroupMembershipPermissionProvider.
@@ -17,13 +17,6 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
    */
   public function __construct(PermissionProviderInterface $parent) {
     $this->parent = $parent;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAdminPermission() {
-    return $this->parent->getAdminPermission();
   }
 
   /**
