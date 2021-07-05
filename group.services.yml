@@ -150,31 +150,30 @@ services:
   group.relation_handler.access_control:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
     arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
-    shared: 'FALSE'
+    shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
     arguments: ['@entity_type.manager']
-    shared: 'FALSE'
+    shared: false
 
   # Traits to use in specific relation plugin declarations.
   group.empty_relation_handler_trait.access_control:
-    abstract: 'TRUE'
     class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
     arguments: ['@group.relation_handler.access_control']
-    shared: 'FALSE'
+    abstract: true
   group.empty_relation_handler_trait.permission_provider:
-    abstract: 'TRUE'
     class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
-    shared: 'FALSE'
+    abstract: true
 
   # Specific group relation plugin handlers.
   group.relation_handler.access_control.group_membership:
     parent: 'group.empty_relation_handler_trait.access_control'
+    shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
-    shared: 'FALSE'
+    shared: false
 
   # Recently, core introduced a new static cache that does not serialize its
   # data, unlike the cache.static service. This entity.memory_cache service has

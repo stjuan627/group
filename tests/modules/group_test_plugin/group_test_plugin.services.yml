@@ -2,24 +2,30 @@ services:
   # Group relation plugin handlers.
   group.relation_handler.access_control.entity_test_as_content:
     parent: 'group.empty_relation_handler_trait.access_control'
+    shared: false
   group.relation_handler.permission_provider.entity_test_as_content:
     class: 'Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
-    shared: 'FALSE'
+    shared: false
 
   group.relation_handler.access_control.group_as_content:
     parent: 'group.empty_relation_handler_trait.access_control'
+    shared: false
   group.relation_handler.permission_provider.group_as_content:
     parent: 'group.empty_relation_handler_trait.permission_provider'
+    shared: false
 
   group.relation_handler.access_control.node_as_content:
     parent: 'group.empty_relation_handler_trait.access_control'
+    shared: false
   group.relation_handler.permission_provider.node_as_content:
     class: 'Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider', '@entity_type.manager']
-    shared: 'FALSE'
+    shared: false
 
   group.relation_handler.access_control.user_as_content:
     parent: 'group.empty_relation_handler_trait.access_control'
+    shared: false
   group.relation_handler.permission_provider.user_as_content:
     parent: 'group.empty_relation_handler_trait.permission_provider'
+    shared: false
