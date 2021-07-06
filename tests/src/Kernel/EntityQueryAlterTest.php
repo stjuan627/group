@@ -61,7 +61,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
     $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_as_content'));
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner content']));
+    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
   }
 
   /**
@@ -134,7 +134,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    * Tests the viewing of any entities for members.
    */
   public function testMemberViewAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner content']);
+    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -157,7 +157,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$entity_1->id(), $entity_2->id(), $entity_3->id()], 'Members can see any test entities.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner content']));
+    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
     $this->assertQueryAccessResult([$entity_2->id()], 'Only the ungrouped test entity shows up.');
   }
 
@@ -165,7 +165,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    * Tests the viewing of any entities for non-members.
    */
   public function testNonMemberViewAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner content']);
+    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -183,7 +183,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
 
     $this->assertQueryAccessResult([$entity_1->id(), $entity_2->id(), $entity_3->id()], 'Non-members can see any test entities.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner content']));
+    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
     $this->assertQueryAccessResult([$entity_1->id(), $entity_2->id(), $entity_3->id()], 'Non-members can see any test entities.');
 
     $this->setCurrentUser($account);
@@ -194,7 +194,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    * Tests the viewing of own entities for members.
    */
   public function testMemberViewOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner content']);
+    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity(['uid' => $account->id()]);
@@ -225,7 +225,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    * Tests the viewing of own entities for non-members.
    */
   public function testNonMemberViewOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner content']);
+    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity(['uid' => $account->id()]);
@@ -249,7 +249,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
     $this->setCurrentUser($account);
     $this->assertQueryAccessResult([$entity_2->id()], 'Only the ungrouped test entity shows up.');
   }
-  
+
   /**
    * Tests that adding new group content clears caches.
    */

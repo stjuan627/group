@@ -94,7 +94,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
 
         // View own relation is not present in version 1.x.
         $case['expected'] = $scope === 'any'
-          ? "view {$scenario['plugin_id']} content"
+          ? "view {$scenario['plugin_id']} relation"
           : FALSE;
 
         $cases[] = $case;
@@ -139,7 +139,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
       foreach (['any', 'own'] as $scope) {
         $case = $scenario;
         $case['scope'] = $scope;
-        $case['expected'] = "update $scope {$scenario['plugin_id']} content";
+        $case['expected'] = "update $scope {$scenario['plugin_id']} relation";
         $cases[] = $case;
       }
     }
@@ -182,7 +182,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
       foreach (['any', 'own'] as $scope) {
         $case = $scenario;
         $case['scope'] = $scope;
-        $case['expected'] = "delete $scope {$scenario['plugin_id']} content";
+        $case['expected'] = "delete $scope {$scenario['plugin_id']} relation";
         $cases[] = $case;
       }
     }
@@ -221,7 +221,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
     $cases = [];
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
       $case = $scenario;
-      $case['expected'] = "create {$scenario['plugin_id']} content";
+      $case['expected'] = "create {$scenario['plugin_id']} relation";
       $cases[] = $case;
     }
     return $cases;

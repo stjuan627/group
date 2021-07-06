@@ -157,7 +157,7 @@ class PermissionProvider implements PermissionProviderInterface {
     // @todo Implement view own permission.
     if ($scope === 'any') {
       // Backwards compatible permission name for 'any' scope.
-      return "view $this->pluginId content";
+      return "view $this->pluginId relation";
     }
     return FALSE;
   }
@@ -173,7 +173,7 @@ class PermissionProvider implements PermissionProviderInterface {
    *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationUpdatePermission($scope = 'any') {
-    return "update $scope $this->pluginId content";
+    return "update $scope $this->pluginId relation";
   }
 
   /**
@@ -187,7 +187,7 @@ class PermissionProvider implements PermissionProviderInterface {
    *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationDeletePermission($scope = 'any') {
-    return "delete $scope $this->pluginId content";
+    return "delete $scope $this->pluginId relation";
   }
 
   /**
@@ -197,7 +197,7 @@ class PermissionProvider implements PermissionProviderInterface {
    *   The permission name or FALSE if it does not apply.
    */
   protected function getRelationCreatePermission() {
-    return "create $this->pluginId content";
+    return "create $this->pluginId relation";
   }
 
   /**

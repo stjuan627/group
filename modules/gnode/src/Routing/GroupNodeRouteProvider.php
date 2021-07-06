@@ -19,8 +19,9 @@ class GroupNodeRouteProvider {
     foreach (NodeType::loadMultiple() as $name => $node_type) {
       $plugin_id = "group_node:$name";
 
+      // @todo Use permission handlers here.
       $plugin_ids[] = $plugin_id;
-      $permissions_add[] = "create $plugin_id content";
+      $permissions_add[] = "create $plugin_id relation";
       $permissions_create[] = "create $plugin_id entity";
     }
 

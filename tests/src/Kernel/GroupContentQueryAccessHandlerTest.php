@@ -104,11 +104,11 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
 
     // Allow outsiders to view any content.
     $group_role = $this->groupType->getOutsiderRole();
-    $group_role->grantPermission('view user_as_content content')->save();
+    $group_role->grantPermission('view user_as_content relation')->save();
 
     // Allow members to update any content.
     $group_role = $this->groupType->getMemberRole();
-    $group_role->grantPermission('update any user_as_content content')->save();
+    $group_role->grantPermission('update any user_as_content relation')->save();
 
     $conditions = $this->handler->getConditions('view', $user);
     $expected_conditions = [
@@ -139,7 +139,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
 
     // Allow members to update any content.
     $group_role = $this->groupType->getMemberRole();
-    $group_role->grantPermission('update any user_as_content content')->save();
+    $group_role->grantPermission('update any user_as_content relation')->save();
 
     $conditions = $this->handler->getConditions('update', $user);
     $expected_conditions = [
@@ -170,11 +170,11 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
 
     // Allow outsiders to view any content.
     $group_role = $this->groupType->getOutsiderRole();
-    $group_role->grantPermission('view user_as_content content')->save();
+    $group_role->grantPermission('view user_as_content relation')->save();
 
     // Allow members to view any content.
     $group_role = $this->groupType->getMemberRole();
-    $group_role->grantPermission('view user_as_content content')->save();
+    $group_role->grantPermission('view user_as_content relation')->save();
 
     $conditions = $this->handler->getConditions('view', $user);
     $expected_sub_condition = new ConditionGroup();
@@ -210,7 +210,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
 
     // Allow outsiders to edit their own content.
     $group_role = $this->groupType->getOutsiderRole();
-    $group_role->grantPermission('update own user_as_content content')->save();
+    $group_role->grantPermission('update own user_as_content relation')->save();
 
     $conditions = $this->handler->getConditions('update', $user);
     $expected_sub_condition = new ConditionGroup();
@@ -247,7 +247,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
 
     // Allow members to edit their own content.
     $group_role = $this->groupType->getMemberRole();
-    $group_role->grantPermission('update own user_as_content content')->save();
+    $group_role->grantPermission('update own user_as_content relation')->save();
 
     $conditions = $this->handler->getConditions('update', $user);
     $expected_sub_condition = new ConditionGroup();
