@@ -5,6 +5,9 @@ namespace Drupal\Tests\group\Kernel;
 /**
  * Tests that relation handlers work as expected.
  *
+ * The services being tested come from group_test_plugin and
+ * group_test_plugin_alter. Check their services files to get an idea.
+ *
  * @group group
  */
 class RelationHandlerTest extends GroupKernelTestBase {

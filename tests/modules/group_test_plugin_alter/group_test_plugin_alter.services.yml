@@ -1,5 +1,5 @@
 services:
-  # Adds foo admin permission to all plugins.
+  # Adds bar admin permission to all plugins.
   group.relation_handler_decorator.permission_provider.bar:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\BarAdminPermissionProvider'
     decorates: 'group.relation_handler.permission_provider'
@@ -7,6 +7,7 @@ services:
     arguments: ['@group.relation_handler_decorator.permission_provider.bar.inner']
     shared: false
 
+  # Adds foo admin permission to all plugins.
   group.relation_handler_decorator.permission_provider.foo:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\FooAdminPermissionProvider'
     decorates: 'group.relation_handler.permission_provider'
@@ -14,7 +15,7 @@ services:
     arguments: ['@group.relation_handler_decorator.permission_provider.foo.inner']
     shared: false
 
-  # Adds bar admin permission to the node_as_content plugin.
+  # Adds baz admin permission to the node_as_content plugin.
   group.relation_handler_decorator.permission_provider.baz.node_as_content:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\BazAdminPermissionProvider'
     decorates: 'group.relation_handler.permission_provider.node_as_content'
@@ -22,7 +23,7 @@ services:
     arguments: ['@group.relation_handler_decorator.permission_provider.baz.node_as_content.inner']
     shared: false
 
-  # Adds bar admin permission to the entity_as_content plugin.
+  # Adds baz admin permission to the entity_as_content plugin.
   group.relation_handler_decorator.permission_provider.baz.entity_as_content:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\BazAdminPermissionProvider'
     decorates: 'group.relation_handler.permission_provider.entity_test_as_content'
@@ -30,7 +31,7 @@ services:
     arguments: ['@group.relation_handler_decorator.permission_provider.baz.entity_as_content.inner']
     shared: false
 
-  # Adds bar admin permission to the entity_as_content plugin.
+  # Adds foo admin permission to the entity_as_content plugin.
   group.relation_handler_decorator.permission_provider.foo.entity_as_content:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\FooAdminPermissionProvider'
     decorates: 'group.relation_handler.permission_provider.entity_test_as_content'
