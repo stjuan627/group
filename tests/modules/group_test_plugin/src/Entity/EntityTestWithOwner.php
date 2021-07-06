@@ -20,7 +20,7 @@ use Drupal\user\EntityOwnerTrait;
  *     "views_data" = "Drupal\views\EntityViewsData"
  *   },
  *   base_table = "entity_test_with_owner",
- *   admin_permission = "administer entity_test_with_owner relation",
+ *   admin_permission = "administer entity_test_with_owner",
  *   persistent_cache = FALSE,
  *   entity_keys = {
  *     "id" = "id",

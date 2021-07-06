@@ -61,7 +61,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_as_content'));
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
   }
 
   /**
@@ -137,7 +137,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the viewing of any grouped entities for members.
    */
   public function testMemberViewAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -164,7 +164,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'view'), 'Members can see any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'view'), 'Non-members cannot see grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'view'), 'Non-members cannot see grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
@@ -174,7 +174,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the viewing of any grouped entities for non-members.
    */
   public function testNonMemberViewAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -194,7 +194,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'view'), 'Non-members can see any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'view'), 'Non-members can see any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'view'), 'Non-members can see any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
@@ -209,7 +209,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the viewing of own grouped entities for members.
    */
   public function testMemberViewOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -236,7 +236,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'view'), 'Members can see their own grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'view'), 'Members cannot see grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'view'), 'Members cannot see grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
@@ -246,7 +246,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the viewing of own grouped entities for non-members.
    */
   public function testNonMemberViewOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -266,7 +266,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'view'), 'Non-members cannot see grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'view'), 'Non-members cannot see grouped test entities they do not own.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'view'), 'Non-members cannot see grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'view'), 'The ungrouped test entity can be viewed.');
@@ -281,7 +281,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the updating of any grouped entities for members.
    */
   public function testMemberUpdateAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -308,7 +308,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'update'), 'Members can update any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'update'), 'Non-members cannot update grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Non-members cannot update grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
@@ -318,7 +318,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the updating of any grouped entities for non-members.
    */
   public function testNonMemberUpdateAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -338,7 +338,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'update'), 'Non-members can update any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'update'), 'Non-members can update any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'update'), 'Non-members can update any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
@@ -353,7 +353,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the updating of own grouped entities for members.
    */
   public function testMemberUpdateOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -380,7 +380,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'update'), 'Members can update their own grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'update'), 'Members cannot update grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Members cannot update grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
@@ -390,7 +390,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the updating of own grouped entities for non-members.
    */
   public function testNonMemberUpdateOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -410,7 +410,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Non-members cannot update grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'update'), 'Non-members cannot update grouped test entities they do not own.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Non-members cannot update grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
@@ -425,7 +425,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the deleting of any grouped entities for members.
    */
   public function testMemberDeleteAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -452,7 +452,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'delete'), 'Members can delete any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'delete'), 'Non-members cannot delete grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'delete'), 'Non-members cannot delete grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
@@ -462,7 +462,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the deleting of any grouped entities for non-members.
    */
   public function testNonMemberDeleteAnyAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
@@ -482,7 +482,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'delete'), 'Non-members can delete any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'delete'), 'Non-members can delete any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'delete'), 'Non-members can delete any grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
@@ -497,7 +497,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the deleting of own grouped entities for members.
    */
   public function testMemberDeleteOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -524,7 +524,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'delete'), 'Members can delete their own grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'delete'), 'Members cannot delete grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'delete'), 'Members cannot delete grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
@@ -534,7 +534,7 @@ class EntityAccessTest extends GroupKernelTestBase {
    * Tests the deleting of own grouped entities for non-members.
    */
   public function testNonMemberDeleteOwnAccess() {
-    $account = $this->createUser([], ['administer entity_test_with_owner relation']);
+    $account = $this->createUser();
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
@@ -554,7 +554,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'delete'), 'Non-members cannot delete grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner relation']));
+    $this->setCurrentUser($this->createUser());
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'delete'), 'Non-members cannot delete grouped test entities they do not own.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'delete'), 'Non-members cannot delete grouped test entities they do not own.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
