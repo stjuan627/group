@@ -70,7 +70,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->installConfig(['user', 'group_test_plugin']);
     $this->installSchema('node', ['node_access']);
     $this->installEntitySchema('node');
-    
+
     $this->storage = $this->entityTypeManager->getStorage('node');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('node');
     $this->createNodeType(['type' => 'page']);
@@ -785,7 +785,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'update'), 'Members cannot update unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'update'), 'The ungrouped node can be updated.');
   }
-  
+
   /**
    * Tests the deleting of any grouped entities for members.
    */

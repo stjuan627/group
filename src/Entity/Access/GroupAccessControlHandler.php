@@ -42,6 +42,7 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'delete group');
     }
 
+    // @todo To be consistent with the rest of the module, return forbidden.
     return AccessResult::neutral();
   }
 

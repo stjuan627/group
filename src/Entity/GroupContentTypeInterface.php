@@ -27,28 +27,28 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
   public function getGroupTypeId();
 
   /**
-   * Gets the content enabler plugin the content type uses.
+   * Gets the group relation plugin the content type uses.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The content enabler plugin the content type uses.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The group relation plugin the content type uses.
    */
   public function getContentPlugin();
 
   /**
-   * Gets the content enabler plugin ID the content type uses.
+   * Gets the group relation plugin ID the content type uses.
    *
    * @return string
-   *   The content enabler plugin ID the content type uses.
+   *   The group relation plugin ID the content type uses.
    */
   public function getContentPluginId();
 
   /**
-   * Updates the configuration of the content enabler plugin.
-   * 
+   * Updates the configuration of the group relation plugin.
+   *
    * Any keys that were left out will be reset to the default.
    *
    * @param array $configuration
-   *   An array of content enabler plugin configuration.
+   *   An array of group relation plugin configuration.
    */
   public function updateContentPlugin(array $configuration);
 
@@ -56,7 +56,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    * Loads group content type entities by their responsible plugin ID.
    *
    * @param string|string[] $plugin_id
-   *   The ID of the content enabler plugin or an array of plugin IDs. If more
+   *   The ID of the group relation plugin or an array of plugin IDs. If more
    *   than one plugin ID is provided, this will load all of the group content
    *   types that match any of the provided plugin IDs.
    *
@@ -75,5 +75,5 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    *   An array of group content type entities which serve the given entity.
    */
   public static function loadByEntityTypeId($entity_type_id);
-  
+
 }

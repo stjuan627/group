@@ -4,7 +4,7 @@ namespace Drupal\group\Plugin\views\relationship;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,9 +26,9 @@ class GroupToGroupContent extends RelationshipPluginBase {
   protected $joinManager;
 
   /**
-   * The group content enabler plugin manager.
+   * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -44,10 +44,10 @@ class GroupToGroupContent extends RelationshipPluginBase {
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
-   *   The group content enabler plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
+   *   The group relation plugin manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupContentEnablerManagerInterface $plugin_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupRelationManagerInterface $plugin_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->joinManager = $join_manager;
     $this->pluginManager = $plugin_manager;
@@ -62,7 +62,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('plugin.manager.views.join'),
-      $container->get('plugin.manager.group_content_enabler')
+      $container->get('plugin.manager.group_relation')
     );
   }
 
@@ -100,7 +100,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
   protected function getContentPluginOptions() {
     $options = [];
     foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
       $options[$plugin_id] = $plugin->getLabel();
     }
     return $options;

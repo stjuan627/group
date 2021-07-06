@@ -23,11 +23,11 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
   protected $entityTypeManager;
 
   /**
-   * The group content enabler manager.
+   * The group relation manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
-  protected $groupContentEnablerManager;
+  protected $groupRelationManager;
 
   /**
    * {@inheritdoc}
@@ -36,7 +36,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     /** @var static $instance */
     $instance = parent::createInstance($container, $entity_type);
     $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->groupContentEnablerManager = $container->get('plugin.manager.group_content_enabler');
+    $instance->groupRelationManager = $container->get('plugin.manager.group_relation');
     return $instance;
   }
 
@@ -64,15 +64,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     foreach ($group_content_types as $group_content_type_id => $group_content_type) {
       $plugin_id = $group_content_type->getContentPluginId();
 
-      // For backwards compatibility reasons, if the group content enabler
-      // plugin used by the group content type does not specify a permission
-      // provider, we do not alter the query for that group content type. In
-      // 8.2.x all group content types will get a permission handler by default,
-      // so this check can be safely removed then.
-      if (!$this->groupContentEnablerManager->hasHandler($plugin_id, 'permission_provider')) {
-        continue;
-      }
-      $handler = $this->groupContentEnablerManager->getPermissionProvider($plugin_id);
+      $handler = $this->groupRelationManager->getPermissionProvider($plugin_id);
       $admin_permission = $handler->getAdminPermission();
       $any_permission = $handler->getPermission($operation, 'relation', 'any');
       $own_permission = $handler->getPermission($operation, 'relation', 'own');

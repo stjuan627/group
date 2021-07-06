@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\Controller\GroupContentController;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,14 +19,14 @@ class GroupNodeController extends GroupContentController {
   /**
    * The group content plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
   /**
    * Constructs a new GroupNodeController.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
    *   The private store factory.
@@ -37,7 +37,7 @@ class GroupNodeController extends GroupContentController {
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
-  public function __construct(GroupContentEnablerManagerInterface $plugin_manager, PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
+  public function __construct(GroupRelationManagerInterface $plugin_manager, PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
     parent::__construct($temp_store_factory, $entity_type_manager, $entity_form_builder, $renderer);
     $this->pluginManager = $plugin_manager;
   }
@@ -47,7 +47,7 @@ class GroupNodeController extends GroupContentController {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_content_enabler'),
+      $container->get('plugin.manager.group_relation'),
       $container->get('tempstore.private'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),

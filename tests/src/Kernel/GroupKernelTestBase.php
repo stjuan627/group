@@ -19,9 +19,9 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   public static $modules = ['group', 'options', 'entity', 'variationcache', 'group_test_config'];
 
   /**
-   * The content enabler plugin manager.
+   * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
@@ -31,7 +31,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->pluginManager = $this->container->get('plugin.manager.group_content_enabler');
+    $this->pluginManager = $this->container->get('plugin.manager.group_relation');
 
     $this->installEntitySchema('group');
     $this->installEntitySchema('group_content');

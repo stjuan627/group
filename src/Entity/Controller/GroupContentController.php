@@ -219,13 +219,12 @@ class GroupContentController extends ControllerBase {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the group content to.
    * @param string $plugin_id
-   *   The group content enabler to add content with.
+   *   The group relation to add content with.
    *
    * @return array
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
 
     $values = [
@@ -243,13 +242,12 @@ class GroupContentController extends ControllerBase {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the group content to.
    * @param string $plugin_id
-   *   The group content enabler to add content with.
+   *   The group relation to add content with.
    *
    * @return string
    *   The page title.
    */
   public function addFormTitle(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
@@ -295,13 +293,12 @@ class GroupContentController extends ControllerBase {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the group content to.
    * @param string $plugin_id
-   *   The group content enabler to add content with.
+   *   The group relation to add content with.
    *
    * @return array
    *   A group content creation form.
    */
   public function createForm(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
 
     $wizard_id = 'group_entity';
@@ -316,7 +313,7 @@ class GroupContentController extends ControllerBase {
 
     // Pass the group, plugin ID and store ID to the form state as well.
     $extra['group'] = $group;
-    $extra['group_content_enabler'] = $plugin_id;
+    $extra['group_relation'] = $plugin_id;
     $extra['store_id'] = $store_id;
 
     // See if we are on the second step of the form.
@@ -367,13 +364,12 @@ class GroupContentController extends ControllerBase {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to create the group content in.
    * @param string $plugin_id
-   *   The group content enabler to create content with.
+   *   The group relation to create content with.
    *
    * @return string
    *   The page title.
    */
   public function createFormTitle(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
     $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);

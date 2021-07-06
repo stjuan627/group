@@ -25,7 +25,7 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    * Retrieves group content types by their responsible plugin ID.
    *
    * @param string|string[] $plugin_id
-   *   The ID of the content enabler plugin or an array of plugin IDs. If more
+   *   The ID of the group relation plugin or an array of plugin IDs. If more
    *   than one plugin ID is provided, this will load all of the group content
    *   types that match any of the provided plugin IDs.
    *
@@ -51,10 +51,10 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type to create the group content type for.
    * @param string $plugin_id
-   *   The ID of the content enabler plugin to use.
+   *   The ID of the group relation plugin to use.
    * @param array $configuration
-   *   (optional) An array of content enabler plugin configuration.
-   * 
+   *   (optional) An array of group relation plugin configuration.
+   *
    * @return \Drupal\group\Entity\GroupContentTypeInterface
    *   A new, unsaved GroupContentType entity.
    */

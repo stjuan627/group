@@ -78,23 +78,23 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   protected $group_type;
 
   /**
-   * The group content enabler plugin ID for the group content type.
+   * The group relation plugin ID for the group content type.
    *
    * @var string
    */
   protected $content_plugin;
 
   /**
-   * The group content enabler plugin configuration for group content type.
+   * The group relation plugin configuration for group content type.
    *
    * @var array
    */
   protected $plugin_config = [];
 
   /**
-   * The content enabler plugin instance.
+   * The group relation plugin instance.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    */
   protected $pluginInstance;
 
@@ -135,13 +135,13 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   }
 
   /**
-   * Returns the content enabler plugin manager.
+   * Returns the group relation plugin manager.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    *   The group content plugin manager.
    */
   protected function getContentEnablerManager() {
-    return \Drupal::service('plugin.manager.group_content_enabler');
+    return \Drupal::service('plugin.manager.group_relation');
   }
 
   /**
@@ -228,8 +228,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       \Drupal::service('views.views_data')->clear();
     }
 
-    /** @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
 
     // We need to reset the plugin ID map cache as it will be out of date now.
     $plugin_manager->clearCachedPluginMaps();
@@ -243,7 +243,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     // type is deleted along with the group type.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
 
-    // Add the dependencies of the responsible content enabler plugin.
+    // Add the dependencies of the responsible group relation plugin.
     $this->addDependencies($this->getContentPlugin()->calculateDependencies());
   }
 

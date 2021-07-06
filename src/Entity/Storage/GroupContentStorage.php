@@ -74,7 +74,6 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     // If a plugin ID was provided, set the group content type ID for it.
     if (isset($plugin_id)) {
-      /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
       $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
       $properties['type'] = $plugin->getContentTypeConfigId();
     }

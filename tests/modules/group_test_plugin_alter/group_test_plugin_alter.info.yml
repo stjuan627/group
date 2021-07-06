@@ -1,0 +1,9 @@
+name: 'Group test plugin alter'
+description: 'Alters group plugins to run tests with.'
+package: 'Testing'
+type: 'module'
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - 'group:group'
+  - 'drupal:language'
+  - 'group:group_test_plugin'

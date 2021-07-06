@@ -16,7 +16,7 @@ use Drupal\Core\Url;
  * Implements hook_ENTITY_TYPE_insert().
  */
 function gnode_node_type_insert(NodeTypeInterface $node_type) {
-  \Drupal::service('plugin.manager.group_content_enabler')->clearCachedDefinitions();
+  \Drupal::service('plugin.manager.group_relation')->clearCachedDefinitions();
 }
 
 /**

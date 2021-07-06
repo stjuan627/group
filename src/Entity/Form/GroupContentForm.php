@@ -33,8 +33,8 @@ class GroupContentForm extends ContentEntityForm {
   /**
    * Returns the plugin responsible for this piece of group content.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The responsible group content enabler plugin.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The responsible group relation plugin.
    */
   protected function getContentPlugin() {
     /** @var \Drupal\group\Entity\GroupContent $group_content */

@@ -5,7 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -14,19 +14,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentTypeForm extends EntityForm {
 
   /**
-   * The group content enabler plugin manager.
+   * The group relation plugin manager.
    *
-   * @var \Drupal\group\Plugin\GroupContentEnablerManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
    */
   protected $pluginManager;
 
   /**
    * Constructs a new GroupContentTypeForm.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
    *   The group content plugin manager.
    */
-  public function __construct(GroupContentEnablerManagerInterface $plugin_manager) {
+  public function __construct(GroupRelationManagerInterface $plugin_manager) {
     $this->pluginManager = $plugin_manager;
   }
 
@@ -35,15 +35,15 @@ class GroupContentTypeForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_content_enabler')
+      $container->get('plugin.manager.group_relation')
     );
   }
 
   /**
    * Returns the configurable plugin for the group content type.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The configurable group content enabler plugin.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The configurable group relation plugin.
    */
   protected function getContentPlugin() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */

@@ -35,9 +35,9 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
   public function getEntity();
 
   /**
-   * Returns the content enabler plugin that handles the group content.
+   * Returns the group relation plugin that handles the group content.
    *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    */
   public function getContentPlugin();
 
@@ -45,7 +45,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Loads group content entities by their responsible plugin ID.
    *
    * @param string $plugin_id
-   *   The ID of the content enabler plugin.
+   *   The ID of the group relation plugin.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   An array of group content entities indexed by their IDs.

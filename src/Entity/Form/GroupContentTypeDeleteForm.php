@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a form for group content type deletion.
  *
  * Instead of just deleting the group content type here, we use this form as a
- * mean of uninstalling a group content enabler plugin which will actually
+ * mean of uninstalling a group relation plugin which will actually
  * trigger the deletion of the group content type.
  */
 class GroupContentTypeDeleteForm extends EntityDeleteForm {
