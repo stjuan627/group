@@ -259,19 +259,19 @@ class EntityQueryAlter implements ContainerInjectionInterface {
         continue;
       }
 
+      $handler = $this->pluginManager->getPermissionProvider($plugin_id);
+      $admin_permission = $handler->getAdminPermission();
+      $any_permission = $handler->getPermission($operation, 'entity', 'any');
+      $own_permission = $handler->getPermission($operation, 'entity', 'own');
+      if ($check_published) {
+        $any_unpublished_permission = $handler->getPermission("$operation unpublished", 'entity', 'any');
+        $own_unpublished_permission = $handler->getPermission("$operation unpublished", 'entity', 'own');
+      }
+
       foreach ($plugin_id_map[$plugin_id] as $group_content_type_id) {
         // If the group content type has no content, skip it.
         if (!in_array($group_content_type_id, $group_content_type_ids_in_use)) {
           continue;
-        }
-
-        $handler = $this->pluginManager->getPermissionProvider($plugin_id);
-        $admin_permission = $handler->getAdminPermission();
-        $any_permission = $handler->getPermission($operation, 'entity', 'any');
-        $own_permission = $handler->getPermission($operation, 'entity', 'own');
-        if ($check_published) {
-          $any_unpublished_permission = $handler->getPermission("$operation unpublished", 'entity', 'any');
-          $own_unpublished_permission = $handler->getPermission("$operation unpublished", 'entity', 'own');
         }
 
         foreach ($calculated_permissions->getItems() as $item) {
