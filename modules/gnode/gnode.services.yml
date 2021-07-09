@@ -1,8 +1,5 @@
 services:
   # Group relation plugin handlers.
-  group.relation_handler.access_control.group_node:
-    parent: 'group.empty_relation_handler_trait.access_control'
-    shared: false
   group.relation_handler.permission_provider.group_node:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupNodePermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']

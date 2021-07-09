@@ -156,20 +156,7 @@ services:
     arguments: ['@entity_type.manager']
     shared: false
 
-  # Traits to use in specific relation plugin declarations.
-  group.empty_relation_handler_trait.access_control:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl'
-    arguments: ['@group.relation_handler.access_control']
-    abstract: true
-  group.empty_relation_handler_trait.permission_provider:
-    class: 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider'
-    arguments: ['@group.relation_handler.permission_provider']
-    abstract: true
-
   # Specific group relation plugin handlers.
-  group.relation_handler.access_control.group_membership:
-    parent: 'group.empty_relation_handler_trait.access_control'
-    shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
