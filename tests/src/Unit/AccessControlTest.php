@@ -22,7 +22,7 @@ use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Tests the default GroupContentEnabler access handler.
+ * Tests the default group relation access_control handler.
  *
  * @coversDefaultClass \Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl
  * @group group

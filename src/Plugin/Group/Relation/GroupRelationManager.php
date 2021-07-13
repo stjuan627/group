@@ -162,6 +162,13 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getPostInstallHandler($plugin_id) {
+    return $this->getHandler($plugin_id, 'post_install');
+  }
+
+  /**
    * Returns the group type storage handler.
    *
    * @return \Drupal\Core\Config\Entity\ConfigEntityStorageInterface

@@ -86,6 +86,22 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getPermissionProvider($plugin_id);
 
   /**
+   * Creates a new post install handler instance.
+   *
+   * @param string $plugin_id
+   *   The plugin ID for this post install handler.
+   *
+   * @return \Drupal\group\Plugin\Group\RelationHandler\PostInstallInterface
+   *   A post install handler instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the plugin doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the permission provider couldn't be loaded.
+   */
+  public function getPostInstallHandler($plugin_id);
+
+  /**
    * Returns a plugin collection of all available group relations.
    *
    * This collection will not have anything set in the individual plugins'

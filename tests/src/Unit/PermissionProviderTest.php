@@ -10,12 +10,12 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 
 /**
- * Tests the default GroupContentEnabler permission_provider handler.
+ * Tests the default group relation permission_provider handler.
  *
  * @coversDefaultClass \Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider
  * @group group
  */
-class GroupContentPermissionProviderTest extends UnitTestCase {
+class PermissionProviderTest extends UnitTestCase {
 
   /**
    * Tests the admin permission name.

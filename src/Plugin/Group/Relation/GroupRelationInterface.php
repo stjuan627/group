@@ -261,13 +261,4 @@ interface GroupRelationInterface extends PluginInspectionInterface, DerivativeIn
    */
   public function getEntityReferenceSettings();
 
-  /**
-   * Runs tasks after the group content type for this plugin has been created.
-   *
-   * A good example of what you might want to do here, is the installation of
-   * extra locked fields on the group content type. You can find an example in
-   * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership::postInstall().
-   */
-  public function postInstall();
-
 }

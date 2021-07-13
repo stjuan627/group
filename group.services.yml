@@ -155,11 +155,18 @@ services:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
     arguments: ['@entity_type.manager']
     shared: false
+  group.relation_handler.post_install:
+    class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall'
+    shared: false
 
   # Specific group relation plugin handlers.
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
+    shared: false
+  group.relation_handler.post_install.group_membership:
+    class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPostInstall'
+    arguments: ['@group.relation_handler.post_install', '@entity_type.manager', '@string_translation']
     shared: false
 
   # Recently, core introduced a new static cache that does not serialize its

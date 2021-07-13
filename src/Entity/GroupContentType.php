@@ -138,9 +138,9 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * Returns the group relation plugin manager.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
-   *   The group content plugin manager.
+   *   The group relation plugin manager.
    */
-  protected function getContentEnablerManager() {
+  protected function getGroupRelationManager() {
     return \Drupal::service('plugin.manager.group_relation');
   }
 
@@ -151,7 +151,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     if (!isset($this->pluginInstance)) {
       $configuration = $this->plugin_config;
       $configuration['group_type_id'] = $this->getGroupTypeId();
-      $this->pluginInstance = $this->getContentEnablerManager()->createInstance($this->getContentPluginId(), $configuration);
+      $this->pluginInstance = $this->getGroupRelationManager()->createInstance($this->getContentPluginId(), $configuration);
     }
     return $this->pluginInstance;
   }
@@ -174,7 +174,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     $this->pluginInstance = NULL;
 
     // Make sure people get a freshly configured plugin collection.
-    $this->getContentEnablerManager()->clearCachedGroupTypeCollections($this->getGroupType());
+    $this->getGroupRelationManager()->clearCachedGroupTypeCollections($this->getGroupType());
   }
 
   /**
@@ -210,10 +210,14 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       }
 
       // Run the post install tasks on the plugin.
-      $this->getContentPlugin()->postInstall();
+      $post_install_handler = $this->getGroupRelationManager()->getPostInstallHandler($this->getContentPluginId());
+      $task_arguments = [$this, \Drupal::isConfigSyncing()];
+      foreach ($post_install_handler->getInstallTasks() as $task) {
+        call_user_func_array($task, $task_arguments);
+      }
 
       // We need to reset the plugin ID map cache as it will be out of date now.
-      $this->getContentEnablerManager()->clearCachedPluginMaps();
+      $this->getGroupRelationManager()->clearCachedPluginMaps();
     }
   }
 

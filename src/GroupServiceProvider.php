@@ -36,6 +36,7 @@ class GroupServiceProvider extends ServiceProviderBase {
     $handlers = [
       'access_control' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl',
       'permission_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider',
+      'post_install' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPostInstall',
     ];
 
     foreach ($discovery->getDefinitions() as $plugin_id => $definition) {

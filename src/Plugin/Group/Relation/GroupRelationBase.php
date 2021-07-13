@@ -242,12 +242,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function postInstall() {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getConfiguration() {
     return $this->configuration;
   }
