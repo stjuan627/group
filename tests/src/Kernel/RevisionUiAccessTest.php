@@ -6,6 +6,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -762,13 +763,17 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    */
   protected function createRequest($route_name, GroupInterface $group, GroupInterface $group_revision = NULL) {
     $params = ['group' => $group->id()];
-    $attributes = ['group' => $group,];
+    $attributes = ['group' => $group];
+
     if ($group_revision) {
       $params['group_revision'] = $group_revision->getRevisionId();
       $attributes['group_revision'] = $group_revision;
     }
 
+    $attributes[RouteObjectInterface::ROUTE_NAME] = $route_name;
     $attributes[RouteObjectInterface::ROUTE_OBJECT] = $this->routeProvider->getRouteByName($route_name);
+    $attributes['_raw_variables'] = new ParameterBag($params);
+
     $request = Request::create(Url::fromRoute($route_name, $params)->toString());
     $request->attributes->add($attributes);
 

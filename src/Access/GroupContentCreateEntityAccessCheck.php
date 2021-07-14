@@ -40,9 +40,10 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Determine whether the user can create entities of the provided type.
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
-    $access = $plugin->createEntityAccess($group, $account)->isAllowed();
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+    $access_handler = $plugin_manager->getAccessControlHandler($plugin_id);
+    $access = $access_handler->entityCreateAccess($group, $account);
 
     // Only allow access if the user can create group content target entities
     // using the provided plugin or if he doesn't need access to do so.

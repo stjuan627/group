@@ -33,13 +33,14 @@ class GroupContentCreateAnyEntityAccessCheck implements AccessInterface {
   public function access(Route $route, AccountInterface $account, GroupInterface $group) {
     $needs_access = $route->getRequirement('_group_content_create_any_entity_access') === 'TRUE';
 
-    // Retrieve all of the group content plugins for the group.
-    $plugins = $group->getGroupType()->getInstalledContentPlugins();
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+    $plugin_ids = $plugin_manager->getGroupTypePluginMap()[$group->bundle()];
 
     // Find out which ones allow the user to create a target entity.
-    foreach ($plugins as $plugin) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-      if ($plugin->createEntityAccess($group, $account)->isAllowed()) {
+    foreach ($plugin_ids as $plugin_id) {
+      $access_handler = $plugin_manager->getAccessControlHandler($plugin_id);
+      if ($access_handler->entityCreateAccess($group, $account, TRUE)->isAllowed()) {
         // Allow access if the route flag was set to 'TRUE'.
         return AccessResult::allowedIf($needs_access);
       }
