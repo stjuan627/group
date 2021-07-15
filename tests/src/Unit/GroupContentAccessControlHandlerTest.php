@@ -102,7 +102,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $group_content->language()->willReturn($language->reveal());
     $group_content->getRevisionId()->willReturn(9001);
     $group_content->getEntityTypeId()->willReturn('group_content');
-    $group_content->getContentPlugin()->willReturn($group_relation->reveal());
+    $group_content->getRelationPlugin()->willReturn($group_relation->reveal());
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);
@@ -127,7 +127,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $group = $this->prophesize(GroupInterface::class);
 
     $group_content_type = $this->prophesize(GroupContentTypeInterface::class);
-    $group_content_type->getContentPluginId()->willReturn('bar');
+    $group_content_type->getRelationPluginId()->willReturn('bar');
     $group_content_type_storage = $this->prophesize(GroupContentTypeStorageInterface::class);
     $group_content_type_storage->load('foo')->willReturn($group_content_type->reveal());
     $this->entityTypeManager->getStorage('group_content_type')->willReturn($group_content_type_storage->reveal());

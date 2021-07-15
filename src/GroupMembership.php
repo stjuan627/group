@@ -7,7 +7,7 @@ use Drupal\group\Entity\GroupContentInterface;
 
 /**
  * Wrapper class for a GroupContent entity representing a membership.
- * 
+ *
  * Should be loaded through the 'group.membership_loader' service.
  */
 class GroupMembership implements CacheableDependencyInterface {
@@ -31,7 +31,7 @@ class GroupMembership implements CacheableDependencyInterface {
    *   enabler plugin.
    */
   public function __construct(GroupContentInterface $group_content) {
-    if ($group_content->getGroupContentType()->getContentPluginId() == 'group_membership') {
+    if ($group_content->getGroupContentType()->getRelationPluginId() == 'group_membership') {
       $this->groupContent = $group_content;
     }
     else {

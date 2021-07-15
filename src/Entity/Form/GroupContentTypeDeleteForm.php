@@ -22,7 +22,7 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
   public function getQuestion() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
-    return $this->t('Are you sure you want to uninstall the %plugin plugin?', ['%plugin' => $group_content_type->getContentPlugin()->getLabel()]);
+    return $this->t('Are you sure you want to uninstall the %plugin plugin?', ['%plugin' => $group_content_type->getRelationPlugin()->getLabel()]);
   }
 
   /**
@@ -40,7 +40,7 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
   public function getDescription() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
-    $plugin = $group_content_type->getContentPlugin();
+    $plugin = $group_content_type->getRelationPlugin();
     $replace = [
       '%entity_type' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
       '%group_type' => $group_content_type->getGroupType()->label(),
@@ -85,7 +85,7 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $group_content_type->getContentPlugin();
+    $plugin = $group_content_type->getRelationPlugin();
 
     $group_content_type->delete();
     \Drupal::logger('group_content_type')->notice('Uninstalled %plugin from %group_type.', [

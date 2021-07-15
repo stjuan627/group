@@ -45,7 +45,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\group\Entity\GroupContentInterface $entity */
-    $access_control = $this->groupRelationManager->getAccessControlHandler($entity->getContentPlugin()->getPluginId());
+    $access_control = $this->groupRelationManager->getAccessControlHandler($entity->getRelationPlugin()->getPluginId());
     return $access_control->relationAccess($entity, $operation, $account, TRUE);
   }
 
@@ -55,7 +55,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->entityTypeManager->getStorage('group_content_type')->load($entity_bundle);
-    $access_control = $this->groupRelationManager->getAccessControlHandler($group_content_type->getContentPluginId());
+    $access_control = $this->groupRelationManager->getAccessControlHandler($group_content_type->getRelationPluginId());
     return $access_control->relationCreateAccess($context['group'], $account, TRUE);
   }
 

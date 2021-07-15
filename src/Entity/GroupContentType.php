@@ -147,11 +147,11 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
-  public function getContentPlugin() {
+  public function getRelationPlugin() {
     if (!isset($this->pluginInstance)) {
       $configuration = $this->plugin_config;
       $configuration['group_type_id'] = $this->getGroupTypeId();
-      $this->pluginInstance = $this->getGroupRelationManager()->createInstance($this->getContentPluginId(), $configuration);
+      $this->pluginInstance = $this->getGroupRelationManager()->createInstance($this->getRelationPluginId(), $configuration);
     }
     return $this->pluginInstance;
   }
@@ -159,7 +159,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
-  public function getContentPluginId() {
+  public function getRelationPluginId() {
     return $this->content_plugin;
   }
 
@@ -210,7 +210,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       }
 
       // Run the post install tasks on the plugin.
-      $post_install_handler = $this->getGroupRelationManager()->getPostInstallHandler($this->getContentPluginId());
+      $post_install_handler = $this->getGroupRelationManager()->getPostInstallHandler($this->getRelationPluginId());
       $task_arguments = [$this, \Drupal::isConfigSyncing()];
       foreach ($post_install_handler->getInstallTasks() as $task) {
         call_user_func_array($task, $task_arguments);
@@ -248,7 +248,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
 
     // Add the dependencies of the responsible group relation plugin.
-    $this->addDependencies($this->getContentPlugin()->calculateDependencies());
+    $this->addDependencies($this->getRelationPlugin()->calculateDependencies());
   }
 
 }

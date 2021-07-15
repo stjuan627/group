@@ -45,20 +45,20 @@ class GroupContentTypeForm extends EntityForm {
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The configurable group relation plugin.
    */
-  protected function getContentPlugin() {
+  protected function getRelationPlugin() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
 
     // Initialize an empty plugin so we can show a default configuration form.
     if ($this->operation == 'add') {
-      $plugin_id = $group_content_type->getContentPluginId();
+      $plugin_id = $group_content_type->getRelationPluginId();
       $configuration['group_type_id'] = $group_type->id();
       return $this->pluginManager->createInstance($plugin_id, $configuration);
     }
     // Return the already configured plugin for existing group content types.
     else {
-      return $group_content_type->getContentPlugin();
+      return $group_content_type->getRelationPlugin();
     }
   }
 
@@ -69,7 +69,7 @@ class GroupContentTypeForm extends EntityForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $this->getContentPlugin();
+    $plugin = $this->getRelationPlugin();
 
     // @todo These messages may need some love.
     if ($this->operation == 'add') {
@@ -116,7 +116,7 @@ class GroupContentTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $plugin = $this->getContentPlugin();
+    $plugin = $this->getRelationPlugin();
     $plugin->validateConfigurationForm($form, $form_state);
   }
 
@@ -127,7 +127,7 @@ class GroupContentTypeForm extends EntityForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $this->getContentPlugin();
+    $plugin = $this->getRelationPlugin();
     $plugin->submitConfigurationForm($form, $form_state);
 
     // Remove button and internal Form API values from submitted values.

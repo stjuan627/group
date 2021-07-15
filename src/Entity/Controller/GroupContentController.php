@@ -163,11 +163,11 @@ class GroupContentController extends ControllerBase {
     foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
-      if ($create_mode && !$group_content_type->getContentPlugin()->definesEntityAccess()) {
+      if ($create_mode && !$group_content_type->getRelationPlugin()->definesEntityAccess()) {
         continue;
       }
 
-      $bundles[$group_content_type->getContentPluginId()] = $bundle;
+      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
     }
 
     return $bundles;

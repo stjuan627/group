@@ -62,7 +62,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
 
     $allowed_any_ids = $allowed_own_ids = $all_ids = [];
     foreach ($group_content_types as $group_content_type_id => $group_content_type) {
-      $plugin_id = $group_content_type->getContentPluginId();
+      $plugin_id = $group_content_type->getRelationPluginId();
 
       $handler = $this->groupRelationManager->getPermissionProvider($plugin_id);
       $admin_permission = $handler->getAdminPermission();

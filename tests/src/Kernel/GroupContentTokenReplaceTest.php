@@ -34,7 +34,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
     $tests['[group_content:langcode]'] = $group_content->language()->getId();
     $tests['[group_content:url]'] = $group_content->toUrl('canonical', $url_options)->toString();
     $tests['[group_content:edit-url]'] = $group_content->toUrl('edit-form', $url_options)->toString();
-    $tests['[group_content:pretty-path-key]'] = $group_content->getContentPlugin()->getPrettyPathKey();
+    $tests['[group_content:pretty-path-key]'] = $group_content->getRelationPlugin()->getPrettyPathKey();
     $tests['[group_content:group]'] = Html::escape($group->label());
     $tests['[group_content:group:id]'] = $group->id();
     $tests['[group_content:created:since]'] = \Drupal::service('date.formatter')->formatTimeDiffSince($group_content->getCreatedTime(), ['langcode' => $this->interfaceLanguage->getId()]);

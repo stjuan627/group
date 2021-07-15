@@ -105,7 +105,7 @@ class GroupNodeController extends GroupContentController {
     $properties = ['group_type' => $group->bundle(), 'content_plugin' => $plugin_ids];
     foreach ($storage->loadByProperties($properties) as $bundle => $group_content_type) {
       /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
-      $bundles[$group_content_type->getContentPluginId()] = $bundle;
+      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
     }
 
     return $bundles;

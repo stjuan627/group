@@ -88,7 +88,7 @@ class AccessControl implements AccessControlInterface {
     // Filter out the content that does not use this plugin.
     foreach ($group_contents as $id => $group_content) {
       // @todo Shows the need for a plugin ID base field.
-      $plugin_id = $group_content->getContentPlugin()->getPluginId();
+      $plugin_id = $group_content->getRelationPlugin()->getPluginId();
       if ($plugin_id !== $this->pluginId) {
         unset($group_contents[$id]);
       }

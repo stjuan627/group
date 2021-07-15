@@ -67,7 +67,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
     }
 
     // Get the plugin for the group content entity.
-    $plugin = $group_content->getContentPlugin();
+    $plugin = $group_content->getRelationPlugin();
 
     // Get the cardinality settings from the plugin.
     $group_cardinality = $plugin->getGroupCardinality();
