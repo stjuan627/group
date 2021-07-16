@@ -235,7 +235,7 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
           break;
 
         case 'pretty-path-key':
-          $replacements[$original] = $group_content->getRelationPlugin()->getPrettyPathKey();
+          $replacements[$original] = $group_content->getRelationPlugin()->getRelationType()->getPrettyPathKey();
           break;
 
         // Default values for the chained tokens handled below.

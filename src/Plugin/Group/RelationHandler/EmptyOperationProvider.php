@@ -3,17 +3,17 @@
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
 /**
- * Provides a default group permission provider.
+ * Provides a default operation provider handler.
  *
  * In case a plugin does not define a handler, the empty class is used so that
  * others can still decorate the plugin-specific service.
  */
-class EmptyPermissionProvider implements PermissionProviderInterface {
+class EmptyOperationProvider implements OperationProviderInterface {
 
-  use PermissionProviderTrait;
+  use OperationProviderTrait;
 
   /**
-   * Constructs a new EmptyPermissionProvider.
+   * Constructs a new EmptyOperationProvider.
    *
    * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $parent
    *   The parent permission provider.

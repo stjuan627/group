@@ -5,7 +5,7 @@ namespace Drupal\group\EventSubscriber;
 use Drupal\Core\Config\ConfigImporterEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -21,9 +21,9 @@ class ConfigSubscriber implements EventSubscriberInterface {
   protected $entityTypeManager;
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -32,10 +32,10 @@ class ConfigSubscriber implements EventSubscriberInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $plugin_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
   }

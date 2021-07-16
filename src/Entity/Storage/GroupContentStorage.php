@@ -37,13 +37,14 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     }
 
     // Check whether the entity can actually be added to the group.
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
-    if ($entity->getEntityTypeId() != $plugin->getEntityTypeId()) {
+    $group_relation = $group->getGroupType()->getRelationPlugin($plugin_id);
+    $group_relation_type = $group_relation->getRelationType();
+    if ($entity->getEntityTypeId() != $group_relation_type->getEntityTypeId()) {
       throw new EntityStorageException("Invalid plugin provided for adding the entity to the group.");
     }
 
     // Verify the bundle as well if the plugin is specific about them.
-    $supported_bundle = $plugin->getEntityBundle();
+    $supported_bundle = $group_relation_type->getEntityBundle();
     if ($supported_bundle !== FALSE) {
       if ($entity->bundle() != $supported_bundle) {
         throw new EntityStorageException("The provided plugin provided does not support the entity's bundle.");
@@ -52,7 +53,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     // Set the necessary keys for a valid GroupContent entity.
     $keys = [
-      'type' => $plugin->getContentTypeConfigId(),
+      'type' => $group_relation->getContentTypeConfigId(),
       'gid' => $group->id(),
       'entity_id' => $entity->id(),
     ];
@@ -74,7 +75,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     // If a plugin ID was provided, set the group content type ID for it.
     if (isset($plugin_id)) {
-      $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+      $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
       $properties['type'] = $plugin->getContentTypeConfigId();
     }
 

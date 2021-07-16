@@ -285,7 +285,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
         $group_role_storage = $this->entityTypeManager()->getStorage('group_role');
 
         // Enable enforced content plugins for the new group type.
-        $this->getContentEnablerManager()->installEnforced($this);
+        $this->getGroupRelationTypeManager()->installEnforced($this);
 
         // Create internal and synchronized group roles for the new group type.
         $group_role_storage->createInternal([$group_type_id]);
@@ -305,35 +305,35 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   }
 
   /**
-   * Returns the group relation plugin manager.
+   * Returns the group relation type manager.
    *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
-   *   The group content plugin manager.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   *   The group relation type manager.
    */
-  protected function getContentEnablerManager() {
-    return \Drupal::service('plugin.manager.group_relation');
+  protected function getGroupRelationTypeManager() {
+    return \Drupal::service('group_relation_type.manager');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getInstalledContentPlugins() {
-    return $this->getContentEnablerManager()->getInstalled($this);
+  public function getInstalledRelationPlugins() {
+    return $this->getGroupRelationTypeManager()->getInstalled($this);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function hasContentPlugin($plugin_id) {
-    $installed = $this->getContentEnablerManager()->getInstalledIds($this);
+  public function hasRelationPlugin($plugin_id) {
+    $installed = $this->getGroupRelationTypeManager()->getInstalledIds($this);
     return in_array($plugin_id, $installed);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentPlugin($plugin_id) {
-    return $this->getInstalledContentPlugins()->get($plugin_id);
+  public function getRelationPlugin($plugin_id) {
+    return $this->getInstalledRelationPlugins()->get($plugin_id);
   }
 
 }

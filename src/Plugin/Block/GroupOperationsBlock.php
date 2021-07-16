@@ -38,10 +38,10 @@ class GroupOperationsBlock extends BlockBase {
 
       // Retrieve the operations and cacheable metadata from the installed
       // content plugins.
-      foreach ($group->getGroupType()->getInstalledContentPlugins() as $plugin) {
-        /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-        $links += $plugin->getGroupOperations($group);
-        $cacheable_metadata = $cacheable_metadata->merge($plugin->getGroupOperationsCacheableMetadata());
+      foreach ($group->getGroupType()->getInstalledRelationPlugins() as $group_relation) {
+        /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation */
+        $links += $group_relation->getGroupOperations($group);
+        $cacheable_metadata = $cacheable_metadata->merge($group_relation->getGroupOperationsCacheableMetadata());
       }
 
       if ($links) {

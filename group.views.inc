@@ -15,13 +15,14 @@ function group_views_data_alter(array &$data) {
   // Get the data table for GroupContent entities.
   $data_table = $entity_types['group_content']->getDataTable();
 
-  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
-  $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
+  $plugin_manager = \Drupal::service('group_relation_type.manager');
 
   // Add views data for all defined plugins so modules can provide default
   // views even though their plugins may not have been installed yet.
-  foreach ($plugin_manager->getAll() as $plugin) {
-    $entity_type_id = $plugin->getEntityTypeId();
+  foreach ($plugin_manager->getDefinitions() as $group_relation_type) {
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+    $entity_type_id = $group_relation_type->getEntityTypeId();
     if (!isset($entity_types[$entity_type_id])) {
       continue;
     }

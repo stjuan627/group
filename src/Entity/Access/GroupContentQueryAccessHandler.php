@@ -23,11 +23,11 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
   protected $entityTypeManager;
 
   /**
-   * The group relation manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
-  protected $groupRelationManager;
+  protected $groupRelationTypeManager;
 
   /**
    * {@inheritdoc}
@@ -36,7 +36,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     /** @var static $instance */
     $instance = parent::createInstance($container, $entity_type);
     $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->groupRelationManager = $container->get('plugin.manager.group_relation');
+    $instance->groupRelationTypeManager = $container->get('group_relation_type.manager');
     return $instance;
   }
 
@@ -64,7 +64,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
     foreach ($group_content_types as $group_content_type_id => $group_content_type) {
       $plugin_id = $group_content_type->getRelationPluginId();
 
-      $handler = $this->groupRelationManager->getPermissionProvider($plugin_id);
+      $handler = $this->groupRelationTypeManager->getPermissionProvider($plugin_id);
       $admin_permission = $handler->getAdminPermission();
       $any_permission = $handler->getPermission($operation, 'relation', 'any');
       $own_permission = $handler->getPermission($operation, 'relation', 'own');

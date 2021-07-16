@@ -4,7 +4,7 @@ namespace Drupal\group\Plugin\views\relationship;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,9 +26,9 @@ class GroupToGroupContent extends RelationshipPluginBase {
   protected $joinManager;
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -44,10 +44,10 @@ class GroupToGroupContent extends RelationshipPluginBase {
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupRelationTypeManagerInterface $plugin_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->joinManager = $join_manager;
     $this->pluginManager = $plugin_manager;
@@ -62,7 +62,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('plugin.manager.views.join'),
-      $container->get('plugin.manager.group_relation')
+      $container->get('group_relation_type.manager')
     );
   }
 
@@ -85,7 +85,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
       '#type' => 'checkboxes',
       '#title' => $this->t('Filter by plugin'),
       '#description' => $this->t('Refine the result by plugin. Leave empty to select all plugins, including those that could be added after this relationship was configured.'),
-      '#options' => $this->getContentPluginOptions(),
+      '#options' => $this->getRelationPluginOptions(),
       '#weight' => -2,
       '#default_value' => $this->options['group_content_plugins'],
     ];
@@ -97,11 +97,11 @@ class GroupToGroupContent extends RelationshipPluginBase {
    * @return string[]
    *   An array of content plugin labels, keyed by plugin ID.
    */
-  protected function getContentPluginOptions() {
+  protected function getRelationPluginOptions() {
     $options = [];
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-      $options[$plugin_id] = $plugin->getLabel();
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      $options[$plugin_id] = $group_relation_type->getLabel();
     }
     return $options;
   }

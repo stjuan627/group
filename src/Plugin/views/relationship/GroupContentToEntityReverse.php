@@ -2,13 +2,6 @@
 
 namespace Drupal\group\Plugin\views\relationship;
 
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
-use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
-use Drupal\views\Plugin\ViewsHandlerManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
  * A relationship handler which reverses group content entity references.
  *

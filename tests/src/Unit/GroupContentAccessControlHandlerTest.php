@@ -14,7 +14,7 @@ use Drupal\group\Entity\GroupContentTypeInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
@@ -43,11 +43,11 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
   protected $entityTypeManager;
 
   /**
-   * The group relation manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface|\Prophecy\Prophecy\ProphecyInterface
    */
-  protected $groupRelationManager;
+  protected $groupRelationTypeManager;
 
   /**
    * The access control handler.
@@ -66,13 +66,13 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $this->account->id()->willReturn(1986);
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
-    $this->groupRelationManager = $this->prophesize(GroupRelationManagerInterface::class);
+    $this->groupRelationTypeManager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
     $moduleHandler->invokeAll(Argument::cetera())->willReturn([]);
 
     $container = $this->prophesize(ContainerInterface::class);
     $container->get('entity_type.manager')->willReturn($this->entityTypeManager->reveal());
-    $container->get('plugin.manager.group_relation')->willReturn($this->groupRelationManager->reveal());
+    $container->get('group_relation_type.manager')->willReturn($this->groupRelationTypeManager->reveal());
     $container->get('module_handler')->willReturn($moduleHandler->reveal());
     \Drupal::setContainer($container->reveal());
 
@@ -91,7 +91,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
    */
   public function testCheckAccess() {
     $group_relation = $this->prophesize(GroupRelationInterface::class);
-    $group_relation->getPluginId()->willReturn('bar');
+    $group_relation->getRelationTypeId()->willReturn('bar');
 
     $language = $this->prophesize(LanguageInterface::class);
     $language->getId()->willReturn('nl');
@@ -107,7 +107,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);
     $access_control->relationAccess($group_content->reveal(), 'some_operation', $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
-    $this->groupRelationManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
+    $this->groupRelationTypeManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
 
     $result = $this->accessControlHandler->access(
       $group_content->reveal(),
@@ -135,7 +135,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);
     $access_control->relationCreateAccess($group->reveal(), $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
-    $this->groupRelationManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
+    $this->groupRelationTypeManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
 
     $result = $this->accessControlHandler->createAccess(
       'foo',

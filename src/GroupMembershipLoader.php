@@ -106,7 +106,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       $account = $this->currentUser;
     }
 
-    // Load all group content types for the membership group relation plugin.
+    // Load all group content types for the membership group relation.
     $group_content_types = $this->entityTypeManager
       ->getStorage('group_content_type')
       ->loadByProperties(['content_plugin' => 'group_membership']);

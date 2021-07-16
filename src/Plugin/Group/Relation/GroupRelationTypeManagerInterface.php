@@ -7,9 +7,9 @@ use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**
- * Provides a common interface for group relation managers.
+ * Provides a common interface for group relation type managers.
  */
-interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
+interface GroupRelationTypeManagerInterface extends PluginManagerInterface, CachedDiscoveryInterface {
 
   /**
    * Returns a handler instance for the given plugin and handler.
@@ -70,6 +70,22 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getAccessControlHandler($plugin_id);
 
   /**
+   * Creates a new operation provider instance.
+   *
+   * @param string $plugin_id
+   *   The plugin ID for this operation provider.
+   *
+   * @return \Drupal\group\Plugin\Group\RelationHandler\OperationProviderInterface
+   *   An operation provider instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the plugin doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the operation provider couldn't be loaded.
+   */
+  public function getOperationProvider($plugin_id);
+
+  /**
    * Creates a new permission provider instance.
    *
    * @param string $plugin_id
@@ -102,47 +118,26 @@ interface GroupRelationManagerInterface extends PluginManagerInterface, CachedDi
   public function getPostInstallHandler($plugin_id);
 
   /**
-   * Returns a plugin collection of all available group relations.
-   *
-   * This collection will not have anything set in the individual plugins'
-   * configuration. Do not use any methods on the plugin that require a group
-   * type to be set or you may encounter unexpected behavior. Instead, use
-   * ::getInstalled() while providing a group type argument to get fully
-   * configured instances of the plugins.
-   *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
-   *   A plugin collection with a vanilla instance of every known plugin.
-   */
-  public function getAll();
-
-  /**
    * Returns a plugin collection of all installed group relations.
    *
-   * Warning: When called without a $group_type argument, this will return a
-   * collection of vanilla plugin instances. See ::getAll() for details about
-   * vanilla instances.
-   *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   (optional) The group type to retrieve installed plugin for.
+   *   The group type to retrieve installed plugins for.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
-   *   A plugin collection with a vanilla instance of every installed plugin. If
-   *   $group_type was provided, the collection will contain fully instantiated
-   *   plugins for the provided group type.
+   *   A plugin collection with an instance of every installed plugin.
    */
-  public function getInstalled(GroupTypeInterface $group_type = NULL);
+  public function getInstalled(GroupTypeInterface $group_type);
 
   /**
    * Returns the plugin ID of all group relations in use.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   (optional) The group type to retrieve plugin IDs for.
+   *   The group type to retrieve plugin IDs for.
    *
    * @return string[]
-   *   A list of all installed group relation plugin IDs. If $group_type was
-   *   provided, this will only return the installed IDs for that group type.
+   *   A list of all installed group relation type IDs for the given group type.
    */
-  public function getInstalledIds(GroupTypeInterface $group_type = NULL);
+  public function getInstalledIds(GroupTypeInterface $group_type);
 
   /**
    * Returns the ID of all plugins that define access for a given entity type.

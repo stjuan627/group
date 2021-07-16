@@ -7,7 +7,7 @@ use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderTrait;
 
 /**
- * Provides group permissions for group relation plugins.
+ * Provides group permissions for group relations.
  */
 class PermissionProvider implements PermissionProviderInterface {
 
@@ -27,7 +27,7 @@ class PermissionProvider implements PermissionProviderInterface {
    * {@inheritdoc}
    */
   public function getAdminPermission() {
-    return $this->definition['admin_permission'];
+    return $this->groupRelationType->getAdminPermission();
   }
 
   /**

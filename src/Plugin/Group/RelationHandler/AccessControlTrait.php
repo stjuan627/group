@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
 /**
  * Trait for group relation permission providers.
@@ -32,9 +33,9 @@ trait AccessControlTrait {
   /**
    * {@inheritdoc}
    */
-  public function init($plugin_id, array $definition) {
-    $this->traitInit($plugin_id, $definition);
-    $this->permissionProvider = $this->groupRelationManager()->getPermissionProvider($plugin_id);
+  public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
+    $this->traitInit($plugin_id, $group_relation_type);
+    $this->permissionProvider = $this->groupRelationTypeManager()->getPermissionProvider($plugin_id);
   }
 
   /**

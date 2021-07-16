@@ -12,9 +12,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentViewsData extends EntityViewsData {
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -24,7 +24,7 @@ class GroupContentViewsData extends EntityViewsData {
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     /** @var static $views_data */
     $views_data = parent::createInstance($container, $entity_type);
-    $views_data->pluginManager = $container->get('plugin.manager.group_relation');
+    $views_data->pluginManager = $container->get('group_relation_type.manager');
     return $views_data;
   }
 
@@ -53,8 +53,9 @@ class GroupContentViewsData extends EntityViewsData {
 
     // Add views data for all defined plugins so modules can provide default
     // views even though their plugins may not have been installed yet.
-    foreach ($this->pluginManager->getAll() as $plugin) {
-      $entity_type_id = $plugin->getEntityTypeId();
+    foreach ($this->pluginManager->getDefinitions() as $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      $entity_type_id = $group_relation_type->getEntityTypeId();
       if (!isset($entity_types[$entity_type_id])) {
         continue;
       }

@@ -69,7 +69,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
 
     // Refresh the managers so they use the new namespaces.
     $this->entityTypeManager = $this->container->get('entity_type.manager');
-    $this->pluginManager = $this->container->get('plugin.manager.group_relation');
+    $this->pluginManager = $this->container->get('group_relation_type.manager');
 
     // Install the plugin and add a node to a group so query access kicks in and
     // cacheable metadata is added to the query.

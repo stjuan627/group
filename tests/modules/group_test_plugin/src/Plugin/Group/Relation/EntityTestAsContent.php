@@ -5,9 +5,9 @@ namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
- * Provides a group relation for test entities.
+ * Provides a group relation type for test entities.
  *
- * @GroupRelation(
+ * @GroupRelationType(
  *   id = "entity_test_as_content",
  *   label = @Translation("Group test entity"),
  *   description = @Translation("Adds test entities to groups."),

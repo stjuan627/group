@@ -10,19 +10,20 @@ class NodeAsContentDeriver extends DeriverBase {
    * {@inheritdoc}.
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $base_plugin_definition */
     $this->derivatives = [];
 
-    $this->derivatives['page'] = [
-      'entity_bundle' => 'page',
-      'label' => t('Pages as content'),
-      'description' => t('Adds pages to groups.'),
-    ] + $base_plugin_definition;
+    $this->derivatives['page'] = clone $base_plugin_definition;
+    $this->derivatives['page']->set('entity_bundle', 'page');
+    $this->derivatives['page']->set('label', t('Pages as content'));
+    $this->derivatives['page']->set('description', t('Adds pages to groups.'));
+    $this->derivatives['page']->set('admin_permission', 'administer node_as_content:page');
 
-    $this->derivatives['article'] = [
-      'entity_bundle' => 'article',
-      'label' => t('Article as content'),
-      'description' => t('Adds articles to groups.'),
-    ] + $base_plugin_definition;
+    $this->derivatives['article'] = clone $base_plugin_definition;
+    $this->derivatives['article']->set('entity_bundle', 'article');
+    $this->derivatives['article']->set('label', t('Article as content'));
+    $this->derivatives['article']->set('description', t('Adds articles to groups.'));
+    $this->derivatives['article']->set('admin_permission', 'administer node_as_content:article');
 
     return $this->derivatives;
   }

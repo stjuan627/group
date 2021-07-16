@@ -2,8 +2,10 @@
 
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+
 /**
- * Trait for group relation plugin handlers.
+ * Trait for group relation handlers.
  *
  * This trait contains a few service getters for services that are often needed
  * in plugin handlers. When using one of these getters, please make sure you
@@ -29,13 +31,11 @@ trait RelationHandlerTrait {
   protected $pluginId;
 
   /**
-   * The plugin definition.
+   * The group relation type.
    *
-   * @var array
-   *
-   * @todo Plugin definition should become a class.
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface
    */
-  protected $definition;
+  protected $groupRelationType;
 
   /**
    * The entity type manager.
@@ -45,21 +45,21 @@ trait RelationHandlerTrait {
   protected $entityTypeManager;
 
   /**
-   * The group relation manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
-  protected $groupRelationManager;
+  protected $groupRelationTypeManager;
 
   /**
    * {@inheritdoc}
    */
-  public function init($plugin_id, array $definition) {
+  public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
     if (isset($this->parent)) {
-      $this->parent->init($plugin_id, $definition);
+      $this->parent->init($plugin_id, $group_relation_type);
     }
     $this->pluginId = $plugin_id;
-    $this->definition = $definition;
+    $this->groupRelationType = $group_relation_type;
   }
 
   /**
@@ -76,16 +76,16 @@ trait RelationHandlerTrait {
   }
 
   /**
-   * Gets the group relation manager service.
+   * Gets the group relation type manager service.
    *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
-   *   The group relation manager service.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   *   The group relation type manager service.
    */
-  protected function groupRelationManager() {
-    if (!$this->groupRelationManager) {
-      $this->groupRelationManager = \Drupal::service('plugin.manager.group_relation');
+  protected function groupRelationTypeManager() {
+    if (!$this->groupRelationTypeManager) {
+      $this->groupRelationTypeManager = \Drupal::service('group_relation_type.manager');
     }
-    return $this->groupRelationManager;
+    return $this->groupRelationTypeManager;
   }
 
 }

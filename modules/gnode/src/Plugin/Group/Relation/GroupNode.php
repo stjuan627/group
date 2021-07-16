@@ -9,9 +9,9 @@ use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a group relation for nodes.
+ * Provides a group relation type for nodes.
  *
- * @GroupContentEnabler(
+ * @GroupRelationType(
  *   id = "group_node",
  *   label = @Translation("Group node"),
  *   description = @Translation("Adds nodes to groups both publicly and privately."),
@@ -39,7 +39,7 @@ class GroupNode extends GroupRelationBase {
    */
   public function getGroupOperations(GroupInterface $group) {
     $account = \Drupal::currentUser();
-    $plugin_id = $this->getPluginId();
+    $plugin_id = $this->getRelationTypeId();
     $type = $this->getEntityBundle();
     $operations = [];
 
@@ -72,7 +72,7 @@ class GroupNode extends GroupRelationBase {
 
     // Disable the entity cardinality field as the functionality of this module
     // relies on a cardinality of 1. We don't just hide it, though, to keep a UI
-    // that's consistent with other group relation plugins.
+    // that's consistent with other group relations.
     $info = $this->t("This field has been disabled by the plugin to guarantee the functionality that's expected of it.");
     $form['entity_cardinality']['#disabled'] = TRUE;
     $form['entity_cardinality']['#description'] .= '<br /><em>' . $info . '</em>';
@@ -85,7 +85,7 @@ class GroupNode extends GroupRelationBase {
    */
   public function calculateDependencies() {
     $dependencies = parent::calculateDependencies();
-    $dependencies['config'][] = 'node.type.' . $this->getEntityBundle();
+    $dependencies['config'][] = 'node.type.' . $this->getRelationType()->getEntityBundle();
     return $dependencies;
   }
 

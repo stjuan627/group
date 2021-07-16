@@ -10,7 +10,8 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManager;
+use Drupal\group\Plugin\Group\Relation\GroupRelationType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 use Drupal\Tests\UnitTestCase;
@@ -18,19 +19,19 @@ use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Tests the group relation plugin manager.
+ * Tests the group relation type manager.
  *
- * @coversDefaultClass \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+ * @coversDefaultClass \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager
  * @group group
  */
-class GroupRelationManagerTest extends UnitTestCase {
+class GroupRelationTypeManagerTest extends UnitTestCase {
 
   /**
-   * The group relation manager under test.
+   * The group relation type manager under test.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager
    */
-  protected $groupRelationManager;
+  protected $groupRelationTypeManager;
 
   /**
    * The service container.
@@ -77,7 +78,7 @@ class GroupRelationManagerTest extends UnitTestCase {
 
     $this->moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
     $this->moduleHandler->getImplementations('entity_type_build')->willReturn([]);
-    $this->moduleHandler->alter('group_relation_info', Argument::type('array'))->willReturn(NULL);
+    $this->moduleHandler->alter('group_relation_type', Argument::type('array'))->willReturn(NULL);
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
     $storage = $this->prophesize(ContentEntityStorageInterface::class);
@@ -85,20 +86,20 @@ class GroupRelationManagerTest extends UnitTestCase {
     $storage = $this->prophesize(ConfigEntityStorageInterface::class);
     $this->entityTypeManager->getStorage('group_type')->willReturn($storage->reveal());
 
-    $this->groupRelationManager = new TestGroupRelationManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
+    $this->groupRelationTypeManager = new TestGroupRelationTypeManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
 
     $this->discovery = $this->prophesize(DiscoveryInterface::class);
-    $this->groupRelationManager->setDiscovery($this->discovery->reveal());
+    $this->groupRelationTypeManager->setDiscovery($this->discovery->reveal());
 
     $this->container = $this->prophesize(ContainerInterface::class);
-    $this->groupRelationManager->setContainer($this->container->reveal());
+    $this->groupRelationTypeManager->setContainer($this->container->reveal());
   }
 
   /**
-   * Sets up the group relation manager to be tested.
+   * Sets up the group relation type manager to be tested.
    *
    * @param array $definitions
-   *   (optional) An array of group relation definitions.
+   *   (optional) An array of group relation type definitions.
    */
   protected function setUpPluginDefinitions($definitions = [], $handlers = []) {
     $this->discovery->getDefinition(Argument::cetera())
@@ -119,7 +120,7 @@ class GroupRelationManagerTest extends UnitTestCase {
 
     foreach ($definitions as $plugin_id => $definition) {
       foreach ($handlers as $handler_name => $class_name) {
-        $service_name = "group.relation_handler.$handler_name.{$definition['id']}";
+        $service_name = "group.relation_handler.$handler_name.{$definition->id()}";
         if ($class_name === FALSE) {
           $this->container->has($service_name)->willReturn(FALSE);
         }
@@ -142,11 +143,11 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testCreateHandlerInstance() {
     $this->setUpPluginDefinitions(
-      ['some_plugin' => ['id' => 'some_plugin']],
+      ['some_plugin' => new GroupRelationType(['id' => 'some_plugin'])],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
-    $handler = $this->groupRelationManager->createHandlerInstance('some_plugin', 'foo_handler');
+    $handler = $this->groupRelationTypeManager->createHandlerInstance('some_plugin', 'foo_handler');
     $this->assertInstanceOf(RelationHandlerInterface::class, $handler);
   }
 
@@ -157,13 +158,13 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testCreateHandlerInstanceNoInterface() {
     $this->setUpPluginDefinitions(
-      ['some_plugin' => ['id' => 'some_plugin']],
+      ['some_plugin' => new GroupRelationType(['id' => 'some_plugin'])],
       ['foo_handler' => TestGroupRelationHandlerWithoutInterface::class]
     );
 
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
-    $this->groupRelationManager->createHandlerInstance('some_plugin', 'foo_handler');
+    $this->groupRelationTypeManager->createHandlerInstance('some_plugin', 'foo_handler');
   }
 
   /**
@@ -174,13 +175,13 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testGetHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => ['id' => 'apple']],
+      ['apple' => new GroupRelationType(['id' => 'apple'])],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
-    $first_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
-    $second_call_result = $this->groupRelationManager->getHandler('apple', 'foo_handler');
-    $direct_call_result = $this->groupRelationManager->createHandlerInstance('apple', 'foo_handler');
+    $first_call_result = $this->groupRelationTypeManager->getHandler('apple', 'foo_handler');
+    $second_call_result = $this->groupRelationTypeManager->getHandler('apple', 'foo_handler');
+    $direct_call_result = $this->groupRelationTypeManager->createHandlerInstance('apple', 'foo_handler');
 
     $this->assertEquals(
       $first_call_result,
@@ -209,11 +210,11 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testGetHandlerWithDerivatives() {
     $this->setUpPluginDefinitions(
-      ['apple:red' => ['id' => 'apple']],
+      ['apple:red' => new GroupRelationType(['id' => 'apple'])],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
-    $handler = $this->groupRelationManager->createHandlerInstance('apple:red', 'foo_handler');
+    $handler = $this->groupRelationTypeManager->createHandlerInstance('apple:red', 'foo_handler');
     $this->assertInstanceOf(RelationHandlerInterface::class, $handler);
   }
 
@@ -224,13 +225,13 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testGetHandlerMissingHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => ['id' => 'apple']],
+      ['apple' => new GroupRelationType(['id' => 'apple'])],
       ['foo_handler' => FALSE]
     );
 
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "apple" plugin did not specify a foo_handler handler service (group.relation_handler.foo_handler.apple).');
-    $this->groupRelationManager->getHandler('apple', 'foo_handler');
+    $this->groupRelationTypeManager->getHandler('apple', 'foo_handler');
   }
 
   /**
@@ -240,11 +241,11 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testGetAccessControlHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => ['id' => 'apple']],
+      ['apple' => new GroupRelationType(['id' => 'apple'])],
       ['access_control' => TestGroupRelationHandler::class]
     );
 
-    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getAccessControlHandler('apple'));
+    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationTypeManager->getAccessControlHandler('apple'));
   }
 
   /**
@@ -254,16 +255,16 @@ class GroupRelationManagerTest extends UnitTestCase {
    */
   public function testGetPermissionProvider() {
     $this->setUpPluginDefinitions(
-      ['apple' => ['id' => 'apple']],
+      ['apple' => new GroupRelationType(['id' => 'apple'])],
       ['permission_provider' => TestGroupRelationHandler::class]
     );
 
-    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationManager->getPermissionProvider('apple'));
+    $this->assertInstanceOf(RelationHandlerInterface::class, $this->groupRelationTypeManager->getPermissionProvider('apple'));
   }
 
 }
 
-class TestGroupRelationManager extends GroupRelationManager {
+class TestGroupRelationTypeManager extends GroupRelationTypeManager {
 
   /**
    * Sets the discovery for the manager.

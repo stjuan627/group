@@ -14,7 +14,7 @@ interface GroupPermissionHandlerInterface {
    *
    * @param bool $include_plugins
    *   (optional) Whether to also include the permissions defined by all
-   *   installed group content plugins. Defaults to FALSE.
+   *   installed group relations. Defaults to FALSE.
    *
    * @return array
    *   An array whose keys are permission names and whose corresponding values

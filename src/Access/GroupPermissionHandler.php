@@ -8,7 +8,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 /**
  * Provides the available permissions based on yml files.
@@ -71,9 +71,9 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   protected $controllerResolver;
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -86,10 +86,10 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *   The string translation.
    * @param \Drupal\Core\Controller\ControllerResolverInterface $controller_resolver
    *   The controller resolver.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationTypeManagerInterface $plugin_manager) {
     $this->moduleHandler = $module_handler;
     $this->stringTranslation = $string_translation;
     $this->controllerResolver = $controller_resolver;
@@ -120,12 +120,13 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     // configuration but can't because their plugins may not be installed along
     // with the module itself (i.e.: non-enforced plugins).
     if ($include_plugins) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-      foreach ($this->pluginManager->getAll() as $plugin) {
-        $provider = $plugin->getProvider();
-        $section = $plugin->getLabel()->__toString();
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      foreach ($this->pluginManager->getDefinitions() as $group_relation_type_id => $group_relation_type) {
+        $provider = $group_relation_type->getProvider();
+        $section = $group_relation_type->getLabel()->__toString();
 
-        foreach ($plugin->getPermissions() as $permission_name => $permission) {
+        $permissions = $this->pluginManager->getPermissionProvider($group_relation_type_id)->buildPermissions();
+        foreach ($permissions as $permission_name => $permission) {
           $permission += ['provider' => $provider, 'section' => $section];
           $all_permissions[$permission_name] = $this->completePermission($permission);
         }
@@ -142,13 +143,14 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     $all_permissions = $this->buildPermissionsYaml();
 
     // Add the plugin defined permissions to the whole.
-    foreach ($group_type->getInstalledContentPlugins() as $plugin) {
-      $provider = $plugin->getProvider();
-      $section = $plugin->getLabel()->__toString();
+    foreach ($group_type->getInstalledRelationPlugins() as $group_relation) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation */
+      $group_relation_type = $group_relation->getRelationType();
+      $provider = $group_relation_type->getProvider();
+      $section = $group_relation_type->getLabel()->__toString();
 
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-      // @todo 2.0.0 CALL HANDLER.
-      foreach ($plugin->getPermissions() as $permission_name => $permission) {
+      $permissions = $this->pluginManager->getPermissionProvider($group_relation->getRelationTypeId())->buildPermissions();
+      foreach ($permissions as $permission_name => $permission) {
         $permission += ['provider' => $provider, 'section' => $section];
         $all_permissions[$permission_name] = $this->completePermission($permission);
       }

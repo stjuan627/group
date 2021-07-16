@@ -15,7 +15,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\CalculatedGroupPermissionsItemInterface as CGPII;
 use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -39,9 +39,9 @@ class EntityQueryAlter implements ContainerInjectionInterface {
   protected $entityTypeManager;
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -99,8 +99,8 @@ class EntityQueryAlter implements ContainerInjectionInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    * @param \Drupal\group\Access\ChainGroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
    * @param \Drupal\Core\Database\Connection $database
@@ -112,7 +112,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager, ChainGroupPermissionCalculatorInterface $permission_calculator, Connection $database, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $plugin_manager, ChainGroupPermissionCalculatorInterface $permission_calculator, Connection $database, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
     $this->permissionCalculator = $permission_calculator;
@@ -129,7 +129,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('plugin.manager.group_relation'),
+      $container->get('group_relation_type.manager'),
       $container->get('group_permission.chain_calculator'),
       $container->get('database'),
       $container->get('renderer'),
@@ -168,7 +168,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       return;
     }
 
-    // Find all of the group content plugins that define access.
+    // Find all of the group relations that define access.
     $plugin_ids = $this->pluginManager->getPluginIdsByEntityTypeAccess($entity_type_id);
     if (empty($plugin_ids)) {
       return;

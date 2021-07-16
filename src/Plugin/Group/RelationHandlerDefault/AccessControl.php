@@ -12,11 +12,11 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
- * Provides access control for group relation plugins.
+ * Provides access control for group relations.
  */
 class AccessControl implements AccessControlInterface {
 
@@ -27,12 +27,12 @@ class AccessControl implements AccessControlInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $groupRelationManager
-   *   The group relation manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $groupRelationTypeManager
+   *   The group relation type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $groupRelationManager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager) {
     $this->entityTypeManager = $entity_type_manager;
-    $this->groupRelationManager = $groupRelationManager;
+    $this->groupRelationTypeManager = $groupRelationTypeManager;
   }
 
   /**
@@ -88,7 +88,7 @@ class AccessControl implements AccessControlInterface {
     // Filter out the content that does not use this plugin.
     foreach ($group_contents as $id => $group_content) {
       // @todo Shows the need for a plugin ID base field.
-      $plugin_id = $group_content->getRelationPlugin()->getPluginId();
+      $plugin_id = $group_content->getRelationPlugin()->getRelationTypeId();
       if ($plugin_id !== $this->pluginId) {
         unset($group_contents[$id]);
       }
@@ -166,7 +166,7 @@ class AccessControl implements AccessControlInterface {
    */
   public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
     // You cannot create target entities if the plugin does not support it.
-    if (empty($this->definition['entity_access'])) {
+    if (!$this->groupRelationType->definesEntityAccess()) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
     $permission = $this->permissionProvider->getPermission('create', 'entity');

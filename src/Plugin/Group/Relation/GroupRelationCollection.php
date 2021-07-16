@@ -5,7 +5,7 @@ namespace Drupal\group\Plugin\Group\Relation;
 use Drupal\Core\Plugin\DefaultLazyPluginCollection;
 
 /**
- * A collection of group relation plugins.
+ * A collection of group relations.
  */
 class GroupRelationCollection extends DefaultLazyPluginCollection {
 
@@ -24,11 +24,11 @@ class GroupRelationCollection extends DefaultLazyPluginCollection {
    * Sorts plugins by provider.
    */
   public function sortHelper($aID, $bID) {
-    $a = $this->get($aID);
-    $b = $this->get($bID);
+    $a_provider = $this->get($aID)->getRelationType()->getProvider();
+    $b_provider = $this->get($bID)->getRelationType()->getProvider();
 
-    if ($a->getProvider() != $b->getProvider()) {
-      return strnatcasecmp($a->getProvider(), $b->getProvider());
+    if ($a_provider != $b_provider) {
+      return strnatcasecmp($a_provider, $b_provider);
     }
 
     return parent::sortHelper($aID, $bID);

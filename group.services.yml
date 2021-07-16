@@ -84,7 +84,7 @@ services:
       - { name: 'event_subscriber' }
   group.config_subscriber:
     class: 'Drupal\group\EventSubscriber\ConfigSubscriber'
-    arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
+    arguments: ['@entity_type.manager', '@group_relation_type.manager']
     tags:
       - { name: 'event_subscriber' }
 
@@ -99,7 +99,7 @@ services:
   # @todo Rename to group_permission.builder in 8.2.0.
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
-    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@plugin.manager.group_relation']
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@group_relation_type.manager']
   # @todo Rename to group_permission.hash_generator in 8.2.0.
   group.permissions_hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'
@@ -127,7 +127,7 @@ services:
     class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
     tags:
       - { name: 'module_install.uninstall_validator' }
-    arguments: ['@string_translation', '@entity_type.manager', '@plugin.manager.group_relation']
+    arguments: ['@string_translation', '@entity_type.manager', '@group_relation_type.manager']
     lazy: 'true'
 
   group_content_type.breadcrumb:
@@ -139,17 +139,21 @@ services:
     class: 'Drupal\group\GroupRoleSynchronizer'
     arguments: ['@entity_type.manager']
 
-  plugin.manager.group_relation:
-    class: 'Drupal\group\Plugin\Group\Relation\GroupRelationManager'
+  group_relation_type.manager:
+    class: 'Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager'
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     parent: container.trait
     tags:
       - { name: plugin_manager_cache_clear }
 
-  # Default group relation plugin handlers.
+  # Default group relation handlers.
   group.relation_handler.access_control:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
-    arguments: ['@entity_type.manager', '@plugin.manager.group_relation']
+    arguments: ['@entity_type.manager', '@group_relation_type.manager']
+    shared: false
+  group.relation_handler.operation_provider:
+    class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider'
+    arguments: ['@entity_type.manager', '@module_handler', '@string_translation']
     shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
@@ -159,7 +163,7 @@ services:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall'
     shared: false
 
-  # Specific group relation plugin handlers.
+  # Specific group relation handlers.
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']

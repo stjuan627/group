@@ -5,9 +5,9 @@ namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
- * Provides a group relation for users.
+ * Provides a group relation type for users.
  *
- * @GroupRelation(
+ * @GroupRelationType(
  *   id = "user_as_content",
  *   label = @Translation("Group user"),
  *   description = @Translation("Adds users to groups without making them members."),

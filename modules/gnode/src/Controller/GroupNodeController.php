@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\Controller\GroupContentController;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,17 +17,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupNodeController extends GroupContentController {
 
   /**
-   * The group content plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
   /**
    * Constructs a new GroupNodeController.
    *
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group content plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $temp_store_factory
    *   The private store factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -37,7 +37,7 @@ class GroupNodeController extends GroupContentController {
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
-  public function __construct(GroupRelationManagerInterface $plugin_manager, PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
+  public function __construct(GroupRelationTypeManagerInterface $plugin_manager, PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
     parent::__construct($temp_store_factory, $entity_type_manager, $entity_form_builder, $renderer);
     $this->pluginManager = $plugin_manager;
   }
@@ -47,7 +47,7 @@ class GroupNodeController extends GroupContentController {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_relation'),
+      $container->get('group_relation_type.manager'),
       $container->get('tempstore.private'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
@@ -70,8 +70,8 @@ class GroupNodeController extends GroupContentController {
     $storage_handler = $this->entityTypeManager->getStorage('node_type');
     foreach ($this->addPageBundles($group, $create_mode) as $plugin_id => $bundle_name) {
       if (!empty($build['#bundles'][$bundle_name])) {
-        $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
-        $bundle_label = $storage_handler->load($plugin->getEntityBundle())->label();
+        $group_relation_type = $group->getGroupType()->getRelationPlugin($plugin_id)->getRelationType();
+        $bundle_label = $storage_handler->load($group_relation_type->getEntityBundle())->label();
 
         $t_args = ['%node_type' => $bundle_label];
         $description = $create_mode

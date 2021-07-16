@@ -65,7 +65,7 @@ class GroupMembershipController extends ControllerBase {
    */
   public function join(GroupInterface $group) {
     /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-    $plugin = $group->getGroupType()->getContentPlugin('group_membership');
+    $plugin = $group->getGroupType()->getRelationPlugin('group_membership');
 
     // Pre-populate a group membership with the current user.
     $group_content = GroupContent::create([

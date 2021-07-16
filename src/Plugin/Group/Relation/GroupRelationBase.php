@@ -12,10 +12,10 @@ use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a base class for GroupContentEnabler plugins.
+ * Provides a base class for GroupRelation plugins.
  *
- * @see \Drupal\group\Annotation\GroupRelation
- * @see \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+ * @see \Drupal\group\Annotation\GroupRelationType
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
  * @see plugin_api
  */
@@ -29,18 +29,13 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   protected $groupTypeId;
 
   /**
-   * Backwards compatible permission array.
-   *
-   * @var array
-   */
-  private $_permissions;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
+    // @todo 2.0.0 Only allow plugins with group type, because handlers can take
+    //    care of the rest.
     // Only support setting the group type ID during construction.
     if (!empty($configuration['group_type_id'])) {
       $this->groupTypeId = $configuration['group_type_id'];
@@ -53,53 +48,15 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function getProvider() {
-    return $this->pluginDefinition['provider'];
+  public function getRelationTypeId() {
+    return $this->pluginId;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getLabel() {
-    return $this->pluginDefinition['label'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    return $this->pluginDefinition['description'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityTypeId() {
-    return $this->pluginDefinition['entity_type_id'];
-  }
-
-  /**
-   * Returns the entity type definition the plugin supports.
-   *
-   * @return \Drupal\Core\Entity\EntityTypeInterface
-   *   The entity type definition.
-   */
-  protected function getEntityType() {
-    return \Drupal::entityTypeManager()->getDefinition($this->getEntityTypeId());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityBundle() {
-    return $this->pluginDefinition['entity_bundle'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getPrettyPathKey() {
-    return $this->pluginDefinition['pretty_path_key'];
+  public function getRelationType() {
+    return $this->pluginDefinition;
   }
 
   /**
@@ -135,27 +92,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function definesEntityAccess() {
-    return $this->pluginDefinition['entity_access'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isEnforced() {
-    return $this->pluginDefinition['enforced'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isCodeOnly() {
-    return $this->pluginDefinition['code_only'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getContentLabel(GroupContentInterface $group_content) {
     return $group_content->getEntity()->label();
   }
@@ -164,7 +100,8 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getContentTypeConfigId() {
-    $preferred_id = $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getPluginId());
+    // @todo 2.0.0 Move to storage!
+    $preferred_id = $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getRelationTypeId());
 
     // Return a hashed ID if the readable ID would exceed the maximum length.
     if (strlen($preferred_id) > EntityTypeInterface::BUNDLE_MAX_LENGTH) {
@@ -179,14 +116,14 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getContentTypeLabel() {
-    return $this->getGroupType()->label() . ': ' . $this->getLabel();
+    return $this->getGroupType()->label() . ': ' . $this->getRelationType()->getLabel();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getContentTypeDescription() {
-    return $this->getDescription();
+    return $this->getRelationType()->getDescription();
   }
 
   /**
@@ -206,34 +143,9 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function getOperations() {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityReferenceLabel() {
-    return isset($this->pluginDefinition['reference_label'])
-      ? $this->pluginDefinition['reference_label']
-      : NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getEntityReferenceDescription() {
-    return isset($this->pluginDefinition['reference_description'])
-      ? $this->pluginDefinition['reference_description']
-      : NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getEntityReferenceSettings() {
-    $settings['target_type'] = $this->getEntityTypeId();
-    if ($bundle = $this->getEntityBundle()) {
+    $settings['target_type'] = $this->getRelationType()->getEntityTypeId();
+    if ($bundle = $this->getRelationType()->getEntityBundle()) {
       $settings['handler_settings']['target_bundles'] = [$bundle];
     }
     return $settings;
@@ -284,7 +196,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
     $entity_type_manager = \Drupal::service('entity_type.manager');
 
     $replace = [
-      '%entity_type' => $entity_type_manager->getDefinition($this->getEntityTypeId())->getLabel(),
+      '%entity_type' => $entity_type_manager->getDefinition($this->getRelationType()->getEntityTypeId())->getLabel(),
       '%group_type' => $this->getGroupType()->label(),
       '%plugin' => $this->getLabel(),
     ];
@@ -339,8 +251,9 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    $dependencies['module'][] = $this->getProvider();
-    $dependencies['module'][] = $this->getEntityType()->getProvider();
+    $entity_type = \Drupal::entityTypeManager()->getDefinition($this->getRelationType()->getEntityTypeId());
+    $dependencies['module'][] = $this->getRelationType()->getProvider();
+    $dependencies['module'][] = $entity_type->getProvider();
     return $dependencies;
   }
 

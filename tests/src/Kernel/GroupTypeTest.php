@@ -52,10 +52,10 @@ class GroupTypeTest extends GroupKernelTestBase {
   /**
    * Tests the retrieval of the collection of installed plugins.
    *
-   * @covers ::getInstalledContentPlugins
+   * @covers ::getInstalledRelationPlugins
    */
-  public function testGetInstalledContentPlugins() {
-    $plugins = $this->groupType->getInstalledContentPlugins();
+  public function testGetInstalledRelationPlugins() {
+    $plugins = $this->groupType->getInstalledRelationPlugins();
     $this->assertInstanceOf('\Drupal\group\Plugin\Group\Relation\GroupRelationCollection', $plugins, 'Loaded the installed plugin collection.');
     $this->assertCount(1, $plugins, 'Plugin collection has one plugin instance.');
   }
@@ -63,32 +63,32 @@ class GroupTypeTest extends GroupKernelTestBase {
   /**
    * Tests whether a group type can tell if it has a plugin installed.
    *
-   * @covers ::hasContentPlugin
+   * @covers ::hasRelationPlugin
    */
-  public function testHasContentPlugin() {
-    $this->assertTrue($this->groupType->hasContentPlugin('group_membership'), 'Found the group_membership plugin.');
-    $this->assertFalse($this->groupType->hasContentPlugin('fake_plugin_id'), 'Could not find the fake_plugin_id plugin.');
+  public function testHasRelationPlugin() {
+    $this->assertTrue($this->groupType->hasRelationPlugin('group_membership'), 'Found the group_membership plugin.');
+    $this->assertFalse($this->groupType->hasRelationPlugin('fake_plugin_id'), 'Could not find the fake_plugin_id plugin.');
   }
 
   /**
    * Tests the retrieval of an installed plugin.
    *
-   * @covers ::getContentPlugin
+   * @covers ::getRelationPlugin
    */
-  public function testGetInstalledContentPlugin() {
-    $plugin = $this->groupType->getContentPlugin('group_membership');
+  public function testGetInstalledRelationPlugin() {
+    $plugin = $this->groupType->getRelationPlugin('group_membership');
     $this->assertInstanceOf('\Drupal\group\Plugin\Group\Relation\GroupRelationInterface', $plugin, 'Loaded the group_membership plugin.');
   }
 
   /**
    * Tests the retrieval of a non-existent plugin.
    *
-   * @covers ::getContentPlugin
+   * @covers ::getRelationPlugin
    */
-  public function testGetNonExistentContentPlugin() {
+  public function testGetNonExistentRelationPlugin() {
     $this->expectException(PluginNotFoundException::class);
     $this->expectExceptionMessage("Plugin ID 'fake_plugin_id' was not found.");
-    $this->groupType->getContentPlugin('fake_plugin_id');
+    $this->groupType->getRelationPlugin('fake_plugin_id');
   }
 
 }

@@ -4,7 +4,7 @@ namespace Drupal\group\Plugin\views\relationship;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,9 +22,9 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
   protected $joinManager;
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -33,10 +33,10 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, GroupRelationTypeManagerInterface $plugin_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->joinManager = $join_manager;
     $this->pluginManager = $plugin_manager;
@@ -51,7 +51,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('plugin.manager.views.join'),
-      $container->get('plugin.manager.group_relation')
+      $container->get('group_relation_type.manager')
     );
   }
 
@@ -93,10 +93,10 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
 
     // Retrieve all of the plugins that can serve this entity type.
     $options = [];
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-      if ($plugin->getEntityTypeId() === $this->getTargetEntityType()) {
-        $options[$plugin_id] = $plugin->getLabel();
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      if ($group_relation_type->getEntityTypeId() === $this->getTargetEntityType()) {
+        $options[$plugin_id] = $group_relation_type->getLabel();
       }
     }
 

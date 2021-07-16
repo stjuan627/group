@@ -13,9 +13,11 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 use Prophecy\Argument;
@@ -56,7 +58,7 @@ class AccessControlTest extends UnitTestCase {
    *   A closure returning the expected access result.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $has_admin_permission
    *   Whether the account has the admin permission.
@@ -74,15 +76,15 @@ class AccessControlTest extends UnitTestCase {
    * @covers ::relationAccess
    * @dataProvider relationAccessProvider
    */
-  public function testRelationAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_owner) {
+  public function testRelationAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_owner) {
     $operation = $this->randomMachineName();
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
-    $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
+    $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
     $permission_provider->getPermission($operation, 'relation', 'any')->willReturn($permission);
     $permission_provider->getPermission($operation, 'relation', 'own')->willReturn($own_permission);
 
-    $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
+    $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
@@ -102,11 +104,11 @@ class AccessControlTest extends UnitTestCase {
     $group_content->getCachetags()->willReturn(['group_content:foo']);
     $group_content->getCacheMaxAge()->willReturn(9999);
 
-    if ($definition['admin_permission']) {
-      $group->hasPermission($definition['admin_permission'], $account)->willReturn($has_admin_permission);
+    if ($definition->getAdminPermission()) {
+      $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);
     }
     else {
-      $group->hasPermission($definition['admin_permission'], $account)->shouldNotBeCalled();
+      $group->hasPermission($definition->getAdminPermission(), $account)->shouldNotBeCalled();
     }
 
     if ($permission) {
@@ -135,19 +137,30 @@ class AccessControlTest extends UnitTestCase {
    */
   public function relationAccessProvider() {
     $cases = [];
-    foreach ($this->getAccessControlHandlerScenarios() as $scenario) {
+
+    foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
+      $keys[0] = $key;
+
       foreach (['any some permission name', FALSE] as $any_permission) {
+        $keys[1] = $any_permission ? 'anyperm' : 'noanyperm';
+
         foreach (['own some permission name', FALSE] as $own_permission) {
+          $keys[2] = $own_permission ? 'ownperm' : 'noownperm';
+
           foreach ([TRUE, FALSE] as $has_own_permission) {
+            $keys[3] = $has_own_permission ? 'hasown' : 'nohasown';
+
             foreach ([TRUE, FALSE] as $is_owner) {
+              $keys[4] = $is_owner ? 'isowner' : 'noisowner';
               $case = $scenario;
+              $case['definition'] = clone $scenario['definition'];
 
               // Default is neutral result if no permissions are defined.
               $case['expected'] = function() {
                 return AccessResult::neutral();
               };
 
-              $admin_permission = $case['definition']['admin_permission'];
+              $admin_permission = $case['definition']->getAdminPermission();
               if ($admin_permission || $any_permission || $own_permission) {
                 $has_admin = $admin_permission && $case['has_admin_permission'];
                 $has_any = $any_permission && $case['has_permission'];
@@ -179,12 +192,13 @@ class AccessControlTest extends UnitTestCase {
               $case['any_permission'] = $any_permission;
               $case['own_permission'] = $own_permission;
               $case['is_owner'] = $is_owner;
-              $cases[] = $case;
+              $cases[implode('-', $keys)] = $case;
             }
           }
         }
       }
     }
+
     return $cases;
   }
 
@@ -195,7 +209,7 @@ class AccessControlTest extends UnitTestCase {
    *   A closure returning the expected access result.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $has_admin_permission
    *   Whether the account has the admin permission.
@@ -207,12 +221,12 @@ class AccessControlTest extends UnitTestCase {
    * @covers ::relationCreateAccess
    * @dataProvider relationCreateAccessProvider
    */
-  public function testRelationCreateAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $permission) {
+  public function testRelationCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
-    $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
+    $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
     $permission_provider->getPermission('create', 'relation')->willReturn($permission);
 
-    $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
+    $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
@@ -222,11 +236,11 @@ class AccessControlTest extends UnitTestCase {
     $group = $this->prophesize(GroupInterface::class);
     $account = $this->prophesize(AccountInterface::class)->reveal();
 
-    if ($definition['admin_permission']) {
-      $group->hasPermission($definition['admin_permission'], $account)->willReturn($has_admin_permission);
+    if ($definition->getAdminPermission()) {
+      $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);
     }
     else {
-      $group->hasPermission($definition['admin_permission'], $account)->shouldNotBeCalled();
+      $group->hasPermission($definition->getAdminPermission(), $account)->shouldNotBeCalled();
     }
 
     if ($permission) {
@@ -248,9 +262,14 @@ class AccessControlTest extends UnitTestCase {
    */
   public function relationCreateAccessProvider() {
     $cases = [];
-    foreach ($this->getAccessControlHandlerScenarios() as $scenario) {
+
+    foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
+      $keys[0] = $key;
+
       foreach (['some permission name', FALSE] as $permission) {
+        $keys[1] = $permission ? 'perm' : 'noperm';
         $case = $scenario;
+        $case['definition'] = clone $scenario['definition'];
 
         // Default is neutral result if no permissions are defined or entity
         // access control is turned off for the plugin.
@@ -258,9 +277,9 @@ class AccessControlTest extends UnitTestCase {
           return AccessResult::neutral();
         };
 
-        $permission_exists = $case['definition']['admin_permission'] || $permission;
+        $permission_exists = $case['definition']->getAdminPermission() || $permission;
         if ($permission_exists) {
-          $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
+          $has_admin = $case['definition']->getAdminPermission() && $case['has_admin_permission'];
           $has_regular = $permission && $case['has_permission'];
           $case['expected'] = function() use ($has_admin, $has_regular) {
             return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
@@ -268,9 +287,10 @@ class AccessControlTest extends UnitTestCase {
         }
 
         $case['permission'] = $permission;
-        $cases[] = $case;
+        $cases[implode('-', $keys)] = $case;
       }
     }
+
     return $cases;
   }
 
@@ -281,7 +301,7 @@ class AccessControlTest extends UnitTestCase {
    *   A closure returning the expected access result.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $has_admin_permission
    *   Whether the account has the admin permission.
@@ -309,13 +329,13 @@ class AccessControlTest extends UnitTestCase {
    * @covers ::entityAccess
    * @dataProvider entityAccessProvider
    */
-  public function testEntityAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_grouped, $is_ownable, $is_owner, $is_publishable, $is_published, $operation) {
+  public function testEntityAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_grouped, $is_ownable, $is_owner, $is_publishable, $is_published, $operation) {
     $storage = $this->prophesize(GroupContentStorageInterface::class);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getStorage('group_content')->willReturn($storage->reveal());
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
-    $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
+    $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
 
     $check_published = $operation === 'view' && $is_publishable;
     if (!$check_published || $is_published) {
@@ -327,7 +347,7 @@ class AccessControlTest extends UnitTestCase {
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
     }
 
-    $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
+    $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
@@ -364,26 +384,26 @@ class AccessControlTest extends UnitTestCase {
       $group_content = $this->prophesize(GroupContentInterface::class);
       $group_content->getGroup()->willReturn($group->reveal());
       $group_content_plugin = $this->prophesize(GroupRelationInterface::class);
-      $group_content_plugin->getPluginId()->willReturn('foo:baz');
+      $group_content_plugin->getRelationTypeId()->willReturn('foo:baz');
       $group_content->getRelationPlugin()->willReturn($group_content_plugin->reveal());
       $group_content = $group_content->reveal();
 
       $group_content_2 = $this->prophesize(GroupContentInterface::class);
       $group_content_plugin_2 = $this->prophesize(GroupRelationInterface::class);
-      $group_content_plugin_2->getPluginId()->willReturn('cat:dog');
+      $group_content_plugin_2->getRelationTypeId()->willReturn('cat:dog');
       $group_content_2->getRelationPlugin()->willReturn($group_content_plugin_2->reveal());
       $group_content_2 = $group_content_2->reveal();
 
       $storage->loadByEntity($entity)->willReturn([1 => $group_content, 2 => $group_content_2]);
 
-      if ($definition['admin_permission']) {
-        $group->hasPermission($definition['admin_permission'], $account)->willReturn($has_admin_permission);
+      if ($definition->getAdminPermission()) {
+        $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);
       }
       else {
-        $group->hasPermission($definition['admin_permission'], $account)->shouldNotBeCalled();
+        $group->hasPermission($definition->getAdminPermission(), $account)->shouldNotBeCalled();
       }
 
-      $checked_and_found_admin = $definition['admin_permission'] && $has_admin_permission;
+      $checked_and_found_admin = $definition->getAdminPermission() && $has_admin_permission;
       if ($permission && !$checked_and_found_admin) {
         $group->hasPermission($permission, $account)->willReturn($has_permission);
       }
@@ -411,17 +431,39 @@ class AccessControlTest extends UnitTestCase {
    *   A list of testEntityAccess method arguments.
    */
   public function entityAccessProvider() {
-    foreach ($this->getAccessControlHandlerScenarios() as $scenario) {
+    foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
+      $keys[0] = $key;
+
       foreach (['any some permission name', FALSE] as $any_permission) {
+        $keys[1] = $any_permission ? 'anyperm' : 'noanyperm';
+
         foreach (['own some permission name', FALSE] as $own_permission) {
+          $keys[2] = $own_permission ? 'ownperm' : 'noownperm';
+
           foreach ([TRUE, FALSE] as $has_own_permission) {
+            $keys[3] = $has_own_permission ? 'hasown' : 'nohasown';
+
             foreach ([TRUE, FALSE] as $is_grouped) {
+              $keys[4] = $is_grouped ? 'grouped' : 'nogrouped';
+
               foreach ([TRUE, FALSE] as $is_ownable) {
+                $keys[5] = $is_ownable ? 'ownable' : 'noownable';
+
                 foreach ([TRUE, FALSE] as $is_owner) {
+                  $keys[6] = $is_owner ? 'isowner' : 'noisowner';
+
                   foreach ([TRUE, FALSE] as $is_publishable) {
+                    $keys[7] = $is_publishable ? 'pub' : 'nopub';
+
                     foreach ([TRUE, FALSE] as $is_published) {
+                      $keys[8] = $is_published ? 'ispub' : 'noispub';
+
                       foreach (['view', $this->randomMachineName()] as $operation) {
+                        $keys[9] = $operation === 'view' ? 'opview' : 'noopview';
+
                         $case = $scenario;
+                        $case['definition'] = clone $scenario['definition'];
+
                         $check_published = $operation === 'view' && $is_publishable;
 
                         // Default varies on whether the entity is grouped.
@@ -442,7 +484,7 @@ class AccessControlTest extends UnitTestCase {
                           return $result;
                         };
 
-                        $admin_permission = $case['definition']['admin_permission'];
+                        $admin_permission = $case['definition']->getAdminPermission();
                         if ($is_grouped && ($admin_permission || $any_permission || $own_permission)) {
                           $admin_access = $admin_permission && $case['has_admin_permission'];
 
@@ -488,7 +530,7 @@ class AccessControlTest extends UnitTestCase {
                         $case['is_publishable'] = $is_publishable;
                         $case['is_published'] = $is_published;
                         $case['operation'] = $operation;
-                        yield $case;
+                        yield implode('-', $keys) => $case;
                       }
                     }
                   }
@@ -508,7 +550,7 @@ class AccessControlTest extends UnitTestCase {
    *   A closure returning the expected access result.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $has_admin_permission
    *   Whether the account has the admin permission.
@@ -520,12 +562,12 @@ class AccessControlTest extends UnitTestCase {
    * @covers ::entityCreateAccess
    * @dataProvider entityCreateAccessProvider
    */
-  public function testEntityCreateAccess(\Closure $expected, $plugin_id, array $definition, $has_admin_permission, $has_permission, $permission) {
+  public function testEntityCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
-    $permission_provider->getAdminPermission()->willReturn($definition['admin_permission']);
+    $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
     $permission_provider->getPermission('create', 'entity')->willReturn($permission);
 
-    $relation_manager = $this->prophesize(GroupRelationManagerInterface::class);
+    $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
@@ -535,11 +577,11 @@ class AccessControlTest extends UnitTestCase {
     $group = $this->prophesize(GroupInterface::class);
     $account = $this->prophesize(AccountInterface::class)->reveal();
 
-    if ($definition['admin_permission']) {
-      $group->hasPermission($definition['admin_permission'], $account)->willReturn($has_admin_permission);
+    if ($definition->getAdminPermission()) {
+      $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);
     }
     else {
-      $group->hasPermission($definition['admin_permission'], $account)->shouldNotBeCalled();
+      $group->hasPermission($definition->getAdminPermission(), $account)->shouldNotBeCalled();
     }
 
     if ($permission) {
@@ -561,10 +603,17 @@ class AccessControlTest extends UnitTestCase {
    */
   public function entityCreateAccessProvider() {
     $cases = [];
-    foreach ($this->getAccessControlHandlerScenarios() as $scenario) {
+
+    foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
+      $keys[0] = $key;
+
       foreach ([TRUE, FALSE] as $entity_access) {
+        $keys[1] = $entity_access ? 'entacc' : 'noentacc';
+
         foreach (['some permission name', FALSE] as $permission) {
+          $keys[2] = $permission ? 'perm' : 'noperm';
           $case = $scenario;
+          $case['definition'] = clone $scenario['definition'];
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
@@ -572,21 +621,22 @@ class AccessControlTest extends UnitTestCase {
             return AccessResult::neutral();
           };
 
-          $permission_exists = $case['definition']['admin_permission'] || $permission;
+          $permission_exists = $case['definition']->getAdminPermission() || $permission;
           if ($permission_exists && $entity_access) {
-            $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
+            $has_admin = $case['definition']->getAdminPermission() && $case['has_admin_permission'];
             $has_regular = $permission && $case['has_permission'];
             $case['expected'] = function() use ($has_admin, $has_regular) {
               return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
             };
           }
 
-          $case['definition']['entity_access'] = $entity_access;
+          $case['definition']->set('entity_access', $entity_access);
           $case['permission'] = $permission;
-          $cases[] = $case;
+          $cases[implode('-', $keys)] = $case;
         }
       }
     }
+
     return $cases;
   }
 
@@ -600,18 +650,24 @@ class AccessControlTest extends UnitTestCase {
     $scenarios = [];
 
     foreach (['administer foo', FALSE] as $admin_permission) {
+      $keys[0] = $admin_permission ? 'admin' : 'noadmin';
+
       foreach ([TRUE, FALSE] as $has_admin_permission) {
+        $keys[1] = $has_admin_permission ? 'hasadmin' : 'nohasadmin';
+
         foreach ([TRUE, FALSE] as $has_permission) {
-          $scenarios[] = [
+          $keys[2] = $has_permission ? 'hasperm' : 'nohasperm';
+
+          $scenarios[implode('-', $keys)] = [
             'expected' => NULL,
             // We use a derivative ID to prove these work.
             'plugin_id' => 'foo:baz',
-            'definition' => [
+            'definition' => new GroupRelationType([
               'id' => 'foo',
               'label' => 'Foo',
               'entity_type_id' => 'bar',
               'admin_permission' => $admin_permission,
-            ],
+            ]),
             'has_admin_permission' => $has_admin_permission,
             'has_permission' => $has_permission,
           ];

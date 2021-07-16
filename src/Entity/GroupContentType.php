@@ -78,21 +78,22 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   protected $group_type;
 
   /**
-   * The group relation plugin ID for the group content type.
+   * The group relation type ID for the group content type.
    *
    * @var string
+   * @todo 2.0.x Replace with other name.
    */
   protected $content_plugin;
 
   /**
-   * The group relation plugin configuration for group content type.
+   * The group relation configuration for group content type.
    *
    * @var array
    */
   protected $plugin_config = [];
 
   /**
-   * The group relation plugin instance.
+   * The group relation instance.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    */
@@ -135,13 +136,13 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   }
 
   /**
-   * Returns the group relation plugin manager.
+   * Returns the group relation type manager.
    *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
-   *   The group relation plugin manager.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   *   The group relation type manager.
    */
-  protected function getGroupRelationManager() {
-    return \Drupal::service('plugin.manager.group_relation');
+  protected function getGroupRelationTypeManager() {
+    return \Drupal::service('group_relation_type.manager');
   }
 
   /**
@@ -151,7 +152,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     if (!isset($this->pluginInstance)) {
       $configuration = $this->plugin_config;
       $configuration['group_type_id'] = $this->getGroupTypeId();
-      $this->pluginInstance = $this->getGroupRelationManager()->createInstance($this->getRelationPluginId(), $configuration);
+      $this->pluginInstance = $this->getGroupRelationTypeManager()->createInstance($this->getRelationPluginId(), $configuration);
     }
     return $this->pluginInstance;
   }
@@ -174,7 +175,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     $this->pluginInstance = NULL;
 
     // Make sure people get a freshly configured plugin collection.
-    $this->getGroupRelationManager()->clearCachedGroupTypeCollections($this->getGroupType());
+    $this->getGroupRelationTypeManager()->clearCachedGroupTypeCollections($this->getGroupType());
   }
 
   /**
@@ -210,14 +211,14 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       }
 
       // Run the post install tasks on the plugin.
-      $post_install_handler = $this->getGroupRelationManager()->getPostInstallHandler($this->getRelationPluginId());
+      $post_install_handler = $this->getGroupRelationTypeManager()->getPostInstallHandler($this->getRelationPluginId());
       $task_arguments = [$this, \Drupal::isConfigSyncing()];
       foreach ($post_install_handler->getInstallTasks() as $task) {
         call_user_func_array($task, $task_arguments);
       }
 
       // We need to reset the plugin ID map cache as it will be out of date now.
-      $this->getGroupRelationManager()->clearCachedPluginMaps();
+      $this->getGroupRelationTypeManager()->clearCachedPluginMaps();
     }
   }
 
@@ -232,8 +233,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       \Drupal::service('views.views_data')->clear();
     }
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('group_relation_type.manager');
 
     // We need to reset the plugin ID map cache as it will be out of date now.
     $plugin_manager->clearCachedPluginMaps();
@@ -247,7 +248,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     // type is deleted along with the group type.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
 
-    // Add the dependencies of the responsible group relation plugin.
+    // Add the dependencies of the responsible group relation.
     $this->addDependencies($this->getRelationPlugin()->calculateDependencies());
   }
 

@@ -5,9 +5,9 @@ namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
- * Provides a group relation for groups.
+ * Provides a group relation type for groups.
  *
- * @GroupRelation(
+ * @GroupRelationType(
  *   id = "group_as_content",
  *   label = @Translation("Subgroup"),
  *   description = @Translation("Adds groups to groups as subgroups."),

@@ -5,7 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -14,19 +14,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentTypeForm extends EntityForm {
 
   /**
-   * The group relation plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
   /**
    * Constructs a new GroupContentTypeForm.
    *
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group content plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(GroupRelationTypeManagerInterface $plugin_manager) {
     $this->pluginManager = $plugin_manager;
   }
 
@@ -35,7 +35,7 @@ class GroupContentTypeForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.group_relation')
+      $container->get('group_relation_type.manager')
     );
   }
 
@@ -43,7 +43,7 @@ class GroupContentTypeForm extends EntityForm {
    * Returns the configurable plugin for the group content type.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
-   *   The configurable group relation plugin.
+   *   The configurable group relation.
    */
   protected function getRelationPlugin() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
@@ -69,7 +69,8 @@ class GroupContentTypeForm extends EntityForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $this->getRelationPlugin();
+    $group_relation = $this->getRelationPlugin();
+    $group_relation_type = $this->getRelationPlugin()->getRelationType();
 
     // @todo These messages may need some love.
     if ($this->operation == 'add') {
@@ -83,8 +84,8 @@ class GroupContentTypeForm extends EntityForm {
 
     // Add in the replacements for the $message variable set above.
     $replace = [
-      '%plugin' => $plugin->getLabel(),
-      '%entity_type' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
+      '%plugin' => $group_relation_type->getLabel(),
+      '%entity_type' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel(),
       '%group_type' => $group_type->label(),
     ];
 
@@ -94,7 +95,7 @@ class GroupContentTypeForm extends EntityForm {
     ];
 
     // Add in the plugin configuration form.
-    $form += $plugin->buildConfigurationForm($form, $form_state);
+    $form += $group_relation->buildConfigurationForm($form, $form_state);
 
     return $form;
   }
@@ -141,7 +142,7 @@ class GroupContentTypeForm extends EntityForm {
     if ($this->operation == 'add') {
       /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
       $storage = $this->entityTypeManager->getStorage('group_content_type');
-      $storage->createFromPlugin($group_type, $plugin->getPluginId(), $config)->save();
+      $storage->createFromPlugin($group_type, $plugin->getRelationTypeId(), $config)->save();
       $this->messenger()->addStatus($this->t('The content plugin was installed on the group type.'));
     }
     // Otherwise, we update the existing group content type's configuration.

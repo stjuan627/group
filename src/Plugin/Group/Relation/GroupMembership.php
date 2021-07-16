@@ -12,9 +12,9 @@ use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a group relation plugin for users as members.
+ * Provides a group relation for users as members.
  *
- * @GroupRelation(
+ * @GroupRelationType(
  *   id = "group_membership",
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
@@ -96,7 +96,7 @@ class GroupMembership extends GroupRelationBase {
 
     // Disable the entity cardinality field as the functionality of this module
     // relies on a cardinality of 1. We don't just hide it, though, to keep a UI
-    // that's consistent with other group relation plugins.
+    // that's consistent with other group relations.
     $info = $this->t("This field has been disabled by the plugin to guarantee the functionality that's expected of it.");
     $form['entity_cardinality']['#disabled'] = TRUE;
     $form['entity_cardinality']['#description'] .= '<br /><em>' . $info . '</em>';

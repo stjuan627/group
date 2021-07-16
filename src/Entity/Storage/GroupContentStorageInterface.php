@@ -19,7 +19,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the content entity to.
    * @param string $plugin_id
-   *   The ID of the group relation plugin to add the entity with.
+   *   The group relation type ID to add the entity with.
    * @param array $values
    *   (optional) Extra values to add to the GroupContent entity.
    *
@@ -34,7 +34,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group entity to load the group content entities for.
    * @param string $plugin_id
-   *   (optional) A group relation plugin ID to filter on.
+   *   (optional) A group relation type ID to filter on.
    * @param array $filters
    *   (optional) An associative array of extra filters where the keys are
    *   property or field names and the values are the value to filter on.
@@ -59,7 +59,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * Retrieves all GroupContent entities by their responsible plugin ID.
    *
    * @param string $plugin_id
-   *   The ID of the group relation plugin.
+   *   The group relation type ID.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   A list of GroupContent entities indexed by their IDs.

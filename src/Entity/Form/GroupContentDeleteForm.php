@@ -15,7 +15,7 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * Returns the plugin responsible for this piece of group content.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
-   *   The responsible group relation plugin.
+   *   The responsible group relation.
    */
   protected function getRelationPlugin() {
     /** @var \Drupal\group\Entity\GroupContent $group_content */

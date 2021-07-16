@@ -7,7 +7,7 @@ use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentType;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
 
@@ -21,9 +21,9 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   protected $entityTypeManager;
 
   /**
-   * The group content plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -34,10 +34,10 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
    *   The string translation service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group content plugin manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    */
-  public function __construct(TranslationInterface $string_translation, EntityTypeManagerInterface $entity_type_manager, GroupRelationManagerInterface $plugin_manager) {
+  public function __construct(TranslationInterface $string_translation, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $plugin_manager) {
     $this->stringTranslation = $string_translation;
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
@@ -49,25 +49,25 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   public function validate($module) {
     $reasons = $plugin_names = [];
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      if ($plugin->getProvider() == $module && $this->hasGroupContent($plugin_id)) {
-        $plugin_names[] = $plugin->getLabel();
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation_type */
+      if ($group_relation_type->getProvider() == $module && $this->hasGroupContent($plugin_id)) {
+        $plugin_names[] = $group_relation_type->getLabel();
       }
     }
 
     if (!empty($plugin_names)) {
-      $reasons[] = $this->t('The following group content plugins still have content for them: %plugins.', ['%plugins' => implode(', ', $plugin_names)]);
+      $reasons[] = $this->t('The following group relations still have content for them: %plugins.', ['%plugins' => implode(', ', $plugin_names)]);
     }
 
     return $reasons;
   }
 
   /**
-   * Determines if there is any group content for a group relation plugin.
+   * Determines if there is any group content for a group relation.
    *
    * @param string $plugin_id
-   *   The group relation plugin ID to check for group content.
+   *   The group relation type ID to check for group content.
    *
    * @return bool
    *   Whether there are group content entities for the given plugin ID.

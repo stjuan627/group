@@ -13,15 +13,17 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Manages GroupRelation plugin implementations.
+ * Manages group relation type type plugin definitions.
  *
- * @see hook_group_content_info_alter()
- * @see \Drupal\group\Annotation\GroupRelation
+ * Each entity type definition array is set in the entity type's annotation and
+ * altered by hook_group_relation_type_alter().
+ *
+ * @see \Drupal\group\Annotation\GroupRelationType
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
- * @see \Drupal\group\Plugin\Group\Relation\GroupRelationBase
- * @see plugin_api
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface
+ * @see hook_group_relation_type_alter()
  */
-class GroupRelationManager extends DefaultPluginManager implements GroupRelationManagerInterface, ContainerAwareInterface {
+class GroupRelationTypeManager extends DefaultPluginManager implements GroupRelationTypeManagerInterface, ContainerAwareInterface {
 
   use ContainerAwareTrait;
 
@@ -54,7 +56,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   protected $groupContentTypeStorage;
 
   /**
-   * A collection of vanilla instances of all group relation plugins.
+   * A collection of vanilla instances of all group relations.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    */
@@ -96,7 +98,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   protected $groupTypePluginMapCacheKey;
 
   /**
-   * Constructs a GroupRelationManager object.
+   * Constructs a GroupRelationTypeManager object.
    *
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
@@ -109,8 +111,8 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    *   The entity type manager.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelation');
-    $this->alterInfo('group_relation_info');
+    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelationType');
+    $this->alterInfo('group_relation_type');
     $this->setCacheBackend($cache_backend, 'group_relations');
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupContentTypeMapCacheKey = $this->cacheKey . '_GCT_map';
@@ -131,8 +133,9 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    * {@inheritdoc}
    */
   public function createHandlerInstance($plugin_id, $handler_type) {
-    $definition = $this->getDefinition($plugin_id);
-    $service_name = "group.relation_handler.$handler_type.{$definition['id']}";
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+    $group_relation_type = $this->getDefinition($plugin_id);
+    $service_name = "group.relation_handler.$handler_type.{$group_relation_type->id()}";
 
     if (!$this->container->has($service_name)) {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));
@@ -142,7 +145,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
     if (!is_subclass_of($handler, 'Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface')) {
       throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
     }
-    $handler->init($plugin_id, $definition);
+    $handler->init($plugin_id, $group_relation_type);
 
     return $handler;
   }
@@ -152,6 +155,13 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    */
   public function getAccessControlHandler($plugin_id) {
     return $this->getHandler($plugin_id, 'access_control');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOperationProvider($plugin_id) {
+    return $this->getHandler($plugin_id, 'operation_provider');
   }
 
   /**
@@ -197,65 +207,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   /**
    * {@inheritdoc}
    */
-  public function getAll() {
-    if (!isset($this->allPlugins)) {
-      $collection = new GroupRelationCollection($this, []);
-
-      // Add every known plugin to the collection with a vanilla configuration.
-      foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
-        $collection->setInstanceConfiguration($plugin_id, ['id' => $plugin_id]);
-      }
-
-      // Sort and set the plugin collection.
-      $this->allPlugins = $collection->sort();
-    }
-
-    return $this->allPlugins;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getInstalled(GroupTypeInterface $group_type = NULL) {
-    return !isset($group_type)
-      ? $this->getVanillaInstalled()
-      : $this->getGroupTypeInstalled($group_type);
-  }
-
-  /**
-   * Retrieves a vanilla instance of every installed plugin.
-   *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
-   *   A plugin collection with a vanilla instance of every installed plugin.
-   */
-  protected function getVanillaInstalled() {
-    // Retrieve a vanilla instance of all known group relation plugins.
-    $plugins = clone $this->getAll();
-
-    // Retrieve all installed group relation plugin IDs.
-    $installed = $this->getInstalledIds();
-
-    // Remove uninstalled plugins from the collection.
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection $plugins */
-    foreach ($plugins as $plugin_id => $plugin) {
-      if (!in_array($plugin_id, $installed)) {
-        $plugins->removeInstanceId($plugin_id);
-      }
-    }
-
-    return $plugins;
-  }
-
-  /**
-   * Retrieves fully instantiated plugins for a group type.
-   *
-   * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type to instantiate the installed plugins for.
-   *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
-   *   A plugin collection with fully instantiated plugins for the group type.
-   */
-  protected function getGroupTypeInstalled(GroupTypeInterface $group_type) {
+  public function getInstalled(GroupTypeInterface $group_type) {
     if (!isset($this->groupTypeInstalled[$group_type->id()])) {
       $configurations = [];
       $group_content_types = $this->getGroupContentTypeStorage()->loadByGroupType($group_type);
@@ -287,14 +239,7 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
   /**
    * {@inheritdoc}
    */
-  public function getInstalledIds(GroupTypeInterface $group_type = NULL) {
-    // If no group type was provided, we can find all installed plugin IDs by
-    // grabbing the keys from the group content type IDs per plugin ID map.
-    if (!isset($group_type)) {
-      return array_keys($this->getPluginGroupContentTypeMap());
-    }
-
-    // Otherwise, we can find the entry in the plugin IDs per group type ID map.
+  public function getInstalledIds(GroupTypeInterface $group_type) {
     $map = $this->getGroupTypePluginMap();
     return isset($map[$group_type->id()]) ? $map[$group_type->id()] : [];
   }
@@ -304,8 +249,9 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
    */
   public function getPluginIdsByEntityTypeAccess($entity_type_id) {
     $plugin_ids = [];
-    foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
-      if (!empty($plugin_info['entity_access']) && $plugin_info['entity_type_id'] == $entity_type_id) {
+    foreach ($this->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      if ($group_relation_type->definesEntityAccess() && $group_relation_type->getEntityTypeId() == $entity_type_id) {
         $plugin_ids[] = $plugin_id;
       }
     }
@@ -319,8 +265,9 @@ class GroupRelationManager extends DefaultPluginManager implements GroupRelation
     $enforced = [];
 
     // Gather the ID of all plugins that are marked as enforced.
-    foreach ($this->getDefinitions() as $plugin_id => $plugin_info) {
-      if ($plugin_info['enforced']) {
+    foreach ($this->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      if ($group_relation_type->isEnforced()) {
         $enforced[] = $plugin_id;
       }
     }

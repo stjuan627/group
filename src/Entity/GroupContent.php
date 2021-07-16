@@ -138,7 +138,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $uri_route_parameters['group'] = $this->getGroup()->id();
     // These routes depend on the plugin ID.
     if (in_array($rel, ['add-form', 'create-form'])) {
-      $uri_route_parameters['plugin_id'] = $this->getRelationPlugin()->getPluginId();
+      $uri_route_parameters['plugin_id'] = $this->getRelationPlugin()->getRelationTypeId();
     }
     return $uri_route_parameters;
   }
@@ -175,7 +175,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     // For memberships, we generally need to rebuild the group role cache for
     // the member's user account in the target group.
-    $rebuild_group_role_cache = $this->getRelationPlugin()->getPluginId() == 'group_membership';
+    $rebuild_group_role_cache = $this->getRelationPlugin()->getRelationTypeId() == 'group_membership';
 
     if ($update === FALSE) {
       // We want to make sure that the entity we just added to the group behaves
@@ -223,7 +223,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
         // If a membership gets deleted, we need to reset the internal group
         // roles cache for the member in that group, but only if the user still
         // exists. Otherwise, it doesn't matter as the user ID will become void.
-        if ($group_content->getRelationPlugin()->getPluginId() == 'group_membership') {
+        if ($group_content->getRelationPlugin()->getRelationTypeId() == 'group_membership') {
           /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $role_storage */
           $role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
           $role_storage->resetUserGroupRoleCache($group_content->getEntity(), $group_content->getGroup());
@@ -343,30 +343,20 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-    // Borrowed this logic from the Comment module.
-    // Warning! May change in the future: https://www.drupal.org/node/2346347
+    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     if ($group_content_type = GroupContentType::load($bundle)) {
-      $plugin = $group_content_type->getRelationPlugin();
+      $group_relation_type = $group_content_type->getRelationPlugin()->getRelationType();
 
       /** @var \Drupal\Core\Field\BaseFieldDefinition $original */
       $original = $base_field_definitions['entity_id'];
 
-      // Recreated the original entity_id field so that it does not contain any
-      // data in its "propertyDefinitions" or "schema" properties because those
-      // were set based on the base field which had no clue what bundle to serve
-      // up until now. This is a bug in core because we can't simply unset those
-      // two properties, see: https://www.drupal.org/node/2346329
-      $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel($plugin->getEntityReferenceLabel() ?: $original->getLabel())
-        ->setDescription($plugin->getEntityReferenceDescription() ?: $original->getDescription())
-        ->setConstraints($original->getConstraints())
-        ->setDisplayOptions('view', $original->getDisplayOptions('view'))
-        ->setDisplayOptions('form', $original->getDisplayOptions('form'))
-        ->setDisplayConfigurable('view', $original->isDisplayConfigurable('view'))
-        ->setDisplayConfigurable('form', $original->isDisplayConfigurable('form'))
-        ->setRequired($original->isRequired());
+      $fields['entity_id'] = clone $base_field_definitions['entity_id'];
+      $fields['entity_id']
+        ->setLabel($group_relation_type->getEntityReferenceLabel() ?: $original->getLabel())
+        ->setDescription($group_relation_type->getEntityReferenceDescription() ?: $original->getDescription());
 
-      foreach ($plugin->getEntityReferenceSettings() as $name => $setting) {
+      // @todo 2.0.x Replace with entity_reference handler.
+      foreach ($group_content_type->getRelationPlugin()->getEntityReferenceSettings() as $name => $setting) {
         $fields['entity_id']->setSetting($name, $setting);
       }
 

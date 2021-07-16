@@ -183,7 +183,7 @@ function template_preprocess_group_content(&$variables) {
  * Implements hook_rebuild().
  */
 function group_rebuild() {
-  _group_relation_manager()->installEnforced();
+  _group_relation_type_manager()->installEnforced();
 
   /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
   $storage = \Drupal::entityTypeManager()->getStorage('group_role');
@@ -197,7 +197,7 @@ function group_rebuild() {
 function group_modules_installed($modules) {
   // Only create config objects while config import is not in progress.
   if (!\Drupal::isConfigSyncing()) {
-    _group_relation_manager()->installEnforced();
+    _group_relation_type_manager()->installEnforced();
 
     /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_role');
@@ -299,10 +299,10 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
-  $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
+  $plugin_manager = \Drupal::service('group_relation_type.manager');
 
-  // Find all of the group content plugins that define access.
+  // Find all of the group relations that define access.
   $plugin_ids = $plugin_manager->getPluginIdsByEntityTypeAccess($entity->getEntityTypeId());
   if (empty($plugin_ids)) {
     return AccessResult::neutral();
@@ -387,7 +387,7 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
   $group_content = $items->getEntity();
 
   // We only care if the group content entity is a group membership.
-  if ($group_content->getRelationPlugin()->getPluginId() != 'group_membership') {
+  if ($group_content->getRelationPlugin()->getRelationTypeId() != 'group_membership') {
     return AccessResult::neutral();
   }
 
@@ -696,15 +696,15 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
  */
 
 /**
- * Gets the group relation plugin manager.
+ * Gets the group relation type manager.
  *
- * @return \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
- *   The group relation plugin manager.
+ * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+ *   The group relation type manager.
  *
  * @internal Try to properly inject the service when possible.
  */
-function _group_relation_manager() {
-  return \Drupal::service('plugin.manager.group_relation');
+function _group_relation_type_manager() {
+  return \Drupal::service('group_relation_type.manager');
 }
 
 /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\group\Unit;
 
+use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall;
 use Drupal\Tests\UnitTestCase;
 
@@ -20,7 +21,7 @@ class PostInstallTest extends UnitTestCase {
    */
   public function testGetInstallTasks() {
     $post_install_handler = new PostInstall();
-    $post_install_handler->init('foo', []);
+    $post_install_handler->init('foo', new GroupRelationType([]));
     $this->assertEquals([], $post_install_handler->getInstallTasks(), 'By default, there are no post install tasks.');
   }
 

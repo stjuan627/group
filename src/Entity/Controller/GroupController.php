@@ -114,7 +114,7 @@ class GroupController extends ControllerBase {
     else {
       // Create an empty group membership that does not yet have a group set.
       $values = [
-        'type' => $group_type->getContentPlugin('group_membership')->getContentTypeConfigId(),
+        'type' => $group_type->getRelationPlugin('group_membership')->getContentTypeConfigId(),
         'entity_id' => $this->currentUser()->id(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);

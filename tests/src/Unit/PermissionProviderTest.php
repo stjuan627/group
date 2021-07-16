@@ -5,6 +5,8 @@ namespace Drupal\Tests\group\Unit;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
@@ -24,7 +26,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -34,7 +36,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getAdminPermission
    * @dataProvider adminPermissionProvider
    */
-  public function testGetAdminPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
+  public function testGetAdminPermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getAdminPermission());
   }
@@ -49,7 +51,7 @@ class PermissionProviderTest extends UnitTestCase {
     $cases = [];
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
         $case = $scenario;
-        $case['expected'] = $case['definition']['admin_permission'];
+        $case['expected'] = $case['definition']->getAdminPermission();
         $cases[] = $case;
     }
     return $cases;
@@ -62,7 +64,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -74,7 +76,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider relationViewPermissionProvider
    */
-  public function testGetRelationViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetRelationViewPermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('view', 'relation', $scope));
   }
@@ -110,7 +112,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -122,7 +124,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider relationUpdatePermissionProvider
    */
-  public function testGetRelationUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetRelationUpdatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('update', 'relation', $scope));
   }
@@ -153,7 +155,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -165,7 +167,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider relationDeletePermissionProvider
    */
-  public function testGetRelationDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetRelationDeletePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('delete', 'relation', $scope));
   }
@@ -196,7 +198,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -206,7 +208,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider relationCreatePermissionProvider
    */
-  public function testGetRelationCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
+  public function testGetRelationCreatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('create', 'relation'));
   }
@@ -234,7 +236,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -246,7 +248,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider entityViewPermissionProvider
    */
-  public function testGetEntityViewPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetEntityViewPermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('view', 'entity', $scope));
   }
@@ -264,7 +266,7 @@ class PermissionProviderTest extends UnitTestCase {
         $case = $scenario;
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
-        if ($case['definition']['entity_access']) {
+        if ($case['definition']->definesEntityAccess()) {
           // View own entity is not present in version 1.x.
           if ($scope === 'any') {
             $case['expected'] = "view {$scenario['plugin_id']} entity";
@@ -283,7 +285,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -295,7 +297,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider entityViewUnpublishedPermissionProvider
    */
-  public function testGetEntityViewUnpublishedPermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetEntityViewUnpublishedPermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('view unpublished', 'entity', $scope));
   }
@@ -313,7 +315,7 @@ class PermissionProviderTest extends UnitTestCase {
         $case = $scenario;
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
-        if ($case['definition']['entity_access'] && $case['implements_published']) {
+        if ($case['definition']->definesEntityAccess() && $case['implements_published']) {
           // View own unpublished entity is not implemented yet.
           if ($scope === 'any') {
             $case['expected'] = "view $scope unpublished {$scenario['plugin_id']} entity";
@@ -332,7 +334,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -344,7 +346,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider entityUpdatePermissionProvider
    */
-  public function testGetEntityUpdatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetEntityUpdatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('update', 'entity', $scope));
   }
@@ -362,7 +364,7 @@ class PermissionProviderTest extends UnitTestCase {
         $case = $scenario;
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
-        if ($case['definition']['entity_access']) {
+        if ($case['definition']->definesEntityAccess()) {
           if ($case['implements_owner'] || $scope === 'any') {
             $case['expected'] = "update $scope {$scenario['plugin_id']} entity";
           }
@@ -380,7 +382,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -392,7 +394,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider entityDeletePermissionProvider
    */
-  public function testGetEntityDeletePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published, $scope) {
+  public function testGetEntityDeletePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('delete', 'entity', $scope));
   }
@@ -410,7 +412,7 @@ class PermissionProviderTest extends UnitTestCase {
         $case = $scenario;
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
-        if ($case['definition']['entity_access']) {
+        if ($case['definition']->definesEntityAccess()) {
           if ($case['implements_owner'] || $scope === 'any') {
             $case['expected'] = "delete $scope {$scenario['plugin_id']} entity";
           }
@@ -428,7 +430,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The expected return value.
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -438,7 +440,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::getPermission
    * @dataProvider entityCreatePermissionProvider
    */
-  public function testGetEntityCreatePermission($expected, $plugin_id, array $definition, $implements_owner, $implements_published) {
+  public function testGetEntityCreatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $this->assertEquals($expected, $permission_provider->getPermission('create', 'entity'));
   }
@@ -454,7 +456,7 @@ class PermissionProviderTest extends UnitTestCase {
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
       $case = $scenario;
       $case['expected'] = FALSE;
-      if ($case['definition']['entity_access']) {
+      if ($case['definition']->definesEntityAccess()) {
         $case['expected'] = "create {$scenario['plugin_id']} entity";
       }
       $cases[] = $case;
@@ -467,7 +469,7 @@ class PermissionProviderTest extends UnitTestCase {
    *
    * @param string $plugin_id
    *   The plugin ID.
-   * @param array $definition
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
    *   The plugin definition.
    * @param bool $implements_owner
    *   Whether the plugin's entity type deals with ownership.
@@ -477,12 +479,12 @@ class PermissionProviderTest extends UnitTestCase {
    * @covers ::buildPermissions
    * @dataProvider buildPermissionsProvider
    */
-  public function testBuildPermissions($plugin_id, array $definition, $implements_owner, $implements_published) {
+  public function testBuildPermissions($plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
     $permissions = $permission_provider->buildPermissions();
 
     // Test the admin permission being restricted.
-    if (!empty($definition['admin_permission'])) {
+    if (!empty($definition->getAdminPermission())) {
       $admin_permission = $permission_provider->getAdminPermission();
       $this->assertArrayHasKey($admin_permission, $permissions);
       $this->assertArrayHasKey('restrict access', $permissions[$admin_permission]);
@@ -533,13 +535,13 @@ class PermissionProviderTest extends UnitTestCase {
               'expected' => NULL,
               // We use a derivative ID to prove these work.
               'plugin_id' => 'foo:baz',
-              'definition' => [
+              'definition' => new GroupRelationType([
                 'id' => 'foo',
                 'label' => 'Foo',
                 'entity_type_id' => 'bar',
                 'entity_access' => $entity_access,
                 'admin_permission' => $admin_permission,
-              ],
+              ]),
               'implements_owner' => $implements_owner,
               'implements_published' => $implements_published,
             ];
@@ -558,7 +560,7 @@ class PermissionProviderTest extends UnitTestCase {
    *   The default permission provider handler.
    */
   protected function createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published) {
-    $this->assertNotEmpty($definition['entity_type_id']);
+    $this->assertNotEmpty($definition->getEntityTypeId());
 
     $entity_type = $this->prophesize(EntityTypeInterface::class);
     $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($implements_owner);
@@ -566,7 +568,7 @@ class PermissionProviderTest extends UnitTestCase {
     $entity_type->getSingularLabel()->willReturn('Bar');
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
-    $entity_type_manager->getDefinition($definition['entity_type_id'])->willReturn($entity_type->reveal());
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
 
     $permission_provider = new PermissionProvider($entity_type_manager->reveal());
     $permission_provider->init($plugin_id, $definition);

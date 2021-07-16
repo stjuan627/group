@@ -5,68 +5,35 @@ namespace Drupal\group\Plugin\Group\Relation;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
-use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
- * Defines an interface for pluggable GroupRelation back-ends.
+ * Defines a common interface for all group relations.
  *
- * @see \Drupal\group\Annotation\GroupRelation
- * @see \Drupal\group\Plugin\Group\Relation\GroupRelationManager
+ * @see \Drupal\group\Annotation\GroupRelationType
+ * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationBase
  * @see plugin_api
  */
-interface GroupRelationInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
+interface GroupRelationInterface extends DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
 
   /**
-   * Returns the plugin provider.
+   * Gets the ID of the type of the relation.
    *
    * @return string
-   *   The plugin provider.
+   *   The relation type ID.
    */
-  public function getProvider();
+  public function getRelationTypeId();
 
   /**
-   * Returns the administrative label for the plugin.
+   * Gets the relation type definition.
    *
-   * @return string
-   *   The plugin label.
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface
+   *   The relation type definition.
    */
-  public function getLabel();
-
-  /**
-   * Returns the administrative description for the plugin.
-   *
-   * @return string
-   *   The plugin description.
-   */
-  public function getDescription();
-
-  /**
-   * Returns the entity type ID the plugin supports.
-   *
-   * @return string
-   *   The entity type ID.
-   */
-  public function getEntityTypeId();
-
-  /**
-   * Returns the entity bundle the plugin supports.
-   *
-   * @return string|false
-   *   The bundle name or FALSE in case it supports all bundles.
-   */
-  public function getEntityBundle();
-
-  /**
-   * Returns the pretty path key for use in path aliases.
-   *
-   * @return string
-   *   The plugin-provided pretty path key, defaults to 'content'.
-   */
-  public function getPrettyPathKey();
+  public function getRelationType();
 
   /**
    * Returns the amount of groups the same content can be added to.
@@ -99,32 +66,6 @@ interface GroupRelationInterface extends PluginInspectionInterface, DerivativeIn
    *   The group type ID, if set in the plugin configuration.
    */
   public function getGroupTypeId();
-
-  /**
-   * Returns whether this plugin defines entity access.
-   *
-   * @return bool
-   *   Whether this plugin defines entity access.
-   *
-   * @see \Drupal\group\Annotation\GroupRelation::$entity_access
-   */
-  public function definesEntityAccess();
-
-  /**
-   * Returns whether this plugin is always on.
-   *
-   * @return bool
-   *   The 'enforced' status.
-   */
-  public function isEnforced();
-
-  /**
-   * Returns whether this plugin can only be (un)installed through code.
-   *
-   * @return bool
-   *   The 'code_only' status.
-   */
-  public function isCodeOnly();
 
   /**
    * Retrieves the label for a piece of group content.
@@ -207,44 +148,6 @@ interface GroupRelationInterface extends PluginInspectionInterface, DerivativeIn
    * @see ::getGroupOperations()
    */
   public function getGroupOperationsCacheableMetadata();
-
-  /**
-   * Provides a list of operations for the group relation plugin.
-   *
-   * These operations will be merged with the ones already available on the
-   * group type content configuration page: (un)install, manage fields, etc.
-   *
-   * @return array
-   *   An associative array of operation links to show on the group type content
-   *   administration UI, keyed by operation name, containing the following
-   *   key-value pairs:
-   *   - title: The localized title of the operation.
-   *   - url: An instance of \Drupal\Core\Url for the operation URL.
-   *   - weight: The weight of this operation.
-   */
-  public function getOperations();
-
-  /**
-   * Returns the label for the entity reference field.
-   *
-   * This allows you to specify the label for the entity reference field
-   * pointing to the entity that is to become group content.
-   *
-   * @return string|null
-   *   The label for the entity reference field or NULL if none was set.
-   */
-  public function getEntityReferenceLabel();
-
-  /**
-   * Returns the description for the entity reference field.
-   *
-   * This allows you to specify the description for the entity reference field
-   * pointing to the entity that is to become group content.
-   *
-   * @return string|null
-   *   The description for the entity reference field or NULL if none was set.
-   */
-  public function getEntityReferenceDescription();
 
   /**
    * Returns a list of entity reference field settings.

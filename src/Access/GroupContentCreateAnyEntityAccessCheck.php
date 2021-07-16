@@ -33,8 +33,8 @@ class GroupContentCreateAnyEntityAccessCheck implements AccessInterface {
   public function access(Route $route, AccountInterface $account, GroupInterface $group) {
     $needs_access = $route->getRequirement('_group_content_create_any_entity_access') === 'TRUE';
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.group_relation');
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
+    $plugin_manager = \Drupal::service('group_relation_type.manager');
     $plugin_ids = $plugin_manager->getGroupTypePluginMap()[$group->bundle()];
 
     // Find out which ones allow the user to create a target entity.

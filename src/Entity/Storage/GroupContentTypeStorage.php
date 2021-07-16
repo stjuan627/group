@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,9 +21,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupContentTypeStorage extends ConfigEntityStorage implements GroupContentTypeStorageInterface {
 
   /**
-   * The group content plugin manager.
+   * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
    */
   protected $pluginManager;
 
@@ -39,8 +39,8 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.
-   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $plugin_manager
-   *   The group relation manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    * @param \Drupal\Component\Uuid\UuidInterface $uuid_service
@@ -50,7 +50,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
    * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
    *   The memory cache backend.
    */
-  public function __construct(EntityTypeInterface $entity_type, GroupRelationManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, MemoryCacheInterface $memory_cache) {
+  public function __construct(EntityTypeInterface $entity_type, GroupRelationTypeManagerInterface $plugin_manager, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, MemoryCacheInterface $memory_cache) {
     parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
     $this->pluginManager = $plugin_manager;
   }
@@ -61,7 +61,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('plugin.manager.group_relation'),
+      $container->get('group_relation_type.manager'),
       $container->get('config.factory'),
       $container->get('uuid'),
       $container->get('language_manager'),
@@ -93,14 +93,14 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
       return $this->byEntityTypeCache[$entity_type_id];
     }
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-    foreach ($this->pluginManager->getAll() as $plugin_id => $plugin) {
-      if ($plugin->getEntityTypeId() === $entity_type_id) {
+    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      if ($group_relation_type->getEntityTypeId() === $entity_type_id) {
         $plugin_ids[] = $plugin_id;
       }
     }
 
-    // If no responsible group content plugins were found, we return nothing.
+    // If no responsible group relations were found, we return nothing.
     if (empty($plugin_ids)) {
       $this->byEntityTypeCache[$entity_type_id] = [];
       return [];

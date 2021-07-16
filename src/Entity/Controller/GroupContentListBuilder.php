@@ -111,9 +111,9 @@ class GroupContentListBuilder extends EntityListBuilder {
     // EntityListBuilder sets the table rows using the #rows property, so we
     // need to add links as render arrays using the 'data' key.
     $row['label']['data'] = $entity->toLink()->toRenderable();
-    $entity_type_id = $entity->getRelationPlugin()->getEntityTypeId();
-    $row['entity_type'] = $this->entityTypeManager->getDefinition($entity_type_id)->getLabel();
-    $row['plugin'] = $entity->getRelationPlugin()->getLabel();
+    $group_relation_type = $entity->getRelationPlugin()->getRelationType();
+    $row['entity_type'] = $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel();
+    $row['plugin'] = $group_relation_type->getLabel();
 
     return $row + parent::buildRow($entity);
   }

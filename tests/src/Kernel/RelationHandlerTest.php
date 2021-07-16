@@ -34,8 +34,8 @@ class RelationHandlerTest extends GroupKernelTestBase {
    * Tests that decorators can target all plugins or one in specific.
    */
   public function testDecoratorChain() {
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationManagerInterface $relation_manager */
-    $relation_manager = $this->container->get('plugin.manager.group_relation');
+    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $relation_manager */
+    $relation_manager = $this->container->get('group_relation_type.manager');
 
     $message = "All plugins have foobar appended, proving decorating defaults works and respects priority";
     $expected = 'administer user_as_content' . 'foobar';

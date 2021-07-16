@@ -11,8 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a form for group content type deletion.
  *
  * Instead of just deleting the group content type here, we use this form as a
- * mean of uninstalling a group relation plugin which will actually
- * trigger the deletion of the group content type.
+ * mean of uninstalling a group relation which will actually trigger the
+ * deletion of the group content type.
  */
 class GroupContentTypeDeleteForm extends EntityDeleteForm {
 
@@ -22,7 +22,9 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
   public function getQuestion() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
-    return $this->t('Are you sure you want to uninstall the %plugin plugin?', ['%plugin' => $group_content_type->getRelationPlugin()->getLabel()]);
+    return $this->t('Are you sure you want to uninstall the %plugin plugin?', [
+      '%plugin' => $group_content_type->getRelationPlugin()->getRelationType()->getLabel(),
+    ]);
   }
 
   /**
@@ -40,9 +42,9 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
   public function getDescription() {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
-    $plugin = $group_content_type->getRelationPlugin();
+    $entity_type_id = $group_content_type->getRelationPlugin()->getRelationType()->getEntityTypeId();
     $replace = [
-      '%entity_type' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
+      '%entity_type' => $this->entityTypeManager->getDefinition($entity_type_id)->getLabel(),
       '%group_type' => $group_content_type->getGroupType()->label(),
     ];
     return $this->t('You will no longer be able to add %entity_type entities to %group_type groups.', $replace);
@@ -85,11 +87,11 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
     $group_type = $group_content_type->getGroupType();
-    $plugin = $group_content_type->getRelationPlugin();
+    $group_relation_type = $group_content_type->getRelationPlugin()->getRelationType();
 
     $group_content_type->delete();
     \Drupal::logger('group_content_type')->notice('Uninstalled %plugin from %group_type.', [
-      '%plugin' => $plugin->getLabel(),
+      '%plugin' => $group_relation_type->getLabel(),
       '%group_type' => $group_type->label(),
     ]);
 

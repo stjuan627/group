@@ -45,7 +45,7 @@ class GroupContentCreateAccessCheck implements AccessInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group in which the content should be created.
    * @param string $plugin_id
-   *   The group relation ID to use for the group content entity.
+   *   The group relation type ID to use for the group content entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
@@ -54,12 +54,12 @@ class GroupContentCreateAccessCheck implements AccessInterface {
     $needs_access = $route->getRequirement('_group_content_create_access') === 'TRUE';
 
     // We can only get the group content type ID if the plugin is installed.
-    if (!$group->getGroupType()->hasContentPlugin($plugin_id)) {
+    if (!$group->getGroupType()->hasRelationPlugin($plugin_id)) {
       return AccessResult::neutral();
     }
 
     // Determine whether the user can create group content using the plugin.
-    $group_content_type_id = $group->getGroupType()->getContentPlugin($plugin_id)->getContentTypeConfigId();
+    $group_content_type_id = $group->getGroupType()->getRelationPlugin($plugin_id)->getContentTypeConfigId();
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
     $access = $access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group]);
 

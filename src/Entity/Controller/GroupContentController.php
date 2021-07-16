@@ -124,8 +124,8 @@ class GroupContentController extends ControllerBase {
 
     // Set the info for all of the remaining bundles.
     foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
-      $label = $plugin->getLabel();
+      $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
+      $label = $plugin->getRelationType()->getLabel();
 
       $build['#bundles'][$bundle_name] = [
         'label' => $label,
@@ -163,7 +163,7 @@ class GroupContentController extends ControllerBase {
     foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
-      if ($create_mode && !$group_content_type->getRelationPlugin()->definesEntityAccess()) {
+      if ($create_mode && !$group_content_type->getRelationPlugin()->getRelationType()->definesEntityAccess()) {
         continue;
       }
 
@@ -225,7 +225,7 @@ class GroupContentController extends ControllerBase {
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
 
     $values = [
       'type' => $plugin->getContentTypeConfigId(),
@@ -248,7 +248,7 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function addFormTitle(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
@@ -299,7 +299,8 @@ class GroupContentController extends ControllerBase {
    *   A group content creation form.
    */
   public function createForm(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+    $group_relation = $group->getGroupType()->getRelationPlugin($plugin_id);
+    $group_relation_type = $group_relation->getRelationType();
 
     $wizard_id = 'group_entity';
     $store = $this->privateTempStoreFactory->get($wizard_id);
@@ -307,7 +308,7 @@ class GroupContentController extends ControllerBase {
 
     // See if the plugin uses a wizard for creating new entities. Also pass this
     // info to the form state.
-    $config = $plugin->getConfiguration();
+    $config = $group_relation->getConfiguration();
     $extra['group_wizard'] = $config['use_creation_wizard'];
     $extra['group_wizard_id'] = $wizard_id;
 
@@ -322,14 +323,14 @@ class GroupContentController extends ControllerBase {
     // Content entity form, potentially as wizard step 1.
     if (!$step2) {
       // Figure out what entity type the plugin is serving.
-      $entity_type_id = $plugin->getEntityTypeId();
+      $entity_type_id = $group_relation_type->getEntityTypeId();
       $entity_type = $this->entityTypeManager()->getDefinition($entity_type_id);
       $storage = $this->entityTypeManager()->getStorage($entity_type_id);
 
       // Only create a new entity if we have nothing stored.
       if (!$entity = $store->get("$store_id:entity")) {
         $values = [];
-        if (($key = $entity_type->getKey('bundle')) && ($bundle = $plugin->getEntityBundle())) {
+        if (($key = $entity_type->getKey('bundle')) && ($bundle = $group_relation_type->getEntityBundle())) {
           $values[$key] = $bundle;
         }
         $entity = $storage->create($values);
@@ -345,7 +346,7 @@ class GroupContentController extends ControllerBase {
     else {
       // Create an empty group content entity.
       $values = [
-        'type' => $plugin->getContentTypeConfigId(),
+        'type' => $group_relation->getContentTypeConfigId(),
         'gid' => $group->id(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);
@@ -370,7 +371,7 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function createFormTitle(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
     $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }

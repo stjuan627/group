@@ -6,7 +6,7 @@ use Drupal\group\Plugin\Group\RelationHandler\PostInstallInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PostInstallTrait;
 
 /**
- * Provides post install tasks for group relation plugins.
+ * Provides post install tasks for group relations.
  */
 class PostInstall implements PostInstallInterface {
 

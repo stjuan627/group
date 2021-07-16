@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -49,12 +50,12 @@ trait PermissionProviderTrait {
   /**
    * {@inheritdoc}
    */
-  public function init($plugin_id, array $definition) {
-    $this->traitInit($plugin_id, $definition);
-    $this->entityType = $this->entityTypeManager()->getDefinition($definition['entity_type_id']);
+  public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
+    $this->traitInit($plugin_id, $group_relation_type);
+    $this->entityType = $this->entityTypeManager()->getDefinition($group_relation_type->getEntityTypeId());
     $this->implementsOwnerInterface = $this->entityType->entityClassImplements(EntityOwnerInterface::class);
     $this->implementsPublishedInterface = $this->entityType->entityClassImplements(EntityPublishedInterface::class);
-    $this->definesEntityPermissions = !empty($definition['entity_access']);
+    $this->definesEntityPermissions = $group_relation_type->definesEntityAccess();
   }
 
   /**
@@ -101,7 +102,7 @@ trait PermissionProviderTrait {
    */
   protected function buildPermission($title, $description = NULL) {
     $t_args = [
-      '%plugin_name' => $this->definition['label'],
+      '%plugin_name' => $this->groupRelationType->getLabel(),
       '%entity_type' => $this->entityType->getSingularLabel(),
     ];
 
