@@ -18,6 +18,11 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
   /**
    * {@inheritdoc}
    */
+  protected $viewLabelOperation = TRUE;
+
+  /**
+   * {@inheritdoc}
+   */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\group\Entity\GroupInterface $entity */
     switch ($operation) {
@@ -34,6 +39,9 @@ class GroupAccessControlHandler extends EntityAccessControlHandler {
 
         // The access result might change if group status changes.
         return $access_result->addCacheableDependency($entity);
+
+      case 'view label':
+        return AccessResult::allowedIfHasPermission($account, 'access content');
 
       case 'update':
         return GroupAccessResult::allowedIfHasGroupPermission($entity, $account, 'edit group');
