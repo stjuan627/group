@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Plugin\Group\Relation;
 
+use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -32,12 +33,11 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   public function __construct(array $configuration, $plugin_id, $plugin_definition) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    // @todo 2.0.0 Only allow plugins with group type, because handlers can take
-    //    care of the rest.
     // Only support setting the group type ID during construction.
-    if (!empty($configuration['group_type_id'])) {
-      $this->groupTypeId = $configuration['group_type_id'];
+    if (empty($configuration['group_type_id'])) {
+      throw new PluginException('Instantiating a group relation plugin requires a group type ID.');
     }
+    $this->groupTypeId = $configuration['group_type_id'];
 
     // Include the default configuration by calling ::setConfiguration().
     $this->setConfiguration($configuration);
