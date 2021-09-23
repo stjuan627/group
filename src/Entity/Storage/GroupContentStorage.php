@@ -51,9 +51,13 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
       }
     }
 
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
+
     // Set the necessary keys for a valid GroupContent entity.
     $keys = [
-      'type' => $group_relation->getContentTypeConfigId(),
+      'type' => $group_content_type_id,
       'gid' => $group->id(),
       'entity_id' => $entity->id(),
     ];
@@ -75,8 +79,9 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     // If a plugin ID was provided, set the group content type ID for it.
     if (isset($plugin_id)) {
-      $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
-      $properties['type'] = $plugin->getContentTypeConfigId();
+      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+      $storage = $this->entityTypeManager->getStorage('group_content_type');
+      $properties['type'] = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
     }
 
     return $this->loadByProperties($properties);

@@ -70,9 +70,11 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin_config = ['group_type_id' => 'import', 'id' => 'group_membership'];
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
-    $group_content_type = $this->entityTypeManager
-      ->getStorage('group_content_type')
-      ->load($plugin->getContentTypeConfigId());
+
+    $group_content_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    $group_content_type = $group_content_type_storage->load(
+      $group_content_type_storage->getGroupContentTypeId($group_type->id(), $plugin->getRelationTypeId())
+    );
     $this->assertNotNull($group_content_type, 'Enforced plugins were installed after config import.');
   }
 

@@ -83,8 +83,12 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
 
     // Enforce the group cardinality if it's not set to unlimited.
     if ($group_cardinality > 0) {
+      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+      $storage = $this->entityTypeManager->getStorage('group_content_type');
+      $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin->getRelationTypeId());
+
       // Get the group content entities for this piece of content.
-      $properties = ['type' => $plugin->getContentTypeConfigId(), 'entity_id' => $entity->id()];
+      $properties = ['type' => $group_content_type_id, 'entity_id' => $entity->id()];
       $group_instances = $this->entityTypeManager
         ->getStorage('group_content')
         ->loadByProperties($properties);

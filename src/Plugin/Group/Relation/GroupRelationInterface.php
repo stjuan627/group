@@ -79,22 +79,6 @@ interface GroupRelationInterface extends DerivativeInspectionInterface, Configur
   public function getContentLabel(GroupContentInterface $group_content);
 
   /**
-   * Returns a safe, unique configuration ID for a group content type.
-   *
-   * By default we use GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID, but feel free to
-   * use any other means of identifying group content types.
-   *
-   * Please do not return any invalid characters in the ID as it will crash the
-   * website. Refer to ConfigBase::validateName() for valid characters.
-   *
-   * @return string
-   *   The safe ID to use as the configuration name.
-   *
-   * @see \Drupal\Core\Config\ConfigBase::validateName()
-   */
-  public function getContentTypeConfigId();
-
-  /**
    * Returns the administrative label for a group content type.
    *
    * @return string

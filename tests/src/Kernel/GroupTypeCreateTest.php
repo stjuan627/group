@@ -49,12 +49,10 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
     $this->assertEquals(3, count($group_roles), 'Three special roles were created.');
 
     // Check that enforced plugins were installed.
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-    $plugin_config = ['group_type_id' => 'dummy', 'id' => 'group_membership'];
-    $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
-
     $this->assertCount(3, $group_content_type_storage->loadByEntityTypeId('user'));
-    $group_content_type = $group_content_type_storage->load($plugin->getContentTypeConfigId());
+    $group_content_type = $group_content_type_storage->load(
+      $group_content_type_storage->getGroupContentTypeId($group_type->id(), 'group_membership')
+    );
     $this->assertNotNull($group_content_type, 'Enforced plugins were installed on the group type.');
   }
 

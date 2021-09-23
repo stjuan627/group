@@ -60,4 +60,17 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    */
   public function createFromPlugin(GroupTypeInterface $group_type, $plugin_id, array $configuration = []);
 
+  /**
+   * Constructs a group content type ID based on a group type and plugin.
+   *
+   * @param string $group_type_id
+   *   The group type ID.
+   * @param string $plugin_id
+   *   The ID of the plugin (to be) installed on the group type.
+   *
+   * @return string
+   *   The group content type ID.
+   */
+  public function getGroupContentTypeId($group_type_id, $plugin_id);
+
 }

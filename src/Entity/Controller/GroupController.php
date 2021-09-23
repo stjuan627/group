@@ -112,9 +112,12 @@ class GroupController extends ControllerBase {
     }
     // Wizard step 2: Group membership form.
     else {
+      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
+      $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
+
       // Create an empty group membership that does not yet have a group set.
       $values = [
-        'type' => $group_type->getRelationPlugin('group_membership')->getContentTypeConfigId(),
+        'type' => $gct_storage->getGroupContentTypeId($group_type->id(), 'group_membership'),
         'entity_id' => $this->currentUser()->id(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);

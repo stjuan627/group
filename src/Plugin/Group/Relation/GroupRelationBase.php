@@ -97,22 +97,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function getContentTypeConfigId() {
-    // @todo 2.0.0 Move to storage!
-    $preferred_id = $this->getGroupTypeId() . '-' . str_replace(':', '-', $this->getRelationTypeId());
-
-    // Return a hashed ID if the readable ID would exceed the maximum length.
-    if (strlen($preferred_id) > EntityTypeInterface::BUNDLE_MAX_LENGTH) {
-      $hashed_id = 'group_content_type_' . md5($preferred_id);
-      $preferred_id = substr($hashed_id, 0, EntityTypeInterface::BUNDLE_MAX_LENGTH);
-    }
-
-    return $preferred_id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getContentTypeLabel() {
     return $this->getGroupType()->label() . ': ' . $this->getRelationType()->getLabel();
   }

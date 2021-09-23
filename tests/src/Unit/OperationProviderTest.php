@@ -9,11 +9,11 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\group\Entity\GroupInterface;
   use Drupal\group\Entity\GroupTypeInterface;
   use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
-  use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationType;
   use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
   use Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider;
   use Drupal\Tests\UnitTestCase;
+  use Prophecy\Argument;
 
   /**
    * Tests the default group relation operation_provider handler.
@@ -41,13 +41,9 @@ namespace Drupal\Tests\group\Unit {
      * @dataProvider getOperationsProvider
      */
     public function testGetOperations($expected, $plugin_id, GroupRelationTypeInterface $definition, $installed, $field_ui) {
-      $group_relation = $this->prophesize(GroupRelationInterface::class);
-      $group_relation->getContentTypeConfigId()->willReturn('foobar');
-
       $group_type = $this->prophesize(GroupTypeInterface::class);
       $group_type->id()->willReturn('some_type');
       $group_type->hasRelationPlugin($plugin_id)->willReturn($installed);
-      $group_type->getRelationPlugin($plugin_id)->willReturn($group_relation->reveal());
 
       $operation_provider = $this->createOperationProvider($plugin_id, $definition, $field_ui);
       $this->assertEquals($expected, array_keys($operation_provider->getOperations($group_type->reveal())));
@@ -175,14 +171,13 @@ namespace Drupal\Tests\group\Unit {
      *   The default permission provider handler.
      */
     protected function createOperationProvider($plugin_id, $definition, $field_ui) {
-      $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+      $entity = $this->prophesize(GroupContentTypeInterface::class);
+      $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
+      $storage->getGroupContentTypeId(Argument::cetera())->willReturn('foobar');
+      $storage->load('foobar')->willReturn($entity->reveal());
 
-      if ($field_ui) {
-        $entity = $this->prophesize(GroupContentTypeInterface::class);
-        $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
-        $storage->load('foobar')->willReturn($entity->reveal());
-        $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
-      }
+      $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+      $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
 
       $module_handler = $this->prophesize(ModuleHandlerInterface::class);
       $module_handler->moduleExists('field_ui')->willReturn($field_ui);

@@ -225,10 +225,11 @@ class GroupContentController extends ControllerBase {
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
+    $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
 
     $values = [
-      'type' => $plugin->getContentTypeConfigId(),
+      'type' => $gct_storage->getGroupContentTypeId($group->bundle(), $plugin_id),
       'gid' => $group->id(),
     ];
     $group_content = $this->entityTypeManager()->getStorage('group_content')->create($values);
@@ -248,8 +249,9 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function addFormTitle(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
-    $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
 
@@ -344,9 +346,12 @@ class GroupContentController extends ControllerBase {
     }
     // Wizard step 2: Group content form.
     else {
+      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
+      $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
+
       // Create an empty group content entity.
       $values = [
-        'type' => $group_relation->getContentTypeConfigId(),
+        'type' => $gct_storage->getGroupContentTypeId($group->bundle(), $plugin_id),
         'gid' => $group->id(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);
@@ -371,8 +376,9 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function createFormTitle(GroupInterface $group, $plugin_id) {
-    $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
-    $group_content_type = GroupContentType::load($plugin->getContentTypeConfigId());
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
 

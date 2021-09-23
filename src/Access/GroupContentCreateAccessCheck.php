@@ -58,9 +58,12 @@ class GroupContentCreateAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    // Determine whether the user can create group content using the plugin.
-    $group_content_type_id = $group->getGroupType()->getRelationPlugin($plugin_id)->getContentTypeConfigId();
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
+
+    // Determine whether the user can create group content using the plugin.
+    $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
     $access = $access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group]);
 
     // Only allow access if the user can create group content using the

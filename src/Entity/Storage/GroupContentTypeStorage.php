@@ -9,6 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -124,7 +125,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
 
     // Create the group content type using plugin generated info.
     $values = [
-      'id' => $plugin->getContentTypeConfigId(),
+      'id' => $this->getGroupContentTypeId($group_type->id(), $plugin_id),
       'label' => $plugin->getContentTypeLabel(),
       'description' => $plugin->getContentTypeDescription(),
       'group_type' => $group_type->id(),
@@ -133,6 +134,21 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     ];
 
     return $this->create($values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupContentTypeId($group_type_id, $plugin_id) {
+    $preferred_id = $group_type_id . '-' . str_replace(':', '-', $plugin_id);
+
+    // Return a hashed ID if the readable ID would exceed the maximum length.
+    if (strlen($preferred_id) > EntityTypeInterface::BUNDLE_MAX_LENGTH) {
+      $hashed_id = 'group_content_type_' . md5($preferred_id);
+      $preferred_id = substr($hashed_id, 0, EntityTypeInterface::BUNDLE_MAX_LENGTH);
+    }
+
+    return $preferred_id;
   }
 
   /**
