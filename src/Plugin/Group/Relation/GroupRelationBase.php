@@ -2,9 +2,7 @@
 
 namespace Drupal\group\Plugin\Group\Relation;
 
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\group\Entity\GroupType;
-use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -124,20 +122,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    */
   public function getContentTypeDescription() {
     return $this->getRelationType()->getDescription();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getGroupOperations(GroupInterface $group) {
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getGroupOperationsCacheableMetadata() {
-    return new CacheableMetadata();
   }
 
   /**

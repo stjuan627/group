@@ -4,6 +4,10 @@ namespace Drupal\group\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a block with operations the user can perform on a group.
@@ -16,7 +20,54 @@ use Drupal\Core\Cache\CacheableMetadata;
  *   }
  * )
  */
-class GroupOperationsBlock extends BlockBase {
+class GroupOperationsBlock extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The group relation type manager.
+   *
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   */
+  protected $pluginManager;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Creates a GroupOperationsBlock instance.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
+   *   The group relation type manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GroupRelationTypeManagerInterface $plugin_manager, ModuleHandlerInterface $module_handler) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->pluginManager = $plugin_manager;
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('group_relation_type.manager'),
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -36,17 +87,19 @@ class GroupOperationsBlock extends BlockBase {
     if (($group = $this->getContextValue('group')) && $group->id()) {
       $links = [];
 
-      // Retrieve the operations and cacheable metadata from the installed
-      // content plugins.
+      // Retrieve the operations and cacheable metadata from the plugins.
       foreach ($group->getGroupType()->getInstalledRelationPlugins() as $group_relation) {
         /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation */
-        $links += $group_relation->getGroupOperations($group);
-        $cacheable_metadata = $cacheable_metadata->merge($group_relation->getGroupOperationsCacheableMetadata());
+        $operation_provider = $this->pluginManager->getOperationProvider($group_relation->getRelationTypeId());
+        $operations = $operation_provider->getGroupOperations($group);
+        $cacheable_metadata = $cacheable_metadata->merge(CacheableMetadata::createFromRenderArray($operations));
+        unset($operations['#cache']);
+        $links += $operations;
       }
 
       if ($links) {
         // Allow modules to alter the collection of gathered links.
-        \Drupal::moduleHandler()->alter('group_operations', $links, $group);
+        $this->moduleHandler->alter('group_operations', $links, $group);
 
         // Sort the operations by weight.
         uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');

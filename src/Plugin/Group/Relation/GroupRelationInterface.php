@@ -111,45 +111,6 @@ interface GroupRelationInterface extends DerivativeInspectionInterface, Configur
   public function getContentTypeDescription();
 
   /**
-   * Provides a list of operations for a group.
-   *
-   * These operations can be implemented in numerous ways by extending modules.
-   * Out of the box, Group provides a block that shows the available operations
-   * to a user visiting a route with a group in its URL.
-   *
-   * Do not forget to specify cacheable metadata if you need to. This can be
-   * done in ::getGroupOperationsCacheableMetadata().
-   *
-   * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group to generate the operations for.
-   *
-   * @return array
-   *   An associative array of operation links to show when in a group context,
-   *   keyed by operation name, containing the following key-value pairs:
-   *   - title: The localized title of the operation.
-   *   - url: An instance of \Drupal\Core\Url for the operation URL.
-   *   - weight: The weight of the operation.
-   *
-   * @see ::getGroupOperationsCacheableMetadata()
-   */
-  public function getGroupOperations(GroupInterface $group);
-
-  /**
-   * Provides the cacheable metadata for this plugin's group operations.
-   *
-   * The operations set in ::getGroupOperations() may have some cacheable
-   * metadata that needs to be set but can't be because the links set in an
-   * Operations render element are simple associative arrays. This method allows
-   * you to specify the cacheable metadata regardless.
-   *
-   * @return \Drupal\Core\Cache\CacheableMetadata
-   *   The cacheable metadata for the group operations.
-   *
-   * @see ::getGroupOperations()
-   */
-  public function getGroupOperationsCacheableMetadata();
-
-  /**
    * Returns a list of entity reference field settings.
    *
    * This allows you to provide some handler settings for the entity reference

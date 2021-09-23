@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
@@ -35,6 +36,16 @@ trait OperationProviderTrait {
       throw new \LogicException('Using OperationProviderTrait without assigning a parent or overwriting the methods.');
     }
     return $this->parent->getOperations($group_type);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupOperations(GroupInterface $group) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using OperationProviderTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->getGroupOperations($group);
   }
 
   /**

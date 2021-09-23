@@ -6,6 +6,7 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\Core\Extension\ModuleHandlerInterface;
   use Drupal\Core\StringTranslation\TranslationInterface;
   use Drupal\group\Entity\GroupContentTypeInterface;
+  use Drupal\group\Entity\GroupInterface;
   use Drupal\group\Entity\GroupTypeInterface;
   use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
@@ -82,6 +83,43 @@ namespace Drupal\Tests\group\Unit {
 
         $case['expected'] = $operation_keys;
         $cases[$key] = $case;
+      }
+
+      return $cases;
+    }
+
+
+    /**
+     * Tests the retrieval of group operations.
+     *
+     * @param mixed $expected
+     *   The expected operation keys.
+     * @param string $plugin_id
+     *   The plugin ID.
+     * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
+     *   The plugin definition.
+     *
+     * @covers ::getGroupOperations
+     * @dataProvider getGroupOperationsProvider
+     */
+    public function testGetGroupOperations($expected, $plugin_id, GroupRelationTypeInterface $definition) {
+      $group = $this->prophesize(GroupInterface::class);
+      $operation_provider = $this->createOperationProvider($plugin_id, $definition, FALSE);
+      $this->assertEquals($expected, array_keys($operation_provider->getGroupOperations($group->reveal())));
+    }
+
+    /**
+     * Data provider for testGetGroupOperations().
+     *
+     * @return array
+     *   A list of testGetGroupOperations method arguments.
+     */
+    public function getGroupOperationsProvider() {
+      $cases = [];
+
+      foreach ($this->getOperationProviderScenarios() as $key => $scenario) {
+        $cases[$key] = $scenario;
+        $cases[$key]['expected'] = [];
       }
 
       return $cases;

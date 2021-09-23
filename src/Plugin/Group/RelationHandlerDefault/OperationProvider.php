@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderTrait;
@@ -80,6 +81,13 @@ class OperationProvider implements OperationProviderInterface {
     }
 
     return $operations;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupOperations(GroupInterface $group) {
+    return [];
   }
 
 }
