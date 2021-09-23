@@ -132,11 +132,11 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function loadByContentPluginId($plugin_id) {
+  public function loadByRelationPluginId($plugin_id) {
     // If no responsible group content types were found, we return nothing.
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $group_content_types = $storage->loadByContentPluginId($plugin_id);
+    $group_content_types = $storage->loadByRelationPluginId($plugin_id);
     if (empty($group_content_types)) {
       return [];
     }

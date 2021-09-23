@@ -177,7 +177,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
     // Load all of the group content types that define access.
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
     $gct_storage = $this->entityTypeManager->getStorage('group_content_type');
-    $group_content_types = $gct_storage->loadByContentPluginId($plugin_ids);
+    $group_content_types = $gct_storage->loadByRelationPluginId($plugin_ids);
 
     // If any new group content entity is added using any of the retrieved
     // plugins, it might change access.

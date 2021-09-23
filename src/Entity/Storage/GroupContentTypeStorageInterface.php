@@ -32,7 +32,7 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
    *   An array of group content types indexed by their IDs.
    */
-  public function loadByContentPluginId($plugin_id);
+  public function loadByRelationPluginId($plugin_id);
 
   /**
    * Retrieves group content types which could serve a given entity type.

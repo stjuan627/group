@@ -202,11 +202,11 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   /**
    * Tests the loading of GroupContent entities for an entity.
    *
-   * @covers ::loadByContentPluginId
+   * @covers ::loadByRelationPluginId
    */
   public function testLoadByContentPluginId() {
     $this->createGroup();
-    $this->assertCount(1, $this->storage->loadByContentPluginId('group_membership'), 'Managed to load the group creator membership by plugin ID.');
+    $this->assertCount(1, $this->storage->loadByRelationPluginId('group_membership'), 'Managed to load the group creator membership by plugin ID.');
   }
 
 }
