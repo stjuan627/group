@@ -6,7 +6,6 @@ use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -75,9 +74,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getGroupType() {
-    if ($id = $this->getGroupTypeId()) {
-      return GroupType::load($id);
-    }
+    return GroupType::load($this->getGroupTypeId());
   }
 
   /**
@@ -166,7 +163,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
     $replace = [
       '%entity_type' => $entity_type_manager->getDefinition($this->getRelationType()->getEntityTypeId())->getLabel(),
       '%group_type' => $this->getGroupType()->label(),
-      '%plugin' => $this->getLabel(),
+      '%plugin' => $this->getRelationType()->getLabel(),
     ];
 
     $form['group_cardinality'] = [
@@ -187,7 +184,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
       '#required' => TRUE,
     ];
 
-    if ($this->definesEntityAccess()) {
+    if ($this->getRelationType()->definesEntityAccess()) {
       $form['use_creation_wizard'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Use 2-step wizard when creating a new %entity_type entity within a %group_type group', $replace),
