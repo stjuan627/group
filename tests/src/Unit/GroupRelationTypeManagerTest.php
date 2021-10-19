@@ -11,6 +11,7 @@ use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
@@ -143,7 +144,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testCreateHandlerInstance() {
     $this->setUpPluginDefinitions(
-      ['some_plugin' => new GroupRelationType(['id' => 'some_plugin'])],
+      ['some_plugin' => (new GroupRelationType(['id' => 'some_plugin']))->setClass(GroupRelationTypeInterface::class)],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
@@ -158,7 +159,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testCreateHandlerInstanceNoInterface() {
     $this->setUpPluginDefinitions(
-      ['some_plugin' => new GroupRelationType(['id' => 'some_plugin'])],
+      ['some_plugin' => (new GroupRelationType(['id' => 'some_plugin']))->setClass(GroupRelationTypeInterface::class)],
       ['foo_handler' => TestGroupRelationHandlerWithoutInterface::class]
     );
 
@@ -175,7 +176,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testGetHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => new GroupRelationType(['id' => 'apple'])],
+      ['apple' => (new GroupRelationType(['id' => 'apple']))->setClass(GroupRelationTypeInterface::class)],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
@@ -210,7 +211,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testGetHandlerWithDerivatives() {
     $this->setUpPluginDefinitions(
-      ['apple:red' => new GroupRelationType(['id' => 'apple'])],
+      ['apple:red' => (new GroupRelationType(['id' => 'apple']))->setClass(GroupRelationTypeInterface::class)],
       ['foo_handler' => TestGroupRelationHandler::class]
     );
 
@@ -225,7 +226,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testGetHandlerMissingHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => new GroupRelationType(['id' => 'apple'])],
+      ['apple' => (new GroupRelationType(['id' => 'apple']))->setClass(GroupRelationTypeInterface::class)],
       ['foo_handler' => FALSE]
     );
 
@@ -241,7 +242,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testGetAccessControlHandler() {
     $this->setUpPluginDefinitions(
-      ['apple' => new GroupRelationType(['id' => 'apple'])],
+      ['apple' => (new GroupRelationType(['id' => 'apple']))->setClass(GroupRelationTypeInterface::class)],
       ['access_control' => TestGroupRelationHandler::class]
     );
 
@@ -255,7 +256,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    */
   public function testGetPermissionProvider() {
     $this->setUpPluginDefinitions(
-      ['apple' => new GroupRelationType(['id' => 'apple'])],
+      ['apple' => (new GroupRelationType(['id' => 'apple']))->setClass(GroupRelationTypeInterface::class)],
       ['permission_provider' => TestGroupRelationHandler::class]
     );
 
