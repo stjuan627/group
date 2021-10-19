@@ -21,6 +21,7 @@ class GroupServiceProvider extends ServiceProviderBase {
     // choking on the variation_cache_factory service no longer being there.
     if (!$container->hasDefinition('variation_cache_factory')) {
       $definition = new Definition('\Drupal\group\VariationCacheFactoryUpdateFix');
+      $definition->setPublic(TRUE);
       $container->setDefinition('variation_cache_factory', $definition);
     }
 
