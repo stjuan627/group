@@ -166,7 +166,7 @@ services:
   # Specific group relation handlers.
   group.relation_handler.operation_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipOperationProvider'
-    arguments: ['@group.relation_handler.permission_provider', '@string_translation', '@current_user']
+    arguments: ['@group.relation_handler.operation_provider', '@string_translation', '@current_user']
     shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
