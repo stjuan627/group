@@ -24,15 +24,6 @@ class GroupMembership extends GroupRelationBase {
   /**
    * {@inheritdoc}
    */
-  public function getEntityReferenceSettings() {
-    $settings = parent::getEntityReferenceSettings();
-    $settings['handler_settings']['include_anonymous'] = FALSE;
-    return $settings;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function defaultConfiguration() {
     $config = parent::defaultConfiguration();
     $config['entity_cardinality'] = 1;

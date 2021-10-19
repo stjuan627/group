@@ -36,6 +36,7 @@ class GroupServiceProvider extends ServiceProviderBase {
 
     $handlers = [
       'access_control' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyAccessControl',
+      'entity_reference' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyEntityReference',
       'operation_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyOperationProvider',
       'permission_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider',
       'post_install' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPostInstall',
@@ -53,6 +54,7 @@ class GroupServiceProvider extends ServiceProviderBase {
         if (!$container->has($service_name)) {
           // Define the service and pass it the default one to decorate.
           $definition = new Definition($handler_class, [new Reference("group.relation_handler.$handler")]);
+          $definition->setPublic(TRUE);
           $definition->setShared(FALSE);
           $container->setDefinition($service_name, $definition);
         }

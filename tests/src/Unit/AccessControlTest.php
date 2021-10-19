@@ -32,13 +32,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class AccessControlTest extends UnitTestCase {
 
   /**
-   * The container.
-   *
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface|\Prophecy\Prophecy\ProphecyInterface
-   */
-  protected $container;
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -46,9 +39,10 @@ class AccessControlTest extends UnitTestCase {
 
     $cache_context_manager = $this->prophesize(CacheContextsManager::class);
     $cache_context_manager->assertValidTokens(Argument::any())->willReturn(TRUE);
-    $this->container = $this->prophesize(ContainerInterface::class);
-    $this->container->get('cache_contexts_manager')->willReturn($cache_context_manager->reveal());
-    \Drupal::setContainer($this->container->reveal());
+
+    $container = $this->prophesize(ContainerInterface::class);
+    $container->get('cache_contexts_manager')->willReturn($cache_context_manager->reveal());
+    \Drupal::setContainer($container->reveal());
   }
 
   /**

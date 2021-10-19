@@ -94,19 +94,4 @@ interface GroupRelationInterface extends DerivativeInspectionInterface, Configur
    */
   public function getContentTypeDescription();
 
-  /**
-   * Returns a list of entity reference field settings.
-   *
-   * This allows you to provide some handler settings for the entity reference
-   * field pointing to the entity that is to become group content. You could
-   * even change the handler being used, all without having to alter the bundle
-   * field settings yourself through an alter hook.
-   *
-   * @return array
-   *   An associative array where the keys are valid entity reference field
-   *   setting names and the values are the corresponding setting for each key.
-   *   Often used keys are 'target_type', 'handler' and 'handler_settings'.
-   */
-  public function getEntityReferenceSettings();
-
 }

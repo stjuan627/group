@@ -151,6 +151,9 @@ services:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
     arguments: ['@entity_type.manager', '@group_relation_type.manager']
     shared: false
+  group.relation_handler.entity_reference:
+    class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\EntityReference'
+    shared: false
   group.relation_handler.operation_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider'
     arguments: ['@entity_type.manager', '@module_handler', '@string_translation']
@@ -164,6 +167,10 @@ services:
     shared: false
 
   # Specific group relation handlers.
+  group.relation_handler.entity_reference.group_membership:
+    class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipEntityReference'
+    arguments: ['@group.relation_handler.entity_reference']
+    shared: false
   group.relation_handler.operation_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipOperationProvider'
     arguments: ['@group.relation_handler.operation_provider', '@string_translation', '@current_user']

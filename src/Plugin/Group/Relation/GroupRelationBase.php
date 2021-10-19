@@ -108,17 +108,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function getEntityReferenceSettings() {
-    $settings['target_type'] = $this->getRelationType()->getEntityTypeId();
-    if ($bundle = $this->getRelationType()->getEntityBundle()) {
-      $settings['handler_settings']['target_bundles'] = [$bundle];
-    }
-    return $settings;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getConfiguration() {
     return $this->configuration;
   }

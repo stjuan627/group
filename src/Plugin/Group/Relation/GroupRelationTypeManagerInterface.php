@@ -70,6 +70,22 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
   public function getAccessControlHandler($plugin_id);
 
   /**
+   * Creates a new entity reference handler instance.
+   *
+   * @param string $plugin_id
+   *   The plugin ID for this entity reference handler.
+   *
+   * @return \Drupal\group\Plugin\Group\RelationHandler\EntityReferenceInterface
+   *   An entity reference handler instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the plugin doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the entity reference handler couldn't be loaded.
+   */
+  public function getEntityReferenceHandler($plugin_id);
+
+  /**
    * Creates a new operation provider instance.
    *
    * @param string $plugin_id

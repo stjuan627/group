@@ -345,20 +345,10 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     if ($group_content_type = GroupContentType::load($bundle)) {
-      $group_relation_type = $group_content_type->getRelationPlugin()->getRelationType();
-
-      /** @var \Drupal\Core\Field\BaseFieldDefinition $original */
-      $original = $base_field_definitions['entity_id'];
-
       $fields['entity_id'] = clone $base_field_definitions['entity_id'];
-      $fields['entity_id']
-        ->setLabel($group_relation_type->getEntityReferenceLabel() ?: $original->getLabel())
-        ->setDescription($group_relation_type->getEntityReferenceDescription() ?: $original->getDescription());
-
-      // @todo 2.0.x Replace with entity_reference handler.
-      foreach ($group_content_type->getRelationPlugin()->getEntityReferenceSettings() as $name => $setting) {
-        $fields['entity_id']->setSetting($name, $setting);
-      }
+      _group_relation_type_manager()
+        ->getEntityReferenceHandler($group_content_type->getRelationPluginId())
+        ->configureField($fields['entity_id']);
 
       return $fields;
     }

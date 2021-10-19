@@ -160,6 +160,13 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * {@inheritdoc}
    */
+  public function getEntityReferenceHandler($plugin_id) {
+    return $this->getHandler($plugin_id, 'entity_reference');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getOperationProvider($plugin_id) {
     return $this->getHandler($plugin_id, 'operation_provider');
   }
