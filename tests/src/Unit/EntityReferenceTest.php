@@ -2,13 +2,11 @@
 
 namespace Drupal\Tests\group\Unit;
 
-use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldTypePluginManager;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\EntityReference;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
