@@ -42,14 +42,14 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    *
    * @var \Drupal\Core\Annotation\Translation
    */
-  public $reference_label;
+  protected $reference_label;
 
   /**
    * (optional) The description for the entity reference field.
    *
    * @var \Drupal\Core\Annotation\Translation
    */
-  public $reference_description;
+  protected $reference_description;
 
   /**
    * The entity type ID the plugin supports.
@@ -65,7 +65,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    *
    * @var string|false
    */
-  public $entity_bundle = FALSE;
+  protected $entity_bundle = FALSE;
 
   /**
    * (optional) Whether the plugin defines entity access.
@@ -115,7 +115,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    *
    * @var string|false
    */
-  public $admin_permission = FALSE;
+  protected $admin_permission = FALSE;
 
   /**
    * Constructs a new GroupRelationType.
