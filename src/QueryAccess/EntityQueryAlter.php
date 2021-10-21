@@ -533,7 +533,16 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       // If the data table wasn't added to the query yet, add it here.
       if (!$data_table_found) {
         $id_key = $entity_type->getKey('id');
-        $this->dataTableAlias = $query->join($data_table, $data_table, "$base_table.$id_key=$data_table.$id_key");
+        $condition = "$base_table.$id_key=$data_table.$id_key";
+
+        // If entity has langcode as entity key, it needs to be added
+        // to the join condition to avoid duplicated results.
+        if ($entity_type->hasKey('langcode')) {
+          $lang_key = $entity_type->getKey('langcode');
+          $condition .= " and $base_table.$lang_key=$data_table.$lang_key";
+        }
+
+        $this->dataTableAlias = $query->join($data_table, $data_table, $condition);
       }
       else {
         $this->dataTableAlias = $data_table;
