@@ -61,10 +61,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
     $renderer->executeInRenderContext($render_context, static function () use ($storage) {
       $storage->getQuery()->execute();
     });
-    // @todo Swap out the lines below once Entity API 1.2 is out.
-    // @see: https://www.drupal.org/project/entity/issues/3161304
-    //$this->assertTrue($render_context->isEmpty(), 'Empty cacheability was not bubbled.');
-    $this->assertEquals(new BubbleableMetadata(), $render_context[0], 'Empty cacheability was not bubbled.');
+    $this->assertTrue($render_context->isEmpty(), 'Empty cacheability was not bubbled.');
 
     // Install the test module so we have an access plugin for nodes.
     $this->enableModules(['group_test_plugin']);
