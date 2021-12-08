@@ -486,6 +486,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
       'use_creation_wizard' => 0,
+      'allow_add_multiple' => FALSE,
     ];
   }
 
@@ -520,7 +521,14 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       '#required' => TRUE,
     ];
 
+    $form['allow_add_multiple'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Allow to add multiple content at once'),
+      '#default_value' => $this->configuration['allow_add_multiple'],
+    ];
+
     if ($this->definesEntityAccess()) {
+      $form['allow_add_multiple']['#description'] = $this->t('Will be disabled if creation wizard is enabled.');
       $form['use_creation_wizard'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Use 2-step wizard when creating a new %entity_type entity within a %group_type group', $replace),

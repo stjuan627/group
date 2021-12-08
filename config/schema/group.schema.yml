@@ -45,6 +45,10 @@ group_content_enabler.config.entity_cardinality:
   type: 'integer'
   label: 'Entity cardinality'
 
+group_content_enabler.config.allow_add_multiple:
+  type: 'boolean'
+  label: 'Allow adding multiple content at once'
+
 group_content_enabler.config.use_creation_wizard:
   type: 'boolean'
   label: 'Use creation wizard'
