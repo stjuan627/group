@@ -528,7 +528,6 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     ];
 
     if ($this->definesEntityAccess()) {
-      $form['allow_add_multiple']['#description'] = $this->t('Will be disabled if creation wizard is enabled.');
       $form['use_creation_wizard'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Use 2-step wizard when creating a new %entity_type entity within a %group_type group', $replace),

@@ -62,27 +62,28 @@ class GroupContentForm extends ContentEntityForm {
     if ($this->operation !== 'add' || $form_state->get('group_wizard')) {
       $form['entity_id']['#access'] = FALSE;
     }
-
-    // Modify the entity_id widget to allow adding multiple items if allowed.
-    $content_plugin = $this->getContentPlugin();
-    $configuration = $content_plugin->getConfiguration();
-    if (array_key_exists('allow_add_multiple', $configuration) && $configuration['allow_add_multiple'] && !$configuration['use_creation_wizard']) {
-      // @todo: Add more possible selection widgets here.
-      $definition = $this->entityTypeManager->getDefinition($content_plugin->getEntityTypeId());
-      $form['entity_id'] = [
-        '#type' => 'entity_autocomplete',
-        '#title' => $this->t('Select @label_plural', [
-          '@label_plural' => $definition->getPluralLabel(),
-        ]),
-        '#target_type' => 'user',
-        '#tags' => TRUE,
-        '#selection_settings' => $content_plugin->getEntityReferenceSettings(),
-        // Dirty hack to make field validation work.
-        // @todo Find a cleaner way, one option would be maintaining
-        // full path for the element: $form['entity_id']['widget'][0] instead.
-        0 => ['target_id' => []],
-      ];
-      $form_state->set('add_multiple', TRUE);
+    else {
+      $content_plugin = $this->getContentPlugin();
+      $configuration = $content_plugin->getConfiguration();
+      if (array_key_exists('allow_add_multiple', $configuration) && $configuration['allow_add_multiple']) {
+        // Modify the entity_id widget to allow adding multiple items if allowed.
+        // @todo: Add more possible selection widgets here.
+        $definition = $this->entityTypeManager->getDefinition($content_plugin->getEntityTypeId());
+        $form['entity_id'] = [
+          '#type' => 'entity_autocomplete',
+          '#title' => $this->t('Select @label_plural', [
+            '@label_plural' => $definition->getPluralLabel(),
+          ]),
+          '#target_type' => 'user',
+          '#tags' => TRUE,
+          '#selection_settings' => $content_plugin->getEntityReferenceSettings(),
+          // Dirty hack to make field validation work.
+          // @todo Find a cleaner way, one option would be maintaining
+          // full path for the element: $form['entity_id']['widget'][0] instead.
+          0 => ['target_id' => []],
+        ];
+        $form_state->set('add_multiple', TRUE);
+      }
     }
 
     return $form;
