@@ -74,7 +74,7 @@ class GroupContentForm extends ContentEntityForm {
           '#title' => $this->t('Select @label_plural', [
             '@label_plural' => $definition->getPluralLabel(),
           ]),
-          '#target_type' => 'user',
+          '#target_type' => $content_plugin->getEntityTypeId(),
           '#tags' => TRUE,
           '#selection_settings' => $content_plugin->getEntityReferenceSettings(),
           // Dirty hack to make field validation work.
@@ -98,6 +98,7 @@ class GroupContentForm extends ContentEntityForm {
       $field_state = WidgetBase::getWidgetState($form['#parents'], 'entity_id', $form_state);
       $field_state['array_parents'] = array_merge($form['#parents'], ['entity_id']);
       WidgetBase::setWidgetState($form['#parents'], 'entity_id', $form_state, $field_state);
+
       $entity_id_value = &$form_state->getValue('entity_id');
       $values = $entity_id_value;
       // Validate each entity variant separately.
