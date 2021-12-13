@@ -280,14 +280,14 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
           // the titles are \Drupal\Core\StringTranslation\TranslatableMarkup.
           $title_a = $permission_a['title']->__toString();
           $title_b = $permission_b['title']->__toString();
-          return strip_tags($title_a) > strip_tags($title_b);
+          return strip_tags($title_a) <=> strip_tags($title_b);
         }
         else {
-          return $permission_a['section'] > $permission_b['section'];
+          return $permission_a['section'] <=> $permission_b['section'];
         }
       }
       else {
-        return $modules[$permission_a['provider']] > $modules[$permission_b['provider']];
+        return $modules[$permission_a['provider']] <=> $modules[$permission_b['provider']];
       }
     });
 
