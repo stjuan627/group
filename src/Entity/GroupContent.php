@@ -127,6 +127,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function label() {
+    // @todo Turn into ui_text handler.
     return $this->getRelationPlugin()->getContentLabel($this);
   }
 
@@ -300,7 +301,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setReadOnly(TRUE)
-      ->setTranslatable(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('view', [
         'label' => 'hidden',

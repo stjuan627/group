@@ -96,7 +96,7 @@ class GroupContentController extends ControllerBase {
   public function addPage(GroupInterface $group, $create_mode = FALSE) {
     $build = ['#theme' => 'entity_add_list', '#bundles' => []];
     $form_route = $this->addPageFormRoute($group, $create_mode);
-    $bundle_names = $this->addPageBundles($group, $create_mode);
+    $group_content_types = $this->addPageBundles($group, $create_mode);
 
     // Set the add bundle message if available.
     $add_bundle_message = $this->addPageBundleMessage($group, $create_mode);
@@ -106,31 +106,43 @@ class GroupContentController extends ControllerBase {
 
     // Filter out the bundles the user doesn't have access to.
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
-    foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $access = $access_control_handler->createAccess($bundle_name, NULL, ['group' => $group], TRUE);
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
+      $access = $access_control_handler->createAccess($group_content_type_id, NULL, ['group' => $group], TRUE);
       if (!$access->isAllowed()) {
-        unset($bundle_names[$plugin_id]);
+        unset($group_content_types[$group_content_type_id]);
       }
       $this->renderer->addCacheableDependency($build, $access);
     }
 
     // Redirect if there's only one bundle available.
-    if (count($bundle_names) == 1) {
-      reset($bundle_names);
-      $route_params = ['group' => $group->id(), 'plugin_id' => key($bundle_names)];
+    if (count($group_content_types) == 1) {
+      $route_params = [
+        'group' => $group->id(),
+        'plugin_id' => reset($group_content_types)->getRelationPluginId(),
+      ];
       $url = Url::fromRoute($form_route, $route_params, ['absolute' => TRUE]);
       return new RedirectResponse($url->toString());
     }
 
     // Set the info for all of the remaining bundles.
-    foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
-      $label = $plugin->getRelationType()->getLabel();
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
+      $group_relation = $group_content_type->getRelationPlugin();
+      $group_relation_type = $group_relation->getRelationType();
+      $label = $group_relation_type->getLabel();
 
-      $build['#bundles'][$bundle_name] = [
-        'label' => $label,
-        'description' => $plugin->getContentTypeDescription(),
-        'add_link' => Link::createFromRoute($label, $form_route, ['group' => $group->id(), 'plugin_id' => $plugin_id]),
+      // @todo Call ui_text handler for text like:
+      $t_args = [];
+      $description = $create_mode
+        ? $this->t('Add new %entity_type of type %bundle to the group.', $t_args)
+        : $this->t('Add existing %entity_type of type %node_type to the group.', $t_args);
+
+      $build['#bundles'][$group_content_type_id] = [
+        'label' => $group_content_type->label(),
+        'description' => $group_content_type->getDescription(),
+        'add_link' => Link::createFromRoute($label, $form_route, [
+          'group' => $group->id(),
+          'plugin_id' => $group_content_type->getRelationPluginId(),
+        ]),
       ];
     }
 
@@ -142,35 +154,32 @@ class GroupContentController extends ControllerBase {
   }
 
   /**
-   * Retrieves a list of available bundles for the add page.
+   * Retrieves a list of available group content types for the add page.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the group content to.
    * @param bool $create_mode
    *   Whether the target entity still needs to be created.
    *
-   * @return array
-   *   An array of group content type IDs, keyed by the plugin that was used to
-   *   generate their respective group content types.
+   * @return \Drupal\group\Entity\GroupContentTypeInterface[]
+   *   An array of group content types, keyed by their ID.
    *
    * @see ::addPage()
    */
   protected function addPageBundles(GroupInterface $group, $create_mode) {
-    $bundles = [];
-
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
+
+    $group_content_types = $storage->loadByGroupType($group->getGroupType());
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
       if ($create_mode && !$group_content_type->getRelationPlugin()->getRelationType()->definesEntityAccess()) {
-        continue;
+        unset ($group_content_types[$group_content_type_id]);
       }
-
-      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
     }
 
-    return $bundles;
+    return $group_content_types;
   }
 
   /**
@@ -252,6 +261,7 @@ class GroupContentController extends ControllerBase {
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
+    // @todo Call ui_text handler for this.
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
 
@@ -379,6 +389,7 @@ class GroupContentController extends ControllerBase {
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
+    // @todo Call ui_text handler for this.
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
 

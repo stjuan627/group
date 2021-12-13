@@ -88,6 +88,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getContentLabel(GroupContentInterface $group_content) {
+    // @todo Move to info_text handler for labels and descriptions.
     return $group_content->getEntity()->label();
   }
 
@@ -95,6 +96,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getContentTypeLabel() {
+    // @todo Move to info_text handler for labels and descriptions.
     return $this->getGroupType()->label() . ': ' . $this->getRelationType()->getLabel();
   }
 
@@ -102,6 +104,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function getContentTypeDescription() {
+    // @todo Move to info_text handler for labels and descriptions.
     return $this->getRelationType()->getDescription();
   }
 

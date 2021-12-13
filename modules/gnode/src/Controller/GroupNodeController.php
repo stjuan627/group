@@ -58,44 +58,16 @@ class GroupNodeController extends GroupContentController {
   /**
    * {@inheritdoc}
    */
-  public function addPage(GroupInterface $group, $create_mode = FALSE) {
-    $build = parent::addPage($group, $create_mode);
-
-    // Do not interfere with redirects.
-    if (!is_array($build)) {
-      return $build;
-    }
-
-    // Overwrite the label and description for all of the displayed bundles.
-    $storage_handler = $this->entityTypeManager->getStorage('node_type');
-    foreach ($this->addPageBundles($group, $create_mode) as $plugin_id => $bundle_name) {
-      if (!empty($build['#bundles'][$bundle_name])) {
-        $group_relation_type = $group->getGroupType()->getRelationPlugin($plugin_id)->getRelationType();
-        $bundle_label = $storage_handler->load($group_relation_type->getEntityBundle())->label();
-
-        $t_args = ['%node_type' => $bundle_label];
-        $description = $create_mode
-          ? $this->t('Add new content of type %node_type to the group.', $t_args)
-          : $this->t('Add existing content of type %node_type to the group.', $t_args);
-
-        $build['#bundles'][$bundle_name]['label'] = $bundle_label;
-        $build['#bundles'][$bundle_name]['description'] = $description;
-      }
-    }
-
-    return $build;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function addPageBundles(GroupInterface $group, $create_mode) {
     $bundles = [];
 
+    // @todo Incorporate the below using an extra parameter $plugin_id into
+    //   the parent and filter there. Then we can remove this class. Make sure
+    //   we concatenate ':' so we can search with strpos safely.
     // Retrieve all group_node plugins for the group's type.
     $plugin_ids = $this->pluginManager->getInstalledIds($group->getGroupType());
     foreach ($plugin_ids as $key => $plugin_id) {
-      if (strpos($plugin_id, 'group_node:') !== 0) {
+      if (strpos($plugin_id . ':', 'group_node:') !== 0) {
         unset($plugin_ids[$key]);
       }
     }
@@ -103,10 +75,7 @@ class GroupNodeController extends GroupContentController {
     // Retrieve all of the responsible group content types, keyed by plugin ID.
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     $properties = ['group_type' => $group->bundle(), 'content_plugin' => $plugin_ids];
-    foreach ($storage->loadByProperties($properties) as $bundle => $group_content_type) {
-      /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
-      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
-    }
+    $storage->loadByProperties($properties);
 
     return $bundles;
   }

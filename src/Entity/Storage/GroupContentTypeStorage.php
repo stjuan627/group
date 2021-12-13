@@ -9,7 +9,6 @@ use Drupal\Core\Config\Entity\ConfigEntityStorage;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -126,8 +125,6 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     // Create the group content type using plugin generated info.
     $values = [
       'id' => $this->getGroupContentTypeId($group_type->id(), $plugin_id),
-      'label' => $plugin->getContentTypeLabel(),
-      'description' => $plugin->getContentTypeDescription(),
       'group_type' => $group_type->id(),
       'content_plugin' => $plugin_id,
       'plugin_config' => $plugin->getConfiguration(),
