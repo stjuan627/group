@@ -127,8 +127,6 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     // Create the group content type using plugin generated info.
     $values = [
       'id' => $this->getGroupContentTypeId($group_type->id(), $plugin_id),
-      'label' => $plugin->getContentTypeLabel(),
-      'description' => $plugin->getContentTypeDescription(),
       'group_type' => $group_type->id(),
       'content_plugin' => $plugin_id,
       'plugin_config' => $plugin->getConfiguration(),

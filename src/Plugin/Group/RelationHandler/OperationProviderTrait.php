@@ -17,17 +17,8 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
  */
 trait OperationProviderTrait {
 
-  use RelationHandlerTrait {
-    init as traitInit;
-  }
+  use RelationHandlerTrait;
   use StringTranslationTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
-    $this->traitInit($plugin_id, $group_relation_type);
-  }
 
   /**
    * {@inheritdoc}

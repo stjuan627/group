@@ -14,6 +14,7 @@ use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -44,6 +45,13 @@ class GroupContentController extends ControllerBase {
   protected $entityFormBuilder;
 
   /**
+   * The group relation type manager.
+   *
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   */
+  protected $groupRelationTypeManager;
+
+  /**
    * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -59,13 +67,16 @@ class GroupContentController extends ControllerBase {
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityFormBuilderInterface $entity_form_builder
    *   The entity form builder.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $groupRelationTypeManager
+   *   The group relation type manager.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
-  public function __construct(PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, RendererInterface $renderer) {
+  public function __construct(PrivateTempStoreFactory $temp_store_factory, EntityTypeManagerInterface $entity_type_manager, EntityFormBuilderInterface $entity_form_builder, GroupRelationTypeManagerInterface $groupRelationTypeManager, RendererInterface $renderer) {
     $this->privateTempStoreFactory = $temp_store_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFormBuilder = $entity_form_builder;
+    $this->groupRelationTypeManager = $groupRelationTypeManager;
     $this->renderer = $renderer;
   }
 
@@ -77,7 +88,8 @@ class GroupContentController extends ControllerBase {
       $container->get('tempstore.private'),
       $container->get('entity_type.manager'),
       $container->get('entity.form_builder'),
-      $container->get('renderer')
+      $container->get('group_relation_type.manager'),
+      $container->get('renderer'),
     );
   }
 
@@ -89,15 +101,19 @@ class GroupContentController extends ControllerBase {
    * @param bool $create_mode
    *   (optional) Whether the target entity still needs to be created. Defaults
    *   to FALSE, meaning the target entity is assumed to exist already.
+   * @param string|null $base_plugin_id
+   *   (optional) A base plugin ID to filter the bundles on. This can be useful
+   *   when you want to show the add page for just a single plugin that has
+   *   derivatives for the target entity type's bundles.
    *
    * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
    *   The group content creation overview page or a redirect to the form for
    *   adding group content if there is only one group content type.
    */
-  public function addPage(GroupInterface $group, $create_mode = FALSE) {
+  public function addPage(GroupInterface $group, $create_mode = FALSE, $base_plugin_id = NULL) {
     $build = ['#theme' => 'entity_add_list', '#bundles' => []];
     $form_route = $this->addPageFormRoute($group, $create_mode);
-    $bundle_names = $this->addPageBundles($group, $create_mode);
+    $group_content_types = $this->addPageBundles($group, $create_mode, $base_plugin_id);
 
     // Set the add bundle message if available.
     $add_bundle_message = $this->addPageBundleMessage($group, $create_mode);
@@ -107,31 +123,36 @@ class GroupContentController extends ControllerBase {
 
     // Filter out the bundles the user doesn't have access to.
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
-    foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $access = $access_control_handler->createAccess($bundle_name, NULL, ['group' => $group], TRUE);
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
+      $access = $access_control_handler->createAccess($group_content_type_id, NULL, ['group' => $group], TRUE);
       if (!$access->isAllowed()) {
-        unset($bundle_names[$plugin_id]);
+        unset($group_content_types[$group_content_type_id]);
       }
       $this->renderer->addCacheableDependency($build, $access);
     }
 
     // Redirect if there's only one bundle available.
-    if (count($bundle_names) == 1) {
-      reset($bundle_names);
-      $route_params = ['group' => $group->id(), 'plugin_id' => key($bundle_names)];
+    if (count($group_content_types) == 1) {
+      $route_params = [
+        'group' => $group->id(),
+        'plugin_id' => reset($group_content_types)->getPluginId(),
+      ];
       $url = Url::fromRoute($form_route, $route_params, ['absolute' => TRUE]);
       return new RedirectResponse($url->toString());
     }
 
     // Set the info for all of the remaining bundles.
-    foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $plugin = $group->getGroupType()->getPlugin($plugin_id);
-      $label = $plugin->getRelationType()->getLabel();
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
+      $ui_text_provider = $this->groupRelationTypeManager->getUiTextProvider($group_content_type->getPluginId());
 
-      $build['#bundles'][$bundle_name] = [
+      $label = $ui_text_provider->getAddPageLabel($create_mode);
+      $build['#bundles'][$group_content_type_id] = [
         'label' => $label,
-        'description' => $plugin->getContentTypeDescription(),
-        'add_link' => Link::createFromRoute($label, $form_route, ['group' => $group->id(), 'plugin_id' => $plugin_id]),
+        'description' => $ui_text_provider->getAddPageDescription($create_mode),
+        'add_link' => Link::createFromRoute($label, $form_route, [
+          'group' => $group->id(),
+          'plugin_id' => $group_content_type->getPluginId(),
+        ]),
       ];
     }
 
@@ -143,35 +164,42 @@ class GroupContentController extends ControllerBase {
   }
 
   /**
-   * Retrieves a list of available bundles for the add page.
+   * Retrieves a list of available group content types for the add page.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the group content to.
    * @param bool $create_mode
    *   Whether the target entity still needs to be created.
+   * @param string|null $base_plugin_id
+   *   (optional) A base plugin ID to filter the bundles on. This can be useful
+   *   when you want to show the add page for just a single plugin that has
+   *   derivatives for the target entity type's bundles.
    *
-   * @return array
-   *   An array of group content type IDs, keyed by the plugin that was used to
-   *   generate their respective group content types.
+   * @return \Drupal\group\Entity\GroupContentTypeInterface[]
+   *   An array of group content types, keyed by their ID.
    *
    * @see ::addPage()
    */
-  protected function addPageBundles(GroupInterface $group, $create_mode) {
-    $bundles = [];
-
+  protected function addPageBundles(GroupInterface $group, $create_mode, $base_plugin_id) {
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     assert($storage instanceof GroupContentTypeStorageInterface);
-    foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
+
+    $group_content_types = $storage->loadByGroupType($group->getGroupType());
+    foreach ($group_content_types as $group_content_type_id => $group_content_type) {
+      $relation = $group_content_type->getPlugin();
+
+      // Check the base plugin ID if a plugin filter was specified.
+      if ($base_plugin_id && $relation->getBaseId() === $base_plugin_id) {
+        unset($group_content_types[$group_content_type_id]);
+      }
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
-      if ($create_mode && !$group_content_type->getPlugin()->getRelationType()->definesEntityAccess()) {
-        continue;
+      elseif ($create_mode && !$relation->getRelationType()->definesEntityAccess()) {
+        unset($group_content_types[$group_content_type_id]);
       }
-
-      $bundles[$group_content_type->getPluginId()] = $bundle;
     }
 
-    return $bundles;
+    return $group_content_types;
   }
 
   /**
@@ -226,11 +254,11 @@ class GroupContentController extends ControllerBase {
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
-    assert($gct_storage instanceof GroupContentTypeStorageInterface);
+    $storage = $this->entityTypeManager()->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
 
     $values = [
-      'type' => $gct_storage->getGroupContentTypeId($group->bundle(), $plugin_id),
+      'type' => $storage->getGroupContentTypeId($group->bundle(), $plugin_id),
       'gid' => $group->id(),
     ];
     $group_content = $this->entityTypeManager()->getStorage('group_content')->create($values);
@@ -250,10 +278,7 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function addFormTitle(GroupInterface $group, $plugin_id) {
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($storage instanceof GroupContentTypeStorageInterface);
-    $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
-    return $this->t('Add @name', ['@name' => $group_content_type->label()]);
+    return $this->groupRelationTypeManager->getUiTextProvider($plugin_id)->getAddFormTitle(FALSE);
   }
 
   /**
@@ -283,11 +308,9 @@ class GroupContentController extends ControllerBase {
    *
    * @return string
    *   The page title.
-   *
-   * @todo Revisit when 8.2.0 is released, https://www.drupal.org/node/2767853.
    */
   public function collectionTitle(GroupInterface $group) {
-    return $this->t('All entities for @group', ['@group' => $group->label()]);
+    return $this->t('All entity relations for @group', ['@group' => $group->label()]);
   }
 
   /**
@@ -377,10 +400,7 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function createFormTitle(GroupInterface $group, $plugin_id) {
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($storage instanceof GroupContentTypeStorageInterface);
-    $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
-    return $this->t('Add @name', ['@name' => $group_content_type->label()]);
+    return $this->groupRelationTypeManager->getUiTextProvider($plugin_id)->getAddFormTitle(TRUE);
   }
 
 }

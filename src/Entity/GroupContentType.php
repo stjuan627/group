@@ -34,12 +34,9 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  *   static_cache = TRUE,
  *   entity_keys = {
  *     "id" = "id",
- *     "label" = "label",
  *   },
  *   config_export = {
  *     "id",
- *     "label",
- *     "description",
  *     "group_type",
  *     "content_plugin",
  *     "plugin_config",
@@ -57,20 +54,6 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * @var string
    */
   protected $id;
-
-  /**
-   * The human-readable name of the group content type.
-   *
-   * @var string
-   */
-  protected $label;
-
-  /**
-   * A brief description of the group content type.
-   *
-   * @var string
-   */
-  protected $description;
 
   /**
    * The group type ID for the group content type.
@@ -106,21 +89,6 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    */
   public function id() {
     return $this->id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getDescription() {
-    return $this->description;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setDescription($description) {
-    $this->description = $description;
-    return $this;
   }
 
   /**

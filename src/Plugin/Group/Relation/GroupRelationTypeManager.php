@@ -202,6 +202,13 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getUiTextProvider($plugin_id) {
+    return $this->getHandler($plugin_id, 'ui_text_provider');
+  }
+
+  /**
    * Returns the group type storage handler.
    *
    * @return \Drupal\Core\Config\Entity\ConfigEntityStorageInterface

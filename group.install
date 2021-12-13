@@ -224,3 +224,17 @@ function group_update_9206() {
     $group_role->save(TRUE);
   }
 }
+
+/**
+ * Remove label and description from group content types.
+ */
+function group_update_9207() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.content_type.') as $config_name) {
+    $group_content_type = $config_factory->getEditable($config_name);
+    $group_content_type->clear('label');
+    $group_content_type->clear('description');
+    $group_content_type->save(TRUE);
+  }
+}

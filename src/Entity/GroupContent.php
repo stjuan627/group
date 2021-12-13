@@ -157,7 +157,9 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function label() {
-    return $this->getPlugin()->getContentLabel($this);
+    return _group_relation_type_manager()
+      ->getUiTextProvider($this->getPluginId())
+      ->getRelationLabel($this);
   }
 
   /**
@@ -202,12 +204,12 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
-    // Set the label so the DB also reflects it.
-    $this->set('label', $this->label());
-
     // Set the denormalized data from the bundle entity.
     $this->set('plugin_id', $this->getGroupContentType()->getPluginId());
     $this->set('group_type', $this->getGroupContentType()->getGroupTypeId());
+
+    // Set the label so the DB also reflects it.
+    $this->set('label', $this->label());
   }
 
   /**
@@ -343,7 +345,6 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setReadOnly(TRUE)
-      ->setTranslatable(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('view', [
         'label' => 'hidden',

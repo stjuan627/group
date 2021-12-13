@@ -129,9 +129,25 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    *   Thrown if the plugin doesn't exist.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   *   Thrown if the permission provider couldn't be loaded.
+   *   Thrown if the post install handler couldn't be loaded.
    */
   public function getPostInstallHandler($plugin_id);
+
+  /**
+   * Creates a new UI text provider instance.
+   *
+   * @param string $plugin_id
+   *   The plugin ID for this UI text provider.
+   *
+   * @return \Drupal\group\Plugin\Group\RelationHandler\UiTextProviderInterface
+   *   A UI text provider instance.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the plugin doesn't exist.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the UI text provider couldn't be loaded.
+   */
+  public function getUiTextProvider($plugin_id);
 
   /**
    * Returns a plugin collection of all installed group relations.

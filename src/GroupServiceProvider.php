@@ -41,6 +41,7 @@ class GroupServiceProvider extends ServiceProviderBase {
       'operation_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyOperationProvider',
       'permission_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPermissionProvider',
       'post_install' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyPostInstall',
+      'ui_text_provider' => 'Drupal\group\Plugin\Group\RelationHandler\EmptyUiTextProvider',
     ];
 
     foreach ($discovery->getDefinitions() as $group_relation_type_id => $group_relation_type) {

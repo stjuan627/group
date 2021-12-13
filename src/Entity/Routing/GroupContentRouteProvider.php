@@ -53,7 +53,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route
         ->setDefaults([
           '_controller' => '\Drupal\group\Entity\Controller\GroupContentController::addForm',
-          // @todo Let forms set title?
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::addFormTitle',
         ])
         ->setRequirement('_group_content_create_access', 'TRUE')
@@ -101,7 +100,6 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $route
         ->setDefaults([
           '_controller' => '\Drupal\group\Entity\Controller\GroupContentController::createForm',
-          // @todo Let forms set title?
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentController::createFormTitle',
         ])
         ->setRequirement('_group_content_create_entity_access', 'TRUE')

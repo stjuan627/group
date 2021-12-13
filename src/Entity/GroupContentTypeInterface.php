@@ -3,12 +3,11 @@
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Entity\EntityDescriptionInterface;
 
 /**
  * Provides an interface defining a group content type entity.
  */
-interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescriptionInterface {
+interface GroupContentTypeInterface extends ConfigEntityInterface {
 
   /**
    * Gets the group type the content type was created for.

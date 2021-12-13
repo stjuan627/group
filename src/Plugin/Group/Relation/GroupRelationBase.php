@@ -87,27 +87,6 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
   /**
    * {@inheritdoc}
    */
-  public function getContentLabel(GroupContentInterface $group_content) {
-    return $group_content->getEntity()->label();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getContentTypeLabel() {
-    return $this->getGroupType()->label() . ': ' . $this->getRelationType()->getLabel();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getContentTypeDescription() {
-    return $this->getRelationType()->getDescription();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getConfiguration() {
     return $this->configuration;
   }

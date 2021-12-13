@@ -67,31 +67,4 @@ interface GroupRelationInterface extends DerivativeInspectionInterface, Configur
    */
   public function getGroupTypeId();
 
-  /**
-   * Retrieves the label for a piece of group content.
-   *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content entity to retrieve the label for.
-   *
-   * @return string
-   *   The label as expected by \Drupal\Core\Entity\EntityInterface::label().
-   */
-  public function getContentLabel(GroupContentInterface $group_content);
-
-  /**
-   * Returns the administrative label for a group content type.
-   *
-   * @return string
-   *   The group content type label.
-   */
-  public function getContentTypeLabel();
-
-  /**
-   * Returns the administrative description for a group content type.
-   *
-   * @return string
-   *   The group content type description.
-   */
-  public function getContentTypeDescription();
-
 }
