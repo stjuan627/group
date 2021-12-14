@@ -81,21 +81,28 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function getGroupContentType() {
-    return $this->type->entity;
+    return $this->get('type')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getGroup() {
-    return $this->gid->entity;
+    return $this->get('gid')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGroupId() {
+    return $this->get('gid')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEntity() {
-    return $this->entity_id->entity;
+    return $this->get('entity_id')->entity;
   }
 
   /**
@@ -135,7 +142,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
-    $uri_route_parameters['group'] = $this->getGroup()->id();
+    $uri_route_parameters['group'] = $this->getGroupId();
     // These routes depend on the plugin ID.
     if (in_array($rel, ['add-form', 'create-form'])) {
       $uri_route_parameters['plugin_id'] = $this->getRelationPlugin()->getRelationTypeId();

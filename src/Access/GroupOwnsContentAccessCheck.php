@@ -51,7 +51,7 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
     }
 
     // If we have a group and group content, see if the owner matches.
-    $group_owns_content = $group_content->getGroup()->id() == $group->id();
+    $group_owns_content = $group_content->getGroupId() == $group->id();
 
     // Only allow access if the group content is owned by the group and
     // _group_owns_content is set to TRUE or the other way around.

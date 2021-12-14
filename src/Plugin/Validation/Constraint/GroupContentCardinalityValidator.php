@@ -98,8 +98,8 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
       $group_ids = [];
       foreach ($group_instances as $instance) {
         /** @var \Drupal\group\Entity\GroupContentInterface $instance */
-        if ($instance->getGroup()->id() != $group->id()) {
-          $group_ids[] = $instance->getGroup()->id();
+        if ($instance->getGroupId() != $group->id()) {
+          $group_ids[] = $instance->getGroupId();
         }
       }
       $group_count = count(array_unique($group_ids));

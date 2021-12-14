@@ -17,6 +17,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the group content type entity the group content uses.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface
+   *   The group content type entity the group content uses.
    */
   public function getGroupContentType();
 
@@ -24,13 +25,23 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the group the group content belongs to.
    *
    * @return \Drupal\group\Entity\GroupInterface
+   *   The group the group content belongs to.
    */
   public function getGroup();
+
+  /**
+   * Returns the group ID the group content belongs to.
+   *
+   * @return string
+   *   The group ID the group content belongs to.
+   */
+  public function getGroupId();
 
   /**
    * Returns the entity that was added as group content.
    *
    * @return \Drupal\Core\Entity\EntityInterface
+   *  The entity that was added as group content.
    */
   public function getEntity();
 
@@ -38,6 +49,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the group relation that handles the group content.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The group relation that handles the group content.
    */
   public function getRelationPlugin();
 
