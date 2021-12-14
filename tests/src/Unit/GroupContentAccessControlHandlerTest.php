@@ -13,7 +13,6 @@ use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupContentTypeInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\Tests\UnitTestCase;
@@ -90,9 +89,6 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
    * @uses ::access
    */
   public function testCheckAccess() {
-    $group_relation = $this->prophesize(GroupRelationInterface::class);
-    $group_relation->getRelationTypeId()->willReturn('bar');
-
     $language = $this->prophesize(LanguageInterface::class);
     $language->getId()->willReturn('nl');
 
@@ -102,7 +98,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $group_content->language()->willReturn($language->reveal());
     $group_content->getRevisionId()->willReturn(9001);
     $group_content->getEntityTypeId()->willReturn('group_content');
-    $group_content->getRelationPlugin()->willReturn($group_relation->reveal());
+    $group_content->getRelationPluginId()->willReturn('bar');
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);

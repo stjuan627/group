@@ -12,7 +12,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentStorageInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
@@ -377,15 +376,11 @@ class AccessControlTest extends UnitTestCase {
       $group = $this->prophesize(GroupInterface::class);
       $group_content = $this->prophesize(GroupContentInterface::class);
       $group_content->getGroup()->willReturn($group->reveal());
-      $group_content_plugin = $this->prophesize(GroupRelationInterface::class);
-      $group_content_plugin->getRelationTypeId()->willReturn('foo:baz');
-      $group_content->getRelationPlugin()->willReturn($group_content_plugin->reveal());
+      $group_content->getRelationPluginId()->willReturn('foo:baz');
       $group_content = $group_content->reveal();
 
       $group_content_2 = $this->prophesize(GroupContentInterface::class);
-      $group_content_plugin_2 = $this->prophesize(GroupRelationInterface::class);
-      $group_content_plugin_2->getRelationTypeId()->willReturn('cat:dog');
-      $group_content_2->getRelationPlugin()->willReturn($group_content_plugin_2->reveal());
+      $group_content_2->getRelationPluginId()->willReturn('cat:dog');
       $group_content_2 = $group_content_2->reveal();
 
       $storage->loadByEntity($entity)->willReturn([1 => $group_content, 2 => $group_content_2]);

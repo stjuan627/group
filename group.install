@@ -5,9 +5,70 @@
  * Install, update and uninstall functions for the group module.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_update_last_removed().
  */
 function group_update_last_removed() {
   return 8023;
+}
+
+/**
+ * Add plugin_id and group_type fields and update indexes for group content.
+ */
+function group_update_9201() {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add the plugin_id and group_type field.
+  $plugin_id = BaseFieldDefinition::create('string')
+    ->setLabel(t('Plugin ID'))
+    ->setRequired(TRUE)
+    ->setReadOnly(TRUE)
+    ->setInitialValue('TEMP');
+
+  $group_type = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Group type'))
+    ->setSetting('target_type', 'group_type')
+    ->setRequired(TRUE)
+    ->setReadOnly(TRUE)
+    ->setInitialValue('TEMP');
+
+  $manager->installFieldStorageDefinition('plugin_id', 'group_content', 'group', $plugin_id);
+  $manager->installFieldStorageDefinition('group_type', 'group_content', 'group', $group_type);
+
+  // Regenerate entity type indexes.
+  $manager->updateEntityType($manager->getEntityType('group_content'));
+
+  // Map group content types to plugin IDs and group types.
+  $config_factory = \Drupal::configFactory();
+
+  $map = ['group_type' => [], 'plugin_id' => []];
+  foreach ($config_factory->listAll('group.content_type.') as $config_name) {
+    $group_content_type = $config_factory->get($config_name);
+
+    $id = $group_content_type->get('id');
+    $map['group_type'][$group_content_type->get('group_type')][] = $id;
+    $map['plugin_id'][$group_content_type->get('content_plugin')][] = $id;
+  }
+
+  // Populate the actual values based on the group content types.
+  $data_table = \Drupal::entityTypeManager()->getDefinition('group_content')->getDataTable();
+
+  /** @var \Drupal\Core\Database\Connection $database */
+  $database = \Drupal::getContainer()->get('database');
+
+  foreach ($map['group_type'] as $group_type_id => $group_content_type_ids) {
+    $database->update($data_table)
+      ->fields(['group_type' => $group_type_id])
+      ->condition('type', $group_content_type_ids, 'IN')
+      ->execute();
+  }
+
+  foreach ($map['plugin_id'] as $plugin_id => $group_content_type_ids) {
+    $database->update($data_table)
+      ->fields(['plugin_id' => $plugin_id])
+      ->condition('type', $group_content_type_ids, 'IN')
+      ->execute();
+  }
 }

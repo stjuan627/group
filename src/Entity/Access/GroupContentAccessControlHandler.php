@@ -45,7 +45,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     /** @var \Drupal\group\Entity\GroupContentInterface $entity */
-    $access_control = $this->groupRelationTypeManager->getAccessControlHandler($entity->getRelationPlugin()->getRelationTypeId());
+    $access_control = $this->groupRelationTypeManager->getAccessControlHandler($entity->getRelationPluginId());
     return $access_control->relationAccess($entity, $operation, $account, TRUE);
   }
 

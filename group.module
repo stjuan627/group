@@ -387,7 +387,7 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
   $group_content = $items->getEntity();
 
   // We only care if the group content entity is a group membership.
-  if ($group_content->getRelationPlugin()->getRelationTypeId() != 'group_membership') {
+  if ($group_content->getRelationPluginId() != 'group_membership') {
     return AccessResult::neutral();
   }
 
