@@ -4,6 +4,7 @@ namespace Drupal\group\Plugin;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupInterface;
@@ -160,7 +161,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getContentLabel(GroupContentInterface $group_content) {
-    return $group_content->getEntity()->label();
+      $entity = $group_content->getEntity();
+      $langcode = $group_content->language()->getId();
+      if ($entity instanceof TranslatableInterface && $entity->hasTranslation($langcode)) {
+          $entity = $entity->getTranslation($langcode);
+      }
+      return $entity->label();
   }
 
   /**

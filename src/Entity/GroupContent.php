@@ -167,6 +167,15 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     // Set the label so the DB also reflects it.
     $this->set('label', $this->label());
+    // If the group content is translatable, update the label for all langauges.
+    $current_langcode = $this->language()->getId();
+    if ($this->isTranslatable()) {
+      foreach ($this->getTranslationLanguages(FALSE) as $langauge) {
+        $this->initializeTranslation($langauge->getId());
+        $this->set('label', $this->label());
+      }
+      $this->initializeTranslation($current_langcode);
+    }
   }
 
   /**

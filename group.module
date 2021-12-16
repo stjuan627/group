@@ -760,3 +760,17 @@ function group_view_presave(EntityInterface $view) {
     $view->set('display', $displays);
   }
 }
+
+/**
+ * Implements hook_entity_update().
+ */
+function group_entity_update(EntityInterface $entity) {
+  // Update group content labels.
+  if ($entity instanceof ContentEntityInterface) {
+    $group_content_items = GroupContent::loadByEntity($entity);
+    foreach ($group_content_items as $group_content_item) {
+      // Label is already updated on pre-save.
+      $group_content_item->save();
+    }
+  }
+}
