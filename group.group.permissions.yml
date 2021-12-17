@@ -18,8 +18,10 @@ edit group:
 delete group:
   title: 'Delete group'
   description: 'Delete the group'
+view all group revisions:
+  title: 'Revisioning: View all revisions'
 view group revisions:
-  title: 'Revisioning: View revisions'
+  title: 'Revisioning: View specific revisions'
 revert group revisions:
   title: 'Revisioning: Revert revisions'
   description: 'Requires the "Edit group" permission'

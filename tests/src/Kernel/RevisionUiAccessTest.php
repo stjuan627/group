@@ -12,6 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Tests the revision UI access for groups.
  *
+ * There used to be a time where it mattered how many revisions there were for
+ * an entity. Those days have passed, but it doesn't hurt to leave the test
+ * cases in for extra hardening. This is why you'll notice some test cases
+ * being specific about there being one revision.
+ *
  * @covers \Drupal\group\Entity\Access\GroupRevisionCheck
  * @group group
  */
@@ -116,10 +121,10 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['view-one-rev-no-new-rev'] = [
       ['view group'],
-      ['view group', 'view group revisions'],
+      ['view group', 'view all group revisions'],
       FALSE,
-      FALSE,
-      FALSE,
+      TRUE,
+      TRUE,
       FALSE,
       FALSE,
       'Checking access to revision overview when there is one revision and new revisions are not created automatically',
@@ -127,7 +132,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['view-one-rev-new-rev'] = [
       ['view group'],
-      ['view group', 'view group revisions'],
+      ['view group', 'view all group revisions'],
       FALSE,
       TRUE,
       TRUE,
@@ -138,7 +143,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['view-multi-rev-no-new-rev'] = [
       ['view group'],
-      ['view group', 'view group revisions'],
+      ['view group', 'view all group revisions'],
       FALSE,
       TRUE,
       TRUE,
@@ -149,7 +154,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['view-multi-rev-new-rev'] = [
       ['view group'],
-      ['view group', 'view group revisions'],
+      ['view group', 'view all group revisions'],
       FALSE,
       TRUE,
       TRUE,
@@ -160,9 +165,9 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['no-view-one-rev-new-rev'] = [
       [],
-      ['view group revisions'],
+      ['view all group revisions'],
       FALSE,
-      FALSE,
+      TRUE,
       TRUE,
       TRUE,
       FALSE,
@@ -171,9 +176,9 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $cases['no-view-multi-rev-new-rev'] = [
       [],
-      ['view group revisions'],
+      ['view all group revisions'],
       FALSE,
-      FALSE,
+      TRUE,
       TRUE,
       TRUE,
       TRUE,
@@ -245,8 +250,8 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
-      FALSE,
-      FALSE,
+      TRUE,
+      TRUE,
       FALSE,
       FALSE,
       FALSE,
@@ -385,8 +390,8 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
-      FALSE,
-      FALSE,
+      TRUE,
+      TRUE,
       FALSE,
       FALSE,
       FALSE,

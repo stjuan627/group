@@ -40,11 +40,6 @@ services:
       - ['setContentModerationInfo', ['@?content_moderation.moderation_information']]
     tags:
       - { name: 'access_check', applies_to: '_group_latest_revision' }
-  access_check.group_revision:
-    class: 'Drupal\group\Entity\Access\GroupRevisionCheck'
-    arguments: ['@entity_type.manager', '@current_route_match']
-    tags:
-      - { name: 'access_check', applies_to: '_group_revision' }
 
   cache.group_permission:
     class: 'Drupal\Core\Cache\CacheBackendInterface'
