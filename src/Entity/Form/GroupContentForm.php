@@ -29,6 +29,13 @@ class GroupContentForm extends ContentEntityForm {
   protected $uuid;
 
   /**
+   * Multiple content added to the group if applicable.
+   *
+   * @var \Drupal\group\Entity\GroupContentInterface[]
+   */
+  protected $entities = [];
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -37,6 +44,13 @@ class GroupContentForm extends ContentEntityForm {
     $form->privateTempStoreFactory = $container->get('tempstore.private');
     $form->uuid = $container->get('uuid');
     return $form;
+  }
+
+  /**
+   * Getter method for other handlers to get the added group content entities.
+   */
+  public function getEntities() {
+    return $this->entities;
   }
 
   /**
@@ -193,9 +207,10 @@ class GroupContentForm extends ContentEntityForm {
           ['value' => $this->uuid->generate()],
         ]);
         $clone->save();
+        $this->entities[$clone->id()] = $clone;
         $added_count++;
       }
-      // Assign the last clone to the form entity.
+      // Assign the last clone to the form entity for compatibility.
       $this->entity = $clone;
 
       $return = $this->entity;
