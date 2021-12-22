@@ -181,10 +181,16 @@ class GroupContentForm extends ContentEntityForm {
     if ($form_state->get('add_multiple')) {
       $entity_id_value = &$form_state->getValue('entity_id');
       $values = $entity_id_value;
-      // We need only one entity here, the only change is the entity_id field.
-      $item = reset($values);
-      $entity_id_value = [$item];
-      parent::submitForm($form, $form_state);
+      // Call the parent method for each reference separately and update
+      // uuid value. Store each created entity.
+      foreach ($values as $item) {
+        $entity_id_value = [$item];
+        parent::submitForm($form, $form_state);
+        $this->entity->set('uuid', [
+          ['value' => $this->uuid->generate()],
+        ]);
+        $this->entities[] = $this->entity;
+      }
       // Revert entity_id value to original state.
       $entity_id_value = $values;
     }
@@ -200,20 +206,10 @@ class GroupContentForm extends ContentEntityForm {
     // Multiple add case.
     if ($form_state->get('add_multiple')) {
       $added_count = 0;
-      foreach ($form_state->getValue('entity_id') as $item) {
-        $clone = clone $this->entity;
-        $clone->set('entity_id', [$item]);
-        $clone->set('uuid', [
-          ['value' => $this->uuid->generate()],
-        ]);
-        $clone->save();
-        $this->entities[$clone->id()] = $clone;
+      foreach ($this->entities as $entity) {
+        $return = $entity->save();
         $added_count++;
       }
-      // Assign the last clone to the form entity for compatibility.
-      $this->entity = $clone;
-
-      $return = $this->entity;
     }
 
     // Default logic.
