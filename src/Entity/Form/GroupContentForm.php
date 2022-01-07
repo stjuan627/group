@@ -127,6 +127,15 @@ class GroupContentForm extends ContentEntityForm {
       $form_state->setRedirect('<front>');
     }
 
+    $t_args = [
+      '@bundle_label' => $group_content->getEntity()->label(),
+      '@content_label' => $group_content->getGroupContentType()->label(),
+      '@group_label' => $group_content->getGroup()->label(),
+    ];
+
+    $this->messenger()->addStatus(
+      $this->t('@bundle_label "@content_label" has been added to the "@group_label" group.', $t_args));
+
     return $return;
   }
 
