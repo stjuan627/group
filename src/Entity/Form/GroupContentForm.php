@@ -128,8 +128,8 @@ class GroupContentForm extends ContentEntityForm {
     }
 
     $t_args = [
-      '@bundle_label' => $group_content->getEntity()->label(),
-      '@content_label' => $group_content->getGroupContentType()->label(),
+      '@bundle_label' => $group_content->getGroupContentType()->label(),
+      '@content_label' => $group_content->getEntity()->label(),
       '@group_label' => $group_content->getGroup()->label(),
     ];
 
