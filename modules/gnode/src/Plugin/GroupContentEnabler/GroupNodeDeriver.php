@@ -2,6 +2,7 @@
 
 namespace Drupal\gnode\Plugin\GroupContentEnabler;
 
+use Drupal\Core\Entity\TranslatableEntityLabelMarkup;
 use Drupal\node\Entity\NodeType;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 
@@ -14,7 +15,7 @@ class GroupNodeDeriver extends DeriverBase {
     $this->derivatives = [];
 
     foreach (NodeType::loadMultiple() as $name => $node_type) {
-      $label = $node_type->label();
+      $label = new TranslatableEntityLabelMarkup('node_type', $name);
 
       $this->derivatives[$name] = [
         'entity_bundle' => $name,
