@@ -98,6 +98,21 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests that unsupported operations are not checked.
+   */
+  public function testUnsupportedOperation() {
+    $node = $this->createNode(['type' => 'page']);
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group->addContent($node, 'node_as_content:page');
+
+    $result = $this->accessControlHandler->access($node, 'take me to the moon', $this->createUser([], ['access content']), TRUE);
+    $this->assertTrue($result->isNeutral(), 'Unsupported operations are not checked.');
+
+    $result = $this->accessControlHandler->access($node, 'view', $this->createUser([], ['access content']), TRUE);
+    $this->assertTrue($result->isForbidden(), 'Supported operations are checked.');
+  }
+
+  /**
    * Tests that grouped nodes are properly hidden.
    */
   public function testMemberGroupAccessWithoutPermission() {

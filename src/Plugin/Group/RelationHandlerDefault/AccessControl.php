@@ -4,7 +4,6 @@ namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
@@ -13,7 +12,6 @@ use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
-use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides access control for group relations.
@@ -33,6 +31,30 @@ class AccessControl implements AccessControlInterface {
   public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->groupRelationTypeManager = $groupRelationTypeManager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsOperation($operation, $target) {
+    assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
+    $permissions = [$this->permissionProvider->getPermission($operation, $target, 'any')];
+
+    // We know relations have owners, but need to check for the target entity.
+    // Please note that we do not check for "view" vs "view unpublished" here
+    // because you usually can't have the latter without the former so a regular
+    // check vs the passed in operation should suffice for most use cases.
+    if ($target === 'relation' || $this->implementsOwnerInterface) {
+      $permissions[] = $this->permissionProvider->getPermission($operation, $target, 'own');
+    }
+
+    foreach ($permissions as $permission) {
+      if ($permission !== FALSE) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
   /**
@@ -81,6 +103,16 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account, $return_as_object = FALSE) {
+    // The Group module's ideology is that if you want to do something to a
+    // group's content, you need Group to explicitly allow access or else the
+    // result will be forbidden. Having said that, if we do not support an
+    // operation yet, it's probably nicer to return neutral here. This way, any
+    // module that exposes new operations will work as intended AND NOT HAVE
+    // GROUP ACCESS CHECKS until Group specifically implements said operations.
+    if (!$this->supportsOperation($operation, 'entity')) {
+      return AccessResult::neutral();
+    }
+
     /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
     $storage = $this->entityTypeManager()->getStorage('group_content');
     $group_contents = $storage->loadByEntity($entity);
@@ -100,12 +132,11 @@ class AccessControl implements AccessControlInterface {
 
     // We only check unpublished vs published for "view" right now. If we ever
     // start supporting other operations, we need to remove the "view" check.
-    $check_published = $operation === 'view'
-      && $entity->getEntityType()->entityClassImplements(EntityPublishedInterface::class);
+    $check_published = $operation === 'view' && $this->implementsPublishedInterface;
 
     // Check if the account is the owner and an owner permission is supported.
     $is_owner = FALSE;
-    if ($entity->getEntityType()->entityClassImplements(EntityOwnerInterface::class)) {
+    if ($this->implementsOwnerInterface) {
       $is_owner = $entity->getOwnerId() === $account->id();
     }
 

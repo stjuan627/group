@@ -13,6 +13,19 @@ use Drupal\group\Entity\GroupInterface;
 interface AccessControlInterface extends RelationHandlerInterface {
 
   /**
+   * Checks whether an operation is supported for a given target.
+   *
+   * @param string $operation
+   *   The permission operation. Usually "create", "view", "update" or "delete".
+   * @param string $target
+   *   The target of the operation. Can be 'relation' or 'entity'.
+   *
+   * @return bool
+   *   Whether the operation is supported.
+   */
+  public function supportsOperation($operation, $target);
+
+  /**
    * Checks access to an operation on the relation.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content

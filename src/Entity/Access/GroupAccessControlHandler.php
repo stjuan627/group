@@ -119,7 +119,12 @@ class GroupAccessControlHandler extends EntityAccessControlHandler implements En
       return $access->addCacheableDependency($cacheability);
     }
 
-    // @todo To be consistent with the rest of the module, return forbidden.
+    // The Group module's ideology is that if you want to do something to a
+    // group, you need Group to explicitly allow access or else the result will
+    // be forbidden. Having said that, if we do not support an operation yet,
+    // it's probably nicer to return neutral here. This way, any module that
+    // exposes new operations will work as intended AND NOT HAVE GROUP ACCESS
+    // CHECKS until Group specifically implements said operations.
     return AccessResult::neutral();
   }
 

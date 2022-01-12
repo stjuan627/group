@@ -27,7 +27,7 @@ interface PermissionProviderInterface extends RelationHandlerInterface {
    *   Defaults to 'any'.
    *
    * @return string|false
-   *   The permission name or FALSE if it does not apply.
+   *   The permission name or FALSE if the combination is not supported.
    */
   public function getPermission($operation, $target, $scope = 'any');
 

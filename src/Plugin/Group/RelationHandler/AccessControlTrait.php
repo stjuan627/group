@@ -4,11 +4,13 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Trait for group relation permission providers.
@@ -24,6 +26,27 @@ trait AccessControlTrait {
   }
 
   /**
+   * The entity type the plugin handler is for.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeInterface
+   */
+  protected $entityType;
+
+  /**
+   * Whether the target entity type implements the EntityOwnerInterface.
+   *
+   * @var bool
+   */
+  protected $implementsOwnerInterface;
+
+  /**
+   * Whether the target entity type implements the EntityPublishedInterface.
+   *
+   * @var bool
+   */
+  protected $implementsPublishedInterface;
+
+  /**
    * The plugin's permission provider.
    *
    * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
@@ -35,7 +58,20 @@ trait AccessControlTrait {
    */
   public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
     $this->traitInit($plugin_id, $group_relation_type);
+    $this->entityType = $this->entityTypeManager()->getDefinition($group_relation_type->getEntityTypeId());
+    $this->implementsOwnerInterface = $this->entityType->entityClassImplements(EntityOwnerInterface::class);
+    $this->implementsPublishedInterface = $this->entityType->entityClassImplements(EntityPublishedInterface::class);
     $this->permissionProvider = $this->groupRelationTypeManager()->getPermissionProvider($plugin_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsOperation($operation, $target) {
+    if (!isset($this->parent)) {
+      throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
+    }
+    return $this->parent->supportsOperation($operation, $target);
   }
 
   /**

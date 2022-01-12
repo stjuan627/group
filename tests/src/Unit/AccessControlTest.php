@@ -45,6 +45,120 @@ class AccessControlTest extends UnitTestCase {
   }
 
   /**
+   * Tests whether the operation is supported.
+   *
+   * @param bool $expected
+   *   The expected outcome.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
+   *   The plugin definition.
+   * @param string $operation
+   *   The permission operation. Usually "create", "view", "update" or "delete".
+   * @param string $target
+   *   The target of the operation. Can be 'relation' or 'entity'.
+   * @param string|false $permission
+   *   The operation permission.
+   * @param string|false $own_permission
+   *   The owner operation permission.
+   * @param bool $is_ownable
+   *   Whether the entity can be owned.
+   * @param bool $is_publishable
+   *   Whether the entity can be (un)published.
+   *
+   * @covers ::supportsOperation
+   * @dataProvider supportsOperationProvider
+   */
+  public function testSupportsOperation($expected, $plugin_id, GroupRelationTypeInterface $definition, $operation, $target, $permission, $own_permission, $is_ownable, $is_publishable) {
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(EntityPublishedInterface::class)->willReturn($is_publishable);
+    $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($is_ownable);
+
+    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
+    $permission_provider = $this->prophesize(PermissionProviderInterface::class);
+    $permission_provider->getPermission($operation, $target, 'any')->willReturn($permission);
+    if ($target === 'relation' || $is_ownable) {
+      $permission_provider->getPermission($operation, $target, 'own')->willReturn($own_permission);
+    }
+    else {
+      $permission_provider->getPermission($operation, $target, 'own')->shouldNotBeCalled();
+    }
+
+    $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
+    $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
+
+    $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
+    $access_control_handler->init($plugin_id, $definition);
+
+    $this->assertSame($expected, $access_control_handler->supportsOperation($operation, $target));
+  }
+
+
+  /**
+   * Data provider for testSupportsOperation().
+   *
+   * @return array
+   *   A list of testSupportsOperation method arguments.
+   */
+  public function supportsOperationProvider() {
+    foreach (['relation', 'entity'] as $target) {
+      $keys[0] = $target;
+
+      foreach (['administer foo', FALSE] as $admin_permission) {
+        $keys[1] = $admin_permission ? 'admin' : 'noadmin';
+
+        foreach (['any some permission name', FALSE] as $any_permission) {
+          $keys[2] = $any_permission ? 'anyperm' : 'noanyperm';
+
+          foreach (['own some permission name', FALSE] as $own_permission) {
+            $keys[3] = $own_permission ? 'ownperm' : 'noownperm';
+
+            foreach ([TRUE, FALSE] as $is_ownable) {
+              $keys[4] = $is_ownable ? 'ownable' : 'noownable';
+
+              foreach ([TRUE, FALSE] as $is_publishable) {
+                $keys[5] = $is_publishable ? 'pub' : 'nopub';
+
+                if ($target === 'relation') {
+                  $expected = $any_permission || $own_permission;
+                }
+                else {
+                  $expected = $any_permission !== FALSE;
+                  if (!$expected && $is_ownable) {
+                    $expected = $own_permission !== FALSE;
+                  }
+                }
+
+                $case = [
+                  'expected' => $expected,
+                  // We use a derivative ID to prove these work.
+                  'plugin_id' => 'foo:baz',
+                  'definition' => new GroupRelationType([
+                    'id' => 'foo',
+                    'label' => 'Foo',
+                    'entity_type_id' => 'bar',
+                    'admin_permission' => $admin_permission,
+                  ]),
+                  'operation' => 'some operation',
+                  'target' => $target,
+                  'any_permission' => $any_permission,
+                  'own_permission' => $own_permission,
+                  'is_ownable' => $is_ownable,
+                  'is_publishable' => $is_publishable,
+                ];
+
+                yield implode('-', $keys) => $case;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Tests the relation operation access.
    *
    * @param \Closure $expected
@@ -80,7 +194,11 @@ class AccessControlTest extends UnitTestCase {
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(Argument::any())->willReturn(FALSE);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
     $access_control_handler->init($plugin_id, $definition);
 
@@ -222,7 +340,11 @@ class AccessControlTest extends UnitTestCase {
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(Argument::any())->willReturn(FALSE);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
     $access_control_handler->init($plugin_id, $definition);
 
@@ -324,18 +446,21 @@ class AccessControlTest extends UnitTestCase {
    */
   public function testEntityAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_grouped, $is_ownable, $is_owner, $is_publishable, $is_published, $operation) {
     $storage = $this->prophesize(GroupContentStorageInterface::class);
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(EntityPublishedInterface::class)->willReturn($is_publishable);
+    $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($is_ownable);
+
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getStorage('group_content')->willReturn($storage->reveal());
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
+    $permission_provider->getPermission($operation, 'entity', 'any')->willReturn($permission);
+    $permission_provider->getPermission($operation, 'entity', 'own')->willReturn($own_permission);
 
     $check_published = $operation === 'view' && $is_publishable;
-    if (!$check_published || $is_published) {
-      $permission_provider->getPermission($operation, 'entity', 'any')->willReturn($permission);
-      $permission_provider->getPermission($operation, 'entity', 'own')->willReturn($own_permission);
-    }
-    elseif ($check_published && !$is_published) {
+    if ($check_published && !$is_published) {
       $permission_provider->getPermission("$operation unpublished", 'entity', 'any')->willReturn($permission);
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
     }
@@ -351,11 +476,6 @@ class AccessControlTest extends UnitTestCase {
     $account->id()->willReturn($account_id);
     $account = $account->reveal();
 
-    $entity_type = $this->prophesize(EntityTypeInterface::class);
-    $entity_type->entityClassImplements(EntityPublishedInterface::class)->willReturn($is_publishable);
-    $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($is_ownable);
-    $entity_type = $entity_type->reveal();
-
     $entity = $this->prophesize(ContentEntityInterface::class);
     $entity->willImplement(EntityOwnerInterface::class);
     if ($is_publishable) {
@@ -363,7 +483,6 @@ class AccessControlTest extends UnitTestCase {
       $entity->isPublished()->willReturn($is_published);
     }
     $entity->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
-    $entity->getEntityType()->willReturn($entity_type);
     $entity->getCacheContexts()->willReturn([]);
     $entity->getCachetags()->willReturn(['some_entity:foo']);
     $entity->getCacheMaxAge()->willReturn(9999);
@@ -453,61 +572,73 @@ class AccessControlTest extends UnitTestCase {
                         $case = $scenario;
                         $case['definition'] = clone $scenario['definition'];
 
-                        $check_published = $operation === 'view' && $is_publishable;
+                        $is_supported = $any_permission !== FALSE;
+                        if (!$is_supported && $is_ownable) {
+                          $is_supported = $own_permission !== FALSE;
+                        }
 
-                        // Default varies on whether the entity is grouped.
-                        $case['expected'] = function() use ($is_grouped, $own_permission, $check_published) {
-                          $result = AccessResult::forbiddenIf($is_grouped);
-                          if ($is_grouped) {
-                            $result->addCacheContexts(['user.group_permissions']);
-
-                            if ($own_permission) {
-                              $result->addCacheContexts(['user']);
-                            }
-
-                            if ($own_permission || $check_published) {
-                              $result->addCacheTags(['some_entity:foo']);
-                              $result->mergeCacheMaxAge(9999);
-                            }
-                          }
-                          return $result;
-                        };
-
-                        $admin_permission = $case['definition']->getAdminPermission();
-                        if ($is_grouped && ($admin_permission || $any_permission || $own_permission)) {
-                          $admin_access = $admin_permission && $case['has_admin_permission'];
-
-                          if (!$check_published || $is_published) {
-                            $any_access = $any_permission && $case['has_permission'];
-                            $own_access = $is_ownable && $is_owner && $own_permission && $has_own_permission;
-                          }
-                          elseif ($check_published && !$is_published) {
-                            $any_access = $any_permission && $case['has_permission'];
-                            $own_access = $is_ownable && $is_owner && $own_permission && $has_own_permission;
-                          }
-                          else {
-                            $any_access = FALSE;
-                            $own_access = FALSE;
-                          }
-
-                          $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published) {
-                            $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
-
-                            if (!$result->isAllowed()) {
-                              $result = AccessResult::forbidden();
-                            }
-
-                            if ($own_permission) {
-                              $result->addCacheContexts(['user']);
-                            }
-
-                            if ($own_permission || $check_published) {
-                              $result->addCacheTags(['some_entity:foo']);
-                              $result->mergeCacheMaxAge(9999);
-                            }
-
-                            return $result->addCacheContexts(['user.group_permissions']);
+                        if (!$is_supported) {
+                          $case['expected'] = function() {
+                            return AccessResult::neutral();
                           };
+                        }
+                        else {
+                          $check_published = $operation === 'view' && $is_publishable;
+
+                          // Default varies on whether the entity is grouped.
+                          $case['expected'] = function() use ($is_grouped, $own_permission, $check_published) {
+                            $result = AccessResult::forbiddenIf($is_grouped);
+                            if ($is_grouped) {
+                              $result->addCacheContexts(['user.group_permissions']);
+
+                              if ($own_permission) {
+                                $result->addCacheContexts(['user']);
+                              }
+
+                              if ($own_permission || $check_published) {
+                                $result->addCacheTags(['some_entity:foo']);
+                                $result->mergeCacheMaxAge(9999);
+                              }
+                            }
+                            return $result;
+                          };
+
+                          $admin_permission = $case['definition']->getAdminPermission();
+                          if ($is_grouped && ($admin_permission || $any_permission || $own_permission)) {
+                            $admin_access = $admin_permission && $case['has_admin_permission'];
+
+                            if (!$check_published || $is_published) {
+                              $any_access = $any_permission && $case['has_permission'];
+                              $own_access = $is_ownable && $is_owner && $own_permission && $has_own_permission;
+                            }
+                            elseif ($check_published && !$is_published) {
+                              $any_access = $any_permission && $case['has_permission'];
+                              $own_access = $is_ownable && $is_owner && $own_permission && $has_own_permission;
+                            }
+                            else {
+                              $any_access = FALSE;
+                              $own_access = FALSE;
+                            }
+
+                            $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published) {
+                              $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
+
+                              if (!$result->isAllowed()) {
+                                $result = AccessResult::forbidden();
+                              }
+
+                              if ($own_permission) {
+                                $result->addCacheContexts(['user']);
+                              }
+
+                              if ($own_permission || $check_published) {
+                                $result->addCacheTags(['some_entity:foo']);
+                                $result->mergeCacheMaxAge(9999);
+                              }
+
+                              return $result->addCacheContexts(['user.group_permissions']);
+                            };
+                          }
                         }
 
                         $case['has_own_permission'] = $has_own_permission;
@@ -559,7 +690,11 @@ class AccessControlTest extends UnitTestCase {
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
 
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(Argument::any())->willReturn(FALSE);
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
     $access_control_handler = new AccessControl($entity_type_manager->reveal(), $relation_manager->reveal());
     $access_control_handler->init($plugin_id, $definition);
 
