@@ -102,7 +102,7 @@ class GroupContentViewsData extends EntityViewsData {
     $entity_type_id = $this->entityType->id();
     $t_arguments = ['@entity_type_label' => $this->entityType->getLabel()];
     if ($this->entityType->hasLinkTemplate('entity-view')) {
-      $data['group_related_view_' . $entity_type_id] = [
+      $data['group_related_entity_link'] = [
         'field' => [
           'title' => $this->t('Link to @entity_type_label related entity', $t_arguments),
           'help' => $this->t('Provide a view link to the @entity_type_label related entity.', $t_arguments),
@@ -111,7 +111,7 @@ class GroupContentViewsData extends EntityViewsData {
       ];
     }
     if ($this->entityType->hasLinkTemplate('entity-edit-form')) {
-      $data['group_related_edit_' . $entity_type_id] = [
+      $data['group_related_entity_link_edit'] = [
         'field' => [
           'title' => $this->t('Link to edit @entity_type_label related entity', $t_arguments),
           'help' => $this->t('Provide an edit link to the @entity_type_label related entity.', $t_arguments),
@@ -120,7 +120,7 @@ class GroupContentViewsData extends EntityViewsData {
       ];
     }
     if ($this->entityType->hasLinkTemplate('entity-delete-form')) {
-      $data['group_related_delete_' . $entity_type_id] = [
+      $data['group_related_entity_link_delete'] = [
         'field' => [
           'title' => $this->t('Link to delete @entity_type_label related entity', $t_arguments),
           'help' => $this->t('Provide a delete link to the @entity_type_label related entity.', $t_arguments),

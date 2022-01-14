@@ -21,10 +21,10 @@ display:
     display_options:
       title: Nodes
       fields:
-        group_related_view_group_content:
-          id: group_related_view_group_content
+        group_related_entity_link:
+          id: group_related_entity_link
           table: group_content
-          field: group_related_view_group_content
+          field: group_related_entity_link
           relationship: group_content
           group_type: group
           admin_label: ''
@@ -90,7 +90,7 @@ display:
             alter_text: false
             text: ''
             make_link: true
-            path: '{{ group_related_view_group_content }}'
+            path: '{{ group_related_entity_link }}'
             absolute: false
             external: false
             replace_spaces: false
@@ -493,10 +493,10 @@ display:
           empty_zero: false
           hide_alter_empty: true
           text: 'Delete relation'
-        group_related_edit_group_content:
-          id: group_related_edit_group_content
+        group_related_entity_link_edit:
+          id: group_related_entity_link_edit
           table: group_content
-          field: group_related_edit_group_content
+          field: group_related_entity_link_edit
           relationship: group_content
           group_type: group
           admin_label: ''
@@ -546,10 +546,10 @@ display:
           text: 'Edit node'
           output_url_as_text: 0
           absolute: 0
-        group_related_delete_group_content:
-          id: group_related_delete_group_content
+        group_related_entity_link_delete:
+          id: group_related_entity_link_delete
           table: group_content
-          field: group_related_delete_group_content
+          field: group_related_entity_link_delete
           relationship: group_content
           group_type: group
           admin_label: ''
@@ -653,9 +653,9 @@ display:
             view_group_content: view_group_content
             edit_group_content: edit_group_content
             delete_group_content: delete_group_content
-            group_related_edit_group_content: group_related_edit_group_content
-            group_related_delete_group_content: group_related_delete_group_content
-            group_related_view_group_content: '0'
+            group_related_entity_link_edit: group_related_entity_link_edit
+            group_related_entity_link_delete: group_related_entity_link_delete
+            group_related_entity_link: '0'
             title: '0'
             type: '0'
             status: '0'
