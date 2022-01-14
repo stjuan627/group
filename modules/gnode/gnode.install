@@ -124,3 +124,25 @@ function gnode_update_8005() {
 function gnode_update_8006() {
   // Empty update. See group_post_update_view_cache_contexts();
 }
+
+/**
+ * Update the group nodes view to use the new links. Deletes any customization!
+ */
+function gnode_update_8007() {
+  if (\Drupal::moduleHandler()->moduleExists('views')) {
+    $name = 'views.view.group_nodes';
+    $view = \Drupal::configFactory()->getEditable($name);
+
+    if (!$view->isNew()) {
+      // Get the storage for optional extension configuration.
+      $optional_storage = new ExtensionInstallStorage(
+        \Drupal::service('config.storage'),
+        InstallStorage::CONFIG_OPTIONAL_DIRECTORY
+      );
+
+      // Read the data from the YAML file and save it to the view.
+      $view->setData($optional_storage->read($name));
+      $view->save(TRUE);
+    }
+  }
+}
