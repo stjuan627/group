@@ -137,7 +137,10 @@ function gnode_update_8007() {
       // Get the storage for optional extension configuration.
       $optional_storage = new ExtensionInstallStorage(
         \Drupal::service('config.storage'),
-        InstallStorage::CONFIG_OPTIONAL_DIRECTORY
+        InstallStorage::CONFIG_OPTIONAL_DIRECTORY,
+        '',
+        TRUE,
+        \Drupal::getContainer()->getParameter('install_profile')
       );
 
       // Read the data from the YAML file and save it to the view.
