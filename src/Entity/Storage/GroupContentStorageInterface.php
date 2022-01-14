@@ -64,6 +64,6 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   A list of GroupContent entities indexed by their IDs.
    */
-  public function loadByRelationPluginId($plugin_id);
+  public function loadByPluginId($plugin_id);
 
 }

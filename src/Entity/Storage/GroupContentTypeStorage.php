@@ -80,7 +80,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function loadByRelationPluginId($plugin_id) {
+  public function loadByPluginId($plugin_id) {
     return $this->loadByProperties(['content_plugin' => $plugin_id]);
   }
 
@@ -108,7 +108,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     }
 
     // Otherwise load all group content types being handled by gathered plugins.
-    $this->byEntityTypeCache[$entity_type_id] = $this->loadByRelationPluginId($plugin_ids);
+    $this->byEntityTypeCache[$entity_type_id] = $this->loadByPluginId($plugin_ids);
     return $this->byEntityTypeCache[$entity_type_id];
   }
 

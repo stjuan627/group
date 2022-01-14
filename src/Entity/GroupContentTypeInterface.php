@@ -63,7 +63,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
    *   An array of group content type entities indexed by their IDs.
    */
-  public static function loadByRelationPluginId($plugin_id);
+  public static function loadByPluginId($plugin_id);
 
   /**
    * Loads group content type entities which could serve a given entity type.

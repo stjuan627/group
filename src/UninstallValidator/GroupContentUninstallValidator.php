@@ -73,7 +73,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
    *   Whether there are group content entities for the given plugin ID.
    */
   protected function hasGroupContent($plugin_id) {
-    $group_content_types = array_keys(GroupContentType::loadByRelationPluginId($plugin_id));
+    $group_content_types = array_keys(GroupContentType::loadByPluginId($plugin_id));
 
     if (empty($group_content_types)) {
       return FALSE;

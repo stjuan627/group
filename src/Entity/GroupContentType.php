@@ -181,10 +181,10 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
-  public static function loadByRelationPluginId($plugin_id) {
+  public static function loadByPluginId($plugin_id) {
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
-    return $storage->loadByRelationPluginId($plugin_id);
+    return $storage->loadByPluginId($plugin_id);
   }
 
   /**

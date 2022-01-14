@@ -136,10 +136,10 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public static function loadByRelationPluginId($plugin_id) {
+  public static function loadByPluginId($plugin_id) {
     /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content');
-    return $storage->loadByRelationPluginId($plugin_id);
+    return $storage->loadByPluginId($plugin_id);
   }
 
   /**
