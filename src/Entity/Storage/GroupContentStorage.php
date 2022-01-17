@@ -16,11 +16,25 @@ use Drupal\group\Entity\GroupInterface;
 class GroupContentStorage extends SqlContentEntityStorage implements GroupContentStorageInterface {
 
   /**
+   * Static cache for looking up group content entities for groups.
+   *
+   * @var array
+   */
+  protected $loadByGroupCache = [];
+
+  /**
    * Static cache for looking up group content entities for entities.
    *
    * @var array
    */
   protected $loadByEntityCache = [];
+
+  /**
+   * Static cache for looking up group content entities for plugins.
+   *
+   * @var array
+   */
+  protected $loadByPluginCache = [];
 
   /**
    * {@inheritdoc}
@@ -69,60 +83,62 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function loadByGroup(GroupInterface $group, $plugin_id = NULL, $filters = []) {
+  public function loadByGroup(GroupInterface $group, $plugin_id = NULL) {
     // An unsaved group cannot have any content.
-    if ($group->id() === NULL) {
-      throw new EntityStorageException("Cannot load GroupContent entities for an unsaved group.");
+    $group_id = $group->id();
+    if ($group_id === NULL) {
+      return [];
     }
 
-    $properties = ['gid' => $group->id()] + $filters;
+    $cache_key = $plugin_id ?: '---ALL---';
+    if (!isset($this->loadByGroupCache[$group_id][$cache_key])) {
+      $query = $this->database
+        ->select($this->dataTable, 'd')
+        ->fields('d', ['id'])
+        ->condition('gid', $group_id);
 
-    // If a plugin ID was provided, set the group content type ID for it.
-    if (isset($plugin_id)) {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-      $storage = $this->entityTypeManager->getStorage('group_content_type');
-      $properties['type'] = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
+      if ($plugin_id) {
+        $query->condition('plugin_id', $plugin_id);
+      }
+
+      $this->loadByGroupCache[$group_id][$cache_key] = $query->execute()->fetchCol();
     }
 
-    return $this->loadByProperties($properties);
+    if (!empty($this->loadByGroupCache[$group_id][$cache_key])) {
+      return $this->loadMultiple($this->loadByGroupCache[$group_id][$cache_key]);
+    }
+    else {
+      return [];
+    }
   }
 
   /**
    * {@inheritdoc}
    */
-  public function loadByEntity(ContentEntityInterface $entity) {
+  public function loadByEntity(ContentEntityInterface $entity, $plugin_id = NULL) {
     // An unsaved entity cannot have any group content.
     $entity_id = $entity->id();
     if ($entity_id === NULL) {
-      throw new EntityStorageException("Cannot load GroupContent entities for an unsaved entity.");
+      return [];
     }
 
     $entity_type_id = $entity->getEntityTypeId();
-    if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id])) {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-      $storage = $this->entityTypeManager->getStorage('group_content_type');
-      $group_content_types = $storage->loadByEntityTypeId($entity_type_id);
+    $cache_key = $plugin_id ?: '---ALL---';
+    if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
+      $query = $this->database
+        ->select($this->dataTable, 'd')
+        ->fields('d', ['id'])
+        ->condition('entity_id', $entity_id);
 
-      // Statically cache all group content IDs for the group content types.
-      if (!empty($group_content_types)) {
-        // Use an optimized plain query to avoid the overhead of entity and SQL
-        // query builders.
-        $query = "SELECT id from {{$this->dataTable}} WHERE entity_id = :entity_id AND type IN (:types[])";
-        $this->loadByEntityCache[$entity_type_id][$entity_id] = $this->database
-          ->query($query, [
-            ':entity_id' => $entity_id,
-            ':types[]' => array_keys($group_content_types),
-          ])
-          ->fetchCol();
+      if ($plugin_id) {
+        $query->condition('plugin_id', $plugin_id);
       }
-      // If no responsible group content types were found, we return nothing.
-      else {
-        $this->loadByEntityCache[$entity_type_id][$entity_id] = [];
-      }
+
+      $this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key] = $query->execute()->fetchCol();
     }
 
-    if (!empty($this->loadByEntityCache[$entity_type_id][$entity_id])) {
-      return $this->loadMultiple($this->loadByEntityCache[$entity_type_id][$entity_id]);
+    if (!empty($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
+      return $this->loadMultiple($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key]);
     }
     else {
       return [];
@@ -133,15 +149,21 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
    * {@inheritdoc}
    */
   public function loadByPluginId($plugin_id) {
-    // If no responsible group content types were found, we return nothing.
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $group_content_types = $storage->loadByPluginId($plugin_id);
-    if (empty($group_content_types)) {
-      return [];
+    if (!isset($this->loadByPluginCache[$plugin_id])) {
+      $query = $this->database
+        ->select($this->dataTable, 'd')
+        ->fields('d', ['id'])
+        ->condition('plugin_id', $plugin_id);
+
+      $this->loadByPluginCache[$plugin_id] = $query->execute()->fetchCol();
     }
 
-    return $this->loadByProperties(['type' => array_keys($group_content_types)]);
+    if (!empty($this->loadByPluginCache[$plugin_id])) {
+      return $this->loadMultiple($this->loadByPluginCache[$plugin_id]);
+    }
+    else {
+      return [];
+    }
   }
 
   /**
@@ -149,7 +171,9 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
    */
   public function resetCache(array $ids = NULL) {
     parent::resetCache($ids);
+    $this->loadByGroupCache = [];
     $this->loadByEntityCache = [];
+    $this->loadByPluginCache = [];
   }
 
 }

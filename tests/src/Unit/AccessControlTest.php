@@ -95,7 +95,6 @@ class AccessControlTest extends UnitTestCase {
     $this->assertSame($expected, $access_control_handler->supportsOperation($operation, $target));
   }
 
-
   /**
    * Data provider for testSupportsOperation().
    *
@@ -489,7 +488,7 @@ class AccessControlTest extends UnitTestCase {
     $entity = $entity->reveal();
 
     if (!$is_grouped) {
-      $storage->loadByEntity($entity)->willReturn([]);
+      $storage->loadByEntity($entity, $plugin_id)->willReturn([]);
     }
     else {
       $group = $this->prophesize(GroupInterface::class);
@@ -499,10 +498,11 @@ class AccessControlTest extends UnitTestCase {
       $group_content = $group_content->reveal();
 
       $group_content_2 = $this->prophesize(GroupContentInterface::class);
+      $group_content_2->getGroup()->willReturn($group->reveal());
       $group_content_2->getRelationPluginId()->willReturn('cat:dog');
       $group_content_2 = $group_content_2->reveal();
 
-      $storage->loadByEntity($entity)->willReturn([1 => $group_content, 2 => $group_content_2]);
+      $storage->loadByEntity($entity, $plugin_id)->willReturn([1 => $group_content, 2 => $group_content_2]);
 
       if ($definition->getAdminPermission()) {
         $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);

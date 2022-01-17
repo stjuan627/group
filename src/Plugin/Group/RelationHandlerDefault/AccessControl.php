@@ -113,17 +113,9 @@ class AccessControl implements AccessControlInterface {
       return AccessResult::neutral();
     }
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
-    $storage = $this->entityTypeManager()->getStorage('group_content');
-    $group_contents = $storage->loadByEntity($entity);
-
-    // Filter out the content that does not use this plugin.
-    foreach ($group_contents as $id => $group_content) {
-      $plugin_id = $group_content->getRelationPluginId();
-      if ($plugin_id !== $this->pluginId) {
-        unset($group_contents[$id]);
-      }
-    }
+    $group_contents = $this->entityTypeManager()
+      ->getStorage('group_content')
+      ->loadByEntity($entity, $this->pluginId);
 
     // If this plugin is not being used by the entity, we have nothing to say.
     if (empty($group_contents)) {

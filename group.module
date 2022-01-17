@@ -314,35 +314,34 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
   foreach ($plugin_ids as $plugin_id) {
     $plugin_cache_tags[] = "group_content_list:plugin:$plugin_id";
   }
+  $access = AccessResult::neutral()->addCacheTags($plugin_cache_tags);
 
-  // Load all of the group content for this entity.
-  $group_contents = \Drupal::entityTypeManager()
-    ->getStorage('group_content')
-    ->loadByEntity($entity);
+  // Reduce the plugin IDs to those that are actually in use.
+  $data_table = \Drupal::entityTypeManager()
+    ->getDefinition('group_content')
+    ->getDataTable();
 
-  // If the entity does not belong to any group, we have nothing to say.
-  //
-  // @todo There is a slight performance boost to be had here. If we have a
-  // plugin that adds content without access and one that adds the same content
-  // with access, then this check would fail for content that is only added
-  // using the non-access plugin. The loop over the plugin IDs below would then
-  // not return anything and we would still end up with a neutral result, albeit
-  // with the user.group_permissions context and slightly worse performance. We
-  // can fix this by only loading those group content entities that use the
-  // plugins retrieved above.
-  if (empty($group_contents)) {
-    return AccessResult::neutral()->addCacheTags($plugin_cache_tags);
-  }
+  $plugin_ids_used = \Drupal::database()
+    ->select($data_table, 'd')
+    ->fields('d', ['plugin_id'])
+    ->condition('entity_id', $entity->id())
+    ->condition('plugin_id', $plugin_ids, 'IN')
+    ->distinct(TRUE)
+    ->execute()
+    ->fetchCol();
 
-  $access = AccessResult::neutral();
-  foreach ($plugin_ids as $plugin_id) {
+  // Loop over the plugin handlers and add their access check to the result.
+  foreach ($plugin_ids_used as $plugin_id) {
     $handler = $plugin_manager->getAccessControlHandler($plugin_id);
     $access = $access->orIf($handler->entityAccess($entity, $operation, $account, TRUE));
+
+    // No need to continue if access is denied.
+    if ($access->isForbidden()) {
+      break;
+    }
   }
 
-  return $access
-    ->addCacheTags($plugin_cache_tags)
-    ->addCacheContexts(['user.group_permissions']);
+  return $access;
 }
 
 /**

@@ -160,24 +160,28 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function getContent($plugin_id = NULL, $filters = []) {
-    return $this->groupContentStorage()->loadByGroup($this, $plugin_id, $filters);
+  public function getContent($plugin_id = NULL) {
+    return $this->groupContentStorage()->loadByGroup($this, $plugin_id);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getContentByEntityId($plugin_id, $id) {
-    return $this->getContent($plugin_id, ['entity_id' => $id]);
+    return $this->groupContentStorage()->loadByProperties([
+      'gid' => $this->id(),
+      'plugin_id' => $plugin_id,
+      'entity_id' => $id,
+    ]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentEntities($plugin_id = NULL, $filters = []) {
+  public function getContentEntities($plugin_id = NULL) {
     $entities = [];
 
-    foreach ($this->getContent($plugin_id, $filters) as $group_content) {
+    foreach ($this->getContent($plugin_id) as $group_content) {
       $entities[] = $group_content->getEntity();
     }
 

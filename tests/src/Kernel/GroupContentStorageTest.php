@@ -161,9 +161,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    */
   public function testLoadByUnsavedGroup() {
     $group = $this->createUnsavedGroup();
-    $this->expectException(EntityStorageException::class);
-    $this->expectExceptionMessage('Cannot load GroupContent entities for an unsaved group.');
-    $this->storage->loadByGroup($group);
+    $this->assertSame([], $this->storage->loadByGroup($group));
   }
 
   /**
@@ -183,9 +181,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    */
   public function testLoadByUnsavedEntity() {
     $group = $this->createUnsavedGroup();
-    $this->expectException(EntityStorageException::class);
-    $this->expectExceptionMessage('Cannot load GroupContent entities for an unsaved entity.');
-    $this->storage->loadByEntity($group);
+    $this->assertSame([], $this->storage->loadByEntity($group));
   }
 
   /**

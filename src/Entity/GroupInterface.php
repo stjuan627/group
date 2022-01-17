@@ -50,14 +50,11 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
-   * @param array $filters
-   *   (optional) An associative array of extra filters where the keys are
-   *   property or field names and the values are the value to filter on.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   A list of GroupContent entities matching the criteria.
    */
-  public function getContent($plugin_id = NULL, $filters = []);
+  public function getContent($plugin_id = NULL);
 
   /**
    * Retrieves all GroupContent entities for a specific entity.
@@ -80,9 +77,6 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
-   * @param array $filters
-   *   (optional) An associative array of extra filters where the keys are
-   *   property or field names and the values are the value to filter on.
    *
    * @return \Drupal\Core\Entity\EntityInterface[]
    *   A list of entities matching the criteria. This list does not have keys
@@ -90,7 +84,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *
    * @see \Drupal\group\Entity\GroupInterface::getContent()
    */
-  public function getContentEntities($plugin_id = NULL, $filters = []);
+  public function getContentEntities($plugin_id = NULL);
 
   /**
    * Adds a user as a member of the group.

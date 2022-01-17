@@ -78,24 +78,40 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * {@inheritdoc}
    */
   public function load(GroupInterface $group, AccountInterface $account) {
-    $filters = ['entity_id' => $account->id()];
-    $group_contents = $this->groupContentStorage()->loadByGroup($group, 'group_membership', $filters);
-    $group_memberships = $this->wrapGroupContentEntities($group_contents);
-    return $group_memberships ? reset($group_memberships) : FALSE;
+    $ids = $this->groupContentStorage()
+      ->getQuery()
+      ->condition('gid', $group->id())
+      ->condition('entity_id', $account->id())
+      ->condition('plugin_id', 'group_membership')
+      ->execute();
+
+    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+      $group_memberships = $this->wrapGroupContentEntities($group_contents);
+      return reset($group_memberships);
+    }
+
+    return FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function loadByGroup(GroupInterface $group, $roles = NULL) {
-    $filters = [];
+    $query = $this->groupContentStorage()
+      ->getQuery()
+      ->condition('gid', $group->id())
+      ->condition('plugin_id', 'group_membership');
 
     if (isset($roles)) {
-      $filters['group_roles'] = (array) $roles;
+      $query->condition('group_roles', (array) $roles, 'IN');
     }
 
-    $group_contents = $this->groupContentStorage()->loadByGroup($group, 'group_membership', $filters);
-    return $this->wrapGroupContentEntities($group_contents);
+    $ids = $query->execute();
+    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+      return $this->wrapGroupContentEntities($group_contents);
+    }
+
+    return [];
   }
 
   /**
@@ -106,30 +122,21 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       $account = $this->currentUser;
     }
 
-    // Load all group content types for the membership group relation.
-    $group_content_types = $this->entityTypeManager
-      ->getStorage('group_content_type')
-      ->loadByProperties(['content_plugin' => 'group_membership']);
+    $query = $this->groupContentStorage()
+      ->getQuery()
+      ->condition('entity_id', $account->id())
+      ->condition('plugin_id', 'group_membership');
 
-    // If none were found, there can be no memberships either.
-    if (empty($group_content_types)) {
-      return [];
-    }
-
-    // Try to load all possible membership group content for the user.
-    $group_content_type_ids = [];
-    foreach ($group_content_types as $group_content_type) {
-      $group_content_type_ids[] = $group_content_type->id();
-    }
-
-    $properties = ['type' => $group_content_type_ids, 'entity_id' => $account->id()];
     if (isset($roles)) {
-      $properties['group_roles'] = (array) $roles;
+      $query->condition('group_roles', (array) $roles, 'IN');
     }
 
-    /** @var \Drupal\group\Entity\GroupContentInterface[] $group_contents */
-    $group_contents = $this->groupContentStorage()->loadByProperties($properties);
-    return $this->wrapGroupContentEntities($group_contents);
+    $ids = $query->execute();
+    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+      return $this->wrapGroupContentEntities($group_contents);
+    }
+
+    return [];
   }
 
 }
