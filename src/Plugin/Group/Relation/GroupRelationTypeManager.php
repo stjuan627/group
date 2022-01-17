@@ -221,7 +221,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
 
       // Get the plugin config from every group content type for the group type.
       foreach ($group_content_types as $group_content_type) {
-        $plugin_id = $group_content_type->getRelationPluginId();
+        $plugin_id = $group_content_type->getPluginId();
 
         // Grab the plugin config from every group content type and amend it
         // with the group type ID so the plugin knows what group type to use. We
@@ -315,7 +315,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
       /** @var \Drupal\group\Entity\GroupContentTypeInterface[] $group_content_types */
       $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
       foreach ($group_content_types as $group_content_type) {
-        $map[$group_content_type->getRelationPluginId()][] = $group_content_type->id();
+        $map[$group_content_type->getPluginId()][] = $group_content_type->id();
       }
 
       $this->setCachedPluginGroupContentTypeMap($map);
@@ -362,7 +362,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
       /** @var \Drupal\group\Entity\GroupContentTypeInterface[] $group_content_types */
       $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
       foreach ($group_content_types as $group_content_type) {
-        $map[$group_content_type->getGroupTypeId()][] = $group_content_type->getRelationPluginId();
+        $map[$group_content_type->getGroupTypeId()][] = $group_content_type->getPluginId();
       }
 
       $this->setCachedGroupTypePluginMap($map);

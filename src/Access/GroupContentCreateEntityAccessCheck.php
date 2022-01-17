@@ -36,7 +36,7 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
     $needs_access = $route->getRequirement('_group_content_create_entity_access') === 'TRUE';
 
     // We can only get the group content type ID if the plugin is installed.
-    if (!$group->getGroupType()->hasRelationPlugin($plugin_id)) {
+    if (!$group->getGroupType()->hasPlugin($plugin_id)) {
       return AccessResult::neutral();
     }
 

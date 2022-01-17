@@ -36,10 +36,10 @@ class GroupContentForm extends ContentEntityForm {
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The responsible group relation.
    */
-  protected function getRelationPlugin() {
+  protected function getPlugin() {
     /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
-    return $group_content->getRelationPlugin();
+    return $group_content->getPlugin();
   }
 
   /**

@@ -124,7 +124,7 @@ class GroupContentController extends ControllerBase {
 
     // Set the info for all of the remaining bundles.
     foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $plugin = $group->getGroupType()->getRelationPlugin($plugin_id);
+      $plugin = $group->getGroupType()->getPlugin($plugin_id);
       $label = $plugin->getRelationType()->getLabel();
 
       $build['#bundles'][$bundle_name] = [
@@ -163,11 +163,11 @@ class GroupContentController extends ControllerBase {
     foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
-      if ($create_mode && !$group_content_type->getRelationPlugin()->getRelationType()->definesEntityAccess()) {
+      if ($create_mode && !$group_content_type->getPlugin()->getRelationType()->definesEntityAccess()) {
         continue;
       }
 
-      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
+      $bundles[$group_content_type->getPluginId()] = $bundle;
     }
 
     return $bundles;
@@ -301,7 +301,7 @@ class GroupContentController extends ControllerBase {
    *   A group content creation form.
    */
   public function createForm(GroupInterface $group, $plugin_id) {
-    $group_relation = $group->getGroupType()->getRelationPlugin($plugin_id);
+    $group_relation = $group->getGroupType()->getPlugin($plugin_id);
     $group_relation_type = $group_relation->getRelationType();
 
     $wizard_id = 'group_entity';

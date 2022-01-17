@@ -31,7 +31,7 @@ class GroupMembership implements CacheableDependencyInterface {
    *   enabler plugin.
    */
   public function __construct(GroupContentInterface $group_content) {
-    if ($group_content->getGroupContentType()->getRelationPluginId() == 'group_membership') {
+    if ($group_content->getGroupContentType()->getPluginId() == 'group_membership') {
       $this->groupContent = $group_content;
     }
     else {

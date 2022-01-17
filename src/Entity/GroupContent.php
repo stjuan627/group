@@ -122,14 +122,14 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRelationPlugin() {
-    return $this->getGroupContentType()->getRelationPlugin();
+  public function getPlugin() {
+    return $this->getGroupContentType()->getPlugin();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRelationPluginId() {
+  public function getPluginId() {
     return $this->get('plugin_id')->value;
   }
 
@@ -155,7 +155,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function label() {
-    return $this->getRelationPlugin()->getContentLabel($this);
+    return $this->getPlugin()->getContentLabel($this);
   }
 
   /**
@@ -166,7 +166,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $uri_route_parameters['group'] = $this->getGroupId();
     // These routes depend on the plugin ID.
     if (in_array($rel, ['add-form', 'create-form'])) {
-      $uri_route_parameters['plugin_id'] = $this->getRelationPluginId();
+      $uri_route_parameters['plugin_id'] = $this->getPluginId();
     }
     return $uri_route_parameters;
   }
@@ -195,7 +195,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $this->set('label', $this->label());
 
     // Set the denormalized data from the bundle entity.
-    $this->set('plugin_id', $this->getGroupContentType()->getRelationPluginId());
+    $this->set('plugin_id', $this->getGroupContentType()->getPluginId());
     $this->set('group_type', $this->getGroupContentType()->getGroupTypeId());
   }
 
@@ -207,7 +207,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     // For memberships, we generally need to rebuild the group role cache for
     // the member's user account in the target group.
-    $rebuild_group_role_cache = $this->getRelationPluginId() == 'group_membership';
+    $rebuild_group_role_cache = $this->getPluginId() == 'group_membership';
 
     if ($update === FALSE) {
       // We want to make sure that the entity we just added to the group behaves
@@ -255,7 +255,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
         // If a membership gets deleted, we need to reset the internal group
         // roles cache for the member in that group, but only if the user still
         // exists. Otherwise, it doesn't matter as the user ID will become void.
-        if ($group_content->getRelationPluginId() == 'group_membership') {
+        if ($group_content->getPluginId() == 'group_membership') {
           /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $role_storage */
           $role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
           $role_storage->resetUserGroupRoleCache($group_content->getEntity(), $group_content->getGroup());
@@ -272,7 +272,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     $group_id = $this->get('gid')->target_id;
     $entity_id = $this->get('entity_id')->target_id;
-    $plugin_id = $this->getGroupContentType()->getRelationPluginId();
+    $plugin_id = $this->getGroupContentType()->getPluginId();
 
     // A specific group gets any content, regardless of plugin used.
     // E.g.: A group's list of entities can be flushed with this.
@@ -393,7 +393,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     if ($group_content_type = GroupContentType::load($bundle)) {
       $fields['entity_id'] = clone $base_field_definitions['entity_id'];
       _group_relation_type_manager()
-        ->getEntityReferenceHandler($group_content_type->getRelationPluginId())
+        ->getEntityReferenceHandler($group_content_type->getPluginId())
         ->configureField($fields['entity_id']);
 
       return $fields;

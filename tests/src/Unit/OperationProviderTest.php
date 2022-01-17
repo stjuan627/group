@@ -43,7 +43,7 @@ namespace Drupal\Tests\group\Unit {
     public function testGetOperations($expected, $plugin_id, GroupRelationTypeInterface $definition, $installed, $field_ui) {
       $group_type = $this->prophesize(GroupTypeInterface::class);
       $group_type->id()->willReturn('some_type');
-      $group_type->hasRelationPlugin($plugin_id)->willReturn($installed);
+      $group_type->hasPlugin($plugin_id)->willReturn($installed);
 
       $operation_provider = $this->createOperationProvider($plugin_id, $definition, $field_ui);
       $this->assertEquals($expected, array_keys($operation_provider->getOperations($group_type->reveal())));

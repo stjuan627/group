@@ -51,8 +51,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     }
 
     // Check whether the entity can actually be added to the group.
-    $group_relation = $group->getGroupType()->getRelationPlugin($plugin_id);
-    $group_relation_type = $group_relation->getRelationType();
+    $group_relation_type = $group->getGroupType()->getPlugin($plugin_id)->getRelationType();
     if ($entity->getEntityTypeId() != $group_relation_type->getEntityTypeId()) {
       throw new EntityStorageException("Invalid plugin provided for adding the entity to the group.");
     }

@@ -143,13 +143,13 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     $all_permissions = $this->buildPermissionsYaml();
 
     // Add the plugin defined permissions to the whole.
-    foreach ($group_type->getInstalledRelationPlugins() as $group_relation) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation */
-      $group_relation_type = $group_relation->getRelationType();
+    foreach ($group_type->getInstalledPlugins() as $plugin) {
+      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
+      $group_relation_type = $plugin->getRelationType();
       $provider = $group_relation_type->getProvider();
       $section = $group_relation_type->getLabel()->__toString();
 
-      $permissions = $this->pluginManager->getPermissionProvider($group_relation->getRelationTypeId())->buildPermissions();
+      $permissions = $this->pluginManager->getPermissionProvider($plugin->getRelationTypeId())->buildPermissions();
       foreach ($permissions as $permission_name => $permission) {
         $permission += ['provider' => $provider, 'section' => $section];
         $all_permissions[$permission_name] = $this->completePermission($permission);

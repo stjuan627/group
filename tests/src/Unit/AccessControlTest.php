@@ -494,12 +494,12 @@ class AccessControlTest extends UnitTestCase {
       $group = $this->prophesize(GroupInterface::class);
       $group_content = $this->prophesize(GroupContentInterface::class);
       $group_content->getGroup()->willReturn($group->reveal());
-      $group_content->getRelationPluginId()->willReturn('foo:baz');
+      $group_content->getPluginId()->willReturn('foo:baz');
       $group_content = $group_content->reveal();
 
       $group_content_2 = $this->prophesize(GroupContentInterface::class);
       $group_content_2->getGroup()->willReturn($group->reveal());
-      $group_content_2->getRelationPluginId()->willReturn('cat:dog');
+      $group_content_2->getPluginId()->willReturn('cat:dog');
       $group_content_2 = $group_content_2->reveal();
 
       $storage->loadByEntity($entity, $plugin_id)->willReturn([1 => $group_content, 2 => $group_content_2]);

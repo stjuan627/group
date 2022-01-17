@@ -130,7 +130,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationCollection
    *   The group relation collection.
    */
-  public function getInstalledRelationPlugins();
+  public function getInstalledPlugins();
 
   /**
    * Checks whether a group relation is installed for this group type.
@@ -141,14 +141,14 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    * @return bool
    *   Whether the group relation is installed.
    */
-  public function hasRelationPlugin($plugin_id);
+  public function hasPlugin($plugin_id);
 
   /**
    * Gets an installed group relation for this group type.
    *
    * Warning: In places where the plugin may not be installed on the group type,
-   * you should always run ::hasRelationPlugin() first or you may risk ending up
-   * with crashes or unreliable data.
+   * you should always run ::hasPlugin() first or you may risk ending up with
+   * crashes or unreliable data.
    *
    * @param string $plugin_id
    *   The group relation type ID.
@@ -156,6 +156,6 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The installed group relation for the group type.
    */
-  public function getRelationPlugin($plugin_id);
+  public function getPlugin($plugin_id);
 
 }

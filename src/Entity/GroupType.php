@@ -317,14 +317,14 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getInstalledRelationPlugins() {
+  public function getInstalledPlugins() {
     return $this->getGroupRelationTypeManager()->getInstalled($this);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function hasRelationPlugin($plugin_id) {
+  public function hasPlugin($plugin_id) {
     $installed = $this->getGroupRelationTypeManager()->getInstalledIds($this);
     return in_array($plugin_id, $installed);
   }
@@ -332,8 +332,8 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRelationPlugin($plugin_id) {
-    return $this->getInstalledRelationPlugins()->get($plugin_id);
+  public function getPlugin($plugin_id) {
+    return $this->getInstalledPlugins()->get($plugin_id);
   }
 
 }

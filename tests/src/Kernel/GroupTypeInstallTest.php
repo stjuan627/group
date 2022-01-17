@@ -39,7 +39,7 @@ class GroupTypeInstallTest extends GroupKernelTestBase {
 
     // Check that the enforced plugins give priority to the Yaml files.
     /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
-    $plugin = $group_type->getRelationPlugin('group_membership');
+    $plugin = $group_type->getPlugin('group_membership');
     $config = $plugin->getConfiguration();
     $this->assertEquals('99', $config['group_cardinality'], 'Enforced group_membership plugin was created from Yaml file.');
   }

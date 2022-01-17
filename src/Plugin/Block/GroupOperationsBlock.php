@@ -88,9 +88,9 @@ class GroupOperationsBlock extends BlockBase implements ContainerFactoryPluginIn
       $links = [];
 
       // Retrieve the operations and cacheable metadata from the plugins.
-      foreach ($group->getGroupType()->getInstalledRelationPlugins() as $group_relation) {
-        /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation */
-        $operation_provider = $this->pluginManager->getOperationProvider($group_relation->getRelationTypeId());
+      foreach ($group->getGroupType()->getInstalledPlugins() as $plugin) {
+        /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
+        $operation_provider = $this->pluginManager->getOperationProvider($plugin->getRelationTypeId());
         $operations = $operation_provider->getGroupOperations($group);
         $cacheable_metadata = $cacheable_metadata->merge(CacheableMetadata::createFromRenderArray($operations));
         unset($operations['#cache']);

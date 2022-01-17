@@ -32,7 +32,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The group relation the content type uses.
    */
-  public function getRelationPlugin();
+  public function getPlugin();
 
   /**
    * Gets the group relation type ID the content type uses.
@@ -40,7 +40,7 @@ interface GroupContentTypeInterface extends ConfigEntityInterface, EntityDescrip
    * @return string
    *   The group relation type ID the content type uses.
    */
-  public function getRelationPluginId();
+  public function getPluginId();
 
   /**
    * Updates the configuration of the group relation.

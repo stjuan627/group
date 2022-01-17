@@ -70,7 +70,7 @@ class GroupNodeController extends GroupContentController {
     $storage_handler = $this->entityTypeManager->getStorage('node_type');
     foreach ($this->addPageBundles($group, $create_mode) as $plugin_id => $bundle_name) {
       if (!empty($build['#bundles'][$bundle_name])) {
-        $group_relation_type = $group->getGroupType()->getRelationPlugin($plugin_id)->getRelationType();
+        $group_relation_type = $group->getGroupType()->getPlugin($plugin_id)->getRelationType();
         $bundle_label = $storage_handler->load($group_relation_type->getEntityBundle())->label();
 
         $t_args = ['%node_type' => $bundle_label];
@@ -105,7 +105,7 @@ class GroupNodeController extends GroupContentController {
     $properties = ['group_type' => $group->bundle(), 'content_plugin' => $plugin_ids];
     foreach ($storage->loadByProperties($properties) as $bundle => $group_content_type) {
       /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
-      $bundles[$group_content_type->getRelationPluginId()] = $bundle;
+      $bundles[$group_content_type->getPluginId()] = $bundle;
     }
 
     return $bundles;

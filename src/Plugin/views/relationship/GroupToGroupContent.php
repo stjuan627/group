@@ -85,7 +85,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
       '#type' => 'checkboxes',
       '#title' => $this->t('Filter by plugin'),
       '#description' => $this->t('Refine the result by plugin. Leave empty to select all plugins, including those that could be added after this relationship was configured.'),
-      '#options' => $this->getRelationPluginOptions(),
+      '#options' => $this->getPluginOptions(),
       '#weight' => -2,
       '#default_value' => $this->options['group_content_plugins'],
     ];
@@ -97,7 +97,7 @@ class GroupToGroupContent extends RelationshipPluginBase {
    * @return string[]
    *   An array of content plugin labels, keyed by plugin ID.
    */
-  protected function getRelationPluginOptions() {
+  protected function getPluginOptions() {
     $options = [];
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
       /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */

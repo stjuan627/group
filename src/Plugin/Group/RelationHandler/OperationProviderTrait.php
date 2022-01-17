@@ -59,7 +59,7 @@ trait OperationProviderTrait {
    *   type or FALSE otherwise.
    */
   protected function getGroupContentTypeId(GroupTypeInterface $group_type) {
-    if ($group_type->hasRelationPlugin($this->pluginId)) {
+    if ($group_type->hasPlugin($this->pluginId)) {
       /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
       $storage = $this->entityTypeManager()->getStorage('group_content_type');
       return $storage->getGroupContentTypeId($group_type->id(), $this->pluginId);
