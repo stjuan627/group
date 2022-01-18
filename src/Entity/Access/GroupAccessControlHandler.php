@@ -132,8 +132,7 @@ class GroupAccessControlHandler extends EntityAccessControlHandler implements En
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    $permissions = ['bypass group access', 'create ' . $entity_bundle . ' group'];
-    return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
+    return AccessResult::allowedIfHasPermission($account, 'create ' . $entity_bundle . ' group');
   }
 
 }

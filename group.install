@@ -72,3 +72,15 @@ function group_update_9201() {
       ->execute();
   }
 }
+
+/**
+ * Remove the 'bypass group access' permission from all roles.
+ */
+function group_update_9202() {
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('user.role.') as $config_name) {
+    $role = $config_factory->getEditable($config_name);
+    $role->set('permissions', array_values(array_diff($role->get('permissions'), ['bypass group access'])));
+    $role->save(TRUE);
+  }
+}

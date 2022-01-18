@@ -31,11 +31,6 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
    * {@inheritdoc}
    */
   public function hasPermissionInGroup($permission, AccountInterface $account, GroupInterface $group) {
-    // If the account can bypass all group access, return immediately.
-    if ($account->hasPermission('bypass group access')) {
-      return TRUE;
-    }
-
     $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
 
     // If the user has member permissions for this group, check those, otherwise

@@ -60,16 +60,8 @@ class GroupQueryAccessHandler extends QueryAccessHandlerBase {
    */
   protected function buildConditions($operation, AccountInterface $account) {
     $conditions = new ConditionGroup('OR');
-
-    // @todo Remove these lines once we kill the bypass permission.
-    // If the account can bypass group access, we do not alter the query at all.
-    $conditions->addCacheContexts(['user.permissions']);
-    if ($account->hasPermission('bypass group access')) {
-      return $conditions;
-    }
-
-    $permission = $this->getPermissionName($operation);
     $conditions->addCacheContexts(['user.group_permissions']);
+    $permission = $this->getPermissionName($operation);
 
     $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
     $allowed_ids = $allowed_any_by_status_ids = $allowed_own_by_status_ids = $member_group_ids = [];

@@ -209,13 +209,6 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       return;
     }
 
-    // @todo Remove these lines once we kill the bypass permission.
-    // If the account can bypass group access, we do not alter the query at all.
-    $this->cacheableMetadata->addCacheContexts(['user.permissions']);
-    if ($this->currentUser->hasPermission('bypass group access')) {
-      return;
-    }
-
     // From this point onward, we know that there are grouped entities and that
     // we need to check access, so we can LEFT JOIN the necessary table.
     $base_table = $entity_type->getBaseTable();

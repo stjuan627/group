@@ -45,8 +45,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * Tests checking whether a user has a permission in a group.
    *
-   * @param bool $can_bypass
-   *   Whether the user can bypass group access.
    * @param bool $is_anon
    *   Whether the user is anonymous.
    * @param array $group_type_permissions
@@ -63,9 +61,8 @@ class GroupPermissionCheckerTest extends UnitTestCase {
    * @covers ::hasPermissionInGroup
    * @dataProvider provideHasPermissionInGroupScenarios
    */
-  public function testHasPermissionInGroup($can_bypass, $is_anon, $group_type_permissions, $group_permissions, $permission, $has_permission, $message) {
+  public function testHasPermissionInGroup($is_anon, $group_type_permissions, $group_permissions, $permission, $has_permission, $message) {
     $account = $this->prophesize(AccountInterface::class);
-    $account->hasPermission('bypass group access')->willReturn($can_bypass);
     $account->isAnonymous()->willReturn($is_anon);
 
     $group = $this->prophesize(GroupInterface::class);
@@ -96,28 +93,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
    * All scenarios assume group ID 1 and type 'foo'.
    */
   public function provideHasPermissionInGroupScenarios() {
-    $scenarios['anonymousWithBypass'] = [
-      TRUE,
-      TRUE,
-      [],
-      [],
-      'view group',
-      TRUE,
-      'An anonymous user with the bypass permission can view the group.'
-    ];
-
-    $scenarios['authenticatedWithBypass'] = [
-      TRUE,
-      FALSE,
-      [],
-      [],
-      'view group',
-      TRUE,
-      'An authenticated user with the bypass permission can view the group.'
-    ];
-
     $scenarios['anonymousWithAdmin'] = [
-      FALSE,
       TRUE,
       ['foo' => ['administer group']],
       [],
@@ -128,7 +104,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scenarios['outsiderWithAdmin'] = [
       FALSE,
-      FALSE,
       ['foo' => ['administer group']],
       [],
       'view group',
@@ -138,7 +113,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scenarios['memberWithAdmin'] = [
       FALSE,
-      FALSE,
       [],
       [1 => ['administer group']],
       'view group',
@@ -147,7 +121,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
     ];
 
     $scenarios['anonymousWithPermission'] = [
-      FALSE,
       TRUE,
       ['foo' => ['view group']],
       [],
@@ -158,7 +131,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scenarios['outsiderWithPermission'] = [
       FALSE,
-      FALSE,
       ['foo' => ['view group']],
       [],
       'view group',
@@ -168,7 +140,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scenarios['memberWithPermission'] = [
       FALSE,
-      FALSE,
       [],
       [1 => ['view group']],
       'view group',
@@ -177,7 +148,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
     ];
 
     $scenarios['anonymousWithoutPermission'] = [
-      FALSE,
       TRUE,
       ['foo' => []],
       [],
@@ -188,7 +158,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $scenarios['outsiderWithoutPermission'] = [
       FALSE,
-      FALSE,
       ['foo' => []],
       [],
       'view group',
@@ -197,7 +166,6 @@ class GroupPermissionCheckerTest extends UnitTestCase {
     ];
 
     $scenarios['memberWithoutPermission'] = [
-      FALSE,
       FALSE,
       [],
       [1 => []],

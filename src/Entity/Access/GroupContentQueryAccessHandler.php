@@ -45,15 +45,8 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
    */
   protected function buildConditions($operation, AccountInterface $account) {
     $conditions = new ConditionGroup('OR');
-
-    // @todo Remove these lines once we kill the bypass permission.
-    // If the account can bypass group access, we do not alter the query at all.
-    $conditions->addCacheContexts(['user.permissions']);
-    if ($account->hasPermission('bypass group access')) {
-      return $conditions;
-    }
-
     $conditions->addCacheContexts(['user.group_permissions']);
+
     $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
     $group_permissions = $calculated_permissions->getItemsByScope(CGPII::SCOPE_GROUP);
 
