@@ -75,7 +75,7 @@ class GroupQueryAccessHandler extends QueryAccessHandlerBase {
         $member_group_ids[] = $identifier;
       }
 
-      if ($item->hasPermission('administer group')) {
+      if ($item->isAdmin()) {
         $allowed_ids[$scope][] = $identifier;
       }
       elseif (!$check_published) {

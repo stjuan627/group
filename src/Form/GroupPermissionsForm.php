@@ -65,12 +65,9 @@ abstract class GroupPermissionsForm extends FormBase {
    *   A render array to display atop the form.
    */
   protected function getInfo() {
-    // Format a message explaining the cells with a red x inside them.
-    $replace = ['@red_dash' => new FormattableMarkup('<span style="color: #ff0000;">-</span>', [])];
-    $message =  $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
-
-    // We use FormattableMarkup so the 'style' attribute doesn't get escaped.
-    return ['red_dash_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
+    $message_check = $this->t('Cells with a &#9989; indicate that the permission is automatically available to that admin role.');
+    $message_cross = $this->t('Cells with a &#10060; indicate that the permission is not available for that role.');
+    return ['icon_info' => ['#markup' => "<p>$message_check<br/>$message_cross</p>"]];
   }
 
   /**
@@ -136,6 +133,7 @@ abstract class GroupPermissionsForm extends FormBase {
         'is_anonymous' => $group_role->isAnonymous(),
         'is_outsider' => $group_role->isOutsider(),
         'is_member' => $group_role->isMember(),
+        'is_admin' => $group_role->isAdmin(),
       ];
     }
 
@@ -220,42 +218,51 @@ abstract class GroupPermissionsForm extends FormBase {
 
           // Finally build a checkbox cell for every group role.
           foreach ($role_info as $role_name => $info) {
-            // Determine whether the permission is available for this role.
-            $na = $info['is_anonymous'] && !in_array('anonymous', $perm_item['allowed for']);
-            $na = $na || ($info['is_outsider'] && !in_array('outsider', $perm_item['allowed for']));
-            $na = $na || ($info['is_member'] && !in_array('member', $perm_item['allowed for']));
+            $marker_text = FALSE;
 
+            // Show a green checkmark for admin roles.
+            if ($info['is_admin']) {
+              $marker_text = '&#9989;';
+            }
             // Show a red '-' if the permission is unavailable.
-            if ($na) {
-              $form['permissions'][$perm][$role_name] = [
-                '#title' => $info['label'] . ': ' . $perm_item['title'],
-                '#title_display' => 'invisible',
-                '#wrapper_attributes' => [
-                  'class' => ['checkbox'],
-                  'style' => 'color: #ff0000;',
-                ],
-                '#markup' => '-',
-              ];
-            }
-            // Show a checkbox if the permissions is available.
             else {
+              $na = $info['is_anonymous'] && !in_array('anonymous', $perm_item['allowed for']);
+              $na = $na || ($info['is_outsider'] && !in_array('outsider', $perm_item['allowed for']));
+              $na = $na || ($info['is_member'] && !in_array('member', $perm_item['allowed for']));
+
+              if ($na) {
+                $marker_text = '&#10060;';
+              }
+            }
+
+            // Show the special marker if necessary.
+            if ($marker_text) {
               $form['permissions'][$perm][$role_name] = [
                 '#title' => $info['label'] . ': ' . $perm_item['title'],
                 '#title_display' => 'invisible',
-                '#wrapper_attributes' => [
-                  'class' => ['checkbox'],
-                ],
-                '#type' => 'checkbox',
-                '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
-                '#attributes' => [
-                  'class' => [
-                    'rid-' . $role_name,
-                    'js-rid-' . $role_name
-                  ]
-                ],
-                '#parents' => [$role_name, $perm],
+                '#wrapper_attributes' => ['class' => ['checkbox']],
+                '#markup' => $marker_text,
               ];
+              continue;
             }
+
+            // Show a checkbox if the permissions is available.
+            $form['permissions'][$perm][$role_name] = [
+              '#title' => $info['label'] . ': ' . $perm_item['title'],
+              '#title_display' => 'invisible',
+              '#wrapper_attributes' => [
+                'class' => ['checkbox'],
+              ],
+              '#type' => 'checkbox',
+              '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
+              '#attributes' => [
+                'class' => [
+                  'rid-' . $role_name,
+                  'js-rid-' . $role_name
+                ]
+              ],
+              '#parents' => [$role_name, $perm],
+            ];
           }
         }
       }

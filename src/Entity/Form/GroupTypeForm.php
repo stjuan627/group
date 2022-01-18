@@ -123,7 +123,7 @@ class GroupTypeForm extends BundleEntityFormBase {
         '#title' => $this->t('Automatically configure an administrative role'),
         '#type' => 'checkbox',
         '#default_value' => 0,
-        '#description' => $this->t("This will create an 'Admin' role by default which will have all currently defined permissions."),
+        '#description' => $this->t("This will create an 'Admin' role by default which will have all permissions."),
       ];
 
       $form['assign_admin_role'] = [
@@ -235,8 +235,9 @@ class GroupTypeForm extends BundleEntityFormBase {
           'label' => $this->t('Admin'),
           'weight' => 100,
           'group_type' => $type->id(),
+          'admin' => TRUE,
         ]);
-        $group_role->grantAllPermissions()->save();
+        $storage->save($group_role);
 
         // Optionally auto-assign the admin role to group creators.
         if ($form_state->getValue('assign_admin_role')) {

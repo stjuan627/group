@@ -68,8 +68,9 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'label' => 'Revision admin',
       'weight' => 0,
       'group_type' => $this->groupType->id(),
+      'admin' => TRUE,
     ]);
-    $this->adminRole->grantPermission('administer group')->save();
+    $this->adminRole->save();
   }
 
   /**

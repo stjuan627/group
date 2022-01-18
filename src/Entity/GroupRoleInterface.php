@@ -29,6 +29,14 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function setWeight($weight);
 
   /**
+   * Returns whether the role is an admin role.
+   *
+   * @return bool
+   *   Whether the role is an admin role.
+   */
+  public function isAdmin();
+
+  /**
    * Returns whether the role is tied to a group type.
    *
    * @return bool
@@ -126,14 +134,6 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function grantPermissions($permissions);
 
   /**
-   * Grants all available permissions to the role.
-   *
-   * @return \Drupal\group\Entity\GroupRoleInterface
-   *   The group role this was called on.
-   */
-  public function grantAllPermissions();
-
-  /**
    * Revokes a permission from the role.
    *
    * @param string $permission
@@ -171,7 +171,7 @@ interface GroupRoleInterface extends ConfigEntityInterface {
    *   revoked.
    *   @code
    *     [
-   *       'administer group' => 0,         // Revoke 'administer group'
+   *       'view group' => 0,               // Revoke 'view group'
    *       'edit group' => FALSE,           // Revoke 'edit group'
    *       'administer members' => 1,       // Grant 'administer members'
    *       'leave group' => TRUE,           // Grant 'leave group'

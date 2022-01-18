@@ -49,6 +49,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "id",
  *     "label",
  *     "weight",
+ *     "admin",
  *     "internal",
  *     "audience",
  *     "group_type",
@@ -79,6 +80,13 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * @var int
    */
   protected $weight;
+
+  /**
+   * Whether the group role is an admin role.
+   *
+   * @var bool
+   */
+  protected $admin = FALSE;
 
   /**
    * Whether the group role is used internally.
@@ -146,6 +154,13 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   public function setWeight($weight) {
     $this->set('weight', $weight);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isAdmin() {
+    return $this->admin;
   }
 
   /**
@@ -225,23 +240,10 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function grantPermissions($permissions) {
-    $this->permissions = array_unique(array_merge($this->permissions, $permissions));
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function grantAllPermissions() {
-    $permissions = $this->getPermissionHandler()->getPermissionsByGroupType($this->getGroupType());
-
-    foreach ($permissions as $permission => $info) {
-      if (!in_array($this->audience, $info['allowed for'])) {
-        unset($permissions[$permission]);
-      }
+    if (!$this->isAdmin()) {
+      $this->permissions = array_unique(array_merge($this->permissions, $permissions));
     }
-
-    return $this->grantPermissions(array_keys($permissions));
+    return $this;
   }
 
   /**
@@ -255,7 +257,9 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function revokePermissions($permissions) {
-    $this->permissions = array_diff($this->permissions, $permissions);
+    if (!$this->isAdmin()) {
+      $this->permissions = array_diff($this->permissions, $permissions);
+    }
     return $this;
   }
 
@@ -263,16 +267,18 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function changePermissions(array $permissions = []) {
-    // Grant new permissions to the role.
-    $grant = array_filter($permissions);
-    if (!empty($grant)) {
-      $this->grantPermissions(array_keys($grant));
-    }
+    if (!$this->isAdmin()) {
+      // Grant new permissions to the role.
+      $grant = array_filter($permissions);
+      if (!empty($grant)) {
+        $this->grantPermissions(array_keys($grant));
+      }
 
-    // Revoke permissions from the role.
-    $revoke = array_diff_assoc($permissions, $grant);
-    if (!empty($revoke)) {
-      $this->revokePermissions(array_keys($revoke));
+      // Revoke permissions from the role.
+      $revoke = array_diff_assoc($permissions, $grant);
+      if (!empty($revoke)) {
+        $this->revokePermissions(array_keys($revoke));
+      }
     }
 
     return $this;
@@ -320,6 +326,11 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
+
+    // No need to store permissions for an admin role.
+    if ($this->isAdmin()) {
+      $this->permissions = [];
+    }
 
     if (!isset($this->weight) && ($group_roles = $storage->loadMultiple())) {
       // Set a role weight to make this new role last.

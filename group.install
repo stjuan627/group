@@ -84,3 +84,21 @@ function group_update_9202() {
     $role->save(TRUE);
   }
 }
+
+/**
+ * Convert group roles with the 'administer group' permission to admin roles.
+ */
+function group_update_9203() {
+  $config_factory = \Drupal::configFactory();
+  foreach ($config_factory->listAll('group.role.') as $config_name) {
+    $role = $config_factory->getEditable($config_name);
+    if (in_array('administer group', $role->get('permissions'), TRUE)) {
+      $role->set('permissions', []);
+      $role->set('admin', TRUE);
+    }
+    else {
+      $role->set('admin', FALSE);
+    }
+    $role->save(TRUE);
+  }
+}

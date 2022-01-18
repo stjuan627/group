@@ -65,7 +65,8 @@ class DefaultGroupPermissionCalculator extends GroupPermissionCalculatorBase {
       $item = new CalculatedGroupPermissionsItem(
         CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
         $group_type_id,
-        $group_role->getPermissions()
+        $group_role->getPermissions(),
+        $group_role->isAdmin()
       );
 
       $calculated_permissions->addItem($item);
@@ -95,7 +96,8 @@ class DefaultGroupPermissionCalculator extends GroupPermissionCalculatorBase {
       $item = new CalculatedGroupPermissionsItem(
         CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
         $group_type_id,
-        $group_role->getPermissions()
+        $group_role->getPermissions(),
+        $group_role->isAdmin()
       );
 
       $calculated_permissions->addItem($item);
@@ -119,20 +121,16 @@ class DefaultGroupPermissionCalculator extends GroupPermissionCalculatorBase {
       // If the member's roles change, so do the permissions.
       $calculated_permissions->addCacheableDependency($group_membership);
 
-      $permission_sets = [];
       foreach ($group_membership->getRoles() as $group_role) {
-        $permission_sets[] = $group_role->getPermissions();
+        $item = new CalculatedGroupPermissionsItem(
+          CalculatedGroupPermissionsItemInterface::SCOPE_GROUP,
+          $group_membership->getGroup()->id(),
+          $group_role->getPermissions(),
+          $group_role->isAdmin()
+        );
         $calculated_permissions->addCacheableDependency($group_role);
+        $calculated_permissions->addItem($item);
       }
-
-      $permissions = $permission_sets ? array_merge(...$permission_sets) : [];
-      $item = new CalculatedGroupPermissionsItem(
-        CalculatedGroupPermissionsItemInterface::SCOPE_GROUP,
-        $group_membership->getGroup()->id(),
-        $permissions
-      );
-
-      $calculated_permissions->addItem($item);
     }
 
     return $calculated_permissions;

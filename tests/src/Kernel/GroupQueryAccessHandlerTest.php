@@ -445,11 +445,11 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
     $this->assertEqualsCanonicalizing(['user', 'user.group_permissions'], $conditions->getCacheContexts());
     $this->assertFalse($conditions->isAlwaysFalse());
 
-    // Verify that having the admin permission simplifies things.
-    $any_unpub->getOutsiderRole()->grantPermission('administer group')->save();
-    $own_unpub->getOutsiderRole()->grantPermission('administer group')->save();
-    $any_unpub->getMemberRole()->grantPermission('administer group')->save();
-    $own_unpub->getMemberRole()->grantPermission('administer group')->save();
+    // Verify that having admin access simplifies things.
+    $any_unpub->getOutsiderRole()->set('admin', TRUE)->save();
+    $own_unpub->getOutsiderRole()->set('admin', TRUE)->save();
+    $any_unpub->getMemberRole()->set('admin', TRUE)->save();
+    $own_unpub->getMemberRole()->set('admin', TRUE)->save();
 
     $conditions = $this->handler->getConditions('view', $user);
     $expected_conditions = [

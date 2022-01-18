@@ -84,9 +84,16 @@ class RefinableCalculatedGroupPermissions implements RefinableCalculatedGroupPer
       throw new \LogicException('Trying to merge two items with different identifiers.');
     }
 
-    $permissions = array_merge($a->getPermissions(), $b->getPermissions());
-    // @todo In Group 8.2.x merge isAdmin flags and pass to constructor.
-    return new CalculatedGroupPermissionsItem($a->getScope(), $a->getIdentifier(), array_unique($permissions));
+    // If either of the items is admin, the new one is too.
+    $is_admin = $a->isAdmin() || $b->isAdmin();
+
+    // Admin items don't need to have any permissions.
+    $permissions = [];
+    if (!$is_admin) {
+      $permissions = array_unique(array_merge($a->getPermissions(), $b->getPermissions()));
+    }
+
+    return new CalculatedGroupPermissionsItem($a->getScope(), $a->getIdentifier(), $permissions, $is_admin);
   }
 
 }

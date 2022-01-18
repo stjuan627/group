@@ -113,8 +113,8 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
         'label' => 'Revision admin',
         'weight' => 0,
         'group_type' => $this->groupType->id(),
+        'admin' => TRUE,
       ])
-      ->grantPermission('administer group')
       ->save();
     $group->addMember($admin, ['group_roles' => ['revision_test-admin']]);
     $this->assertFalse($this->accessManager->checkRequest($request, $admin), 'An admin has no access if there is no pending revision.');
@@ -158,7 +158,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     // Test that the admin permission also works.
     $this->groupType->getMemberRole()
       ->revokePermission('view any unpublished group')
-      ->grantPermission('administer group')
+      ->set('admin', TRUE)
       ->save();
 
     $request = $this->createRequest($group);

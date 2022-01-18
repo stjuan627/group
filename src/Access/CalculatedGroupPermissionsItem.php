@@ -49,16 +49,11 @@ class CalculatedGroupPermissionsItem implements CalculatedGroupPermissionsItemIn
    * @param bool $is_admin
    *   (optional) Whether the item grants admin privileges.
    */
-  public function __construct($scope, $identifier, $permissions, $is_admin = NULL) {
+  public function __construct($scope, $identifier, $permissions, $is_admin = FALSE) {
     $this->scope = $scope;
     $this->identifier = $identifier;
-    $this->permissions = array_unique($permissions);
-
-    // @todo Rework for group 8.2.x to no longer use the admin permission.
-    // @todo Do make flag default to FALSE and pass role's isAdmin flag instead.
-    $this->isAdmin = isset($is_admin)
-      ? $is_admin
-      : in_array('administer group', $permissions, TRUE);
+    $this->permissions = $is_admin ? [] : array_unique($permissions);
+    $this->isAdmin = $is_admin;
   }
 
   /**

@@ -119,7 +119,7 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   /**
    * Gets the IDs of the group roles a group creator should receive.
    *
-   * @return string
+   * @return string[]
    *   The IDs of the group role the group creator should receive.
    */
   public function getCreatorRoleIds();

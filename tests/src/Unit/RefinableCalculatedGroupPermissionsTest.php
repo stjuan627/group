@@ -37,6 +37,11 @@ class RefinableCalculatedGroupPermissionsTest extends UnitTestCase {
 
     $calculated_permissions->addItem($item, TRUE);
     $this->assertEquals(['baz'], $calculated_permissions->getItem(CGPII::SCOPE_GROUP_TYPE, 'foo')->getPermissions(), 'Successfully overwrote an item that was already in the list.');
+
+    $item = new CalculatedGroupPermissionsItem(CGPII::SCOPE_GROUP_TYPE, 'foo', ['cat'], TRUE);
+    $calculated_permissions->addItem($item);
+    $this->assertEquals([], $calculated_permissions->getItem(CGPII::SCOPE_GROUP_TYPE, 'foo')->getPermissions(), 'Merging in a calculated permissions item with admin rights empties the permissions.');
+    $this->assertTrue($calculated_permissions->getItem(CGPII::SCOPE_GROUP_TYPE, 'foo')->isAdmin(), 'Merging in a calculated permissions item with admin rights flags the result as having admin rights.');
   }
 
   /**

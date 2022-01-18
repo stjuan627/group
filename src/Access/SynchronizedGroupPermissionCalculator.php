@@ -54,8 +54,6 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
     $roles = $account->getRoles(TRUE);
 
     foreach ($group_type_storage->getQuery()->execute() as $group_type_id) {
-      $permission_sets = [];
-
       $group_role_ids = [];
       foreach ($roles as $role_id) {
         $group_role_ids[] = $this->groupRoleSynchronizer->getGroupRoleId($group_type_id, $role_id);
@@ -64,19 +62,16 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
       if (!empty($group_role_ids)) {
         /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
         foreach ($group_role_storage->loadMultiple($group_role_ids) as $group_role) {
-          $permission_sets[] = $group_role->getPermissions();
+          $item = new CalculatedGroupPermissionsItem(
+            CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
+            $group_type_id,
+            $group_role->getPermissions(),
+            $group_role->isAdmin()
+          );
+          $calculated_permissions->addItem($item);
           $calculated_permissions->addCacheableDependency($group_role);
         }
       }
-
-      $permissions = $permission_sets ? array_merge(...$permission_sets) : [];
-      $item = new CalculatedGroupPermissionsItem(
-        CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE,
-        $group_type_id,
-        $permissions
-      );
-
-      $calculated_permissions->addItem($item);
     }
 
     return $calculated_permissions;

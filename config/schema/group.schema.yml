@@ -63,6 +63,9 @@ group.role.*:
     weight:
       type: 'integer'
       label: 'Weight'
+    admin:
+      type: 'boolean'
+      label: 'Group role is an admin role'
     internal:
       type: 'boolean'
       label: 'Group role is used internally'

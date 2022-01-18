@@ -80,6 +80,13 @@ class GroupRoleForm extends EntityForm {
       '#value' => $group_role->getWeight(),
     ];
 
+    $form['admin'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Admin role'),
+      '#description' => $this->t('<strong>Warning</strong>: An admin role will always have all permissions, assign with caution.'),
+      '#default_value' => $group_role->isAdmin(),
+    ];
+
     return $form;
   }
 
