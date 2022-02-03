@@ -116,6 +116,30 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityCreatePermission();
 
   /**
+   * Gets the name of the view all revisions permission for the relation.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityViewAllRevisionsPermission();
+
+  /**
+   * Gets the name of the delete revision permission for the relation.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityDeleteRevisionsPermission();
+
+  /**
+   * Gets the name of the revert revision permission for the relation.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityRevertRevisionsPermission();
+
+  /**
    * Gets the name of the permission for the given operation, target and scope.
    *
    * @param string $operation

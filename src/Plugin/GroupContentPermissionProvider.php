@@ -164,6 +164,36 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getEntityViewAllRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "view $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityRevertRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "revert $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityDeleteRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "delete $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermission($operation, $target, $scope = 'any') {
     assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
     assert(in_array($scope, ['any', 'own'], TRUE), '$target must be either "relation" or "entity"');
@@ -192,6 +222,12 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getEntityDeletePermission($scope);
         case 'create':
           return $this->getEntityCreatePermission();
+        case 'view all revisions':
+          return $this->getEntityViewAllRevisionsPermission();
+        case 'delete revision':
+          return $this->getEntityDeleteRevisionsPermission();
+        case 'revert revision':
+          return $this->getEntityRevertRevisionsPermission();
       }
     }
 
