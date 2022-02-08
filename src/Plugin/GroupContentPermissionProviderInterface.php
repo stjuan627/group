@@ -124,6 +124,14 @@ interface GroupContentPermissionProviderInterface {
   public function getEntityViewAllRevisionsPermission();
 
   /**
+   * Gets the name of the view revision permission for the relation.
+   *
+   * @return string|false
+   *   The permission name or FALSE if it does not apply.
+   */
+  public function getEntityViewRevisionPermission();
+
+  /**
    * Gets the name of the delete revision permission for the relation.
    *
    * @return string|false
