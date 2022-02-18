@@ -120,17 +120,19 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    * Returns whether the group roles should match with Drupal roles.
    *
    * @return bool
-   *   Whether the group creator rol must be set from drupal roles.
+   *   Whether the group creator role must be set from drupal roles.
    */
-  public function creatorRoleMembership();
+  public function creatorRoleMembership(): bool;
 
   /**
-   * Returns group roles according to drupal roles.
+   * Returns group roles for creators based on their site-wide roles.
    *
-   * @return Array
-   *   Drupal roles according to group roles.
+   * @return array
+   *   An associate array where primary keys are site-wide role names and values
+   *   are group roles that should be assigned to users with a given site-wide
+   *   role.
    */
-  public function creatorRoleMembershipRoles();
+  public function creatorRoleMembershipRoles(): array;
 
   /**
    * Gets the IDs of the group roles a group creator should receive.
@@ -175,55 +177,13 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   public function getContentPlugin($plugin_id);
 
   /**
-   * Adds a content enabler plugin to this group type.
+   * Returns group roles that should be assigned to the current user.
    *
-   * @param string $plugin_id
-   *   The ID of the content enabler plugin to add.
-   * @param array $configuration
-   *   (optional) An array of content enabler plugin configuration.
-   *
-   * @return $this
-   *
-   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
-   *   \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface::
-   *   createFromPlugin() instead.
-   */
-  public function installContentPlugin($plugin_id, array $configuration = []);
-
-  /**
-   * Updates the configuration of a content enabler plugin for this group type.
-   *
-   * @param string $plugin_id
-   *   The ID of the content enabler plugin to add.
-   * @param array $configuration
-   *   An array of content enabler plugin configuration.
-   *
-   * @return $this
-   *
-   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
-   *   \Drupal\group\Entity\GroupContentTypeInterface::updateContentPlugin()
-   *   instead.
-   */
-  public function updateContentPlugin($plugin_id, array $configuration);
-
-  /**
-   * Removes a content enabler plugin from this group type.
-   *
-   * @param string $plugin_id
-   *   The content enabler plugin ID.
-   *
-   * @return $this
-   *
-   * @deprecated in Group 1.0-beta3, will be removed before Group 1.0-rc1. Use
-   *   \Drupal\group\Entity\GroupContentType::delete() instead.
-   */
-  public function uninstallContentPlugin($plugin_id);
-
-  /**
-   * Returns group roles set for the drupal roles on configuration.
+   * This is defined based on the user's current roles.
    *
    * @return array
+   *   An array of group roles.
    */
-  public function getRoleMembershipRoles();
+  public function getRoleMembershipRoles(): array;
 
 }

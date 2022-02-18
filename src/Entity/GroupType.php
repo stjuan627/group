@@ -265,14 +265,14 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function creatorRoleMembership() {
+  public function creatorRoleMembership(): bool {
     return $this->creator_role_membership;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function creatorRoleMembershipRoles() {
+  public function creatorRoleMembershipRoles(): array {
     return $this->creator_role_membership_roles;
   }
 
@@ -369,43 +369,19 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function installContentPlugin($plugin_id, array $configuration = []) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-    $storage = $this->entityTypeManager()->getStorage('group_content_type');
-    $storage->createFromPlugin($this, $plugin_id, $configuration)->save();
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function updateContentPlugin($plugin_id, array $configuration) {
-    $plugin = $this->getContentPlugin($plugin_id);
-    GroupContentType::load($plugin->getContentTypeConfigId())->updateContentPlugin($configuration);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function uninstallContentPlugin($plugin_id) {
-    $plugin = $this->getContentPlugin($plugin_id);
-    GroupContentType::load($plugin->getContentTypeConfigId())->delete();
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRoleMembershipRoles() {
-    $member_roles = [];
-    $user_roles = \Drupal::currentUser()->getRoles();
-    foreach ($this->creatorRoleMembershipRoles() as $role => $role_values) {
-      if (in_array($role, $user_roles) && isset($role_values['roles'])) {
-        $member_roles += array_diff($role_values['roles'], [0]);
+  public function getRoleMembershipRoles(): array {
+    $current_user = \Drupal::currentUser();
+    if ($current_user->isAnonymous()) {
+      return [];
+    }
+    $tmp = [];
+    $user_roles = $current_user->getRoles();
+    foreach ($this->creatorRoleMembershipRoles() as $sitewide_role => $group_roles) {
+      if (!empty($group_roles) && in_array($sitewide_role, $user_roles, TRUE)) {
+        $tmp[] = $group_roles;
       }
     }
-    return $member_roles;
+    return array_unique(array_merge(...$tmp));
   }
 
 }

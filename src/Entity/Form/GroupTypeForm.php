@@ -142,10 +142,10 @@ class GroupTypeForm extends BundleEntityFormBase {
     // Edit-form specific elements.
     else {
       $form['creator_role_membership'] = [
-        '#title' => $this->t('Assign group roles according to drupal roles'),
+        '#title' => $this->t('Assign group roles based on site-wide roles'),
         '#type' => 'checkbox',
         '#default_value' => $type->creatorRoleMembership(),
-        '#description' => $this->t('If the group creator automatically becomes a member you can match the roles according to Drupal roles.'),
+        '#description' => $this->t("If the group creator automatically becomes a member you can grant additional group roles to it based on the user's site-wide roles."),
         '#states' => [
           'visible' => [':input[name="creator_membership"]' => ['checked' => TRUE]],
           'invisible' => [':input[name="creator_wizard"]' => ['checked' => TRUE]],
@@ -154,9 +154,12 @@ class GroupTypeForm extends BundleEntityFormBase {
       $form['creator_role_membership_roles'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Match roles'),
-        '#description' => $this->t('Match group roles and Drupal roles'),
+        '#description' => $this->t('Match group roles and site-wide roles'),
         '#states' => [
-          'visible' => [':input[name="creator_role_membership"]' => ['checked' => TRUE]],
+          'visible' => [
+            ':input[name="creator_membership"]' => ['checked' => TRUE],
+            ':input[name="creator_role_membership"]' => ['checked' => TRUE],
+          ],
         ],
         '#tree' => TRUE,
       ];
@@ -167,18 +170,18 @@ class GroupTypeForm extends BundleEntityFormBase {
       }
 
       if ($options) {
-        $user_roles  = user_role_names(TRUE, 'create ' . $type->id() . ' group');
+        $user_roles = user_role_names(TRUE, 'create ' . $type->id() . ' group');
         $role_membership_roles = $type->creatorRoleMembershipRoles();
         foreach ($user_roles as $user_role => $user_role_name) {
           $form['creator_role_membership_roles'][$user_role] = [
             '#type' => 'fieldset',
-            '#title' => $this->t('Drupal role: @role', ['@role' => $user_role_name]),
+            '#title' => $this->t('Site-wide role: @role', ['@role' => $user_role_name]),
           ];
           $form['creator_role_membership_roles'][$user_role]['roles'] = [
             '#type' => 'checkboxes',
             '#title' => $this->t('Group Roles'),
             '#options' => $options,
-            '#default_value' => isset($role_membership_roles[$user_role]['roles']) ? $role_membership_roles[$user_role]['roles'] : [],
+            '#default_value' => $role_membership_roles[$user_role] ?? [],
           ];
         }
       }
@@ -250,9 +253,20 @@ class GroupTypeForm extends BundleEntityFormBase {
       $type->set('creator_role_membership', $form_state->getValue('creator_role_membership'));
     }
 
-    if ($form_state->getValue('creator_role_membership_roles')) {
-      $type->set('creator_role_membership_roles', $form_state->getValue('creator_role_membership_roles'));
+    $creator_role_membership_roles = $form_state->getValue('creator_role_membership_roles');
+    if ($form_state->getValue('creator_membership') && $form_state->getValue('creator_role_membership')) {
+      if ($creator_role_membership_roles) {
+        $creator_role_membership_roles = array_reduce(array_keys($creator_role_membership_roles), static function(array $carry, string $role) use ($creator_role_membership_roles) {
+          $carry[$role] = array_values(array_filter($creator_role_membership_roles[$role]['roles']));
+          return $carry;
+        }, []);
+      }
     }
+    else {
+      // Keep configuration clean, do not leave remnants behind.
+      $creator_role_membership_roles = [];
+    }
+    $type->set('creator_role_membership_roles', $creator_role_membership_roles);
 
     $status = $type->save();
     $t_args = ['%label' => $type->label()];
