@@ -36,6 +36,15 @@ group.type.*:
       sequence:
         type: 'string'
         label: 'Group role ID'
+    creator_role_membership:
+      type: 'boolean'
+      label: 'Assign group roles according to drupal roles.'
+    creator_role_membership_roles:
+      type: 'sequence'
+      label: 'Group creator roles according drupal roles'
+      sequence:
+        type: 'sequence'
+        label: 'Group role ID'
 
 group_content_enabler.config.group_cardinality:
   type: 'integer'

@@ -54,6 +54,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "creator_membership",
  *     "creator_wizard",
  *     "creator_roles",
+ *     "creator_role_membership",
+ *     "creator_role_membership_roles",
  *   }
  * )
  */
@@ -107,6 +109,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * @var string[]
    */
   protected $creator_roles = [];
+
+  /**
+   * Match group roles with Drupal roles.
+   *
+   * @var bool
+   */
+  protected $creator_role_membership = FALSE;
+
+  /**
+   * The Group roles that a group creator should receive according its Drupal roles.
+   *
+   * @var string[]
+   */
+  protected $creator_role_membership_roles = [];
 
   /**
    * {@inheritdoc}
@@ -249,6 +265,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
+  public function creatorRoleMembership() {
+    return $this->creator_role_membership;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function creatorRoleMembershipRoles() {
+    return $this->creator_role_membership_roles;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(EntityStorageInterface $storage) {
     // Throw an exception if the group type ID is longer than the limit.
     if (strlen($this->id()) > GroupTypeInterface::ID_MAX_LENGTH) {
@@ -334,6 +364,48 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function getContentPlugin($plugin_id) {
     return $this->getInstalledContentPlugins()->get($plugin_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function installContentPlugin($plugin_id, array $configuration = []) {
+    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
+    $storage = $this->entityTypeManager()->getStorage('group_content_type');
+    $storage->createFromPlugin($this, $plugin_id, $configuration)->save();
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function updateContentPlugin($plugin_id, array $configuration) {
+    $plugin = $this->getContentPlugin($plugin_id);
+    GroupContentType::load($plugin->getContentTypeConfigId())->updateContentPlugin($configuration);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function uninstallContentPlugin($plugin_id) {
+    $plugin = $this->getContentPlugin($plugin_id);
+    GroupContentType::load($plugin->getContentTypeConfigId())->delete();
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoleMembershipRoles() {
+    $member_roles = [];
+    $user_roles = \Drupal::currentUser()->getRoles();
+    foreach ($this->creatorRoleMembershipRoles() as $role => $role_values) {
+      if (in_array($role, $user_roles) && isset($role_values['roles'])) {
+        $member_roles += array_diff($role_values['roles'], [0]);
+      }
+    }
+    return $member_roles;
   }
 
 }
