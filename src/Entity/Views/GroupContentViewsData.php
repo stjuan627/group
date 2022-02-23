@@ -90,6 +90,11 @@ class GroupContentViewsData extends EntityViewsData {
       ];
     }
 
+    // Apply group roles filter.
+    if (array_key_exists('group_content__group_roles', $data)) {
+      $data['group_content__group_roles']['group_roles_target_id']['filter']['id'] = 'group_role';
+    }
+
     return $data;
   }
 
