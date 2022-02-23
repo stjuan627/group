@@ -89,9 +89,9 @@ class GroupForm extends ContentEntityForm {
       '%title' => $this->entity->label(),
     ];
 
-    $this->messenger()->addStatus($this->operation == 'edit'
-      ? $this->t('@type %title has been updated.', $t_args)
-      : $this->t('@type %title has been created.', $t_args)
+    $this->messenger()->addStatus($this->operation == 'add'
+      ? $this->t('@type %title has been created.', $t_args)
+      : $this->t('@type %title has been updated.', $t_args)
     );
 
     $form_state->setRedirect('entity.group.canonical', ['group' => $this->entity->id()]);
