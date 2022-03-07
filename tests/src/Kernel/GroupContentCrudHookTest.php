@@ -24,7 +24,7 @@ class GroupContentCrudHookTest extends GroupKernelTestBase {
    */
   public function testGroupedEntityDeletion() {
     $account = $this->createUser();
-    $group = $this->createGroup(['uid' => $account->id()]);
+    $group = $this->createGroup(['type' => $this->createGroupType()->id(), 'uid' => $account->id()]);
 
     $count = count($group->getContent());
     $account->delete();
@@ -35,7 +35,7 @@ class GroupContentCrudHookTest extends GroupKernelTestBase {
    * Tests that an ungrouped entity deletion triggers no group content deletion.
    */
   public function testUngroupedEntityDeletion() {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
 
     $count = count($group->getContent());
     $this->createUser()->delete();

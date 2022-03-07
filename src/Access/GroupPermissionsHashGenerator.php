@@ -67,7 +67,7 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
     }
     // Otherwise hash the permissions and store them in the static cache.
     else {
-      $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
+      $calculated_permissions = $this->groupPermissionCalculator->calculateFullPermissions($account);
 
       $permissions = [];
       foreach ($calculated_permissions->getItems() as $item) {
@@ -87,13 +87,16 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
           sort($item_permissions);
         }
 
-        $permissions[$item->getIdentifier()] = $item_permissions;
+        $permissions[$item->getScope()][$item->getIdentifier()] = $item_permissions;
       }
 
       // Sort the result by key to ensure we don't get mismatching hashes for
       // people with the same permissions, just because the order of the keys
       // happened to differ.
       ksort($permissions);
+      foreach ($permissions as &$scope_permissions) {
+        ksort($scope_permissions);
+      }
 
       $hash = $this->hash(serialize($permissions));
       $this->static->set($cid, $hash, Cache::PERMANENT, $calculated_permissions->getCacheTags());
@@ -105,7 +108,7 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
    * {@inheritdoc}
    */
   public function getCacheableMetadata(AccountInterface $account) {
-    return CacheableMetadata::createFromObject($this->groupPermissionCalculator->calculatePermissions($account));
+    return CacheableMetadata::createFromObject($this->groupPermissionCalculator->calculateFullPermissions($account));
   }
 
   /**

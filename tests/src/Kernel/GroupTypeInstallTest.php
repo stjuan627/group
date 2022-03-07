@@ -11,6 +11,19 @@ namespace Drupal\Tests\group\Kernel;
 class GroupTypeInstallTest extends GroupKernelTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  public static $modules = ['group_test_config'];
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->installConfig('group_test_config');
+  }
+
+  /**
    * Tests special behavior during group type creation.
    *
    * @covers ::postSave
@@ -22,20 +35,6 @@ class GroupTypeInstallTest extends GroupKernelTestBase {
       ->getStorage('group_type')
       ->load('default');
     $this->assertNotNull($group_type, 'Group type was loaded successfully.');
-
-    // Check that the special group roles give priority to the Yaml files.
-    /** @var \Drupal\group\Entity\GroupRoleInterface $outsider */
-    $outsider = $this->entityTypeManager
-      ->getStorage('group_role')
-      ->load($group_type->getOutsiderRoleId());
-    $this->assertEquals(['join group', 'view group'], $outsider->getPermissions(), 'Outsider role was created from Yaml file.');
-
-    // Check that special group roles are being created without Yaml files.
-    /** @var \Drupal\group\Entity\GroupRoleInterface $anonymous */
-    $anonymous = $this->entityTypeManager
-      ->getStorage('group_role')
-      ->load($group_type->getAnonymousRoleId());
-    $this->assertNotNull($anonymous, 'Anonymous role was created without a Yaml file.');
 
     // Check that the enforced plugins give priority to the Yaml files.
     /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */

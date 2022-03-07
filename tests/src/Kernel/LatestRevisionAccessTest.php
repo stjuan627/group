@@ -78,17 +78,23 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $user_without_access = $this->createUser();
 
     // Set up the initial permissions for the accounts.
-    $this->groupType->getOutsiderRole()
-      ->grantPermission('view group')
-      ->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view group'],
+    ]);
 
-    $this->groupType->getMemberRole()
-      ->grantPermissions([
+    $insider_role = $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => [
         'view group',
         'view any unpublished group',
         'view latest group version',
-      ])
-      ->save();
+      ],
+    ]);
 
     // Create a group with no pending revisions.
     $group = $this->createGroup([
@@ -107,16 +113,13 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
 
     // Verify that even admins can't see the revision page if there are none.
     $admin = $this->createUser();
-    $this->entityTypeManager->getStorage('group_role')
-      ->create([
-        'id' => 'revision_test-admin',
-        'label' => 'Revision admin',
-        'weight' => 0,
-        'group_type' => $this->groupType->id(),
-        'admin' => TRUE,
-      ])
-      ->save();
-    $group->addMember($admin, ['group_roles' => ['revision_test-admin']]);
+    $admin_role = $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'individual',
+      'admin' => TRUE,
+    ]);
+
+    $group->addMember($admin, ['group_roles' => [$admin_role->id()]]);
     $this->assertFalse($this->accessManager->checkRequest($request, $admin), 'An admin has no access if there is no pending revision.');
 
     // Create a pending revision of the original group.
@@ -136,8 +139,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessManager->checkRequest($request, $user_without_access), 'An account with insufficient permissions has no access if there is a pending revision.');
 
     // Now remove the ability to view unpublished groups and try again.
-    $this->groupType
-      ->getMemberRole()
+    $insider_role
       ->revokePermission('view any unpublished group')
       ->save();
 
@@ -146,7 +148,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessManager->checkRequest($request, $user_with_access), 'Removing the ability to view unpublished groups denies access to pending revisions.');
 
     // Grant back the view unpublished access but revoke revision access.
-    $this->groupType->getMemberRole()
+    $insider_role
       ->grantPermission('view any unpublished group')
       ->revokePermission('view latest group version')
       ->save();
@@ -156,7 +158,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessManager->checkRequest($request, $user_with_access), 'Removing the ability to view revisions denies access to pending revisions.');
 
     // Test that the admin permission also works.
-    $this->groupType->getMemberRole()
+    $insider_role
       ->revokePermission('view any unpublished group')
       ->set('admin', TRUE)
       ->save();

@@ -66,18 +66,15 @@ group.role.*:
     admin:
       type: 'boolean'
       label: 'Group role is an admin role'
-    internal:
-      type: 'boolean'
-      label: 'Group role is used internally'
-    audience:
+    scope:
       type: 'string'
-      label: 'Audience'
+      label: 'The scope of the group role'
+    global_role:
+      type: 'string'
+      label: 'The global role the group role synchronizes with. Only applies if scope is outsider or insider'
     group_type:
       type: 'string'
       label: 'Group type ID'
-    permissions_ui:
-      type: 'boolean'
-      label: 'Show this role in the default permissions UI'
     permissions:
       type: 'sequence'
       label: 'Permissions'

@@ -19,8 +19,10 @@ class GroupContentStorageSchema extends SqlContentEntityStorageSchema {
 
     if ($data_table = $this->storage->getDataTable()) {
       $schema[$data_table]['indexes'] += [
-        'group_content__entity_fields' => ['type', 'entity_id'],
-        'group_content__plugin_id' => ['plugin_id', 'group_type'],
+        $this->getEntityIndexName($entity_type, 'load_by_group') => ['gid', 'plugin_id', 'entity_id'],
+        $this->getEntityIndexName($entity_type, 'load_by_entity') => ['entity_id', 'plugin_id'],
+        $this->getEntityIndexName($entity_type, 'load_by_plugin') => ['plugin_id'],
+        $this->getEntityIndexName($entity_type, 'sync_scope_checks') => ['group_type', 'plugin_id'],
       ];
     }
 
@@ -37,21 +39,19 @@ class GroupContentStorageSchema extends SqlContentEntityStorageSchema {
       $field_name = $storage_definition->getName();
 
       switch ($field_name) {
-        case 'group_type':
-          $this->addSharedTableFieldIndex($storage_definition, $schema, TRUE);
-          break;
-
         case 'plugin_id':
-          // Improves the performance of the group_content__plugin_id index
-          // defined in ::getEntitySchema() above.
-          $schema['fields'][$field_name]['not null'] = TRUE;
-
           // The default field size would be 255, which is far too long. We can
           // reasonably assume that the total length of a plugin ID and perhaps
           // derivative ID would not exceed 64 characters. If we ever get a
           // complaint about this, we can bump it up to 128, but for now let's
           // choose performance over edge cases.
           $schema['fields'][$field_name]['length'] = 64;
+
+        // Deliberate break missing above because plugin_id also needs this.
+        case 'gid':
+        case 'entity_id':
+          // Improves the performance of the indexes defined above.
+          $schema['fields'][$field_name]['not null'] = TRUE;
           break;
       }
     }

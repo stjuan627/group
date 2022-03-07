@@ -24,7 +24,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
     ];
 
     // Create a group and retrieve the group content for the owner's membership.
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
     $account = $group->getOwner();
     $group_content = $group->getMember($account)->getGroupContent();
 

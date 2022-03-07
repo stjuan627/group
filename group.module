@@ -19,7 +19,8 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContent;
 use Drupal\group\QueryAccess\EntityQueryAlter;
-use Drupal\user\RoleInterface;
+use Drupal\group\QueryAccess\GroupContentQueryAlter;
+use Drupal\group\QueryAccess\GroupQueryAlter;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\ViewExecutable;
@@ -184,11 +185,6 @@ function template_preprocess_group_content(&$variables) {
  */
 function group_rebuild() {
   _group_relation_type_manager()->installEnforced();
-
-  /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
-  $storage = \Drupal::entityTypeManager()->getStorage('group_role');
-  $storage->createInternal();
-  $storage->createSynchronized();
 }
 
 /**
@@ -198,11 +194,6 @@ function group_modules_installed($modules) {
   // Only create config objects while config import is not in progress.
   if (!\Drupal::isConfigSyncing()) {
     _group_relation_type_manager()->installEnforced();
-
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
-    $storage = \Drupal::entityTypeManager()->getStorage('group_role');
-    $storage->createInternal();
-    $storage->createSynchronized();
   }
 }
 
@@ -245,8 +236,33 @@ function group_query_entity_query_alter(SelectInterface $query) {
     $entity_type_manager = \Drupal::entityTypeManager();
     $entity_type = $entity_type_manager->getDefinition($entity_type_id);
 
+    // Add specific access checks based on the entity type. Please note that we
+    // first check for the group and group content entity types because we have
+    // full control over those and can therefore optimize the query more. If the
+    // query is for a different entity type, we fall back to the default query
+    // alter.
+    //
+    // PLEASE KEEP IN MIND that this means that a plugin that allows you to nest
+    // groups will have no query access added for nested groups whatsoever. This
+    // is by design as those plugins should opt to use the permission calculator
+    // system, as it's way faster and automatically included in GroupQueryAlter.
+    //
+    // @todo Enforce that plugins may not define entity_access for "group".
+    switch ($entity_type_id) {
+      case 'group':
+        $class_name = GroupQueryAlter::class;
+        break;
+
+      case 'group_content':
+        $class_name = GroupContentQueryAlter::class;
+        break;
+
+      default:
+        $class_name = EntityQueryAlter::class;
+    }
+
     \Drupal::service('class_resolver')
-      ->getInstanceFromDefinition(EntityQueryAlter::class)
+      ->getInstanceFromDefinition($class_name)
       ->alter($query, $entity_type);
   }
 }
@@ -502,33 +518,6 @@ function group_user_delete(EntityInterface $account) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_insert().
- */
-function group_user_role_insert(RoleInterface $role) {
-  // Only create config objects while config import is not in progress.
-  if (!\Drupal::isConfigSyncing()) {
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
-    $storage = \Drupal::entityTypeManager()->getStorage('group_role');
-    $storage->createSynchronized(NULL, [$role->id()]);
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_update().
- */
-function group_user_role_update(RoleInterface $role) {
-  /** @var \Drupal\User\RoleInterface $original */
-  $original = $role->original;
-
-  // Update the group roles if the user role label changed.
-  if ($role->label() != $original->label()) {
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
-    $storage = \Drupal::entityTypeManager()->getStorage('group_role');
-    $storage->updateSynchronizedLabels($role);
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -704,18 +693,6 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
  */
 function _group_relation_type_manager() {
   return \Drupal::service('group_relation_type.manager');
-}
-
-/**
- * Gets the group role synchronizer service.
- *
- * @return \Drupal\group\GroupRoleSynchronizerInterface
- *   The group role synchronizer service.
- *
- * @internal Try to properly inject the service when possible.
- */
-function _group_role_synchronizer() {
-  return \Drupal::service('group_role.synchronizer');
 }
 
 /**

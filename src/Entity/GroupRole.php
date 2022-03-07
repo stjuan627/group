@@ -3,6 +3,7 @@
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
@@ -23,7 +24,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "form" = {
  *       "add" = "Drupal\group\Entity\Form\GroupRoleForm",
  *       "edit" = "Drupal\group\Entity\Form\GroupRoleForm",
- *       "delete" = "Drupal\group\Entity\Form\GroupRoleDeleteForm"
+ *       "delete" = "Drupal\Core\Entity\EntityDeleteForm"
  *     },
  *     "route_provider" = {
  *       "html" = "Drupal\group\Entity\Routing\GroupRoleRouteProvider",
@@ -50,10 +51,9 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "label",
  *     "weight",
  *     "admin",
- *     "internal",
- *     "audience",
+ *     "scope",
+ *     "global_role",
  *     "group_type",
- *     "permissions_ui",
  *     "permissions"
  *   }
  * )
@@ -89,25 +89,22 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   protected $admin = FALSE;
 
   /**
-   * Whether the group role is used internally.
+   * The scope the role is intended for.
    *
-   * Internal roles cannot be edited or assigned directly. They do not show in
-   * the list of group roles to edit or assign and do not have an individual
-   * permissions page either. Examples of these are the special group roles
-   * 'anonymous', 'outsider' and 'member'.
-   *
-   * @var bool
-   */
-  protected $internal = FALSE;
-
-  /**
-   * The audience the role is intended for.
-   *
-   * Supported values are: 'anonymous', 'outsider' or 'member'.
+   * Supported values are: 'outsider', 'insider' or 'individual'.
    *
    * @var string
    */
-  protected $audience = 'member';
+  protected $scope;
+
+  /**
+   * The global role ID this group role synchronizes with.
+   *
+   * Only applies for group roles with a scope value of 'outsider' or 'insider'.
+   *
+   * @var string
+   */
+  protected $global_role;
 
   /**
    * The ID of the group type this role belongs to.
@@ -115,17 +112,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * @var string
    */
   protected $group_type;
-
-  /**
-   * Whether the role shows in the default permissions UI.
-   *
-   * By default, group roles show on the permissions page regardless of their
-   * 'internal' property. If you want to hide a group role from that UI, you can
-   * do so by setting this to FALSE.
-   *
-   * @var bool
-   */
-  protected $permissions_ui = TRUE;
 
   /**
    * The permissions belonging to the group role.
@@ -166,39 +152,53 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
   /**
    * {@inheritdoc}
    */
-  public function isInternal() {
-    return $this->internal;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function isAnonymous() {
-    return $this->audience == 'anonymous';
+    return $this->scope == 'outsider' && $this->global_role == 'anonymous';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isOutsider() {
-    return $this->audience == 'outsider';
+    return $this->scope == 'outsider' && $this->global_role != 'anonymous';
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMember() {
-    // Instead of checking whether the audience property is set to 'member', we
-    // check whether it isn't 'anonymous' or 'outsider'. Any unsupported value
-    // will therefore default to 'member'.
-    return !$this->isAnonymous() && !$this->isOutsider();
+    return $this->scope == 'insider' || $this->scope == 'individual';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getScope() {
+    return $this->scope;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGlobalRole() {
+    if (isset($this->global_role)) {
+      return $this->entityTypeManager()->getStorage('user_role')->load($this->global_role);
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getGlobalRoleId() {
+    return $this->global_role ?? FALSE;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getGroupType() {
-    return GroupType::load($this->group_type);
+    return $this->entityTypeManager()->getStorage('group_type')->load($this->group_type);
   }
 
   /**
@@ -206,13 +206,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function getGroupTypeId() {
     return $this->group_type;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function inPermissionsUI() {
-    return $this->permissions_ui;
   }
 
   /**
@@ -308,7 +301,11 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function calculateDependencies() {
     parent::calculateDependencies();
+    // @todo Test this.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
+    if ($role = $this->getGlobalRole()) {
+      $this->addDependency('config', $role->getConfigDependencyName());
+    }
   }
 
   /**
@@ -326,6 +323,25 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
+
+    // All group roles need to indicate their scope.
+    if (!isset($this->scope)) {
+      throw new EntityMalformedException('All group roles require a scope.');
+    }
+
+    // Individual roles do not synchronize to a global role.
+    if ($this->scope === 'individual') {
+      $this->global_role = NULL;
+    }
+    // Other scopes need to indicate their target global role.
+    elseif (!isset($this->global_role)) {
+      throw new EntityMalformedException('Group roles within the outsider or insider scope require a global role to be set.');
+    }
+
+    // Anonymous users cannot be members, so avoid this weird scenario.
+    if ($this->scope === 'insider' && $this->global_role === 'anonymous') {
+      throw new EntityMalformedException('Anonymous users cannot be members so you may not create an insider role for the "Anonymous user" role.');
+    }
 
     // No need to store permissions for an admin role.
     if ($this->isAdmin()) {

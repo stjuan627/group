@@ -134,20 +134,14 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
       $def['extra'] = $this->definition['extra'];
     }
 
-    // We can't run an IN-query on an empty array. So if there are no group
-    // content types yet, we need to make sure the JOIN does not return any GCT
-    // that does not serve the entity type that was configured for this handler
-    // instance.
-    $group_content_type_ids = $this->getGroupContentTypeIds();
-    if (empty($group_content_type_ids)) {
-      $group_content_type_ids = ['***'];
+    // Add the plugin IDs to the query if any were selected.
+    $plugin_ids = array_filter($this->options['group_content_plugins']);
+    if (!empty($plugin_ids)) {
+      $def['extra'][] = [
+        $this->getJoinFieldType() => 'plugin_id',
+        'value' => $plugin_ids,
+      ];
     }
-
-    // Then add our own join condition, namely the group content type IDs.
-    $def['extra'][] = [
-      $this->getJoinFieldType() => 'type',
-      'value' => $group_content_type_ids,
-    ];
 
     // Use the standard join plugin unless instructed otherwise.
     $join_id = !empty($def['join_id']) ? $def['join_id'] : 'standard';
@@ -163,34 +157,6 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
       $access_tag = $table_data['table']['base']['access query tag'];
       $this->query->addTag($access_tag);
     }
-  }
-
-  /**
-   * Returns the group content types this relationship should filter on.
-   *
-   * This checks if any plugins were selected on the option form and, in that
-   * case, loads only those group content types available to the selected
-   * plugins. Otherwise, all possible group content types for the relationship's
-   * entity type are loaded.
-   *
-   * This needs to happen live to cover the use case where a group content
-   * plugin is installed on a group type after this relationship has been
-   * configured on a view without any plugins selected.
-   *
-   * @todo Could be cached even more, I guess.
-   *
-   * @return string[]
-   *   The group content type IDs to filter on.
-   */
-  protected function getGroupContentTypeIds() {
-    $plugin_ids = array_filter($this->options['group_content_plugins']);
-
-    $group_content_type_ids = [];
-    foreach ($plugin_ids as $plugin_id) {
-      $group_content_type_ids = array_merge($group_content_type_ids, $this->pluginManager->getGroupContentTypeIds($plugin_id));
-    }
-
-    return $plugin_ids ? $group_content_type_ids : array_keys(GroupContentType::loadByEntityTypeId($this->getTargetEntityType()));
   }
 
 }

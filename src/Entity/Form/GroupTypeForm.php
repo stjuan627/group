@@ -119,6 +119,13 @@ class GroupTypeForm extends BundleEntityFormBase {
 
     // Add-form specific elements.
     if ($this->operation == 'add') {
+      $form['add_default_roles'] = [
+        '#title' => $this->t('Automatically configure useful default roles'),
+        '#type' => 'checkbox',
+        '#default_value' => 0,
+        '#description' => $this->t("This will create an 'Anonymous', 'Outsider' and 'Member' role by default which will synchronize to the 'Anonymous user' and 'Authenticated user' global roles."),
+      ];
+
       $form['add_admin_role'] = [
         '#title' => $this->t('Automatically configure an administrative role'),
         '#type' => 'checkbox',
@@ -195,26 +202,27 @@ class GroupTypeForm extends BundleEntityFormBase {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupTypeInterface $type */
-    $type = $this->entity;
+    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    $group_type = $this->entity;
+    $group_type_id = $group_type->id();
 
     // Trim any whitespace off the label.
-    $type->set('label', trim($type->label()));
+    $group_type->set('label', trim($group_type->label()));
 
     // Clean up the creator role IDs as it comes from a checkboxes element.
-    if ($creator_roles = $type->getCreatorRoleIds()) {
-      $type->set('creator_roles', array_values(array_filter($creator_roles)));
+    if ($creator_roles = $group_type->getCreatorRoleIds()) {
+      $group_type->set('creator_roles', array_values(array_filter($creator_roles)));
     }
 
-    $status = $type->save();
-    $t_args = ['%label' => $type->label()];
+    $status = $group_type->save();
+    $t_args = ['%label' => $group_type->label()];
 
     // Update title field definition.
-    $fields = $this->entityFieldManager->getFieldDefinitions('group', $type->id());
+    $fields = $this->entityFieldManager->getFieldDefinitions('group', $group_type_id);
     $title_field = $fields['label'];
     $title_label = $form_state->getValue('title_label');
     if ($title_field->getLabel() !== $title_label) {
-      $title_field->getConfig($type->id())->setLabel($title_label)->save();
+      $title_field->getConfig($group_type_id)->setLabel($title_label)->save();
     }
 
     if ($status == SAVED_UPDATED) {
@@ -222,31 +230,64 @@ class GroupTypeForm extends BundleEntityFormBase {
     }
     elseif ($status == SAVED_NEW) {
       $this->messenger()->addStatus($this->t('The group type %label has been added. You may now configure which roles a group creator will receive by editing the group type.', $t_args));
-      $context = array_merge($t_args, ['link' => $type->toLink($this->t('View'), 'collection')->toString()]);
+      $context = array_merge($t_args, ['link' => $group_type->toLink($this->t('View'), 'collection')->toString()]);
       $this->logger('group')->notice('Added group type %label.', $context);
 
-      // Optionally create a default admin role.
-      if ($form_state->getValue('add_admin_role')) {
+      // Optionally create the default and/or admin roles.
+      $add_default_roles = $form_state->getValue('add_default_roles');
+      $add_admin_role = $form_state->getValue('add_admin_role');
+      if ($add_default_roles || $add_admin_role) {
+        /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
         $storage = $this->entityTypeManager->getStorage('group_role');
 
-        /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
-        $group_role = $storage->create([
-          'id' => $type->id() . '-admin',
-          'label' => $this->t('Admin'),
-          'weight' => 100,
-          'group_type' => $type->id(),
-          'admin' => TRUE,
-        ]);
-        $storage->save($group_role);
+        if ($add_default_roles) {
+          $storage->save($storage->create([
+            'id' => "$group_type_id-anonymous",
+            'label' => $this->t('Anonymous'),
+            'weight' => -102,
+            'scope' => 'outsider',
+            'global_role' => 'anonymous',
+            'group_type' => $group_type_id,
+          ]));
 
-        // Optionally auto-assign the admin role to group creators.
-        if ($form_state->getValue('assign_admin_role')) {
-          $type->set('creator_roles', [$type->id() . '-admin'])->save();
+          $storage->save($storage->create([
+            'id' => "$group_type_id-outsider",
+            'label' => $this->t('Outsider'),
+            'weight' => -101,
+            'scope' => 'outsider',
+            'global_role' => 'authenticated',
+            'group_type' => $group_type_id,
+          ]));
+
+          $storage->save($storage->create([
+            'id' => "$group_type_id-member",
+            'label' => $this->t('Member'),
+            'weight' => -100,
+            'scope' => 'insider',
+            'global_role' => 'authenticated',
+            'group_type' => $group_type_id,
+          ]));
+        }
+
+        if ($add_admin_role) {
+          $storage->save($storage->create([
+            'id' => "$group_type_id-admin",
+            'label' => $this->t('Admin'),
+            'weight' => -99,
+            'scope' => 'individual',
+            'group_type' => $group_type_id,
+            'admin' => TRUE,
+          ]));
+
+          // Optionally auto-assign the admin role to group creators.
+          if ($form_state->getValue('assign_admin_role')) {
+            $group_type->set('creator_roles', [$group_type_id . '-admin'])->save();
+          }
         }
       }
     }
 
-    $form_state->setRedirectUrl($type->toUrl('collection'));
+    $form_state->setRedirectUrl($group_type->toUrl('collection'));
   }
 
 }

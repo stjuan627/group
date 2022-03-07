@@ -26,12 +26,15 @@ class EntityOperationsTest extends GroupBrowserTestBase {
    * @dataProvider provideEntityOperationScenarios
    */
   public function testEntityOperations($visible, $invisible, $permissions = [], $modules = []) {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
 
     if (!empty($permissions)) {
-      $role = $group->getGroupType()->getMemberRole();
-      $role->grantPermissions($permissions);
-      $role->save();
+      $this->createGroupRole([
+        'group_type' => $group->bundle(),
+        'scope' => 'insider',
+        'global_role' => 'authenticated',
+        'permissions' => $permissions,
+      ]);
     }
 
     if (!empty($modules)) {
@@ -75,6 +78,7 @@ class EntityOperationsTest extends GroupBrowserTestBase {
         'group/1/members' => 'Members',
       ],
       [
+        'view group',
         'edit group',
         'delete group',
         'administer members',
@@ -91,6 +95,7 @@ class EntityOperationsTest extends GroupBrowserTestBase {
       ],
       [],
       [
+        'view group',
         'edit group',
         'delete group',
         'administer members',

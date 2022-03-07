@@ -4,6 +4,7 @@ namespace Drupal\group\Access;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\GroupMembershipLoaderInterface;
 
 /**
  * Calculates group permissions for an account.
@@ -18,30 +19,43 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
   protected $groupPermissionCalculator;
 
   /**
+   * The group membership loader.
+   *
+   * @var \Drupal\group\GroupMembershipLoaderInterface
+   */
+  protected $groupMembershipLoader;
+
+  /**
    * Constructs a GroupPermissionChecker object.
    *
    * @param \Drupal\group\Access\ChainGroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
+   * @param \Drupal\group\GroupMembershipLoaderInterface $group_membership_loader
+   *   The group membership loader.
    */
-  public function __construct(ChainGroupPermissionCalculatorInterface $permission_calculator) {
+  public function __construct(ChainGroupPermissionCalculatorInterface $permission_calculator, GroupMembershipLoaderInterface $group_membership_loader) {
     $this->groupPermissionCalculator = $permission_calculator;
+    $this->groupMembershipLoader = $group_membership_loader;
   }
 
   /**
    * {@inheritdoc}
    */
   public function hasPermissionInGroup($permission, AccountInterface $account, GroupInterface $group) {
-    $calculated_permissions = $this->groupPermissionCalculator->calculatePermissions($account);
+    $calculated_permissions = $this->groupPermissionCalculator->calculateFullPermissions($account);
 
-    // If the user has member permissions for this group, check those, otherwise
-    // we need to check the group type permissions instead, i.e.: the ones for
-    // anonymous or outsider audiences.
-    $item = $calculated_permissions->getItem(CalculatedGroupPermissionsItemInterface::SCOPE_GROUP, $group->id());
-    if ($item === FALSE) {
-      $item = $calculated_permissions->getItem(CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE, $group->bundle());
+    if ($this->groupMembershipLoader->load($group, $account)) {
+      $item = $calculated_permissions->getItem('individual', $group->id());
+      if ($item && $item->hasPermission($permission)) {
+        return TRUE;
+      }
+      $item = $calculated_permissions->getItem('insider', $group->bundle());
+    }
+    else {
+      $item = $calculated_permissions->getItem('outsider', $group->bundle());
     }
 
-    return $item->hasPermission($permission);
+    return $item && $item->hasPermission($permission);
   }
 
 }

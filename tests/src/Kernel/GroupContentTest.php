@@ -24,43 +24,44 @@ class GroupContentTest extends GroupKernelTestBase {
    * @covers ::urlRouteParameters
    */
   public function testUrlRouteParameters() {
-    $group = $this->createGroup();
+    $group_type = $this->createGroupType();
+    $group = $this->createGroup(['type' => $group_type->id()]);
+
     $account = $this->createUser();
-    $group->addContent($account, 'group_membership');
-    $group_content = $group->getContent('group_membership');
-    foreach ($group_content as $item) {
-      // Canonical.
-      $expected = "/group/{$group->id()}/content/{$item->id()}";
-      $this->assertEquals($expected, $item->toUrl()->toString());
+    $group->addMember($account);
+    $group_content = $group->getMember($account)->getGroupContent();
 
-      // Add form.
-      $expected = "/group/{$group->id()}/content/add/group_membership?group_content_type=default-group_membership";
-      $this->assertEquals($expected, $item->toUrl('add-form')->toString());
+    // Canonical.
+    $expected = "/group/{$group->id()}/content/{$group_content->id()}";
+    $this->assertEquals($expected, $group_content->toUrl()->toString());
 
-      // Add page.
-      $expected = "/group/{$group->id()}/content/add";
-      $this->assertEquals($expected, $item->toUrl('add-page')->toString());
+    // Add form.
+    $expected = "/group/{$group->id()}/content/add/group_membership";
+    $this->assertEquals($expected, $group_content->toUrl('add-form')->toString());
 
-      // Collection.
-      $expected = "/group/{$group->id()}/content";
-      $this->assertEquals($expected, $item->toUrl('collection')->toString());
+    // Add page.
+    $expected = "/group/{$group->id()}/content/add";
+    $this->assertEquals($expected, $group_content->toUrl('add-page')->toString());
 
-      // Create form.
-      $expected = "/group/{$group->id()}/content/create/group_membership?group_content={$item->id()}";
-      $this->assertEquals($expected, $item->toUrl('create-form')->toString());
+    // Collection.
+    $expected = "/group/{$group->id()}/content";
+    $this->assertEquals($expected, $group_content->toUrl('collection')->toString());
 
-      // Create page.
-      $expected = "/group/{$group->id()}/content/create?group_content={$item->id()}";
-      $this->assertEquals($expected, $item->toUrl('create-page')->toString());
+    // Create form.
+    $expected = "/group/{$group->id()}/content/create/group_membership";
+    $this->assertEquals($expected, $group_content->toUrl('create-form')->toString());
 
-      // Delete form.
-      $expected = "/group/{$group->id()}/content/{$item->id()}/delete";
-      $this->assertEquals($expected, $item->toUrl('delete-form')->toString());
+    // Create page.
+    $expected = "/group/{$group->id()}/content/create";
+    $this->assertEquals($expected, $group_content->toUrl('create-page')->toString());
 
-      // Edit form.
-      $expected = "/group/{$group->id()}/content/{$item->id()}/edit";
-      $this->assertEquals($expected, $item->toUrl('edit-form')->toString());
-    }
+    // Delete form.
+    $expected = "/group/{$group->id()}/content/{$group_content->id()}/delete";
+    $this->assertEquals($expected, $group_content->toUrl('delete-form')->toString());
+
+    // Edit form.
+    $expected = "/group/{$group->id()}/content/{$group_content->id()}/edit";
+    $this->assertEquals($expected, $group_content->toUrl('edit-form')->toString());
   }
 
   /**
@@ -74,7 +75,7 @@ class GroupContentTest extends GroupKernelTestBase {
     $changed = 123456789;
     $account = $this->createUser(['changed' => $changed]);
 
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
     $group->addContent($account, 'group_membership');
 
     // All users whose changed time was set to 123456789 get their changed time
@@ -148,25 +149,25 @@ class GroupContentTest extends GroupKernelTestBase {
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
     // Add any user as a member to any group and verify cache entries.
-    $extra_group->addContent($extra_account, 'group_membership');
+    $extra_group->addMember($extra_account);
     $this->assertFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin cleared.');
     $this->assertNotFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
     // Add any user as a member to the group and verify cache entries.
-    $test_group->addContent($extra_account, 'group_membership');
+    $test_group->addMember($extra_account);
     $this->assertFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin cleared.');
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
     // Add the user as a member to any group and verify cache entries.
-    $extra_group->addContent($test_account, 'group_membership');
+    $extra_group->addMember($test_account);
     $this->assertFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin cleared.');
 
     // Set the cache again and verify if we add the user to the group.
     foreach ($scenarios as $cid => $cache_tags) {
       $cache->set($cid, 'foo', CacheBackendInterface::CACHE_PERMANENT, $cache_tags);
     }
-    $test_group->addContent($test_account, 'group_membership');
+    $test_group->addMember($test_account);
     $this->assertFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin cleared.');
     $this->assertFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin cleared.');
     $this->assertFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin cleared.');

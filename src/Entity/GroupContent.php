@@ -164,10 +164,19 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   protected function urlRouteParameters($rel) {
     $uri_route_parameters = parent::urlRouteParameters($rel);
     $uri_route_parameters['group'] = $this->getGroupId();
+
     // These routes depend on the plugin ID.
-    if (in_array($rel, ['add-form', 'create-form'])) {
+    $is_form_rel = in_array($rel, ['add-form', 'create-form']);
+    if ($is_form_rel) {
       $uri_route_parameters['plugin_id'] = $this->getPluginId();
     }
+
+    // These parameters are not needed here so let's remove them or else they'll
+    // get added as query arguments for no reason.
+    if ($is_form_rel || $rel == 'create-page') {
+      unset($uri_route_parameters['group_content'], $uri_route_parameters['group_content_type']);
+    }
+
     return $uri_route_parameters;
   }
 

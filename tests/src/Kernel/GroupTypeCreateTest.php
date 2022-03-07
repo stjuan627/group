@@ -20,7 +20,7 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
   public function testCreate() {
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $group_content_type_storage */
     $group_content_type_storage = $this->entityTypeManager->getStorage('group_content_type');
-    $this->assertCount(2, $group_content_type_storage->loadByEntityTypeId('user'));
+    $this->assertCount(0, $group_content_type_storage->loadByEntityTypeId('user'));
 
     // Check that the group type was created and saved properly.
     /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
@@ -35,21 +35,8 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
     $this->assertInstanceOf(GroupTypeInterface::class, $group_type);
     $this->assertEquals(SAVED_NEW, $group_type->save(), 'Group type was saved successfully.');
 
-    // Check that the special group roles were created.
-    $group_role_ids = [
-      $group_type->getAnonymousRoleId(),
-      $group_type->getOutsiderRoleId(),
-      $group_type->getMemberRoleId(),
-    ];
-
-    $group_roles = $this->entityTypeManager
-      ->getStorage('group_role')
-      ->loadMultiple($group_role_ids);
-
-    $this->assertEquals(3, count($group_roles), 'Three special roles were created.');
-
     // Check that enforced plugins were installed.
-    $this->assertCount(3, $group_content_type_storage->loadByEntityTypeId('user'));
+    $this->assertCount(1, $group_content_type_storage->loadByEntityTypeId('user'));
     $group_content_type = $group_content_type_storage->load(
       $group_content_type_storage->getGroupContentTypeId($group_type->id(), 'group_membership')
     );

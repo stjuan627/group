@@ -1,9 +1,9 @@
 <?php
 
-namespace Drupal\Tests\group\Kernel;
+namespace Drupal\Tests\group\Kernel\QueryAlter;
 
-use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\RenderContext;
+use Drupal\Tests\group\Kernel\GroupKernelTestBase;
 
 /**
  * Tests grouped entities query access cacheability.

@@ -18,6 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * Each entity type definition array is set in the entity type's annotation and
  * altered by hook_group_relation_type_alter().
  *
+ * @todo Prevent target entity type of group_content?
+ *
  * @see \Drupal\group\Annotation\GroupRelationType
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface

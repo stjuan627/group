@@ -40,7 +40,6 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $sync_dir = Settings::get('config_sync_directory');
     $file_system = $this->container->get('file_system');
     $file_system->copy("$test_dir/group.type.import.yml", "$sync_dir/group.type.import.yml");
-    $file_system->copy("$test_dir/group.role.import-outsider.yml", "$sync_dir/group.role.import-outsider.yml");
 
     // Import the content of the sync directory.
     $this->configImporter()->import();
@@ -51,20 +50,6 @@ class GroupTypeImportTest extends GroupKernelTestBase {
       ->getStorage('group_type')
       ->load('import');
     $this->assertNotNull($group_type, 'Group type was loaded successfully.');
-
-    // Check that the special group roles give priority to the Yaml files.
-    /** @var \Drupal\group\Entity\GroupRoleInterface $outsider */
-    $outsider = $this->entityTypeManager
-      ->getStorage('group_role')
-      ->load($group_type->getOutsiderRoleId());
-    $this->assertEquals(['join group', 'view group'], $outsider->getPermissions(), 'Outsider role was created from Yaml file.');
-
-    // Check that special group roles are being created without Yaml files.
-    /** @var \Drupal\group\Entity\GroupRoleInterface $anonymous */
-    $anonymous = $this->entityTypeManager
-      ->getStorage('group_role')
-      ->load($group_type->getAnonymousRoleId());
-    $this->assertNotNull($anonymous, 'Anonymous role was created without a Yaml file.');
 
     // Check that enforced plugins were installed.
     /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */

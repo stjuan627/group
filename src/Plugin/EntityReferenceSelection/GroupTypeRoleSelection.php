@@ -28,7 +28,7 @@ class GroupTypeRoleSelection extends DefaultSelection {
 
     $query = parent::buildEntityQuery($match, $match_operator);
     $query->condition('group_type', $group_type_id, '=');
-    $query->condition('internal', 0, '=');
+    $query->condition('scope', 'individual', '=');
 
     return $query;
   }

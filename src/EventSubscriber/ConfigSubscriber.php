@@ -48,11 +48,6 @@ class ConfigSubscriber implements EventSubscriberInterface {
    */
   public function onConfigImport(ConfigImporterEvent $event) {
     $this->pluginManager->installEnforced();
-
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
-    $storage = $this->entityTypeManager->getStorage('group_role');
-    $storage->createInternal();
-    $storage->createSynchronized();
   }
 
   /**

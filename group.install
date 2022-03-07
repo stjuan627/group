@@ -5,7 +5,9 @@
  * Install, update and uninstall functions for the group module.
  */
 
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\group\Entity\GroupTypeInterface;
 
 /**
  * Implements hook_update_last_removed().
@@ -100,5 +102,125 @@ function group_update_9203() {
       $role->set('admin', FALSE);
     }
     $role->save(TRUE);
+  }
+}
+
+/**
+ * Convert synchronized group roles to new scope and target_role structure.
+ */
+function group_update_9204() {
+  $config_factory = \Drupal::configFactory();
+
+  $synchronized_role_ids = [];
+  foreach ($config_factory->listAll('user.role.') as $role_config_name) {
+    $role_id = $config_factory->get($role_config_name)->get('id');
+
+    // We never synced any roles to anonymous or authenticated.
+    if ($role_id === 'anonymous' || $role_id === 'authenticated') {
+      continue;
+    }
+
+    $synchronized_role_ids[] = $role_id;
+  }
+
+  // Nothing to update if we had no user defined global roles.
+  if (empty($synchronized_role_ids)) {
+    return;
+  }
+
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type_id = $config_factory->get($group_type_config_name)->get('id');
+
+    foreach ($synchronized_role_ids as $role_id) {
+      // Copied the group role ID logic directly from the GroupRoleSynchronizer
+      // class because that class has been removed in favor of the new roles.
+      $machine_name_max_length = EntityTypeInterface::ID_MAX_LENGTH - GroupTypeInterface::ID_MAX_LENGTH - 1;
+      $machine_name = substr(md5('group_role_sync.' . $role_id), 0, $machine_name_max_length);
+      $group_role_id = "$group_type_id-$machine_name";
+
+      // Delete the synchronized role if they had no rights.
+      $group_role = $config_factory->getEditable('group.role.' . $group_role_id);
+      if (!$group_role->get('admin') && empty($group_role->get('permissions'))) {
+        $group_role->delete();
+      }
+      // Otherwise update the group role to use the new keys.
+      else {
+        $group_role->set('scope', 'outsider');
+        $group_role->set('global_role', $role_id);
+
+        // Clear the old keys and save.
+        $group_role->clear('permissions_ui');
+        $group_role->clear('internal');
+        $group_role->clear('audience');
+        $group_role->save(TRUE);
+      }
+    }
+  }
+}
+
+/**
+ * Convert default group roles to new scope and target_role structure.
+ */
+function group_update_9205() {
+  $config_factory = \Drupal::configFactory();
+
+  $group_role_info = [
+    'anonymous' => [
+      'scope' => 'outsider',
+      'global_role' => 'anonymous',
+    ],
+    'outsider' => [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+    ],
+    'member' => [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+    ],
+  ];
+
+  // Update anonymous, outsider and member.
+  foreach ($config_factory->listAll('group.type.') as $group_type_config_name) {
+    $group_type_id = $config_factory->get($group_type_config_name)->get('id');
+
+    foreach ($group_role_info as $group_role_suffix => $info) {
+      $group_role_id = "$group_type_id-$group_role_suffix";
+
+      // We do not delete the default roles, even if they have no rights.
+      $group_role = $config_factory->getEditable('group.role.' . $group_role_id);
+      $group_role->set('scope', $info['scope']);
+      $group_role->set('global_role', $info['global_role']);
+
+      // Clear the old keys and save.
+      $group_role->clear('permissions_ui');
+      $group_role->clear('internal');
+      $group_role->clear('audience');
+      $group_role->save(TRUE);
+    }
+  }
+}
+
+/**
+ * Convert user created group roles to new scope and target_role structure.
+ */
+function group_update_9206() {
+  $config_factory = \Drupal::configFactory();
+
+  foreach ($config_factory->listAll('group.role.') as $config_name) {
+    // Now that we've updated synchronized and default roles, any role that
+    // still has the old properties is a user generated one. So skip the rest.
+    if (empty($config_factory->get($config_name)->get('audience'))) {
+      continue;
+    }
+
+    // We do not delete the user created roles, even if they have no rights.
+    $group_role = $config_factory->getEditable($config_name);
+    $group_role->set('scope', 'individual');
+
+    // Clear the old keys and save.
+    $group_role->clear('permissions_ui');
+    $group_role->clear('internal');
+    $group_role->clear('audience');
+    $group_role->save(TRUE);
   }
 }

@@ -123,7 +123,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('administer entity_test_as_content')->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupTypeA->id(),
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['administer entity_test_as_content'],
+    ]);
+
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($entity_1, 'entity_test_as_content');
     $group->addMember($this->getCurrentUser());
@@ -139,7 +145,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_1 = $this->createTestEntity();
     $entity_2 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('administer entity_test_as_content')->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupTypeA->id(),
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['administer entity_test_as_content'],
+    ]);
+
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($entity_1, 'entity_test_as_content');
     $this->createGroup(['type' => $this->groupTypeA->id()]);
@@ -157,8 +169,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view any entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -194,8 +211,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view any entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -229,8 +251,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view own entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -266,8 +293,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view own entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -301,8 +333,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('update any entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('update any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -338,8 +375,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('update any entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('update any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -373,8 +415,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('update own entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('update own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -410,8 +457,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('update own entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('update own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -445,8 +497,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('delete any entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('delete any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -482,8 +539,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('delete any entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('delete any entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete any entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -517,8 +579,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getMemberRole()->grantPermission('delete own entity_test_as_content entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('delete own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');
@@ -554,8 +621,13 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity(['uid' => $account->id()]);
     $entity_3 = $this->createTestEntity();
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('delete own entity_test_as_content entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('delete own entity_test_as_content entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete own entity_test_as_content entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($entity_1, 'entity_test_as_content');

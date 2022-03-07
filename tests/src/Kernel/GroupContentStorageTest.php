@@ -25,19 +25,26 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   protected $storage;
 
   /**
+   * The group type to use in testing.
+   *
+   * @var \Drupal\group\Entity\GroupTypeInterface
+   */
+  protected $groupType;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
 
     $this->storage = $this->entityTypeManager->getStorage('group_content');
+    $this->groupType = $this->createGroupType();
 
-    // Enable the test plugins on the default group type.
+    // Enable the test plugins on a test group type.
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-    $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $storage->createFromPlugin($group_type, 'user_as_content')->save();
-    $storage->createFromPlugin($group_type, 'group_as_content')->save();
+    $storage->createFromPlugin($this->groupType, 'user_as_content')->save();
+    $storage->createFromPlugin($this->groupType, 'group_as_content')->save();
   }
 
   /**
@@ -51,7 +58,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    */
   protected function createUnsavedGroup($values = []) {
     $group = $this->entityTypeManager->getStorage('group')->create($values + [
-      'type' => 'default',
+      'type' => $this->groupType->id(),
       'label' => $this->randomMachineName(),
     ]);
     return $group;
@@ -94,7 +101,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::createForEntityInGroup
    */
   public function testCreateForUnsavedEntity() {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
     $account = $this->createUnsavedUser();
 
     $this->expectException(EntityStorageException::class);
@@ -108,7 +115,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::createForEntityInGroup
    */
   public function testCreateForInvalidPluginId() {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
     $account = $this->createUser();
 
     $this->expectException(EntityStorageException::class);
@@ -122,8 +129,8 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::createForEntityInGroup
    */
   public function testCreateForInvalidBundle() {
-    $group = $this->createGroup();
-    $subgroup = $this->createGroup(['type' => 'other']);
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $subgroup = $this->createGroup(['type' => $this->createGroupType()->id()]);
 
     $this->expectException(EntityStorageException::class);
     $this->expectExceptionMessage("The provided plugin provided does not support the entity's bundle.");
@@ -136,8 +143,8 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::createForEntityInGroup
    */
   public function testCreateWithBundle() {
-    $group = $this->createGroup();
-    $subgroup = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $subgroup = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
     $group_content = $this->storage->createForEntityInGroup($subgroup, $group, 'group_as_content');
     $this->assertInstanceOf('\Drupal\group\Entity\GroupContentInterface', $group_content, 'Created a GroupContent entity using a bundle-specific plugin.');
   }
@@ -148,7 +155,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::createForEntityInGroup
    */
   public function testCreateWithoutBundle() {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
     $account = $this->createUser();
     $group_content = $this->storage->createForEntityInGroup($account, $group, 'user_as_content');
     $this->assertInstanceOf('\Drupal\group\Entity\GroupContentInterface', $group_content, 'Created a GroupContent entity using a bundle-independent plugin.');
@@ -170,7 +177,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::loadByGroup
    */
   public function testLoadByGroup() {
-    $group = $this->createGroup();
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
     $this->assertCount(1, $this->storage->loadByGroup($group), 'Managed to load the group creator membership by group.');
   }
 
@@ -190,7 +197,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::loadByEntity
    */
   public function testLoadByEntity() {
-    $this->createGroup();
+    $this->createGroup(['type' => $this->groupType->id()]);
     $account = $this->getCurrentUser();
     $this->assertCount(1, $this->storage->loadByEntity($account), 'Managed to load the group creator membership by user.');
   }
@@ -201,7 +208,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::loadByPluginId
    */
   public function testLoadByPluginId() {
-    $this->createGroup();
+    $this->createGroup(['type' => $this->groupType->id()]);
     $this->assertCount(1, $this->storage->loadByPluginId('group_membership'), 'Managed to load the group creator membership by plugin ID.');
   }
 

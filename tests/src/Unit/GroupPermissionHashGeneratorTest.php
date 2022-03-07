@@ -10,7 +10,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\group\Access\CalculatedGroupPermissionsInterface;
 use Drupal\group\Access\CalculatedGroupPermissionsItem;
-use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
 use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGenerator;
 use Drupal\group\Access\RefinableCalculatedGroupPermissions;
@@ -75,33 +74,32 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
    * @covers ::generateHash
    */
   public function testGenerateHash() {
-    $scope_gt = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
-    $scope_g = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP;
     $cid = 'group_permissions_hash_24101986';
 
     $calculated_permissions = new RefinableCalculatedGroupPermissions();
-    $this->permissionCalculator->calculatePermissions($this->account)->willReturn($calculated_permissions);
+    $this->permissionCalculator->calculateFullPermissions($this->account)->willReturn($calculated_permissions);
 
     $sorted_permissions = [
-      'alice' => ['bob'],
-      'foo' => ['bar', 'baz'],
-      16 => ['sweet'],
+      'scope_a' => ['alice' => ['bob']],
+      'scope_b' => ['foo' => ['bar', 'baz']],
+      'scope_c' => [16 => ['sweet']],
     ];
     $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
     $this->static->get($cid)->willReturn(FALSE);
     $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
 
+    // Deliberately add the permissions in an unsorted manner.
     $calculated_permissions
-      ->addItem(new CalculatedGroupPermissionsItem($scope_gt, 'foo', ['baz', 'bar']))
-      ->addItem(new CalculatedGroupPermissionsItem($scope_gt, 'alice', ['bob']))
-      ->addItem(new CalculatedGroupPermissionsItem($scope_g, 16, ['sweet']));
+      ->addItem(new CalculatedGroupPermissionsItem('scope_b', 'foo', ['baz', 'bar']))
+      ->addItem(new CalculatedGroupPermissionsItem('scope_c', 16, ['sweet']))
+      ->addItem(new CalculatedGroupPermissionsItem('scope_a', 'alice', ['bob']));
     $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash was generated based on the sorted calculated permissions.');
 
-    $sorted_permissions[100] = 'is-admin';
+    $sorted_permissions['scope_d'][100] = 'is-admin';
     $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
     $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
     $calculated_permissions
-      ->addItem(new CalculatedGroupPermissionsItem($scope_g, 100, ['irrelevant'], TRUE));
+      ->addItem(new CalculatedGroupPermissionsItem('scope_d', 100, ['irrelevant'], TRUE));
     $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash uses a simple flag instead of permissions for admin entries.');
 
     $cache = (object) ['data' => 'foobar'];
@@ -121,7 +119,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
     $calculated_permissions->getCacheTags()->willReturn(["config:group.role.foo-bar"]);
     $calculated_permissions->getCacheMaxAge()->willReturn(-1);
     $calculated_permissions = $calculated_permissions->reveal();
-    $this->permissionCalculator->calculatePermissions($this->account)->willReturn($calculated_permissions);
+    $this->permissionCalculator->calculateFullPermissions($this->account)->willReturn($calculated_permissions);
     $this->assertEquals(CacheableMetadata::createFromObject($calculated_permissions), $this->hashGenerator->getCacheableMetadata($this->account));
   }
 

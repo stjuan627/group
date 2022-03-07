@@ -2,7 +2,6 @@
 
 namespace Drupal\group\Form;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -65,9 +64,15 @@ abstract class GroupPermissionsForm extends FormBase {
    *   A render array to display atop the form.
    */
   protected function getInfo() {
-    $message_check = $this->t('Cells with a &#9989; indicate that the permission is automatically available to that admin role.');
+    $message_lock = $this->t('Group roles in the outsider scope will use a &#128274; to indicate the global role they synchronize with.');
+    $message_key = $this->t('Group roles in the insider scope will use a &#128273; to indicate the global role they synchronize with.');
+    $info['role_icons']['#markup'] = "<p>$message_lock<br/>$message_key</p>";
+
     $message_cross = $this->t('Cells with a &#10060; indicate that the permission is not available for that role.');
-    return ['icon_info' => ['#markup' => "<p>$message_check<br/>$message_cross</p>"]];
+    $message_check = $this->t('Cells with a &#9989; indicate that the permission is automatically available to that admin role.');
+    $info['cell_icons']['#markup'] = "<p>$message_cross<br/>$message_check</p>";
+
+    return $info;
   }
 
   /**
@@ -117,7 +122,8 @@ abstract class GroupPermissionsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $role_info = [];
+    // Cluster the roles by scope to make the UI easier to understand.
+    $role_info = ['outsider' => [], 'insider' => [], 'individual' => []];
 
     // Sort the group roles using the static sort() method.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
@@ -127,8 +133,9 @@ abstract class GroupPermissionsForm extends FormBase {
     // Retrieve information for every role to user further down. We do this to
     // prevent the same methods from being fired (rows * permissions) times.
     foreach ($group_roles as $role_name => $group_role) {
-      $role_info[$role_name] = [
+      $role_info[$group_role->getScope()][$role_name] = [
         'label' => $group_role->label(),
+        'global_role' => ($global_role = $group_role->getGlobalRole()) ? $global_role->label() : FALSE,
         'permissions' => $group_role->getPermissions(),
         'is_anonymous' => $group_role->isAnonymous(),
         'is_outsider' => $group_role->isOutsider(),
@@ -158,11 +165,19 @@ abstract class GroupPermissionsForm extends FormBase {
     ];
 
     // Create a column with header for every group role.
-    foreach ($role_info as $info) {
-      $form['permissions']['#header'][] = [
-        'data' => $info['label'],
-        'class' => ['checkbox'],
-      ];
+    foreach ($role_info as $scope_id => $scope_info) {
+      foreach ($scope_info as $info) {
+        $label = $info['label'];
+        if ($info['global_role']) {
+          $icon = $scope_id === 'outsider' ? '&#128274;' : '&#128273;';
+          $label .= '<br />(' . $icon . ' ' . $info['global_role'] . ')';
+        }
+
+        $form['permissions']['#header'][] = [
+          'data' => ['#markup' => $label],
+          'class' => ['checkbox'],
+        ];
+      }
     }
 
     // Render the permission as sections of rows.
@@ -217,52 +232,51 @@ abstract class GroupPermissionsForm extends FormBase {
           }
 
           // Finally build a checkbox cell for every group role.
-          foreach ($role_info as $role_name => $info) {
-            $marker_text = FALSE;
+          foreach ($role_info as $scope_info) {
+            foreach ($scope_info as $role_name => $info) {
+              $marker_text = FALSE;
 
-            // Show a green checkmark for admin roles.
-            if ($info['is_admin']) {
-              $marker_text = '&#9989;';
-            }
-            // Show a red '-' if the permission is unavailable.
-            else {
+              // Show a red '-' if the permission is unavailable.
               $na = $info['is_anonymous'] && !in_array('anonymous', $perm_item['allowed for']);
               $na = $na || ($info['is_outsider'] && !in_array('outsider', $perm_item['allowed for']));
               $na = $na || ($info['is_member'] && !in_array('member', $perm_item['allowed for']));
-
               if ($na) {
                 $marker_text = '&#10060;';
               }
-            }
+              // Show a green checkmark for admin roles.
+              elseif ($info['is_admin']) {
+                $marker_text = '&#9989;';
+              }
 
-            // Show the special marker if necessary.
-            if ($marker_text) {
+              // Show the special marker if necessary.
+              if ($marker_text) {
+                $form['permissions'][$perm][$role_name] = [
+                  '#title' => $info['label'] . ': ' . $perm_item['title'],
+                  '#title_display' => 'invisible',
+                  '#wrapper_attributes' => ['class' => ['checkbox']],
+                  '#markup' => $marker_text,
+                ];
+                continue;
+              }
+
+              // Show a checkbox if the permissions is available.
               $form['permissions'][$perm][$role_name] = [
                 '#title' => $info['label'] . ': ' . $perm_item['title'],
                 '#title_display' => 'invisible',
-                '#wrapper_attributes' => ['class' => ['checkbox']],
-                '#markup' => $marker_text,
+                '#wrapper_attributes' => [
+                  'class' => ['checkbox'],
+                ],
+                '#type' => 'checkbox',
+                '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
+                '#attributes' => [
+                  'class' => [
+                    'rid-' . $role_name,
+                    'js-rid-' . $role_name
+                  ]
+                ],
+                '#parents' => [$role_name, $perm],
               ];
-              continue;
             }
-
-            // Show a checkbox if the permissions is available.
-            $form['permissions'][$perm][$role_name] = [
-              '#title' => $info['label'] . ': ' . $perm_item['title'],
-              '#title_display' => 'invisible',
-              '#wrapper_attributes' => [
-                'class' => ['checkbox'],
-              ],
-              '#type' => 'checkbox',
-              '#default_value' => in_array($perm, $info['permissions']) ? 1 : 0,
-              '#attributes' => [
-                'class' => [
-                  'rid-' . $role_name,
-                  'js-rid-' . $role_name
-                ]
-              ],
-              '#parents' => [$role_name, $perm],
-            ];
           }
         }
       }
@@ -275,8 +289,6 @@ abstract class GroupPermissionsForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
-    // @todo Do something like the global permissions page JS for 'member'.
-    // @todo See user/drupal.user.permissions for JS example.
     $form['#attached']['library'][] = 'group/permissions';
 
     return $form;

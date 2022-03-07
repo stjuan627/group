@@ -133,82 +133,34 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRoles($include_internal = TRUE) {
+  public function getRoles($include_synchronized = TRUE) {
     $properties = ['group_type' => $this->id()];
 
-    // Exclude internal roles if told to.
-    if ($include_internal === FALSE) {
-      $properties['internal'] = FALSE;
+    // Exclude synchronized roles if told to.
+    if ($include_synchronized === FALSE) {
+      $properties['scope'] = 'individual';
     }
 
     return $this->entityTypeManager()
       ->getStorage('group_role')
-      ->loadByProperties($properties);
+      ->loadByProperties(['group_type' => $this->id()]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getRoleIds($include_internal = TRUE) {
+  public function getRoleIds($include_synchronized = TRUE) {
     $query = $this->entityTypeManager()
       ->getStorage('group_role')
       ->getQuery()
       ->condition('group_type', $this->id());
 
-    // Exclude internal roles if told to.
-    if ($include_internal === FALSE) {
-      $query->condition('internal', FALSE);
+    // Exclude synchronized roles if told to.
+    if ($include_synchronized === FALSE) {
+      $query->condition('scope', 'individual');
     }
 
     return $query->execute();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAnonymousRole() {
-    return $this->entityTypeManager()
-      ->getStorage('group_role')
-      ->load($this->getAnonymousRoleId());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAnonymousRoleId() {
-    return $this->id() . '-anonymous';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOutsiderRole() {
-    return $this->entityTypeManager()
-      ->getStorage('group_role')
-      ->load($this->getOutsiderRoleId());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOutsiderRoleId() {
-    return $this->id() . '-outsider';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMemberRole() {
-    return $this->entityTypeManager()
-      ->getStorage('group_role')
-      ->load($this->getMemberRoleId());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMemberRoleId() {
-    return $this->id() . '-member';
   }
 
   /**
@@ -271,37 +223,19 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       // @todo Remove this line when https://www.drupal.org/node/2645202 lands.
       $this->setOriginalId($group_type_id);
 
-      // The code below will create the default group roles, synchronized group
-      // roles and the group content types for enforced plugins. It is extremely
-      // important that we only run this code when we're not dealing with config
-      // synchronization.
+      // The code below will create group content types for enforced plugins. It
+      // is extremely important that we only run this code when we're not
+      // dealing with config synchronization.
       //
       // Any of the config entities created here could still be queued up for
       // import in a combined config import. Therefore, we only create them in
       // \Drupal\group\EventSubscriber\ConfigSubscriber after the entire import
       // has finished.
       if (!$this->isSyncing()) {
-        /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
-        $group_role_storage = $this->entityTypeManager()->getStorage('group_role');
-
         // Enable enforced content plugins for the new group type.
         $this->getGroupRelationTypeManager()->installEnforced($this);
-
-        // Create internal and synchronized group roles for the new group type.
-        $group_role_storage->createInternal([$group_type_id]);
-        $group_role_storage->createSynchronized([$group_type_id]);
       }
     }
-  }
-
-  /**
-   * Returns the group role synchronizer service.
-   *
-   * @return \Drupal\group\GroupRoleSynchronizerInterface
-   *   The group role synchronizer service.
-   */
-  protected function getGroupRoleSynchronizer() {
-    return \Drupal::service('group_role.synchronizer');
   }
 
   /**

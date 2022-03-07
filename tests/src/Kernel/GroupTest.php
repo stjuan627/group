@@ -25,7 +25,7 @@ class GroupTest extends GroupKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->group = $this->createGroup();
+    $this->group = $this->createGroup(['type' => $this->createGroupType()->id()]);
   }
 
   /**

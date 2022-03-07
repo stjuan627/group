@@ -33,13 +33,6 @@ class GroupToGroupContent extends RelationshipPluginBase {
   protected $pluginManager;
 
   /**
-   * The group content type IDs to filter the join on.
-   *
-   * @var string[]
-   */
-  protected $groupContentTypeIds;
-
-  /**
    * Constructs a GroupToGroupContent object.
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
@@ -130,13 +123,12 @@ class GroupToGroupContent extends RelationshipPluginBase {
       $def['extra'] = $this->definition['extra'];
     }
 
-    // We can't run an IN-query on an empty array. So if there are no group
-    // content types yet, we do not add our extra condition to the JOIN.
-    $group_content_type_ids = $this->getGroupContentTypeIds();
-    if (!empty($group_content_type_ids)) {
+    // Add the plugin IDs to the query if any were selected.
+    $plugin_ids = array_filter($this->options['group_content_plugins']);
+    if (!empty($plugin_ids)) {
       $def['extra'][] = [
-        'field' => 'type',
-        'value' => $group_content_type_ids,
+        'field' => 'plugin_id',
+        'value' => $plugin_ids,
       ];
     }
 
@@ -154,40 +146,6 @@ class GroupToGroupContent extends RelationshipPluginBase {
       $access_tag = $table_data['table']['base']['access query tag'];
       $this->query->addTag($access_tag);
     }
-  }
-
-  /**
-   * Returns the group content types this relationship should filter on.
-   *
-   * This checks if any plugins were selected on the option form and, in that
-   * case, loads only those group content types available to the selected
-   * plugins. Otherwise, all possible group content types for the relationship's
-   * entity type are loaded.
-   *
-   * This needs to happen live to cover the use case where a group content
-   * plugin is installed on a group type after this relationship has been
-   * configured on a view without any plugins selected.
-   *
-   * @return string[]
-   *   The group content type IDs to filter on.
-   */
-  protected function getGroupContentTypeIds() {
-    // Even though the retrieval needs to happen live, there's nothing stopping
-    // us from statically caching it during runtime.
-    if (!isset($this->groupContentTypeIds)) {
-      $plugin_ids = array_filter($this->options['group_content_plugins']);
-
-      $group_content_type_ids = [];
-      foreach ($plugin_ids as $plugin_id) {
-        $group_content_type_ids = array_merge($group_content_type_ids, $this->pluginManager->getGroupContentTypeIds($plugin_id));
-      }
-
-      $this->groupContentTypeIds = $plugin_ids
-        ? $group_content_type_ids
-        : array_keys(GroupContentType::loadMultiple());
-    }
-
-    return $this->groupContentTypeIds;
   }
 
 }

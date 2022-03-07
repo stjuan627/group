@@ -72,14 +72,11 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $storage->save($storage->createFromPlugin($this->groupType, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupType, 'node_as_content:page'));
 
-    $this->adminRole = $this->entityTypeManager->getStorage('group_role')->create([
-      'id' => 'create_access_test-admin',
-      'label' => 'Create test admin',
-      'weight' => 0,
+    $this->adminRole = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
+      'scope' => 'individual',
       'admin' => TRUE,
     ]);
-    $this->adminRole->save();
   }
 
   /**
@@ -92,13 +89,18 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $member = $this->createUser();
     $admin = $this->createUser();
 
-    $this->groupType->getOutsiderRole()
-      ->grantPermissions($outsider_permissions)
-      ->save();
-
-    $this->groupType->getMemberRole()
-      ->grantPermissions($member_permissions)
-      ->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => $outsider_permissions,
+    ]);
+    $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => $member_permissions,
+    ]);
 
     $group = $this->createGroup(['type' => $this->groupType->id()]);
     $group->addMember($member);
@@ -192,13 +194,18 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $member = $this->createUser();
     $admin = $this->createUser();
 
-    $this->groupType->getOutsiderRole()
-      ->grantPermissions($outsider_permissions)
-      ->save();
-
-    $this->groupType->getMemberRole()
-      ->grantPermissions($member_permissions)
-      ->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => $outsider_permissions,
+    ]);
+    $this->createGroupRole([
+      'group_type' => $this->groupType->id(),
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => $member_permissions,
+    ]);
 
     $group = $this->createGroup(['type' => $this->groupType->id()]);
     $group->addMember($member);

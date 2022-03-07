@@ -13,10 +13,17 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    * Tests that a group creator gets a membership using the wizard.
    */
   public function testCreatorMembershipWizard() {
-    $this->drupalGet('/group/add/default');
+    $group_type = $this->createGroupType();
+    $group_type_id = $group_type->id();
+
+    $role = $this->drupalCreateRole(["create $group_type_id group"]);
+    $this->groupCreator->addRole($role);
+    $this->groupCreator->save();
+
+    $this->drupalGet("/group/add/$group_type_id");
     $this->assertSession()->statusCodeEquals(200);
 
-    $submit_button = 'Create Default label and complete your membership';
+    $submit_button = 'Create ' . $group_type->label() . ' and complete your membership';
     $this->assertSession()->buttonExists($submit_button);
     $this->assertSession()->buttonExists('Cancel');
 
@@ -32,15 +39,17 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    * Tests that a group creator gets a membership without using the wizard.
    */
   public function testCreatorMembershipNoWizard() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
-    $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
-    $group_type->set('creator_wizard', FALSE);
-    $group_type->save();
+    $group_type = $this->createGroupType(['creator_wizard' => FALSE]);
+    $group_type_id = $group_type->id();
 
-    $this->drupalGet('/group/add/default');
+    $role = $this->drupalCreateRole(["create $group_type_id group"]);
+    $this->groupCreator->addRole($role);
+    $this->groupCreator->save();
+
+    $this->drupalGet("/group/add/$group_type_id");
     $this->assertSession()->statusCodeEquals(200);
 
-    $submit_button = 'Create Default label and become a member';
+    $submit_button = 'Create ' . $group_type->label() . ' and become a member';
     $this->assertSession()->buttonExists($submit_button);
     $this->assertSession()->buttonNotExists('Cancel');
   }
@@ -49,9 +58,19 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    * Tests that a group form is not turned into a wizard.
    */
   public function testNoWizard() {
-    $this->drupalGet('/group/add/other');
+    $group_type = $this->createGroupType([
+      'creator_membership' => FALSE,
+      'creator_wizard' => FALSE,
+    ]);
+    $group_type_id = $group_type->id();
+
+    $role = $this->drupalCreateRole(["create $group_type_id group"]);
+    $this->groupCreator->addRole($role);
+    $this->groupCreator->save();
+
+    $this->drupalGet("/group/add/$group_type_id");
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->buttonExists('Create Other');
+    $this->assertSession()->buttonExists('Create ' . $group_type->label());
     $this->assertSession()->buttonNotExists('Cancel');
   }
 

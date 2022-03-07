@@ -15,23 +15,6 @@ use Drupal\group\Entity\GroupTypeInterface;
 class GroupTypeTest extends GroupKernelTestBase {
 
   /**
-   * The 'default' group type from the group_test_config test module.
-   *
-   * @var \Drupal\group\Entity\GroupTypeInterface
-   */
-  protected $groupType;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-    $this->groupType = $this->entityTypeManager
-      ->getStorage('group_type')
-      ->load('default');
-  }
-
-  /**
    * Tests the maximum ID length of a group type.
    *
    * @covers ::preSave
@@ -55,7 +38,7 @@ class GroupTypeTest extends GroupKernelTestBase {
    * @covers ::getInstalledPlugins
    */
   public function testGetInstalledPlugins() {
-    $plugins = $this->groupType->getInstalledPlugins();
+    $plugins = $this->createGroupType()->getInstalledPlugins();
     $this->assertInstanceOf('\Drupal\group\Plugin\Group\Relation\GroupRelationCollection', $plugins, 'Loaded the installed plugin collection.');
     $this->assertCount(1, $plugins, 'Plugin collection has one plugin instance.');
   }
@@ -66,8 +49,9 @@ class GroupTypeTest extends GroupKernelTestBase {
    * @covers ::hasPlugin
    */
   public function testHasPlugin() {
-    $this->assertTrue($this->groupType->hasPlugin('group_membership'), 'Found the group_membership plugin.');
-    $this->assertFalse($this->groupType->hasPlugin('fake_plugin_id'), 'Could not find the fake_plugin_id plugin.');
+    $group_type = $this->createGroupType();
+    $this->assertTrue($group_type->hasPlugin('group_membership'), 'Found the group_membership plugin.');
+    $this->assertFalse($group_type->hasPlugin('fake_plugin_id'), 'Could not find the fake_plugin_id plugin.');
   }
 
   /**
@@ -76,7 +60,7 @@ class GroupTypeTest extends GroupKernelTestBase {
    * @covers ::getPlugin
    */
   public function testGetInstalledPlugin() {
-    $plugin = $this->groupType->getPlugin('group_membership');
+    $plugin = $this->createGroupType()->getPlugin('group_membership');
     $this->assertInstanceOf('\Drupal\group\Plugin\Group\Relation\GroupRelationInterface', $plugin, 'Loaded the group_membership plugin.');
   }
 
@@ -88,7 +72,7 @@ class GroupTypeTest extends GroupKernelTestBase {
   public function testGetNonExistentPlugin() {
     $this->expectException(PluginNotFoundException::class);
     $this->expectExceptionMessage("Plugin ID 'fake_plugin_id' was not found.");
-    $this->groupType->getPlugin('fake_plugin_id');
+    $this->createGroupType()->getPlugin('fake_plugin_id');
   }
 
 }

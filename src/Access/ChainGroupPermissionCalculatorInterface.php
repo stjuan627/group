@@ -9,6 +9,10 @@ use Drupal\Core\Session\AccountInterface;
  *
  * Each calculator in the chain can be another chain, which is why this
  * interface extends the permission calculator one.
+ *
+ * @todo Perhaps move to own module and make scopes config entities.
+ *   But why? Label/desc/id and then what?
+ * @todo Add alterPermissions($permissions, $account, $scope)?
  */
 interface ChainGroupPermissionCalculatorInterface extends GroupPermissionCalculatorInterface {
 
@@ -31,23 +35,9 @@ interface ChainGroupPermissionCalculatorInterface extends GroupPermissionCalcula
   public function getCalculators();
 
   /**
-   * Calculates the full group permissions for an authenticated account.
-   *
-   * This includes both outsider and member permissions.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   The user account for which to retrieve the permissions.
-   *
-   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
-   *   An object representing the full authenticated group permissions.
-   */
-  public function calculateAuthenticatedPermissions(AccountInterface $account);
-
-  /**
    * Calculates the full group permissions for an account.
    *
-   * This could either include anonymous permissions or both outsider and member
-   * permissions, depending on the account's anonymous status.
+   * This includes all scopes: outsider, insider, individual.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account for which to retrieve the permissions.
@@ -55,6 +45,6 @@ interface ChainGroupPermissionCalculatorInterface extends GroupPermissionCalcula
    * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
    *   An object representing the full group permissions.
    */
-  public function calculatePermissions(AccountInterface $account);
+  public function calculateFullPermissions(AccountInterface $account);
 
 }

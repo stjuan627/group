@@ -12,22 +12,15 @@ abstract class GroupPermissionCalculatorBase implements GroupPermissionCalculato
   /**
    * {@inheritdoc}
    */
-  public function calculateAnonymousPermissions() {
-    return new RefinableCalculatedGroupPermissions();
+  public function calculatePermissions(AccountInterface $account, $scope) {
+    return (new RefinableCalculatedGroupPermissions())->addCacheContexts($this->getPersistentCacheContexts($scope));
   }
 
   /**
    * {@inheritdoc}
    */
-  public function calculateOutsiderPermissions(AccountInterface $account) {
-    return new RefinableCalculatedGroupPermissions();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateMemberPermissions(AccountInterface $account) {
-    return new RefinableCalculatedGroupPermissions();
+  public function getPersistentCacheContexts($scope) {
+    return [];
   }
 
 }

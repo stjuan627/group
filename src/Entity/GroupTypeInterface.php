@@ -23,74 +23,26 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   /**
    * Gets the group roles.
    *
-   * @param bool $include_internal
-   *   (optional) Whether to include internal roles in the result. Defaults to
-   *   TRUE.
+   * @param bool $include_synchronized
+   *   (optional) Whether to include roles that synchronize to a global role in
+   *   the result. Defaults to TRUE.
    *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
    *   The group roles this group type uses.
    */
-  public function getRoles($include_internal = TRUE);
+  public function getRoles($include_synchronized = TRUE);
 
   /**
    * Gets the role IDs.
    *
-   * @param bool $include_internal
-   *   (optional) Whether to include internal roles in the result. Defaults to
-   *   TRUE.
+   * @param bool $include_synchronized
+   *   (optional) Whether to include roles that synchronize to a global role in
+   *   the result. Defaults to TRUE.
    *
    * @return string[]
    *   The ids of the group roles this group type uses.
    */
-  public function getRoleIds($include_internal = TRUE);
-
-  /**
-   * Gets the generic anonymous group role for this group type.
-   *
-   * @return \Drupal\group\Entity\GroupRoleInterface
-   *   The anonymous group role this group type uses.
-   */
-  public function getAnonymousRole();
-
-  /**
-   * Gets the generic anonymous role ID.
-   *
-   * @return string
-   *   The ID of the anonymous group role this group type uses.
-   */
-  public function getAnonymousRoleId();
-
-  /**
-   * Gets the generic outsider group role for this group type.
-   *
-   * @return \Drupal\group\Entity\GroupRoleInterface
-   *   The outsider group role this group type uses.
-   */
-  public function getOutsiderRole();
-
-  /**
-   * Gets the generic outsider role ID.
-   *
-   * @return string
-   *   The ID of the outsider group role this group type uses.
-   */
-  public function getOutsiderRoleId();
-
-  /**
-   * Gets the generic member group role for this group type.
-   *
-   * @return \Drupal\group\Entity\GroupRoleInterface
-   *   The generic member group role this group type uses.
-   */
-  public function getMemberRole();
-
-  /**
-   * Gets the generic member role ID.
-   *
-   * @return string
-   *   The ID of the generic member group role this group type uses.
-   */
-  public function getMemberRoleId();
+  public function getRoleIds($include_synchronized = TRUE);
 
   /**
    * Sets whether a new revision should be created by default.

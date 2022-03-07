@@ -82,22 +82,12 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
   }
 
   /**
-   * Performs the calculation of permissions with caching support.
-   *
-   * @param string[] $cache_keys
-   *   The cache keys to store the calculation with.
-   * @param string[] $persistent_cache_contexts
-   *   The cache contexts that are always used for this calculation.
-   * @param string $method
-   *   The method to invoke on each calculator.
-   * @param array $args
-   *   The arguments to pass to the calculator method.
-   *
-   * @return \Drupal\group\Access\CalculatedGroupPermissionsInterface
-   *   The calculated group permissions, potentially served from a cache.
+   * {@inheritdoc}
    */
-  protected function doCacheableCalculation(array $cache_keys, array $persistent_cache_contexts, $method, array $args = []) {
+  public function calculatePermissions(AccountInterface $account, $scope) {
+    $persistent_cache_contexts = $this->getPersistentCacheContexts($scope);
     $initial_cacheability = (new CacheableMetadata())->addCacheContexts($persistent_cache_contexts);
+    $cache_keys = ['group_permissions', $scope];
 
     // Whether to switch the user account during cache storage and retrieval.
     //
@@ -123,7 +113,7 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
       list($cache_context_root) = explode('.', $cache_context, 2);
       if ($cache_context_root === 'user') {
         $switch_account = TRUE;
-        $this->accountSwitcher->switchTo($args[0]);
+        $this->accountSwitcher->switchTo($account);
         break;
       }
     }
@@ -144,80 +134,43 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
     else {
       $calculated_permissions = new RefinableCalculatedGroupPermissions();
       foreach ($this->getCalculators() as $calculator) {
-        $calculated_permissions = $calculated_permissions->merge(call_user_func_array([$calculator, $method], $args));
+        $calculated_permissions = $calculated_permissions->merge($calculator->calculatePermissions($account, $scope));
       }
 
       // Apply a cache tag to easily flush the calculated group permissions.
       $calculated_permissions->addCacheTags(['group_permissions']);
-
-      // Cache the permissions as an immutable value object.
-      $calculated_permissions = new CalculatedGroupPermissions($calculated_permissions);
     }
 
-    // The persistent cache contexts are only used internally and should never
-    // bubble up. We therefore only add them to the cacheable metadata provided
-    // to the VariationCache, but not the actual object we're storing.
     if (!$static_cache_hit) {
-      $final_cacheability = CacheableMetadata::createFromObject($calculated_permissions)->addCacheContexts($persistent_cache_contexts);
-      $this->static->set($cache_keys, $calculated_permissions, $final_cacheability, $initial_cacheability);
+      $cacheability = CacheableMetadata::createFromObject($calculated_permissions);
+
+      // First store the actual calculated permissions in the persistent cache,
+      // along with the final cache contexts after all calculations have run.
       if (!$persistent_cache_hit) {
-        $this->cache->set($cache_keys, $calculated_permissions, $final_cacheability, $initial_cacheability);
+        $this->cache->set($cache_keys, $calculated_permissions, $cacheability, $initial_cacheability);
       }
+
+      // Then convert the calculated permissions to an immutable value object
+      // and store it in the static cache so that we don't have to do the same
+      // conversion every time we call for the calculated permissions from a
+      // warm static cache.
+      $calculated_permissions = new CalculatedGroupPermissions($calculated_permissions);
+      $this->static->set($cache_keys, $calculated_permissions, $cacheability, $initial_cacheability);
     }
 
     if ($switch_account) {
       $this->accountSwitcher->switchBack();
     }
 
+    // Return the permissions as an immutable value object.
     return $calculated_permissions;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function calculateAnonymousPermissions() {
-    return $this->doCacheableCalculation(
-      ['group_permissions', 'anonymous'],
-      $this->getPersistentAnonymousCacheContexts(),
-      __FUNCTION__
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateOutsiderPermissions(AccountInterface $account) {
-    return $this->doCacheableCalculation(
-      ['group_permissions', 'outsider'],
-      $this->getPersistentOutsiderCacheContexts(),
-      __FUNCTION__,
-      [$account]
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculateMemberPermissions(AccountInterface $account) {
-    return $this->doCacheableCalculation(
-      ['group_permissions', 'member'],
-      $this->getPersistentMemberCacheContexts(),
-      __FUNCTION__,
-      [$account]
-    );
-  }
-
-  /**
-   * Performs the retrieval of persistent cache contexts.
-   *
-   * @param string $constant_name
-   *   The constant to read from each calculator.
-   *
-   * @return string[]
-   *   The combined persistent cache contexts from all calculators.
-   */
-  protected function getPersistentCacheContexts($constant_name) {
-    $cid = 'group_permission:chain_calculator:contexts:' . $constant_name;
+  public function getPersistentCacheContexts($scope) {
+    $cid = 'group_permission:chain_calculator:contexts:' . $scope;
 
     // Retrieve the contexts from the regular static cache if available.
     if ($static_cache = $this->regularStatic->get($cid)) {
@@ -226,7 +179,7 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
     else {
       $contexts = [];
       foreach ($this->getCalculators() as $calculator) {
-        $contexts = array_merge($contexts, constant(get_class($calculator) . '::' . $constant_name));
+        $contexts = array_merge($contexts, $calculator->getPersistentCacheContexts($scope));
       }
 
       // Store the contexts in the regular static cache.
@@ -237,50 +190,15 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
   }
 
   /**
-   * Gets the cache contexts that always apply to the anonymous permissions.
-   *
-   * @return string[]
-   */
-  protected function getPersistentAnonymousCacheContexts() {
-    return $this->getPersistentCacheContexts('ANONYMOUS_CACHE_CONTEXTS');
-  }
-
-  /**
-   * Gets the cache contexts that always apply to the outsider permissions.
-   *
-   * @return string[]
-   */
-  protected function getPersistentOutsiderCacheContexts() {
-    return $this->getPersistentCacheContexts('OUTSIDER_CACHE_CONTEXTS');
-  }
-
-  /**
-   * Gets the cache contexts that always apply to the member permissions.
-   *
-   * @return string[]
-   */
-  protected function getPersistentMemberCacheContexts() {
-    return $this->getPersistentCacheContexts('MEMBER_CACHE_CONTEXTS');
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public function calculateAuthenticatedPermissions(AccountInterface $account) {
+  public function calculateFullPermissions(AccountInterface $account) {
     $calculated_permissions = new RefinableCalculatedGroupPermissions();
     $calculated_permissions
-      ->merge($this->calculateOutsiderPermissions($account))
-      ->merge($this->calculateMemberPermissions($account));
+      ->merge($this->calculatePermissions($account, 'outsider'))
+      ->merge($this->calculatePermissions($account, 'insider'))
+      ->merge($this->calculatePermissions($account, 'individual'));
     return new CalculatedGroupPermissions($calculated_permissions);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function calculatePermissions(AccountInterface $account) {
-    return $account->isAnonymous()
-      ? $this->calculateAnonymousPermissions()
-      : $this->calculateAuthenticatedPermissions($account);
   }
 
 }

@@ -8,16 +8,6 @@ namespace Drupal\group\Access;
 interface CalculatedGroupPermissionsItemInterface {
 
   /**
-   * The scope for group based permissions (e.g.: memberships).
-   */
-  const SCOPE_GROUP = 'group';
-
-  /**
-   * The scope for group type based permissions (e.g.: anonymous or outsider).
-   */
-  const SCOPE_GROUP_TYPE = 'group_type';
-
-  /**
    * Returns the scope of the calculated permissions item.
    *
    * @return string

@@ -17,6 +17,44 @@ use Drupal\group\Entity\GroupInterface;
 class GroupCreatorTest extends GroupKernelTestBase {
 
   /**
+   * Tests that a group creator is not automatically made a member.
+   */
+  public function testCreatorDoesNotGetMembership() {
+    $group = $this->createGroup(['type' => $this->createGroupType(['creator_membership' => FALSE])->id()]);
+    $this->assertFalse($group->getMember($this->getCurrentUser()), 'Membership could not be loaded for the group creator.');
+  }
+
+  /**
+   * Tests that a group creator is automatically a member.
+   */
+  public function testCreatorGetsMembership() {
+    $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
+    $this->assertNotFalse($group->getMember($this->getCurrentUser()), 'Membership could be loaded for the group creator.');
+    $this->assertCount(0, $this->getCreatorRoles($this->getCurrentUser(), $group), 'Membership has zero roles.');
+  }
+
+  /**
+   * Tests that a group creator gets the configured roles.
+   *
+   * @depends testCreatorGetsMembership
+   */
+  public function testCreatorRoles() {
+    $group_type = $this->createGroupType();
+    $group_role = $this->createGroupRole([
+      'group_type' => $group_type->id(),
+      'scope' => 'individual',
+    ]);
+    $group_type->set('creator_roles', [$group_role->id()]);
+    $group_type->save();
+
+    $group = $this->createGroup(['type' => $group_type->id()]);
+    $group_roles = $this->getCreatorRoles($this->getCurrentUser(), $group);
+
+    $this->assertCount(1, $group_roles, 'Membership has one role.');
+    $this->assertEquals($group_role->id(), reset($group_roles)->id(), 'Membership has the custom role.');
+  }
+
+  /**
    * Gets the roles for the group creator account's membership.
    *
    * @param \Drupal\Core\Session\AccountInterface $account
@@ -31,45 +69,6 @@ class GroupCreatorTest extends GroupKernelTestBase {
     /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
     $group_role_storage = $this->entityTypeManager->getStorage('group_role');
     return $group_role_storage->loadByUserAndGroup($account, $group, FALSE);
-  }
-
-  /**
-   * Tests that a group creator is automatically a member.
-   */
-  public function testCreatorGetsMembership() {
-    $group = $this->createGroup();
-    $account = $this->getCurrentUser();
-    $this->assertNotFalse($group->getMember($account), 'Membership could be loaded for the group creator.');
-    $this->assertCount(0, $this->getCreatorRoles($account, $group), 'Membership has zero roles.');
-  }
-
-  /**
-   * Tests that a group creator gets the configured roles.
-   *
-   * @depends testCreatorGetsMembership
-   */
-  public function testCreatorRoles() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
-    $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
-    $group_type->set('creator_roles', ['default-custom']);
-    $group_type->save();
-
-    $group_roles = $this->getCreatorRoles($this->getCurrentUser(), $this->createGroup());
-    $this->assertCount(1, $group_roles, 'Membership has one role.');
-    $this->assertEquals('default-custom', reset($group_roles)->id(), 'Membership has the custom role.');
-  }
-
-  /**
-   * Tests that a group creator is not automatically made a member.
-   */
-  public function testCreatorDoesNotGetMembership() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
-    $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
-    $group_type->set('creator_membership', FALSE);
-    $group_type->save();
-
-    $group_membership = $this->createGroup()->getMember($this->getCurrentUser());
-    $this->assertFalse($group_membership, 'Membership could not be loaded for the group creator.');
   }
 
 }

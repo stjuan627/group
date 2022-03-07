@@ -148,7 +148,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('administer node_as_content:page')->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupTypeA->id(),
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['administer node_as_content:page'],
+    ]);
+
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
     $group->addMember($this->getCurrentUser());
@@ -164,7 +170,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('administer node_as_content:page')->save();
+    $this->createGroupRole([
+      'group_type' => $this->groupTypeA->id(),
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['administer node_as_content:page'],
+    ]);
+
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addContent($node_1, 'node_as_content:page');
     $this->createGroup(['type' => $this->groupTypeA->id()]);
@@ -201,8 +213,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any published grouped nodes.');
@@ -249,8 +266,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any published grouped nodes.');
@@ -297,8 +319,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'Anonymous can see published ungrouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->groupTypeA->getAnonymousRole()->grantPermission('view any node_as_content:page entity')->save();
-    $this->groupTypeB->getAnonymousRole()->grantPermission('view any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'anonymous',
+      'permissions' => ['view any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Anonymous can see any published grouped nodes.');
@@ -335,8 +362,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see their own published grouped nodes.');
@@ -383,8 +415,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see their own published grouped nodes.');
@@ -433,8 +470,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any unpublished node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see any unpublished grouped nodes.');
@@ -481,8 +523,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view any unpublished node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any unpublished grouped nodes.');
@@ -529,8 +576,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'Anonymous cannot see unpublished ungrouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->groupTypeA->getAnonymousRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getAnonymousRole()->grantPermission('view any unpublished node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'anonymous',
+      'permissions' => ['view any unpublished node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Anonymous can see any unpublished grouped nodes.');
@@ -567,8 +619,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->groupTypeA->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own unpublished node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see their own unpublished grouped nodes.');
@@ -615,8 +672,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('view own unpublished node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['view own unpublished node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
     $this->accessControlHandler->resetCache();
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see their own unpublished grouped nodes.');
@@ -646,8 +708,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('update any node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('update any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -683,8 +750,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('update any node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('update any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -720,8 +792,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
     $node_5 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('update own node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('update own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -767,8 +844,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
     $node_5 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('update own node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('update own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['update own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -810,8 +892,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 1]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('delete any node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('delete any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -847,8 +934,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('delete any node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('delete any node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete any node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -884,8 +976,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
     $node_5 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getMemberRole()->grantPermission('delete own node_as_content:page entity')->save();
-    $this->groupTypeB->getMemberRole()->grantPermission('delete own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'insider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');
@@ -931,8 +1028,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
     $node_5 = $this->createNode(['type' => 'page']);
 
-    $this->groupTypeA->getOutsiderRole()->grantPermission('delete own node_as_content:page entity')->save();
-    $this->groupTypeB->getOutsiderRole()->grantPermission('delete own node_as_content:page entity')->save();
+    $role_config = [
+      'scope' => 'outsider',
+      'global_role' => 'authenticated',
+      'permissions' => ['delete own node_as_content:page entity'],
+    ];
+    $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
+    $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group_a->addContent($node_1, 'node_as_content:page');

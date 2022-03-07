@@ -6,32 +6,11 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\group\Entity\GroupRole;
 
 /**
  * Form controller for group role forms.
  */
 class GroupRoleForm extends EntityForm {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
-    $group_role = $this->entity;
-    if ($group_role->isInternal()) {
-      return [
-        '#title' => $this->t('Error'),
-        'description' => [
-          '#prefix' => '<p>',
-          '#suffix' => '</p>',
-          '#markup' => $this->t('Cannot edit an internal group role directly.'),
-        ],
-      ];
-    }
-
-    return parent::buildForm($form, $form_state);
-  }
 
   /**
    * {@inheritdoc}
@@ -59,7 +38,7 @@ class GroupRoleForm extends EntityForm {
     // Since machine names with periods in it are technically not allowed, we
     // strip the group type ID prefix when editing a group role.
     if ($group_role->id()) {
-      list(, $group_role_id) = explode('-', $group_role->id(), 2);
+      [, $group_role_id] = explode('-', $group_role->id(), 2);
     }
 
     $form['id'] = [
@@ -78,6 +57,33 @@ class GroupRoleForm extends EntityForm {
     $form['weight'] = [
       '#type' => 'value',
       '#value' => $group_role->getWeight(),
+    ];
+
+    $form['scope'] = [
+      '#title' => $this->t('Scope'),
+      '#type' => 'radios',
+      '#options' => [
+        'outsider' => $this->t('Outsider: <em>Assigned to all non-members who have the corresponding global role</em>'),
+        'insider' => $this->t('Insider: <em>Assigned to all members who have the corresponding global role</em>'),
+        'individual' => $this->t('Individual: <em>Can be assigned to individual members</em>'),
+      ],
+      '#default_value' => $group_role->getScope() ?? 'individual',
+      '#required' => TRUE,
+    ];
+
+    $role_labels = [];
+    foreach ($this->entityTypeManager->getStorage('user_role')->loadMultiple() as $role) {
+      $role_labels[$role->id()] = $role->label();
+    }
+    $form['global_role'] = [
+      '#title' => $this->t('Global role'),
+      '#type' => 'select',
+      '#options' => $role_labels,
+      '#default_value' => $group_role->getGlobalRoleId(),
+      '#states' => [
+        'invisible' => [':input[name="scope"]' => ['value' => 'individual']],
+        'disabled' => [':input[name="scope"]' => ['value' => 'individual']],
+      ],
     ];
 
     $form['admin'] = [
@@ -106,10 +112,28 @@ class GroupRoleForm extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
-    $id = trim($form_state->getValue('id'));
     // '0' is invalid, since elsewhere we might check it using empty().
+    $id = trim($form_state->getValue('id'));
     if ($id == '0') {
-      $form_state->setErrorByName('id', $this->t("Invalid machine-readable name. Enter a name other than %invalid.", ['%invalid' => $id]));
+      $form_state->setErrorByName('id', $this->t('Invalid machine-readable name. Enter a name other than %invalid.', ['%invalid' => $id]));
+    }
+
+    // Make sure we do not duplicate the scope-global_role pair.
+    $scope = $form_state->getValue('scope');
+    if ($scope !== 'individual') {
+      $global_role = $form_state->getValue('global_role');
+
+      // Anonymous users cannot be members, so avoid this weird scenario.
+      if ($scope === 'insider' && $global_role === 'anonymous') {
+        $t_args = ['%role' => $this->entityTypeManager->getStorage('user_role')->load($global_role)->label()];
+        $form_state->setErrorByName('global_role', $this->t('Anonymous users cannot be members so you may not create an insider role for the %role global role.', $t_args));
+      }
+
+      $properties = ['scope' => $scope, 'global_role' => $global_role];
+      if ($this->entityTypeManager->getStorage('group_role')->loadByProperties($properties)) {
+        $t_args = ['%role' => $this->entityTypeManager->getStorage('user_role')->load($global_role)->label()];
+        $form_state->setErrorByName('global_role', $this->t("There already is an $scope group role for the %role global role", $t_args));
+      }
     }
   }
 
@@ -121,6 +145,11 @@ class GroupRoleForm extends EntityForm {
     $group_role = $this->entity;
     $group_role->set('id', $group_role->getGroupTypeId() . '-' . $group_role->id());
     $group_role->set('label', trim($group_role->label()));
+
+    // Make sure the global_role property is NULL rather than FALSE.
+    if ($group_role->getScope() === 'individual') {
+      $group_role->set('global_role', NULL);
+    }
 
     $status = $group_role->save();
     $t_args = ['%label' => $group_role->label()];
@@ -149,7 +178,7 @@ class GroupRoleForm extends EntityForm {
   public function exists($id) {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $group_role = $this->entity;
-    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' .$id);
+    return (boolean) $this->entityTypeManager->getStorage('group_role')->load($group_role->getGroupTypeId() . '-' .$id);
   }
 
   /**

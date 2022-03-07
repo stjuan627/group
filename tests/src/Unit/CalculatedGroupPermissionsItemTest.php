@@ -3,7 +3,6 @@
 namespace Drupal\Tests\group\Unit;
 
 use Drupal\group\Access\CalculatedGroupPermissionsItem;
-use Drupal\group\Access\CalculatedGroupPermissionsItemInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -24,7 +23,7 @@ class CalculatedGroupPermissionsItemTest extends UnitTestCase {
    * @covers ::isAdmin
    */
   public function testConstructor() {
-    $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
+    $scope = 'some_scope';
 
     $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar', 'baz', 'bar'], FALSE);
     $this->assertEquals($scope, $item->getScope(), 'Scope name was set correctly.');
@@ -44,8 +43,7 @@ class CalculatedGroupPermissionsItemTest extends UnitTestCase {
    * @depends testConstructor
    */
   public function testHasPermission() {
-    $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
-    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar'], FALSE);
+    $item = new CalculatedGroupPermissionsItem('some_scope', 'foo', ['bar'], FALSE);
     $this->assertFalse($item->hasPermission('baz'), 'Missing permission was not found.');
     $this->assertTrue($item->hasPermission('bar'), 'Existing permission was found.');
   }
@@ -57,8 +55,7 @@ class CalculatedGroupPermissionsItemTest extends UnitTestCase {
    * @depends testConstructor
    */
   public function testHasPermissionWithAdminFlag() {
-    $scope = CalculatedGroupPermissionsItemInterface::SCOPE_GROUP_TYPE;
-    $item = new CalculatedGroupPermissionsItem($scope, 'foo', ['bar'], TRUE);
+    $item = new CalculatedGroupPermissionsItem('some_scope', 'foo', ['bar'], TRUE);
     $this->assertTrue($item->hasPermission('baz'), 'Missing permission was found.');
     $this->assertTrue($item->hasPermission('bar'), 'Existing permission was found.');
   }

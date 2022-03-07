@@ -80,6 +80,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
   public function load(GroupInterface $group, AccountInterface $account) {
     $ids = $this->groupContentStorage()
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('gid', $group->id())
       ->condition('entity_id', $account->id())
       ->condition('plugin_id', 'group_membership')
@@ -99,6 +100,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
   public function loadByGroup(GroupInterface $group, $roles = NULL) {
     $query = $this->groupContentStorage()
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('gid', $group->id())
       ->condition('plugin_id', 'group_membership');
 
@@ -124,6 +126,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
 
     $query = $this->groupContentStorage()
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('entity_id', $account->id())
       ->condition('plugin_id', 'group_membership');
 

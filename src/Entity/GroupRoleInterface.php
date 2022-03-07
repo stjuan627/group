@@ -37,14 +37,6 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function isAdmin();
 
   /**
-   * Returns whether the role is tied to a group type.
-   *
-   * @return bool
-   *   Whether the role is tied to a group type.
-   */
-  public function isInternal();
-
-  /**
    * Returns whether the role is for an anonymous user.
    *
    * @return bool
@@ -69,6 +61,32 @@ interface GroupRoleInterface extends ConfigEntityInterface {
   public function isMember();
 
   /**
+   * Returns the scope this role belongs to.
+   *
+   * @return string
+   *   The scope this role belongs to.
+   */
+  public function getScope();
+
+  /**
+   * Returns the global role this role synchronizes with.
+   *
+   * @return \Drupal\user\RoleInterface|false
+   *   The global role this role synchronizes with or FALSE if this role belongs
+   *   to the individual scope.
+   */
+  public function getGlobalRole();
+
+  /**
+   * Returns the ID of the global role this role synchronizes with.
+   *
+   * @return string|false
+   *   The ID of the global role this role synchronizes with or FALSE if this
+   *   role belongs to the individual scope.
+   */
+  public function getGlobalRoleId();
+
+  /**
    * Returns the group type this role belongs to.
    *
    * @return \Drupal\group\Entity\GroupTypeInterface
@@ -83,14 +101,6 @@ interface GroupRoleInterface extends ConfigEntityInterface {
    *   The ID of the group type this role belongs to.
    */
   public function getGroupTypeId();
-
-  /**
-   * Returns whether the role shows up in the default permissions UI.
-   *
-   * @return bool
-   *   Whether the role shows up in the default permissions UI.
-   */
-  public function inPermissionsUI();
 
   /**
    * Returns a list of permissions assigned to the role.

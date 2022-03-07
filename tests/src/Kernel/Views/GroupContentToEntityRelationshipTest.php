@@ -2,10 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel\Views;
 
-use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
-use Drupal\views\Tests\ViewTestData;
-use Drupal\views\Views;
-
 /**
  * Tests the group_content_to_entity relationship handler.
  *
@@ -13,22 +9,12 @@ use Drupal\views\Views;
  *
  * @group group
  */
-class GroupContentToEntityRelationshipTest extends ViewsKernelTestBase {
+class GroupContentToEntityRelationshipTest extends GroupViewsKernelTestBase {
 
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'group',
-    'options',
-    'entity',
-    'variationcache',
-    'field',
-    'text',
-    'group_test_config',
-    'group_test_plugin',
-    'group_test_views',
-  ];
+  public static $modules = ['group_test_plugin', 'node'];
 
   /**
    * Views used by this test.
@@ -38,92 +24,16 @@ class GroupContentToEntityRelationshipTest extends ViewsKernelTestBase {
   public static $testViews = ['test_group_content_to_entity_relationship'];
 
   /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp($import_test_views = TRUE) {
     parent::setUp($import_test_views);
+    $this->installEntitySchema('node');
 
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
-
-    $this->installEntitySchema('user');
-    $this->installEntitySchema('group');
-    $this->installEntitySchema('group_type');
-    $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
-    $this->installConfig(['group', 'field', 'group_test_config']);
-
-    // Set the current user so group creation can rely on it.
-    $this->container->get('current_user')->setAccount($this->createUser());
-
-    // Enable the user_as_content plugin on the default group type.
+    // Enable the user_as_content plugin on the test group type.
     /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
-    $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    $storage->createFromPlugin($group_type, 'user_as_content')->save();
-
-    ViewTestData::createTestViews(get_class($this), ['group_test_views']);
-  }
-
-  /**
-   * Creates a group.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\Group
-   *   The created group entity.
-   */
-  protected function createGroup($values = []) {
-    $group = $this->entityTypeManager->getStorage('group')->create($values + [
-      'type' => 'default',
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->enforceIsNew();
-    $group->save();
-    return $group;
-  }
-
-  /**
-   * Creates a user.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\user\Entity\User
-   *   The created user entity.
-   */
-  protected function createUser($values = []) {
-    $account = $this->entityTypeManager->getStorage('user')->create($values + [
-      'name' => $this->randomMachineName(),
-      'status' => 1,
-    ]);
-    $account->enforceIsNew();
-    $account->save();
-    return $account;
-  }
-
-  /**
-   * Retrieves the results for this test's view.
-   *
-   * @return \Drupal\views\ResultRow[]
-   *   A list of view results.
-   */
-  protected function getViewResults() {
-    $view = Views::getView(reset($this::$testViews));
-    $view->setDisplay();
-
-    if ($view->preview()) {
-      return $view->result;
-    }
-
-    return [];
+    $storage->createFromPlugin($this->groupType, 'user_as_content')->save();
   }
 
   /**
