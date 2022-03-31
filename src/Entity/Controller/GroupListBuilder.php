@@ -191,6 +191,25 @@ class GroupListBuilder extends EntityListBuilder {
       $operations[$key]['query'] = $destination;
     }
 
+    // Add links to the most commonly used overviews.
+    $route_params = ['group' => $entity->id()];
+
+    if ($entity->hasPermission('access content overview', $this->currentUser)) {
+      $operations['group_content'] = [
+        'title' => $this->t('Related entities'),
+        'weight' => 101,
+        'url' => Url::fromRoute('entity.group_content.collection', $route_params),
+      ];
+    }
+
+    if ($this->moduleHandler->moduleExists('views') && $entity->hasPermission('administer members', $this->currentUser)) {
+      $operations['group_membership'] = [
+        'title' => $this->t('Members'),
+        'weight' => 102,
+        'url' => Url::fromRoute('view.group_members.page_1', $route_params),
+      ];
+    }
+
     return $operations;
   }
 

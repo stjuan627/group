@@ -42,3 +42,17 @@ function gnode_entity_operation(EntityInterface $entity) {
 
   return $operations;
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function gnode_preprocess_node(&$variables) {
+  // See if we are rendering the node within a group scope.
+  if ($variables['view_mode'] == 'full' && $variables['page'] === FALSE) {
+    $route_match = \Drupal::routeMatch();
+    if ($route_match->getRouteName() == 'entity.group_content.entity_view') {
+      $page_group_content = $route_match->getParameter('group_content');
+      $variables['page'] = $page_group_content->getEntity()->id() == $variables['node']->id();
+    }
+  }
+}

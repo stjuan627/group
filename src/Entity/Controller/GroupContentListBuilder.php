@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -39,6 +40,13 @@ class GroupContentListBuilder extends EntityListBuilder {
   protected $redirectDestination;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
    * Constructs a new GroupContentListBuilder object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -49,11 +57,14 @@ class GroupContentListBuilder extends EntityListBuilder {
    *   The route match.
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type definition.
+   * @param \Drupal\Core\Session\AccountInterface $current_user
+   *   The current user.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RedirectDestinationInterface $redirect_destination, RouteMatchInterface $route_match, EntityTypeInterface $entity_type) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RedirectDestinationInterface $redirect_destination, RouteMatchInterface $route_match, EntityTypeInterface $entity_type, AccountInterface $current_user) {
     parent::__construct($entity_type, $entity_type_manager->getStorage($entity_type->id()));
     $this->entityTypeManager = $entity_type_manager;
     $this->redirectDestination = $redirect_destination;
+    $this->currentUser = $current_user;
     // There should always be a group on the route for group content lists.
     $this->group = $route_match->getParameters()->get('group');
   }
@@ -66,7 +77,8 @@ class GroupContentListBuilder extends EntityListBuilder {
       $container->get('entity_type.manager'),
       $container->get('redirect.destination'),
       $container->get('current_route_match'),
-      $entity_type
+      $entity_type,
+      $container->get('current_user')
     );
   }
 
@@ -148,12 +160,27 @@ class GroupContentListBuilder extends EntityListBuilder {
       $operations[$key]['query'] = $destination;
     }
 
-    // Add an operation to view the actual entity.
-    if ($entity->getEntity()->access('view') && $entity->getEntity()->hasLinkTemplate('canonical')) {
-      $operations['view'] = [
+    // Add operations to view, update and delete the related entity.
+    $plugin = $entity->getContentPlugin();
+    if ($plugin->checkEntityAccess($entity, 'view', $this->currentUser)) {
+      $operations['view_entity'] = [
         'title' => $this->t('View entity'),
         'weight' => 101,
-        'url' => $entity->getEntity()->toUrl('canonical'),
+        'url' => $entity->toUrl('entity-view'),
+      ];
+    }
+    if ($plugin->checkEntityAccess($entity, 'update', $this->currentUser)) {
+      $operations['update_entity'] = [
+        'title' => $this->t('Edit related entity'),
+        'weight' => 102,
+        'url' => $entity->toUrl('entity-edit-form'),
+      ];
+    }
+    if ($plugin->checkEntityAccess($entity, 'delete', $this->currentUser)) {
+      $operations['delete_entity'] = [
+        'title' => $this->t('Delete related entity'),
+        'weight' => 103,
+        'url' => $entity->toUrl('entity-delete-form'),
       ];
     }
 

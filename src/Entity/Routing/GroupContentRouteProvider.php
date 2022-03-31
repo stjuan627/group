@@ -28,6 +28,18 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
       $collection->add("entity.group_content.create_form", $create_form_route);
     }
 
+    if ($entity_delete_form_route = $this->getEntityDeleteFormRoute($entity_type)) {
+      $collection->add("entity.group_content.entity_delete_form", $entity_delete_form_route);
+    }
+
+    if ($entity_edit_form_route = $this->getEntityEditFormRoute($entity_type)) {
+      $collection->add("entity.group_content.entity_edit_form", $entity_edit_form_route);
+    }
+
+    if ($entity_view_route = $this->getEntityViewRoute($entity_type)) {
+      $collection->add("entity.group_content.entity_view", $entity_view_route);
+    }
+
     return $collection;
   }
 
@@ -178,6 +190,98 @@ class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
         'group' => ['type' => 'entity:group'],
         'group_content' => ['type' => 'entity:group_content'],
       ]);
+  }
+
+  /**
+   * Gets the route for deleting the grouped entity.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getEntityDeleteFormRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('entity-delete-form')) {
+      $route = new Route($entity_type->getLinkTemplate('entity-delete-form'));
+      $route
+        ->addDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteForm',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::deleteFormTitle',
+        ])
+        ->setRequirement('group', '\d+')
+        ->setRequirement('group_content', '\d+')
+        ->setRequirement('_group_owns_content', 'TRUE')
+        ->setRequirement('_group_content_entity_access', 'delete')
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the route for editing the grouped entity.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getEntityEditFormRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('entity-edit-form')) {
+      $route = new Route($entity_type->getLinkTemplate('entity-edit-form'));
+      $route
+        ->addDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editForm',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::editFormTitle',
+        ])
+        ->setRequirement('group', '\d+')
+        ->setRequirement('group_content', '\d+')
+        ->setRequirement('_group_owns_content', 'TRUE')
+        ->setRequirement('_group_content_entity_access', 'update')
+        ->setOption('_group_operation_route', TRUE)
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
+  }
+
+  /**
+   * Gets the route for viewing the grouped entity.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   *
+   * @return \Symfony\Component\Routing\Route|null
+   *   The generated route, if available.
+   */
+  protected function getEntityViewRoute(EntityTypeInterface $entity_type) {
+    if ($entity_type->hasLinkTemplate('entity-view')) {
+      $route = new Route($entity_type->getLinkTemplate('entity-view'));
+      $route
+        ->addDefaults([
+          '_controller' => '\Drupal\group\Entity\Controller\GroupContentEntityController::view',
+          '_title_callback' => '\Drupal\group\Entity\Controller\GroupContentEntityController::viewTitle',
+        ])
+        ->setRequirement('group', '\d+')
+        ->setRequirement('group_content', '\d+')
+        ->setRequirement('_group_owns_content', 'TRUE')
+        ->setRequirement('_group_content_entity_access', 'view')
+        ->setOption('parameters', [
+          'group' => ['type' => 'entity:group'],
+          'group_content' => ['type' => 'entity:group_content'],
+        ]);
+
+      return $route;
+    }
   }
 
 }

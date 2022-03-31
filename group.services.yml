@@ -45,6 +45,10 @@ services:
     arguments: ['@entity_type.manager', '@current_route_match']
     tags:
       - { name: 'access_check', applies_to: '_group_revision' }
+  access_check.group_content.entity_access:
+    class: 'Drupal\group\Access\GroupContentEntityAccessCheck'
+    tags:
+     - { name: 'access_check', applies_to: '_group_content_entity_access' }
 
   cache.group_permission:
     class: 'Drupal\Core\Cache\CacheBackendInterface'

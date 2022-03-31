@@ -155,6 +155,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     $storage = $this->groupContentStorage();
     $group_content = $storage->createForEntityInGroup($entity, $this, $plugin_id, $values);
     $storage->save($group_content);
+    return $group_content;
   }
 
   /**

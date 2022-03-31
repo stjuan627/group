@@ -64,7 +64,10 @@ use Drupal\user\UserInterface;
  *     "create-form" = "/group/{group}/content/create/{plugin_id}",
  *     "create-page" = "/group/{group}/content/create",
  *     "delete-form" = "/group/{group}/content/{group_content}/delete",
- *     "edit-form" = "/group/{group}/content/{group_content}/edit"
+ *     "edit-form" = "/group/{group}/content/{group_content}/edit",
+ *     "entity-delete-form" = "/group/{group}/content/{group_content}/entity/delete",
+ *     "entity-edit-form" = "/group/{group}/content/{group_content}/entity/edit",
+ *     "entity-view" = "/group/{group}/content/{group_content}/entity"
  *   },
  *   bundle_entity_type = "group_content_type",
  *   field_ui_base_route = "entity.group_content_type.edit_form",

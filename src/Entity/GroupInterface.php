@@ -42,6 +42,9 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param array $values
    *   (optional) Extra values to add to the group content relationship. You
    *   cannot overwrite the group ID (gid) or entity ID (entity_id).
+   *
+   * @return \Drupal\group\Entity\GroupContentInterface
+   *   The newly created group content entity.
    */
   public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []);
 

@@ -44,3 +44,15 @@ views.relationship.group_content_to_entity_reverse:
 views.relationship.group_to_group_content:
   type: 'views_relationship_with_group_plugin_filter'
   label: 'Group to group content'
+
+views.field.group_related_entity_link:
+  type: views.field.entity_link
+  label: 'Group content delete related entity link'
+
+views.field.group_related_entity_link_delete:
+  type: views.field.entity_link
+  label: 'Group content delete related entity link'
+
+views.field.group_related_entity_link_edit:
+  type: views.field.entity_link
+  label: 'Group content edit related entity link'
