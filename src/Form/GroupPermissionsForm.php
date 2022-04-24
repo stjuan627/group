@@ -103,7 +103,7 @@ abstract class GroupPermissionsForm extends FormBase {
 
     // Create a list of group permissions ordered by their provider and section.
     foreach ($this->groupPermissionHandler->getPermissionsByGroupType($this->getGroupType()) as $permission_name => $permission) {
-      $by_provider_and_section[$permission['provider']][$permission['section']][$permission_name] = $permission;
+      $by_provider_and_section[$permission['provider']][(string)$permission['section']][$permission_name] = $permission;
     }
 
     // Always put the 'General' section at the top if provided.
