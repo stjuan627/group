@@ -120,23 +120,25 @@ class GroupRoleForm extends EntityForm {
       $form_state->setErrorByName('id', $this->t('Invalid machine-readable name. Enter a name other than %invalid.', ['%invalid' => $id]));
     }
 
-    // Make sure we do not duplicate the scope-global_role pair.
-    $scope = $form_state->getValue('scope');
-    if ($scope !== 'individual') {
-      $global_role = $form_state->getValue('global_role');
-
-      // Anonymous users cannot be members, so avoid this weird scenario.
-      if ($scope === 'insider' && $global_role === 'anonymous') {
-        $t_args = ['%role' => $this->entityTypeManager->getStorage('user_role')->load($global_role)->label()];
-        $form_state->setErrorByName('global_role', $this->t('Anonymous users cannot be members so you may not create an insider role for the %role global role.', $t_args));
-      }
-
-      $properties = ['scope' => $scope, 'global_role' => $global_role];
-      if ($this->entityTypeManager->getStorage('group_role')->loadByProperties($properties)) {
-        $t_args = ['%role' => $this->entityTypeManager->getStorage('user_role')->load($global_role)->label()];
-        $form_state->setErrorByName('global_role', $this->t("There already is an $scope group role for the %role global role", $t_args));
-      }
+    // Config entity forms do not validate constraints by default.
+    $violations = $this->entity->getTypedData()->validate();
+    foreach ($violations as $violation) {
+      $name = static::mapViolationPropertyPathToFormName($violation->getPropertyPath());
+      $form_state->setErrorByName($name, $violation->getMessage());
     }
+  }
+
+  /**
+   * Maps a violation property path to a form name.
+   *
+   * @param string $property_path
+   *   The violation property path.
+   *
+   * @return string
+   *   The mapped form name(s) for the violation property path.
+   */
+  protected static function mapViolationPropertyPathToFormName($property_path) {
+    return str_replace('.', '][', $property_path);
   }
 
   /**

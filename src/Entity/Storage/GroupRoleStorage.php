@@ -6,6 +6,8 @@ use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -22,9 +24,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * loading group role entities based on user and group information.
  */
 class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageInterface {
-
-  // @todo Prevent duplicate scope/role pairs.
-  // @todo Make loading by certain keys faster.
 
   /**
    * Static cache of a user's group role IDs.
@@ -84,6 +83,17 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       $container->get('language_manager'),
       $container->get('entity.memory_cache')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function doPreSave(EntityInterface $entity) {
+    // Entity storage does not validate constraints by default.
+    $violations = $entity->getTypedData()->validate();
+    foreach ($violations as $violation) {
+      throw new EntityMalformedException($violation->getMessage());
+    }
   }
 
   /**

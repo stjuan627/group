@@ -57,6 +57,14 @@ use Drupal\user\RoleInterface;
  *     "global_role",
  *     "group_type",
  *     "permissions"
+ *   },
+ *   lookup_keys = {
+ *     "scope",
+ *     "global_role",
+ *     "group_type"
+ *   },
+ *   constraints = {
+ *     "GroupRoleScope" = {}
  *   }
  * )
  */
@@ -221,7 +229,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function hasPermission($permission) {
-    return in_array($permission, $this->permissions);
+    return $this->isAdmin() || in_array($permission, $this->permissions);
   }
 
   /**
@@ -303,7 +311,6 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    */
   public function calculateDependencies() {
     parent::calculateDependencies();
-    // @todo Test this.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
     if ($role = $this->getGlobalRole()) {
       $this->addDependency('config', $role->getConfigDependencyName());
