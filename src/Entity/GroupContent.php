@@ -8,6 +8,8 @@ use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\group\Entity\Storage\GroupContentStorageInterface;
+use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
@@ -137,8 +139,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function loadByPluginId($plugin_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+    assert($storage instanceof GroupContentStorageInterface);
     return $storage->loadByPluginId($plugin_id);
   }
 
@@ -146,8 +148,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function loadByEntity(ContentEntityInterface $entity) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+    assert($storage instanceof GroupContentStorageInterface);
     return $storage->loadByEntity($entity);
   }
 
@@ -238,8 +240,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     }
 
     if ($rebuild_group_role_cache) {
-      /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $role_storage */
       $role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
+      assert($role_storage instanceof GroupRoleStorageInterface);
       $role_storage->resetUserGroupRoleCache($this->getEntity(), $this->getGroup());
     }
   }
@@ -250,8 +252,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
     parent::postDelete($storage, $entities);
 
-    /** @var GroupContentInterface[] $entities */
     foreach ($entities as $group_content) {
+      assert($group_content instanceof GroupContentInterface);
       if ($entity = $group_content->getEntity()) {
         // For the same reasons we re-save entities that are added to a group,
         // we need to re-save entities that were removed from one. See
@@ -265,8 +267,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
         // roles cache for the member in that group, but only if the user still
         // exists. Otherwise, it doesn't matter as the user ID will become void.
         if ($group_content->getPluginId() == 'group_membership') {
-          /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $role_storage */
           $role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
+          assert($role_storage instanceof GroupRoleStorageInterface);
           $role_storage->resetUserGroupRoleCache($group_content->getEntity(), $group_content->getGroup());
         }
       }
@@ -398,8 +400,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     if ($group_content_type = GroupContentType::load($bundle)) {
+      assert($group_content_type instanceof GroupContentTypeInterface);
       $fields['entity_id'] = clone $base_field_definitions['entity_id'];
       _group_relation_type_manager()
         ->getEntityReferenceHandler($group_content_type->getPluginId())

@@ -6,6 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -33,8 +34,8 @@ class GroupContentCreateAnyEntityAccessCheck implements AccessInterface {
   public function access(Route $route, AccountInterface $account, GroupInterface $group) {
     $needs_access = $route->getRequirement('_group_content_create_any_entity_access') === 'TRUE';
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
     $plugin_manager = \Drupal::service('group_relation_type.manager');
+    assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
     $plugin_ids = $plugin_manager->getGroupTypePluginMap()[$group->bundle()];
 
     // Find out which ones allow the user to create a target entity.

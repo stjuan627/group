@@ -5,6 +5,7 @@ namespace Drupal\group\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Config\Entity\Exception\ConfigEntityIdLengthException;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Defines the Group type configuration entity.
@@ -138,7 +139,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
     // Exclude synchronized roles if told to.
     if ($include_synchronized === FALSE) {
-      $properties['scope'] = 'individual';
+      $properties['scope'] = PermissionScopeInterface::INDIVIDUAL_ID;
     }
 
     return $this->entityTypeManager()
@@ -157,7 +158,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
     // Exclude synchronized roles if told to.
     if ($include_synchronized === FALSE) {
-      $query->condition('scope', 'individual');
+      $query->condition('scope', PermissionScopeInterface::INDIVIDUAL_ID);
     }
 
     return $query->execute();

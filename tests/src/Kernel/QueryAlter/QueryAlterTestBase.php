@@ -5,7 +5,9 @@ namespace Drupal\Tests\group\Kernel\QueryAlter;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\group\Kernel\GroupKernelTestBase;
+use Drupal\user\RoleInterface;
 
 /**
  * Base class for testing query alters.
@@ -81,8 +83,8 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
     if ($synchronized_permissions) {
       $this->createGroupRole([
         'group_type' => $group_type->id(),
-        'scope' => 'outsider',
-        'global_role' => 'authenticated',
+        'scope' => PermissionScopeInterface::OUTSIDER_ID,
+        'global_role' => RoleInterface::AUTHENTICATED_ID,
         'permissions' => $is_admin ? [] : $synchronized_permissions,
         'admin' => $is_admin,
       ]);
@@ -91,7 +93,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
     if ($individual_permissions) {
       $group_role = $this->createGroupRole([
         'group_type' => $group_type->id(),
-        'scope' => 'individual',
+        'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
         'permissions' => $is_admin ? [] : $individual_permissions,
         'admin' => $is_admin,
       ]);

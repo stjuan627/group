@@ -9,6 +9,7 @@ use Drupal\group\Access\GroupPermissionChecker;
 use Drupal\group\Access\RefinableCalculatedGroupPermissions;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
+use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -86,13 +87,13 @@ class GroupPermissionCheckerTest extends UnitTestCase {
 
     $calculated_permissions = new RefinableCalculatedGroupPermissions();
     foreach ($outsider_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem('outsider', $identifier, $permissions, $outsider_admin));
+      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::OUTSIDER_ID, $identifier, $permissions, $outsider_admin));
     }
     foreach ($insider_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem('insider', $identifier, $permissions, $insider_admin));
+      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::INSIDER_ID, $identifier, $permissions, $insider_admin));
     }
     foreach ($individual_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem('individual', $identifier, $permissions, $individual_admin));
+      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::INDIVIDUAL_ID, $identifier, $permissions, $individual_admin));
     }
 
     $this->permissionCalculator

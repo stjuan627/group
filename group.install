@@ -8,6 +8,8 @@
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_update_last_removed().
@@ -57,9 +59,7 @@ function group_update_9201() {
   // Populate the actual values based on the group content types.
   $data_table = \Drupal::entityTypeManager()->getDefinition('group_content')->getDataTable();
 
-  /** @var \Drupal\Core\Database\Connection $database */
-  $database = \Drupal::getContainer()->get('database');
-
+  $database = \Drupal::database();
   foreach ($map['group_type'] as $group_type_id => $group_content_type_ids) {
     $database->update($data_table)
       ->fields(['group_type' => $group_type_id])
@@ -116,7 +116,7 @@ function group_update_9204() {
     $role_id = $config_factory->get($role_config_name)->get('id');
 
     // We never synced any roles to anonymous or authenticated.
-    if ($role_id === 'anonymous' || $role_id === 'authenticated') {
+    if ($role_id === RoleInterface::ANONYMOUS_ID || $role_id === RoleInterface::AUTHENTICATED_ID) {
       continue;
     }
 
@@ -145,7 +145,7 @@ function group_update_9204() {
       }
       // Otherwise update the group role to use the new keys.
       else {
-        $group_role->set('scope', 'outsider');
+        $group_role->set('scope', PermissionScopeInterface::OUTSIDER_ID);
         $group_role->set('global_role', $role_id);
 
         // Clear the old keys and save.
@@ -166,16 +166,16 @@ function group_update_9205() {
 
   $group_role_info = [
     'anonymous' => [
-      'scope' => 'outsider',
-      'global_role' => 'anonymous',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::ANONYMOUS_ID,
     ],
     'outsider' => [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
     ],
     'member' => [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
     ],
   ];
 
@@ -215,7 +215,7 @@ function group_update_9206() {
 
     // We do not delete the user created roles, even if they have no rights.
     $group_role = $config_factory->getEditable($config_name);
-    $group_role->set('scope', 'individual');
+    $group_role->set('scope', PermissionScopeInterface::INDIVIDUAL_ID);
 
     // Clear the old keys and save.
     $group_role->clear('permissions_ui');

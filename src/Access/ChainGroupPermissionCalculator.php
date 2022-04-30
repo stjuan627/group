@@ -6,6 +6,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountSwitcherInterface;
+use Drupal\group\PermissionScopeInterface;
 use Drupal\variationcache\Cache\VariationCacheInterface;
 
 /**
@@ -110,7 +111,7 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
     // VariationCache for accounts other than the current user.
     $switch_account = FALSE;
     foreach ($persistent_cache_contexts as $cache_context) {
-      list($cache_context_root) = explode('.', $cache_context, 2);
+      [$cache_context_root] = explode('.', $cache_context, 2);
       if ($cache_context_root === 'user') {
         $switch_account = TRUE;
         $this->accountSwitcher->switchTo($account);
@@ -195,9 +196,9 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
   public function calculateFullPermissions(AccountInterface $account) {
     $calculated_permissions = new RefinableCalculatedGroupPermissions();
     $calculated_permissions
-      ->merge($this->calculatePermissions($account, 'outsider'))
-      ->merge($this->calculatePermissions($account, 'insider'))
-      ->merge($this->calculatePermissions($account, 'individual'));
+      ->merge($this->calculatePermissions($account, PermissionScopeInterface::OUTSIDER_ID))
+      ->merge($this->calculatePermissions($account, PermissionScopeInterface::INSIDER_ID))
+      ->merge($this->calculatePermissions($account, PermissionScopeInterface::INDIVIDUAL_ID));
     return new CalculatedGroupPermissions($calculated_permissions);
   }
 

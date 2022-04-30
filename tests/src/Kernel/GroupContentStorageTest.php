@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 
 /**
  * Tests the behavior of group content storage handler.
@@ -41,8 +42,8 @@ class GroupContentStorageTest extends GroupKernelTestBase {
     $this->groupType = $this->createGroupType();
 
     // Enable the test plugins on a test group type.
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->createFromPlugin($this->groupType, 'user_as_content')->save();
     $storage->createFromPlugin($this->groupType, 'group_as_content')->save();
   }

@@ -5,6 +5,8 @@ namespace Drupal\Tests\group\Kernel;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,7 +67,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $this->adminRole = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'individual',
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
       'admin' => TRUE,
     ]);
   }
@@ -82,14 +84,14 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $outsider_permissions,
     ]);
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $member_permissions,
     ]);
 
@@ -203,14 +205,14 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $outsider_permissions,
     ]);
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $member_permissions,
     ]);
 
@@ -636,14 +638,14 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $outsider_permissions,
     ]);
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $member_permissions,
     ]);
 

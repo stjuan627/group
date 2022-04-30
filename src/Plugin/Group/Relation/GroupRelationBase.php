@@ -146,8 +146,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
-    $entity_type_manager = \Drupal::service('entity_type.manager');
+    $entity_type_manager = \Drupal::entityTypeManager();
 
     $replace = [
       '%entity_type' => $entity_type_manager->getDefinition($this->getRelationType()->getEntityTypeId())->getLabel(),

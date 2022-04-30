@@ -12,6 +12,7 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -106,7 +107,7 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       if ($include_synchronized) {
         $roles = $account->getRoles();
         $query = $this->getQuery()
-          ->condition('scope', $membership ? 'insider' : 'outsider')
+          ->condition('scope', $membership ? PermissionScopeInterface::INSIDER_ID : PermissionScopeInterface::OUTSIDER_ID)
           ->condition('global_role', $roles, 'IN');
         $ids = array_merge($ids, $query->execute());
       }

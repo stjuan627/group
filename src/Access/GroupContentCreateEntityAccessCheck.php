@@ -6,6 +6,7 @@ use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -40,8 +41,8 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
     $plugin_manager = \Drupal::service('group_relation_type.manager');
+    assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
     $access_handler = $plugin_manager->getAccessControlHandler($plugin_id);
     $access = $access_handler->entityCreateAccess($group, $account);
 

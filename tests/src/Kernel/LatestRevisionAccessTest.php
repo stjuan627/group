@@ -4,7 +4,9 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
+use Drupal\user\RoleInterface;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -73,6 +75,9 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
   public function testAccess() {
     $moderation_info = $this->container->get('content_moderation.moderation_information');
 
+    // Create the authenticated role.
+    $this->createRole([], RoleInterface::AUTHENTICATED_ID);
+
     // Create two accounts to test with.
     $user_with_access = $this->createUser();
     $user_without_access = $this->createUser();
@@ -80,15 +85,15 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     // Set up the initial permissions for the accounts.
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view group'],
     ]);
 
     $insider_role = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => [
         'view group',
         'view any unpublished group',
@@ -115,7 +120,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $admin = $this->createUser();
     $admin_role = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'individual',
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
       'admin' => TRUE,
     ]);
 

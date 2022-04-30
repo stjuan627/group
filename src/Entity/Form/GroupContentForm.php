@@ -4,6 +4,7 @@ namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Entity\GroupContentInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,7 +25,6 @@ class GroupContentForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    /** @var static $form */
     $form = parent::create($container);
     $form->privateTempStoreFactory = $container->get('tempstore.private');
     return $form;
@@ -37,8 +37,8 @@ class GroupContentForm extends ContentEntityForm {
    *   The responsible group relation.
    */
   protected function getPlugin() {
-    /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
+    assert($group_content instanceof GroupContentInterface);
     return $group_content->getPlugin();
   }
 
@@ -107,8 +107,8 @@ class GroupContentForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $return = parent::save($form, $form_state);
 
-    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $this->getEntity();
+    assert($group_content instanceof GroupContentInterface);
 
     // The below redirect ensures the user will be redirected to something they
     // can view in the following order: The relationship entity (group content),

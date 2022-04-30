@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\group\Entity\GroupContentInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -105,7 +106,7 @@ class GroupContentListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+    assert($entity instanceof GroupContentInterface);
     $row['id'] = $entity->id();
 
     // EntityListBuilder sets the table rows using the #rows property, so we
@@ -131,7 +132,7 @@ class GroupContentListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   protected function getDefaultOperations(EntityInterface $entity) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+    assert($entity instanceof GroupContentInterface);
     $operations = parent::getDefaultOperations($entity);
 
     // Improve the edit and delete operation labels.

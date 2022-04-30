@@ -4,6 +4,9 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,14 +70,14 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     ]);
 
     // Enable the test plugins on the group type.
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->save($storage->createFromPlugin($this->groupType, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupType, 'node_as_content:page'));
 
     $this->adminRole = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'individual',
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
       'admin' => TRUE,
     ]);
   }
@@ -91,14 +94,14 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $outsider_permissions,
     ]);
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $member_permissions,
     ]);
 
@@ -196,14 +199,14 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $outsider_permissions,
     ]);
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => $member_permissions,
     ]);
 

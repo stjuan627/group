@@ -4,6 +4,8 @@ namespace Drupal\group\Plugin\Validation\Constraint;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,13 +14,6 @@ use Symfony\Component\Validator\ConstraintValidator;
  * Checks the amount of times a single content entity can be added to a group.
  */
 class GroupContentCardinalityValidator extends ConstraintValidator implements ContainerInjectionInterface {
-
-  /**
-   * Type-hinting in parent Symfony class is off, let's fix that.
-   *
-   * @var \Symfony\Component\Validator\Context\ExecutionContextInterface
-   */
-  protected $context;
 
   /**
    * The entity type manager.
@@ -50,8 +45,8 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
    * {@inheritdoc}
    */
   public function validate($group_content, Constraint $constraint) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
-    /** @var \Drupal\group\Plugin\Validation\Constraint\GroupContentCardinality $constraint */
+    assert($group_content instanceof GroupContentInterface);
+    assert($constraint instanceof GroupContentCardinality);
     if (!isset($group_content)) {
       return;
     }
@@ -83,8 +78,8 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
 
     // Enforce the group cardinality if it's not set to unlimited.
     if ($group_cardinality > 0) {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
       $storage = $this->entityTypeManager->getStorage('group_content_type');
+      assert($storage instanceof GroupContentTypeStorageInterface);
       $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin->getRelationTypeId());
 
       // Get the group content entities for this piece of content.
@@ -97,7 +92,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
       // the current group towards the limit.
       $group_ids = [];
       foreach ($group_instances as $instance) {
-        /** @var \Drupal\group\Entity\GroupContentInterface $instance */
+        assert($instance instanceof GroupContentInterface);
         if ($instance->getGroupId() != $group->id()) {
           $group_ids[] = $instance->getGroupId();
         }
@@ -126,7 +121,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
       // If the current group content entity has an ID, exclude that one.
       if ($group_content_id = $group_content->id()) {
         foreach ($entity_instances as $instance) {
-          /** @var \Drupal\group\Entity\GroupContentInterface $instance */
+          assert($instance instanceof GroupContentInterface);
           if ($instance->id() == $group_content_id) {
             $entity_count--;
             break;

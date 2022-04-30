@@ -6,12 +6,14 @@
  */
 
 use Drupal\Core\Config\Entity\ConfigEntityUpdater;
+use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\group\Entity\GroupType;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\Storage\GroupStorage;
 use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
 
 /**
  * Recalculate group type and group content type dependencies after moving the
@@ -41,8 +43,8 @@ function group_post_update_group_content_type_dependencies() {
  * Grant the new 'access group overview' permission.
  */
 function group_post_update_grant_access_overview_permission() {
-  /** @var \Drupal\user\RoleInterface $role */
   foreach (Role::loadMultiple() as $role) {
+    assert($role instanceof RoleInterface);
     if ($role->hasPermission('administer group')) {
       $role->grantPermission('access group overview');
       $role->save();
@@ -68,8 +70,8 @@ function group_post_update_view_cache_contexts(&$sandbox) {
  */
 function group_post_update_make_group_revisionable(&$sandbox) {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  /** @var \Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface $last_installed_schema_repository */
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
 
   $entity_type = $definition_update_manager->getEntityType('group');
   $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group');

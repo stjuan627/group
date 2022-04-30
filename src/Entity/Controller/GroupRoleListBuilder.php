@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Config\Entity\DraggableListBuilder;
@@ -9,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -92,13 +94,13 @@ class GroupRoleListBuilder extends DraggableListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /** @var \Drupal\group\Entity\GroupRoleInterface $entity */
-    if ($entity->getScope() === 'individual') {
+    assert($entity instanceof GroupRoleInterface);
+    if ($entity->getScope() === PermissionScopeInterface::INDIVIDUAL_ID) {
       $scope_label = $this->t('Individual');
       $global_role = $this->t('n/a');
     }
     else {
-      $scope_label = $entity->getScope() === 'outsider' ? $this->t('Outsider') : $this->t('Insider');
+      $scope_label = $entity->getScope() === PermissionScopeInterface::OUTSIDER_ID ? $this->t('Outsider') : $this->t('Insider');
       $global_role = $entity->getGlobalRole()->label();
     }
 

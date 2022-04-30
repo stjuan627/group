@@ -7,6 +7,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -58,8 +59,8 @@ class GroupContentCreateAccessCheck implements AccessInterface {
       return AccessResult::neutral();
     }
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
 
     // Determine whether the user can create group content using the plugin.

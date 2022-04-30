@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\Entity\GroupTypeInterface;
+
 /**
  * Tests the creation of group type entities during extension install.
  *
@@ -30,14 +32,13 @@ class GroupTypeInstallTest extends GroupKernelTestBase {
    */
   public function testInstall() {
     // Check that the group type was installed properly.
-    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager
       ->getStorage('group_type')
       ->load('default');
+    assert($group_type instanceof GroupTypeInterface);
     $this->assertNotNull($group_type, 'Group type was loaded successfully.');
 
     // Check that the enforced plugins give priority to the Yaml files.
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin = $group_type->getPlugin('group_membership');
     $config = $plugin->getConfiguration();
     $this->assertEquals('99', $config['group_cardinality'], 'Enforced group_membership plugin was created from Yaml file.');

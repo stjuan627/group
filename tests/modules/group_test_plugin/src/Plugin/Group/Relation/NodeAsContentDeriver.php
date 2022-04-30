@@ -3,6 +3,7 @@
 namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
 class NodeAsContentDeriver extends DeriverBase {
 
@@ -10,7 +11,7 @@ class NodeAsContentDeriver extends DeriverBase {
    * {@inheritdoc}.
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $base_plugin_definition */
+    assert($base_plugin_definition instanceof GroupRelationTypeInterface);
     $this->derivatives = [];
 
     $this->derivatives['page'] = clone $base_plugin_definition;

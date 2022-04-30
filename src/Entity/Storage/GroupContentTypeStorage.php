@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -95,7 +96,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     }
 
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       if ($group_relation_type->getEntityTypeId() === $entity_type_id) {
         $plugin_ids[] = $plugin_id;
       }
@@ -120,8 +121,8 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     $configuration['group_type_id'] = $group_type->id();
 
     // Instantiate the plugin we are installing.
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin = $this->pluginManager->createInstance($plugin_id, $configuration);
+    assert($plugin instanceof GroupRelationInterface);
 
     // Create the group content type using plugin generated info.
     $values = [

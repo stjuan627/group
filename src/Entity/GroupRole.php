@@ -5,6 +5,8 @@ namespace Drupal\group\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Defines the Group role configuration entity.
@@ -153,21 +155,21 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
    * {@inheritdoc}
    */
   public function isAnonymous() {
-    return $this->scope == 'outsider' && $this->global_role == 'anonymous';
+    return $this->scope == PermissionScopeInterface::OUTSIDER_ID && $this->global_role == RoleInterface::ANONYMOUS_ID;
   }
 
   /**
    * {@inheritdoc}
    */
   public function isOutsider() {
-    return $this->scope == 'outsider' && $this->global_role != 'anonymous';
+    return $this->scope == PermissionScopeInterface::OUTSIDER_ID && $this->global_role != RoleInterface::ANONYMOUS_ID;
   }
 
   /**
    * {@inheritdoc}
    */
   public function isMember() {
-    return $this->scope == 'insider' || $this->scope == 'individual';
+    return $this->scope == PermissionScopeInterface::INSIDER_ID || $this->scope == PermissionScopeInterface::INDIVIDUAL_ID;
   }
 
   /**
@@ -330,7 +332,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     }
 
     // Individual roles do not synchronize to a global role.
-    if ($this->scope === 'individual') {
+    if ($this->scope === PermissionScopeInterface::INDIVIDUAL_ID) {
       $this->global_role = NULL;
     }
     // Other scopes need to indicate their target global role.
@@ -339,7 +341,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     }
 
     // Anonymous users cannot be members, so avoid this weird scenario.
-    if ($this->scope === 'insider' && $this->global_role === 'anonymous') {
+    if ($this->scope === PermissionScopeInterface::INSIDER_ID && $this->global_role === RoleInterface::ANONYMOUS_ID) {
       throw new EntityMalformedException('Anonymous users cannot be members so you may not create an insider role for the "Anonymous user" role.');
     }
 

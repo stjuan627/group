@@ -5,6 +5,7 @@ namespace Drupal\Tests\group\Kernel\QueryAlter;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\QueryAccess\EntityQueryAlter;
 
 /**
@@ -82,8 +83,8 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function setUpContent(GroupTypeInterface $group_type) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->save($storage->createFromPlugin($group_type, $this->pluginId));
   }
 

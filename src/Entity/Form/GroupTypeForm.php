@@ -7,6 +7,9 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,7 +47,7 @@ class GroupTypeForm extends BundleEntityFormBase {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupTypeInterface $type */
+    assert($this->entity instanceof GroupTypeInterface);
     $form = parent::form($form, $form_state);
     $type = $this->entity;
 
@@ -202,7 +205,7 @@ class GroupTypeForm extends BundleEntityFormBase {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    assert($this->entity instanceof GroupTypeInterface);
     $group_type = $this->entity;
     $group_type_id = $group_type->id();
 
@@ -237,16 +240,16 @@ class GroupTypeForm extends BundleEntityFormBase {
       $add_default_roles = $form_state->getValue('add_default_roles');
       $add_admin_role = $form_state->getValue('add_admin_role');
       if ($add_default_roles || $add_admin_role) {
-        /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
         $storage = $this->entityTypeManager->getStorage('group_role');
+        assert($storage instanceof GroupRoleStorageInterface);
 
         if ($add_default_roles) {
           $storage->save($storage->create([
             'id' => "$group_type_id-anonymous",
             'label' => $this->t('Anonymous'),
             'weight' => -102,
-            'scope' => 'outsider',
-            'global_role' => 'anonymous',
+            'scope' => PermissionScopeInterface::OUTSIDER_ID,
+            'global_role' => RoleInterface::ANONYMOUS_ID,
             'group_type' => $group_type_id,
           ]));
 
@@ -254,8 +257,8 @@ class GroupTypeForm extends BundleEntityFormBase {
             'id' => "$group_type_id-outsider",
             'label' => $this->t('Outsider'),
             'weight' => -101,
-            'scope' => 'outsider',
-            'global_role' => 'authenticated',
+            'scope' => PermissionScopeInterface::OUTSIDER_ID,
+            'global_role' => RoleInterface::AUTHENTICATED_ID,
             'group_type' => $group_type_id,
           ]));
 
@@ -263,8 +266,8 @@ class GroupTypeForm extends BundleEntityFormBase {
             'id' => "$group_type_id-member",
             'label' => $this->t('Member'),
             'weight' => -100,
-            'scope' => 'insider',
-            'global_role' => 'authenticated',
+            'scope' => PermissionScopeInterface::INSIDER_ID,
+            'global_role' => RoleInterface::AUTHENTICATED_ID,
             'group_type' => $group_type_id,
           ]));
         }
@@ -274,7 +277,7 @@ class GroupTypeForm extends BundleEntityFormBase {
             'id' => "$group_type_id-admin",
             'label' => $this->t('Admin'),
             'weight' => -99,
-            'scope' => 'individual',
+            'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
             'group_type' => $group_type_id,
             'admin' => TRUE,
           ]));

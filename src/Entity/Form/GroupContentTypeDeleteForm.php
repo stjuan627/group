@@ -5,6 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -20,8 +21,8 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     return $this->t('Are you sure you want to uninstall the %plugin plugin?', [
       '%plugin' => $group_content_type->getPlugin()->getRelationType()->getLabel(),
     ]);
@@ -31,8 +32,8 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     return Url::fromRoute('entity.group_type.content_plugins', ['group_type' => $group_content_type->getGroupTypeId()]);
   }
 
@@ -40,8 +41,8 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function getDescription() {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $entity_type_id = $group_content_type->getPlugin()->getRelationType()->getEntityTypeId();
     $replace = [
       '%entity_type' => $this->entityTypeManager->getDefinition($entity_type_id)->getLabel(),
@@ -84,8 +85,8 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $group_type = $group_content_type->getGroupType();
     $group_relation_type = $group_content_type->getPlugin()->getRelationType();
 

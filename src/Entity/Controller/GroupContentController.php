@@ -13,6 +13,7 @@ use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -158,8 +159,8 @@ class GroupContentController extends ControllerBase {
   protected function addPageBundles(GroupInterface $group, $create_mode) {
     $bundles = [];
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     foreach ($storage->loadByGroupType($group->getGroupType()) as $bundle => $group_content_type) {
       // Skip the bundle if we are listing bundles that allow you to create an
       // entity in the group and the bundle's plugin does not support that.
@@ -225,8 +226,8 @@ class GroupContentController extends ControllerBase {
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
     $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
+    assert($gct_storage instanceof GroupContentTypeStorageInterface);
 
     $values = [
       'type' => $gct_storage->getGroupContentTypeId($group->bundle(), $plugin_id),
@@ -249,8 +250,8 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function addFormTitle(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }
@@ -346,8 +347,8 @@ class GroupContentController extends ControllerBase {
     }
     // Wizard step 2: Group content form.
     else {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
       $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
+      assert($gct_storage instanceof GroupContentTypeStorageInterface);
 
       // Create an empty group content entity.
       $values = [
@@ -376,8 +377,8 @@ class GroupContentController extends ControllerBase {
    *   The page title.
    */
   public function createFormTitle(GroupInterface $group, $plugin_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $group_content_type = $storage->load($storage->getGroupContentTypeId($group->bundle(), $plugin_id));
     return $this->t('Add @name', ['@name' => $group_content_type->label()]);
   }

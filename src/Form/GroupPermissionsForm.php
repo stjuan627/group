@@ -6,6 +6,8 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Access\GroupPermissionHandlerInterface;
+use Drupal\group\Entity\GroupRoleInterface;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -123,7 +125,11 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Cluster the roles by scope to make the UI easier to understand.
-    $role_info = ['outsider' => [], 'insider' => [], 'individual' => []];
+    $role_info = [
+      PermissionScopeInterface::OUTSIDER_ID => [],
+      PermissionScopeInterface::INSIDER_ID => [],
+      PermissionScopeInterface::INDIVIDUAL_ID => [],
+    ];
 
     // Sort the group roles using the static sort() method.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
@@ -169,7 +175,7 @@ abstract class GroupPermissionsForm extends FormBase {
       foreach ($scope_info as $info) {
         $label = $info['label'];
         if ($info['global_role']) {
-          $icon = $scope_id === 'outsider' ? '&#128274;' : '&#128273;';
+          $icon = $scope_id === PermissionScopeInterface::OUTSIDER_ID ? '&#128274;' : '&#128273;';
           $label .= '<br />(' . $icon . ' ' . $info['global_role'] . ')';
         }
 
@@ -299,7 +305,7 @@ abstract class GroupPermissionsForm extends FormBase {
    */
   function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
-      /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+      assert($group_role instanceof GroupRoleInterface);
       $permissions = $form_state->getValue($role_name);
       $group_role->changePermissions($permissions)->trustData()->save();
     }

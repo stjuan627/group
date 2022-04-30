@@ -2,6 +2,9 @@
 
 namespace Drupal\Tests\group\Functional;
 
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
+
 /**
  * Tests that entity operations (do not) show up on the group overview.
  *
@@ -31,8 +34,8 @@ class EntityOperationsTest extends GroupBrowserTestBase {
     if (!empty($permissions)) {
       $this->createGroupRole([
         'group_type' => $group->bundle(),
-        'scope' => 'insider',
-        'global_role' => 'authenticated',
+        'scope' => PermissionScopeInterface::INSIDER_ID,
+        'global_role' => RoleInterface::AUTHENTICATED_ID,
         'permissions' => $permissions,
       ]);
     }

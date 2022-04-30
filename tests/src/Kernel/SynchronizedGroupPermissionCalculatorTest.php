@@ -3,6 +3,8 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\group\Access\CalculatedGroupPermissionsInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the calculation of synchronized group permissions.
@@ -37,11 +39,12 @@ class SynchronizedGroupPermissionCalculatorTest extends GroupKernelTestBase {
    * @dataProvider calculatePermissionsProvider
    */
   public function testCalculatePermissions($scope) {
+    $this->createRole([], RoleInterface::AUTHENTICATED_ID);
     $group_type_a = $this->createGroupType();
     $group_type_b = $this->createGroupType();
     $role_config = [
       'scope' => $scope,
-      'global_role' => 'authenticated',
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => [],
     ];
     $group_role_a = $this->createGroupRole(['group_type' => $group_type_a->id()] + $role_config);
@@ -99,8 +102,8 @@ class SynchronizedGroupPermissionCalculatorTest extends GroupKernelTestBase {
    */
   public function calculatePermissionsProvider() {
     return [
-      'outsider-scope' => ['outsider'],
-      'insider-scope' => ['insider'],
+      'outsider-scope' => [PermissionScopeInterface::OUTSIDER_ID],
+      'insider-scope' => [PermissionScopeInterface::INSIDER_ID],
     ];
   }
 

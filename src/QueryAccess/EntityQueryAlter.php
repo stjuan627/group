@@ -5,6 +5,7 @@ namespace Drupal\group\QueryAccess;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -251,7 +252,7 @@ class EntityQueryAlter extends QueryAlterBase {
 
     $sub_condition = $this->query->andConditionGroup();
     $sub_condition->condition("$this->joinAliasPlugins.group_type", array_unique($allowed_ids), 'IN');
-    if ($scope === 'outsider') {
+    if ($scope === PermissionScopeInterface::OUTSIDER_ID) {
       $sub_condition->isNull("$membership_alias.entity_id");
     }
     else {

@@ -4,6 +4,8 @@ namespace Drupal\group\Access;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupRoleInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Calculates synchronized group permissions for an account.
@@ -33,7 +35,7 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
   public function calculatePermissions(AccountInterface $account, $scope) {
     $calculated_permissions = parent::calculatePermissions($account, $scope);
 
-    if ($scope !== 'outsider' && $scope !== 'insider') {
+    if ($scope !== PermissionScopeInterface::OUTSIDER_ID && $scope !== PermissionScopeInterface::INSIDER_ID) {
       return $calculated_permissions;
     }
 
@@ -48,8 +50,8 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
       'global_role' => $roles,
     ]);
 
-    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     foreach ($group_roles as $group_role) {
+      assert($group_role instanceof GroupRoleInterface);
       $item = new CalculatedGroupPermissionsItem(
         $group_role->getScope(),
         $group_role->getGroupTypeId(),
@@ -67,7 +69,7 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
    * {@inheritdoc}
    */
   public function getPersistentCacheContexts($scope) {
-    if ($scope === 'outsider' || $scope === 'insider') {
+    if ($scope === PermissionScopeInterface::OUTSIDER_ID || $scope === PermissionScopeInterface::INSIDER_ID) {
       return ['user.roles'];
     }
     return [];

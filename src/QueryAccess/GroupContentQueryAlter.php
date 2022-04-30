@@ -3,6 +3,7 @@
 namespace Drupal\group\QueryAccess;
 
 use Drupal\Core\Database\Query\ConditionInterface;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -90,7 +91,7 @@ class GroupContentQueryAlter extends QueryAlterBase {
       $sub_condition = $this->query->andConditionGroup();
       $sub_condition->condition("$data_table.group_type", array_unique($identifiers), 'IN');
       $sub_condition->condition("$data_table.plugin_id", $plugin_id);
-      if ($scope === 'outsider') {
+      if ($scope === PermissionScopeInterface::OUTSIDER_ID) {
         $sub_condition->isNull("$membership_alias.entity_id");
       }
       else {

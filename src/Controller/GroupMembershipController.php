@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\Storage\GroupContentStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -66,8 +67,8 @@ class GroupMembershipController extends ControllerBase {
    *   A group join form.
    */
   public function join(GroupInterface $group) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content');
+    assert($storage instanceof GroupContentStorageInterface);
 
     // Pre-populate a group membership with the current user.
     $user = $this->entityTypeManager->getStorage('user')->load($this->currentUser->id());

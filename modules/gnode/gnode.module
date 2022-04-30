@@ -5,12 +5,11 @@
  * Enables Group functionality for the Node module.
  */
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\node\NodeInterface;
-use Drupal\node\NodeTypeInterface;
 use Drupal\Core\Url;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\node\NodeTypeInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
@@ -26,10 +25,10 @@ function gnode_entity_operation(EntityInterface $entity) {
   $operations = [];
 
   if ($entity->getEntityTypeId() == 'group' && \Drupal::moduleHandler()->moduleExists('views')) {
-    /** @var \Drupal\group\Entity\GroupInterface $entity */
+    assert($entity instanceof GroupInterface);
     if ($entity->hasPermission('access group_node overview', \Drupal::currentUser())) {
-      /** @var \Symfony\Component\Routing\RouterInterface $router */
       $router = \Drupal::service('router.no_access_checks');
+      assert($router instanceof RouterInterface);
       if ($router->getRouteCollection()->get('view.group_nodes.page_1') !== NULL) {
         $operations['nodes'] = [
           'title' => t('Nodes'),

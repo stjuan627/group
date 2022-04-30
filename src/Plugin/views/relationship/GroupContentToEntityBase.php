@@ -3,7 +3,7 @@
 namespace Drupal\group\Plugin\views\relationship;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\GroupContentType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
@@ -94,7 +94,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
     // Retrieve all of the plugins that can serve this entity type.
     $options = [];
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       if ($group_relation_type->getEntityTypeId() === $this->getTargetEntityType()) {
         $options[$plugin_id] = $group_relation_type->getLabel();
       }

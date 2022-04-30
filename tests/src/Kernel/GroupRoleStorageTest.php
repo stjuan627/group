@@ -2,6 +2,9 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
+
 /**
  * Tests the behavior of group role storage handler.
  *
@@ -41,8 +44,8 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
   public function testLoadByUserAndGroup() {
     $outsider_role = $this->createGroupRole([
       'group_type' => $this->group->bundle(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
     ]);
     $this->compareMemberRoles([], FALSE, 'User has no individual group roles as they are not a member.');
     $this->compareMemberRoles([$outsider_role->id()], TRUE, 'User initially has synchronized outsider role.');
@@ -60,7 +63,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
     // Create an outsider role that synchronizes with the Drupal role.
     $group_role = $this->createGroupRole([
       'group_type' => $this->group->bundle(),
-      'scope' => 'outsider',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => $user_role->id(),
     ]);
     $this->compareMemberRoles([], FALSE, 'User has no individual group roles as they are not a member.');
@@ -69,8 +72,8 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
     // From this point on we test with the user as a member.
     $insider_role = $this->createGroupRole([
       'group_type' => $this->group->bundle(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
     ]);
     $this->group->addMember($this->account);
     $this->compareMemberRoles([], FALSE, 'User still has no explicit group roles.');
@@ -79,7 +82,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
     // Grant the member a new group role and check the storage.
     $individual_role = $this->createGroupRole([
       'group_type' => $this->group->bundle(),
-      'scope' => 'individual',
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
     ]);
     // @todo This displays a desperate need for addRole() and removeRole().
     $membership = $this->group->getMember($this->account)->getGroupContent();

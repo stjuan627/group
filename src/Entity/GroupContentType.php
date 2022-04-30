@@ -4,6 +4,8 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 /**
  * Defines the Group content type configuration entity.
@@ -182,8 +184,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public static function loadByPluginId($plugin_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     return $storage->loadByPluginId($plugin_id);
   }
 
@@ -191,8 +193,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public static function loadByEntityTypeId($entity_type_id) {
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     return $storage->loadByEntityTypeId($entity_type_id);
   }
 
@@ -233,8 +235,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       \Drupal::service('views.views_data')->clear();
     }
 
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
     $plugin_manager = \Drupal::service('group_relation_type.manager');
+    assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
 
     // We need to reset the plugin ID map cache as it will be out of date now.
     $plugin_manager->clearCachedPluginMaps();

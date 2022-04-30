@@ -4,6 +4,7 @@ namespace Drupal\group;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 
 /**
  * Wrapper class for a GroupContent entity representing a membership.
@@ -73,8 +74,8 @@ class GroupMembership implements CacheableDependencyInterface {
    *   An array of group roles, keyed by their ID.
    */
   public function getRoles() {
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
     $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
+    assert($group_role_storage instanceof GroupRoleStorageInterface);
     return $group_role_storage->loadByUserAndGroup($this->getUser(), $this->getGroup());
   }
 

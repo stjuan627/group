@@ -3,6 +3,9 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Site\Settings;
+use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 
 /**
  * Tests the import or synchronization of group type entities.
@@ -45,18 +48,19 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $this->configImporter()->import();
 
     // Check that the group type was created.
-    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager
       ->getStorage('group_type')
       ->load('import');
+    assert($group_type instanceof GroupTypeInterface);
     $this->assertNotNull($group_type, 'Group type was loaded successfully.');
 
     // Check that enforced plugins were installed.
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
     $plugin_config = ['group_type_id' => 'import', 'id' => 'group_membership'];
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
+    assert($plugin instanceof GroupRelationInterface);
 
     $group_content_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($group_content_type_storage instanceof GroupContentTypeStorageInterface);
     $group_content_type = $group_content_type_storage->load(
       $group_content_type_storage->getGroupContentTypeId($group_type->id(), $plugin->getRelationTypeId())
     );

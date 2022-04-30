@@ -2,6 +2,7 @@
 
 namespace Drupal\gnode\Plugin\Group\Relation;
 
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\node\Entity\NodeType;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 
@@ -11,7 +12,7 @@ class GroupNodeDeriver extends DeriverBase {
    * {@inheritdoc}.
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $base_plugin_definition */
+    assert($base_plugin_definition instanceof GroupRelationTypeInterface);
     $this->derivatives = [];
 
     foreach (NodeType::loadMultiple() as $name => $node_type) {

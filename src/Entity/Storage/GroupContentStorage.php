@@ -64,8 +64,8 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
       }
     }
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
 
     // Set the necessary keys for a valid GroupContent entity.

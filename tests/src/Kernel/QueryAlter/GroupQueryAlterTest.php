@@ -5,7 +5,9 @@ namespace Drupal\Tests\group\Kernel\QueryAlter;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\PermissionScopeInterface;
 use Drupal\group\QueryAccess\GroupQueryAlter;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the behavior of group query alter.
@@ -74,9 +76,10 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
    * @covers ::getConditions
    */
   public function testMixedViewUnpublishedAccess() {
+    $this->createRole([], RoleInterface::AUTHENTICATED_ID);
     $group_type_a = $this->createGroupType();
     $group_type_b = $this->createGroupType();
-    $group_role = ['scope' => 'outsider', 'global_role' => 'authenticated'];
+    $group_role = ['scope' => PermissionScopeInterface::OUTSIDER_ID, 'global_role' => RoleInterface::AUTHENTICATED_ID];
     $this->createGroupRole([
       'group_type' => $group_type_a->id(),
       'permissions' => ['view any unpublished group'],

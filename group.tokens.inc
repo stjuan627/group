@@ -8,6 +8,8 @@
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupContentInterface;
 
 /**
  * Implements hook_token_info().
@@ -141,8 +143,8 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
   }
 
   if ($type == 'group' && !empty($data[$type])) {
-    /** @var \Drupal\group\Entity\GroupInterface $group */
     $group = $data['group'];
+    assert($group instanceof GroupInterface);
 
     foreach ($tokens as $name => $original) {
       switch ($name) {
@@ -213,8 +215,8 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
     }
   }
   elseif ($type == 'group_content' && !empty($data[$type])) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $data['group_content'];
+    assert($group_content instanceof GroupContentInterface);
 
     foreach ($tokens as $name => $original) {
       switch ($name) {

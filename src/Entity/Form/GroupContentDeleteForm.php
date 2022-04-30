@@ -5,6 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\group\Entity\GroupContentInterface;
 
 /**
  * Provides a form for deleting a group content entity.
@@ -18,8 +19,8 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    *   The responsible group relation.
    */
   protected function getPlugin() {
-    /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
+    assert($group_content instanceof GroupContentInterface);
     return $group_content->getPlugin();
   }
 
@@ -34,8 +35,8 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelURL() {
-    /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
+    assert($group_content instanceof GroupContentInterface);
     $group = $group_content->getGroup();
     $route_params = [
       'group' => $group->id(),
@@ -55,8 +56,8 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupContent $group_content */
     $group_content = $this->getEntity();
+    assert($group_content instanceof GroupContentInterface);
     $group = $group_content->getGroup();
     $group_content->delete();
 

@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
+use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -168,15 +169,15 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
     }
 
     // Add the group types where synchronized access is granted.
-    foreach (['outsider', 'insider'] as $scope) {
+    foreach ([PermissionScopeInterface::OUTSIDER_ID, PermissionScopeInterface::INSIDER_ID] as $scope) {
       if (!empty($allowed_ids[$scope])) {
         $this->addSynchronizedConditions($allowed_ids[$scope], $scope_conditions, $scope);
       }
     }
 
     // Add the groups where individual access is granted.
-    if (!empty($allowed_ids['individual'])) {
-      $this->addIndividualConditions($allowed_ids['individual'], $scope_conditions);
+    if (!empty($allowed_ids[PermissionScopeInterface::INDIVIDUAL_ID])) {
+      $this->addIndividualConditions($allowed_ids[PermissionScopeInterface::INDIVIDUAL_ID], $scope_conditions);
     }
   }
 

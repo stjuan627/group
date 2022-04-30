@@ -6,6 +6,8 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\group\Entity\GroupRoleInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Form controller for group role forms.
@@ -18,7 +20,7 @@ class GroupRoleForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+    assert($this->entity instanceof GroupRoleInterface);
     $group_role = $this->entity;
     $group_role_id = '';
 
@@ -63,11 +65,11 @@ class GroupRoleForm extends EntityForm {
       '#title' => $this->t('Scope'),
       '#type' => 'radios',
       '#options' => [
-        'outsider' => $this->t('Outsider: <em>Assigned to all non-members who have the corresponding global role</em>'),
-        'insider' => $this->t('Insider: <em>Assigned to all members who have the corresponding global role</em>'),
-        'individual' => $this->t('Individual: <em>Can be assigned to individual members</em>'),
+        PermissionScopeInterface::OUTSIDER_ID => $this->t('Outsider: <em>Assigned to all non-members who have the corresponding global role</em>'),
+        PermissionScopeInterface::INSIDER_ID => $this->t('Insider: <em>Assigned to all members who have the corresponding global role</em>'),
+        PermissionScopeInterface::INDIVIDUAL_ID => $this->t('Individual: <em>Can be assigned to individual members</em>'),
       ],
-      '#default_value' => $group_role->getScope() ?? 'individual',
+      '#default_value' => $group_role->getScope() ?? PermissionScopeInterface::INDIVIDUAL_ID,
       '#required' => TRUE,
     ];
 
@@ -81,8 +83,8 @@ class GroupRoleForm extends EntityForm {
       '#options' => $role_labels,
       '#default_value' => $group_role->getGlobalRoleId(),
       '#states' => [
-        'invisible' => [':input[name="scope"]' => ['value' => 'individual']],
-        'disabled' => [':input[name="scope"]' => ['value' => 'individual']],
+        'invisible' => [':input[name="scope"]' => ['value' => PermissionScopeInterface::INDIVIDUAL_ID]],
+        'disabled' => [':input[name="scope"]' => ['value' => PermissionScopeInterface::INDIVIDUAL_ID]],
       ],
     ];
 
@@ -141,13 +143,13 @@ class GroupRoleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+    assert($this->entity instanceof GroupRoleInterface);
     $group_role = $this->entity;
     $group_role->set('id', $group_role->getGroupTypeId() . '-' . $group_role->id());
     $group_role->set('label', trim($group_role->label()));
 
     // Make sure the global_role property is NULL rather than FALSE.
-    if ($group_role->getScope() === 'individual') {
+    if ($group_role->getScope() === PermissionScopeInterface::INDIVIDUAL_ID) {
       $group_role->set('global_role', NULL);
     }
 
@@ -176,7 +178,7 @@ class GroupRoleForm extends EntityForm {
    *   Whether the ID is taken.
    */
   public function exists($id) {
-    /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
+    assert($this->entity instanceof GroupRoleInterface);
     $group_role = $this->entity;
     return (boolean) $this->entityTypeManager->getStorage('group_role')->load($group_role->getGroupTypeId() . '-' .$id);
   }

@@ -5,6 +5,7 @@ namespace Drupal\group\Access;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Calculates group permissions for an account.
@@ -45,14 +46,14 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
     $calculated_permissions = $this->groupPermissionCalculator->calculateFullPermissions($account);
 
     if ($this->groupMembershipLoader->load($group, $account)) {
-      $item = $calculated_permissions->getItem('individual', $group->id());
+      $item = $calculated_permissions->getItem(PermissionScopeInterface::INDIVIDUAL_ID, $group->id());
       if ($item && $item->hasPermission($permission)) {
         return TRUE;
       }
-      $item = $calculated_permissions->getItem('insider', $group->bundle());
+      $item = $calculated_permissions->getItem(PermissionScopeInterface::INSIDER_ID, $group->bundle());
     }
     else {
-      $item = $calculated_permissions->getItem('outsider', $group->bundle());
+      $item = $calculated_permissions->getItem(PermissionScopeInterface::OUTSIDER_ID, $group->bundle());
     }
 
     return $item && $item->hasPermission($permission);

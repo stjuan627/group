@@ -8,6 +8,7 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -135,8 +136,8 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    * {@inheritdoc}
    */
   public function createHandlerInstance($plugin_id, $handler_type) {
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
     $group_relation_type = $this->getDefinition($plugin_id);
+    assert($group_relation_type instanceof GroupRelationTypeInterface);
     $service_name = "group.relation_handler.$handler_type.{$group_relation_type->id()}";
 
     if (!$this->container->has($service_name)) {
@@ -259,7 +260,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   public function getPluginIdsByEntityTypeAccess($entity_type_id) {
     $plugin_ids = [];
     foreach ($this->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       if ($group_relation_type->definesEntityAccess() && $group_relation_type->getEntityTypeId() == $entity_type_id) {
         $plugin_ids[] = $plugin_id;
       }
@@ -275,18 +276,18 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
 
     // Gather the ID of all plugins that are marked as enforced.
     foreach ($this->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       if ($group_relation_type->isEnforced()) {
         $enforced[] = $plugin_id;
       }
     }
 
     // If no group type was specified, we check all of them.
-    /** @var \Drupal\group\Entity\GroupTypeInterface[] $group_types */
     $group_types = empty($group_type) ? $this->getGroupTypeStorage()->loadMultiple() : [$group_type];
 
     // Search through all of the enforced plugins and install new ones.
     foreach ($group_types as $group_type) {
+      assert($group_type instanceof GroupTypeInterface);
       $installed = $this->getInstalledIds($group_type);
 
       foreach ($enforced as $plugin_id) {
@@ -314,9 +315,9 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     if (!isset($map)) {
       $map = [];
 
-      /** @var \Drupal\group\Entity\GroupContentTypeInterface[] $group_content_types */
       $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
       foreach ($group_content_types as $group_content_type) {
+        assert($group_content_type instanceof GroupContentTypeInterface);
         $map[$group_content_type->getPluginId()][] = $group_content_type->id();
       }
 
@@ -361,9 +362,9 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     if (!isset($map)) {
       $map = [];
 
-      /** @var \Drupal\group\Entity\GroupContentTypeInterface[] $group_content_types */
       $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
       foreach ($group_content_types as $group_content_type) {
+        assert($group_content_type instanceof GroupContentTypeInterface);
         $map[$group_content_type->getGroupTypeId()][] = $group_content_type->getPluginId();
       }
 

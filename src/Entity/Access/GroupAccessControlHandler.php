@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
+use Drupal\group\Entity\GroupInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -57,7 +58,7 @@ class GroupAccessControlHandler extends EntityAccessControlHandler implements En
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\group\Entity\GroupInterface $entity */
+    assert($entity instanceof GroupInterface);
     switch ($operation) {
       case 'view':
         if (!$entity->isPublished()) {

@@ -5,6 +5,7 @@ namespace Drupal\group\Access;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Calculates individual group permissions for an account.
@@ -44,7 +45,7 @@ class IndividualGroupPermissionCalculator extends GroupPermissionCalculatorBase 
   public function calculatePermissions(AccountInterface $account, $scope) {
     $calculated_permissions = parent::calculatePermissions($account, $scope);
 
-    if ($scope !== 'individual') {
+    if ($scope !== PermissionScopeInterface::INDIVIDUAL_ID) {
       return $calculated_permissions;
     }
 
@@ -75,7 +76,7 @@ class IndividualGroupPermissionCalculator extends GroupPermissionCalculatorBase 
    * {@inheritdoc}
    */
   public function getPersistentCacheContexts($scope) {
-    if ($scope === 'individual') {
+    if ($scope === PermissionScopeInterface::INDIVIDUAL_ID) {
       return ['user'];
     }
     return [];

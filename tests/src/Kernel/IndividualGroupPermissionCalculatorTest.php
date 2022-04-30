@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\group\Access\CalculatedGroupPermissionsInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Tests the calculation of individual group permissions.
@@ -33,7 +34,7 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
    * @covers ::calculatePermissions
    */
   public function testCalculatePermissions() {
-    $scope = 'individual';
+    $scope = PermissionScopeInterface::INDIVIDUAL_ID;
 
     $group_type = $this->createGroupType();
     $group_role = $this->createGroupRole([

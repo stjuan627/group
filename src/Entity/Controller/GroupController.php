@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -112,8 +113,8 @@ class GroupController extends ControllerBase {
     }
     // Wizard step 2: Group membership form.
     else {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
       $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
+      assert($gct_storage instanceof GroupContentTypeStorageInterface);
 
       // Create an empty group membership that does not yet have a group set.
       $values = [

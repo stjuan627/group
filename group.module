@@ -17,7 +17,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupContent;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\Storage\GroupContentStorageInterface;
+use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\QueryAccess\EntityQueryAlter;
 use Drupal\group\QueryAccess\GroupContentQueryAlter;
 use Drupal\group\QueryAccess\GroupQueryAlter;
@@ -72,8 +76,9 @@ function group_theme() {
 function group_theme_suggestions_group(array $variables) {
   $suggestions = [];
 
-  /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $variables['elements']['#group'];
+  assert($group instanceof GroupInterface);
+
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 
   $suggestions[] = 'group__' . $sanitized_view_mode;
@@ -91,8 +96,9 @@ function group_theme_suggestions_group(array $variables) {
 function group_theme_suggestions_group_content(array $variables) {
   $suggestions = [];
 
-  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
   $group_content = $variables['elements']['#group_content'];
+  assert($group_content instanceof GroupContentInterface);
+
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
   $sanitized_bundle = strtr($group_content->bundle(), '-', '_');
 
@@ -116,8 +122,8 @@ function group_theme_suggestions_group_content(array $variables) {
  *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
  */
 function template_preprocess_group(&$variables) {
-  /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $variables['elements']['#group'];
+  assert($group instanceof GroupInterface);
 
   $variables['group'] = $group;
   $variables['view_mode'] = $variables['elements']['#view_mode'];
@@ -154,8 +160,8 @@ function template_preprocess_group(&$variables) {
  *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
  */
 function template_preprocess_group_content(&$variables) {
-  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
   $group_content = $variables['elements']['#group_content'];
+  assert($group_content instanceof GroupContentInterface);
 
   $variables['group_content'] = $group_content;
   $variables['view_mode'] = $variables['elements']['#view_mode'];
@@ -315,8 +321,8 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager */
   $plugin_manager = \Drupal::service('group_relation_type.manager');
+  assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
 
   // Find all of the group relations that define access.
   $plugin_ids = $plugin_manager->getPluginIdsByEntityTypeAccess($entity->getEntityTypeId());
@@ -365,8 +371,10 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
  */
 function group_entity_delete(EntityInterface $entity) {
   if ($entity instanceof ContentEntityInterface) {
-    if ($group_contents = GroupContent::loadByEntity($entity)) {
-      /** @var \Drupal\group\Entity\GroupContent $group_content */
+    $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+    assert($storage instanceof GroupContentStorageInterface);
+
+    if ($group_contents = $storage->loadByEntity($entity)) {
       foreach ($group_contents as $group_content) {
         $group_content->delete();
       }
@@ -398,8 +406,8 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
     return AccessResult::neutral();
   }
 
-  /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
   $group_content = $items->getEntity();
+  assert($group_content instanceof GroupContentInterface);
 
   // We only care if the group content entity is a group membership.
   if ($group_content->getPluginId() != 'group_membership') {
@@ -450,7 +458,7 @@ function group_user_cancel($edit, $account, $method) {
     // Run it immediately if not.
     else {
       foreach ($storage->loadMultiple($gids) as $group) {
-        /** @var \Drupal\group\Entity\GroupInterface $group */
+        assert($group instanceof GroupInterface);
         $group->set('uid', 1);
         $storage->save($group);
       }
@@ -478,7 +486,7 @@ function _group_mass_reassign_to_super_user(array $ids, &$context) {
 
   $storage = \Drupal::entityTypeManager()->getStorage('group');
   foreach ($storage->loadMultiple($ids) as $group) {
-    /** @var \Drupal\group\Entity\GroupInterface $group */
+    assert($group instanceof GroupInterface);
     $group->set('uid', 1);
     $storage->save($group);
     $context['sandbox']['progress']++;
@@ -500,8 +508,8 @@ function group_user_update(AccountInterface $account) {
   sort($old);
 
   if ($new != $old) {
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $storage */
     $storage = \Drupal::entityTypeManager()->getStorage('group_role');
+    assert($storage instanceof GroupRoleStorageInterface);
     $storage->resetUserGroupRoleCache($account);
   }
 }
@@ -588,8 +596,8 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
  * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
  */
 function group_content_wizard_store($form, FormStateInterface $form_state) {
-  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
+  assert($entity instanceof ContentEntityInterface);
 
   // Store the unsaved entity in the temp store.
   $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
@@ -615,8 +623,8 @@ function group_content_wizard_cancel($form, FormStateInterface $form_state) {
   $store->delete("$store_id:entity");
   $store->delete("$store_id:step");
 
-  /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $form_state->get('group');
+  assert($group instanceof GroupInterface);
 
   // Redirect to the group page if no destination was set in the URL.
   $form_state->setRedirect('entity.group.canonical', ['group' => $group->id()]);
@@ -629,11 +637,11 @@ function group_content_wizard_cancel($form, FormStateInterface $form_state) {
  * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
  */
 function group_content_entity_submit($form, FormStateInterface $form_state) {
-  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
+  assert($entity instanceof ContentEntityInterface);
 
-  /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $form_state->get('group');
+  assert($group instanceof GroupInterface);
   $group->addContent($entity, $form_state->get('group_relation'));
 
   // This submit handler is only called when creating new content within a group

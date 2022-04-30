@@ -2,6 +2,10 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
+
 /**
  * Tests that Group properly checks access for grouped entities.
  *
@@ -50,14 +54,17 @@ class EntityAccessTest extends GroupKernelTestBase {
 
     $this->installEntitySchema('entity_test_with_owner');
 
+    // Create the authenticated role.
+    $this->createRole([], RoleInterface::AUTHENTICATED_ID);
+
     $this->storage = $this->entityTypeManager->getStorage('entity_test_with_owner');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('entity_test_with_owner');
 
     $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
     $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_as_content'));
 
@@ -125,8 +132,8 @@ class EntityAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupTypeA->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['administer entity_test_as_content'],
     ]);
 
@@ -147,8 +154,8 @@ class EntityAccessTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupTypeA->id(),
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['administer entity_test_as_content'],
     ]);
 
@@ -170,8 +177,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -212,8 +219,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -252,8 +259,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -294,8 +301,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -334,8 +341,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['update any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -376,8 +383,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['update any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -416,8 +423,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['update own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -458,8 +465,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['update own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -498,8 +505,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['delete any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -540,8 +547,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['delete any entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -580,8 +587,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['delete own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
@@ -622,8 +629,8 @@ class EntityAccessTest extends GroupKernelTestBase {
     $entity_3 = $this->createTestEntity();
 
     $role_config = [
-      'scope' => 'outsider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['delete own entity_test_as_content entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);

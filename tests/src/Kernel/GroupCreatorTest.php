@@ -4,6 +4,8 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Tests the behavior of group creators.
@@ -42,7 +44,7 @@ class GroupCreatorTest extends GroupKernelTestBase {
     $group_type = $this->createGroupType();
     $group_role = $this->createGroupRole([
       'group_type' => $group_type->id(),
-      'scope' => 'individual',
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
     ]);
     $group_type->set('creator_roles', [$group_role->id()]);
     $group_type->save();
@@ -66,8 +68,8 @@ class GroupCreatorTest extends GroupKernelTestBase {
    *   The group roles matching the criteria.
    */
   protected function getCreatorRoles(AccountInterface $account, GroupInterface $group) {
-    /** @var \Drupal\group\Entity\Storage\GroupRoleStorageInterface $group_role_storage */
     $group_role_storage = $this->entityTypeManager->getStorage('group_role');
+    assert($group_role_storage instanceof GroupRoleStorageInterface);
     return $group_role_storage->loadByUserAndGroup($account, $group, FALSE);
   }
 

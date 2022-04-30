@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel\QueryAlter;
 
 use Drupal\Core\Render\RenderContext;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\Tests\group\Kernel\GroupKernelTestBase;
 
 /**
@@ -73,8 +74,8 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
 
     // Install the plugin and add a node to a group so query access kicks in and
     // cacheable metadata is added to the query.
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $gct_storage */
     $gct_storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($gct_storage instanceof GroupContentTypeStorageInterface);
     $gct_storage->save($gct_storage->createFromPlugin($this->groupType, 'node_as_content:page'));
     $group = $this->createGroup(['type' => $this->groupType->id()]);
     $group->addContent($this->createNode(['type' => 'page']), 'node_as_content:page');

@@ -3,6 +3,7 @@
 namespace Drupal\group\Entity\Views;
 
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\views\EntityViewsData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,7 +23,6 @@ class GroupContentViewsData extends EntityViewsData {
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    /** @var static $views_data */
     $views_data = parent::createInstance($container, $entity_type);
     $views_data->pluginManager = $container->get('group_relation_type.manager');
     return $views_data;
@@ -48,18 +48,18 @@ class GroupContentViewsData extends EntityViewsData {
     // @todo Eventually, we may want to replace all of 'entity_id'.
     unset($data[$data_table]['entity_id']['relationship']);
 
-    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
     $entity_types = $this->entityTypeManager->getDefinitions();
 
     // Add views data for all defined plugins so modules can provide default
     // views even though their plugins may not have been installed yet.
     foreach ($this->pluginManager->getDefinitions() as $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       $entity_type_id = $group_relation_type->getEntityTypeId();
       if (!isset($entity_types[$entity_type_id])) {
         continue;
       }
       $entity_type = $entity_types[$entity_type_id];
+      assert($entity_type instanceof EntityTypeInterface);
       $entity_data_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
 
       // Create a unique field name for this views field.

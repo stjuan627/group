@@ -5,6 +5,7 @@ namespace Drupal\group;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
 use Drupal\Core\Plugin\Discovery\AnnotatedClassDiscovery;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -43,7 +44,7 @@ class GroupServiceProvider extends ServiceProviderBase {
     ];
 
     foreach ($discovery->getDefinitions() as $group_relation_type_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       // Skip plugins that whose provider is not installed.
       if (!isset($modules[$group_relation_type->getProvider()])) {
         continue;

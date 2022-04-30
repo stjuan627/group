@@ -5,6 +5,8 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\group\Entity\GroupContentTypeInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -46,8 +48,8 @@ class GroupContentTypeForm extends EntityForm {
    *   The configurable group relation.
    */
   protected function getPlugin() {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $group_type = $group_content_type->getGroupType();
 
     // Initialize an empty plugin so we can show a default configuration form.
@@ -66,8 +68,8 @@ class GroupContentTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $group_type = $group_content_type->getGroupType();
     $group_relation = $this->getPlugin();
     $group_relation_type = $this->getPlugin()->getRelationType();
@@ -125,8 +127,8 @@ class GroupContentTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->getEntity();
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $group_type = $group_content_type->getGroupType();
     $plugin = $this->getPlugin();
     $plugin->submitConfigurationForm($form, $form_state);
@@ -140,8 +142,8 @@ class GroupContentTypeForm extends EntityForm {
     // If we are on an 'add' form, we create the group content type using the
     // plugin configuration submitted using this form.
     if ($this->operation == 'add') {
-      /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
       $storage = $this->entityTypeManager->getStorage('group_content_type');
+      assert($storage instanceof GroupContentTypeStorageInterface);
       $storage->createFromPlugin($group_type, $plugin->getRelationTypeId(), $config)->save();
       $this->messenger()->addStatus($this->t('The content plugin was installed on the group type.'));
     }

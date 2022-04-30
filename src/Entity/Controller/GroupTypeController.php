@@ -89,7 +89,7 @@ class GroupTypeController extends ControllerBase {
     $installed_ids = $this->pluginManager->getInstalledIds($group_type);
 
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       $is_installed = in_array($plugin_id, $installed_ids, TRUE);
       $status = $is_installed ? 'installed' : 'available';
       $rows[$status][$plugin_id] = $this->buildRow($plugin_id, $group_relation_type, $is_installed);

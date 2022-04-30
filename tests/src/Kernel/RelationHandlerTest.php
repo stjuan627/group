@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+
 /**
  * Tests that relation handlers work as expected.
  *
@@ -34,8 +36,8 @@ class RelationHandlerTest extends GroupKernelTestBase {
    * Tests that decorators can target all plugins or one in specific.
    */
   public function testDecoratorChain() {
-    /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $relation_manager */
     $relation_manager = $this->container->get('group_relation_type.manager');
+    assert($relation_manager instanceof GroupRelationTypeManagerInterface);
 
     $message = "All plugins have foobar appended, proving decorating defaults works and respects priority";
     $expected = 'administer user_as_content' . 'foobar';

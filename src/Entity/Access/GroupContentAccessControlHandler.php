@@ -7,6 +7,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,7 +46,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\group\Entity\GroupContentInterface $entity */
+    assert($entity instanceof GroupContentInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($entity->getPluginId());
     return $access_control->relationAccess($entity, $operation, $account, TRUE);
   }
@@ -53,8 +55,8 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
     $group_content_type = $this->entityTypeManager->getStorage('group_content_type')->load($entity_bundle);
+    assert($group_content_type instanceof GroupContentTypeInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($group_content_type->getPluginId());
     return $access_control->relationCreateAccess($context['group'], $account, TRUE);
   }

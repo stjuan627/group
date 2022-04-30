@@ -2,7 +2,9 @@
 
 namespace Drupal\Tests\group\Kernel\Views;
 
+use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
+use Drupal\user\RoleInterface;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\views\Views;
 
@@ -57,11 +59,11 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
     // Allow anyone full group access so query alters don't deny access.
     $role_config = [
       'group_type' => $this->groupType->id(),
-      'global_role' => 'authenticated',
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'admin' => TRUE,
     ];
-    $this->createGroupRole(['scope' => 'outsider'] + $role_config);
-    $this->createGroupRole(['scope' => 'insider'] + $role_config);
+    $this->createGroupRole(['scope' => PermissionScopeInterface::OUTSIDER_ID] + $role_config);
+    $this->createGroupRole(['scope' => PermissionScopeInterface::INSIDER_ID] + $role_config);
 
     // Make sure we do not use user 1.
     $this->createUser();

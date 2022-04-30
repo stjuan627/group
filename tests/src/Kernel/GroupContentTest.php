@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 
 /**
  * Tests for the GroupContent entity.
@@ -95,8 +96,8 @@ class GroupContentTest extends GroupKernelTestBase {
     // Create a group type and enable adding users as content.
     $group_type = $this->createGroupType();
 
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->createFromPlugin($group_type, 'user_as_content')->save();
 
     // Create a group and user to check the cache tags for.

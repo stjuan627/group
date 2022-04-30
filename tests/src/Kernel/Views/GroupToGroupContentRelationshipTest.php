@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel\Views;
 
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+
 /**
  * Tests the group_to_group_content relationship handler.
  *
@@ -31,8 +33,8 @@ class GroupToGroupContentRelationshipTest extends GroupViewsKernelTestBase {
     $this->installEntitySchema('node');
 
     // Enable the user_as_content plugin on the test group type.
-    /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->createFromPlugin($this->groupType, 'user_as_content')->save();
   }
 

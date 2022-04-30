@@ -2,6 +2,9 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
+
 /**
  * Tests the general access behavior of group entities.
  *
@@ -57,8 +60,8 @@ class GroupAccessControlHandlerTest extends GroupKernelTestBase {
 
     $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => [$permission],
     ]);
     $this->assertTrue($this->group->access($operation), 'A member with the right permission has access');
@@ -108,8 +111,8 @@ class GroupAccessControlHandlerTest extends GroupKernelTestBase {
 
     $insider_role = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
-      'scope' => 'insider',
-      'global_role' => 'authenticated',
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
       'permissions' => ['view group'],
     ]);
     $this->assertTrue($this->group->access('view'), 'A member with the right permission has access');
@@ -147,7 +150,7 @@ class GroupAccessControlHandlerTest extends GroupKernelTestBase {
     $access_control_handler->resetCache();
 
     $this->entityTypeManager->getStorage('user_role')
-      ->load('authenticated')
+      ->load(RoleInterface::AUTHENTICATED_ID)
       ->grantPermission('create foo group')
       ->save();
     $this->assertTrue($access_control_handler->createAccess('foo'), 'A user with the right permission has access');

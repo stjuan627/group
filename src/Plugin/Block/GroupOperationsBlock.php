@@ -6,6 +6,8 @@ use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -83,13 +85,13 @@ class GroupOperationsBlock extends BlockBase implements ContainerFactoryPluginIn
     $cacheable_metadata = new CacheableMetadata();
     $cacheable_metadata->setCacheContexts(['user.group_permissions']);
 
-    /** @var \Drupal\group\Entity\GroupInterface $group */
     if (($group = $this->getContextValue('group')) && $group->id()) {
+      assert($group instanceof GroupInterface);
       $links = [];
 
       // Retrieve the operations and cacheable metadata from the plugins.
       foreach ($group->getGroupType()->getInstalledPlugins() as $plugin) {
-        /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
+        assert($plugin instanceof GroupRelationInterface);
         $operation_provider = $this->pluginManager->getOperationProvider($plugin->getRelationTypeId());
         $operations = $operation_provider->getGroupOperations($group);
         $cacheable_metadata = $cacheable_metadata->merge(CacheableMetadata::createFromRenderArray($operations));

@@ -8,6 +8,8 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 /**
@@ -120,8 +122,8 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     // configuration but can't because their plugins may not be installed along
     // with the module itself (i.e.: non-enforced plugins).
     if ($include_plugins) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $group_relation_type */
       foreach ($this->pluginManager->getDefinitions() as $group_relation_type_id => $group_relation_type) {
+        assert($group_relation_type instanceof GroupRelationTypeInterface);
         $provider = $group_relation_type->getProvider();
         $section = $group_relation_type->getLabel()->__toString();
 
@@ -144,7 +146,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
 
     // Add the plugin defined permissions to the whole.
     foreach ($group_type->getInstalledPlugins() as $plugin) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $plugin */
+      assert($plugin instanceof GroupRelationInterface);
       $group_relation_type = $plugin->getRelationType();
       $provider = $group_relation_type->getProvider();
       $section = $group_relation_type->getLabel()->__toString();

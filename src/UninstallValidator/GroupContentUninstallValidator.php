@@ -7,6 +7,7 @@ use Drupal\Core\Extension\ModuleUninstallValidatorInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentType;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
@@ -50,7 +51,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
     $reasons = $plugin_names = [];
 
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      /** @var \Drupal\group\Plugin\Group\Relation\GroupRelationInterface $group_relation_type */
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
       if ($group_relation_type->getProvider() == $module && $this->hasGroupContent($plugin_id)) {
         $plugin_names[] = $group_relation_type->getLabel();
       }

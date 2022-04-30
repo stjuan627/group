@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\group\Entity\Controller\GroupContentController;
+use Drupal\group\Entity\GroupContentTypeInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -104,7 +105,7 @@ class GroupNodeController extends GroupContentController {
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     $properties = ['group_type' => $group->bundle(), 'content_plugin' => $plugin_ids];
     foreach ($storage->loadByProperties($properties) as $bundle => $group_content_type) {
-      /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */
+      assert($group_content_type instanceof GroupContentTypeInterface);
       $bundles[$group_content_type->getPluginId()] = $bundle;
     }
 

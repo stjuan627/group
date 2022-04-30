@@ -3,6 +3,7 @@
 namespace Drupal\group\QueryAccess;
 
 use Drupal\Core\Database\Query\ConditionInterface;
+use Drupal\group\PermissionScopeInterface;
 
 /**
  * Defines a class for altering group queries.
@@ -128,7 +129,7 @@ class GroupQueryAlter extends QueryAlterBase {
 
     $sub_condition = $this->query->andConditionGroup();
     $sub_condition->condition("$table_with_type.type", array_unique($allowed_ids), 'IN');
-    if ($scope === 'outsider') {
+    if ($scope === PermissionScopeInterface::OUTSIDER_ID) {
       $sub_condition->isNull("$membership_alias.entity_id");
     }
     else {
