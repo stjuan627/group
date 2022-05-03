@@ -144,7 +144,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
 
     return $this->entityTypeManager()
       ->getStorage('group_role')
-      ->loadByProperties(['group_type' => $this->id()]);
+      ->loadByProperties($properties);
   }
 
   /**
