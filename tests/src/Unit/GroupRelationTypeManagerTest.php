@@ -119,7 +119,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
       });
     $this->discovery->getDefinitions()->willReturn($definitions);
 
-    foreach ($definitions as $plugin_id => $definition) {
+    foreach ($definitions as $definition) {
       foreach ($handlers as $handler_name => $class_name) {
         $service_name = "group.relation_handler.$handler_name.{$definition->id()}";
         if ($class_name === FALSE) {
@@ -135,6 +135,51 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
         }
       }
     }
+  }
+
+  /**
+   * Tests that you may not define an access plugin for group entities.
+   *
+   * @covers ::processDefinition
+   */
+  public function testPluginForGroupException() {
+    $this->setUpPluginDefinitions(
+      ['some_plugin' => (new GroupRelationType([
+        'id' => 'some_plugin',
+        'entity_type_id' => 'group',
+      ]))->setClass(GroupRelationTypeInterface::class)]
+    );
+    $this->groupRelationTypeManager->getDefinitions();
+    $this->groupRelationTypeManager->clearCachedDefinitions();
+
+    $this->setUpPluginDefinitions(
+      ['some_plugin' => (new GroupRelationType([
+        'id' => 'some_plugin',
+        'entity_access' => TRUE,
+        'entity_type_id' => 'group',
+      ]))->setClass(GroupRelationTypeInterface::class)]
+    );
+    $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage('The "some_plugin" plugin defines entity access over group entities. This should be dealt with by altering the group permissions of the current user.');
+    $this->groupRelationTypeManager->getDefinitions();
+  }
+
+  /**
+   * Tests that you may not define a plugin for group_content entities.
+   *
+   * @covers ::processDefinition
+   */
+  public function testPluginForGroupContentException() {
+    $this->setUpPluginDefinitions(
+      ['some_plugin' => (new GroupRelationType([
+        'id' => 'some_plugin',
+        'entity_type_id' => 'group_content',
+      ]))->setClass(GroupRelationTypeInterface::class)]
+    );
+
+    $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage('The "some_plugin" plugin tries to group group_content entities, which is simply not possible.');
+    $this->groupRelationTypeManager->getDefinitions();
   }
 
   /**

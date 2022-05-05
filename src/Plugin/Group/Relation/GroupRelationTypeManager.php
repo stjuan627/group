@@ -19,8 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * Each entity type definition array is set in the entity type's annotation and
  * altered by hook_group_relation_type_alter().
  *
- * @todo Prevent target entity type of group_content?
- *
  * @see \Drupal\group\Annotation\GroupRelationType
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface
@@ -120,6 +118,21 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupContentTypeMapCacheKey = $this->cacheKey . '_GCT_map';
     $this->groupTypePluginMapCacheKey = $this->cacheKey . '_GT_map';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processDefinition(&$definition, $plugin_id) {
+    parent::processDefinition($definition, $plugin_id);
+
+    assert($definition instanceof GroupRelationTypeInterface);
+    if ($definition->getEntityTypeId() === 'group_content') {
+      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_content entities, which is simply not possible.', $plugin_id));
+    }
+    elseif ($definition->definesEntityAccess() && $definition->getEntityTypeId() === 'group') {
+      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin defines entity access over group entities. This should be dealt with by altering the group permissions of the current user.', $plugin_id));
+    }
   }
 
   /**

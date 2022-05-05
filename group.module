@@ -252,8 +252,6 @@ function group_query_entity_query_alter(SelectInterface $query) {
     // groups will have no query access added for nested groups whatsoever. This
     // is by design as those plugins should opt to use the permission calculator
     // system, as it's way faster and automatically included in GroupQueryAlter.
-    //
-    // @todo Enforce that plugins may not define entity_access for "group".
     switch ($entity_type_id) {
       case 'group':
         $class_name = GroupQueryAlter::class;
