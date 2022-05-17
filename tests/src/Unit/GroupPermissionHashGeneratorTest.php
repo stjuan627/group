@@ -8,11 +8,11 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
-use Drupal\group\Access\CalculatedGroupPermissionsInterface;
-use Drupal\group\Access\CalculatedGroupPermissionsItem;
-use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsItem;
+use Drupal\flexible_permissions\RefinableCalculatedPermissions;
+use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGenerator;
-use Drupal\group\Access\RefinableCalculatedGroupPermissions;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -33,7 +33,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $permissionCalculator;
 
@@ -60,7 +60,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
     $private_key = $this->prophesize(PrivateKey::class);
     $private_key->get()->willReturn('');
     $this->static = $this->prophesize(CacheBackendInterface::class);
-    $this->permissionCalculator = $this->prophesize(ChainGroupPermissionCalculatorInterface::class);
+    $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
     $this->hashGenerator = new GroupPermissionsHashGenerator($private_key->reveal(), $this->static->reveal(), $this->permissionCalculator->reveal());
 
     $account = $this->prophesize(AccountInterface::class);
@@ -76,7 +76,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
   public function testGenerateHash() {
     $cid = 'group_permissions_hash_24101986';
 
-    $calculated_permissions = new RefinableCalculatedGroupPermissions();
+    $calculated_permissions = new RefinableCalculatedPermissions();
     $this->permissionCalculator->calculateFullPermissions($this->account)->willReturn($calculated_permissions);
 
     $sorted_permissions = [
@@ -90,16 +90,16 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
 
     // Deliberately add the permissions in an unsorted manner.
     $calculated_permissions
-      ->addItem(new CalculatedGroupPermissionsItem('scope_b', 'foo', ['baz', 'bar']))
-      ->addItem(new CalculatedGroupPermissionsItem('scope_c', 16, ['sweet']))
-      ->addItem(new CalculatedGroupPermissionsItem('scope_a', 'alice', ['bob']));
+      ->addItem(new CalculatedPermissionsItem('scope_b', 'foo', ['baz', 'bar']))
+      ->addItem(new CalculatedPermissionsItem('scope_c', 16, ['sweet']))
+      ->addItem(new CalculatedPermissionsItem('scope_a', 'alice', ['bob']));
     $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash was generated based on the sorted calculated permissions.');
 
     $sorted_permissions['scope_d'][100] = 'is-admin';
     $expected_hash = hash('sha256', 'SALT' . serialize($sorted_permissions));
     $this->static->set($cid, $expected_hash, Cache::PERMANENT, [])->shouldBeCalledTimes(1);
     $calculated_permissions
-      ->addItem(new CalculatedGroupPermissionsItem('scope_d', 100, ['irrelevant'], TRUE));
+      ->addItem(new CalculatedPermissionsItem('scope_d', 100, ['irrelevant'], TRUE));
     $this->assertEquals($expected_hash, $this->hashGenerator->generateHash($this->account), 'The hash uses a simple flag instead of permissions for admin entries.');
 
     $cache = (object) ['data' => 'foobar'];
@@ -114,7 +114,7 @@ class GroupPermissionHashGeneratorTest extends UnitTestCase {
    * @covers ::getCacheableMetadata
    */
   public function testGetCacheableMetadata() {
-    $calculated_permissions = $this->prophesize(CalculatedGroupPermissionsInterface::class);
+    $calculated_permissions = $this->prophesize(CalculatedPermissionsInterface::class);
     $calculated_permissions->getCacheContexts()->willReturn([]);
     $calculated_permissions->getCacheTags()->willReturn(["config:group.role.foo-bar"]);
     $calculated_permissions->getCacheMaxAge()->willReturn(-1);

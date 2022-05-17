@@ -3,10 +3,10 @@
 namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Access\CalculatedGroupPermissionsItem;
-use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsItem;
+use Drupal\flexible_permissions\RefinableCalculatedPermissions;
+use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionChecker;
-use Drupal\group\Access\RefinableCalculatedGroupPermissions;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
 use Drupal\group\PermissionScopeInterface;
@@ -23,7 +23,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
    */
   protected $permissionCalculator;
 
@@ -46,7 +46,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
    */
   public function setUp() {
     parent::setUp();
-    $this->permissionCalculator = $this->prophesize(ChainGroupPermissionCalculatorInterface::class);
+    $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
     $this->membershipLoader = $this->prophesize(GroupMembershipLoaderInterface::class);
     $this->permissionChecker = new GroupPermissionChecker($this->permissionCalculator->reveal(), $this->membershipLoader->reveal());
   }
@@ -85,15 +85,15 @@ class GroupPermissionCheckerTest extends UnitTestCase {
     $group->bundle()->willReturn('foo');
     $group = $group->reveal();
 
-    $calculated_permissions = new RefinableCalculatedGroupPermissions();
+    $calculated_permissions = new RefinableCalculatedPermissions();
     foreach ($outsider_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::OUTSIDER_ID, $identifier, $permissions, $outsider_admin));
+      $calculated_permissions->addItem(new CalculatedPermissionsItem(PermissionScopeInterface::OUTSIDER_ID, $identifier, $permissions, $outsider_admin));
     }
     foreach ($insider_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::INSIDER_ID, $identifier, $permissions, $insider_admin));
+      $calculated_permissions->addItem(new CalculatedPermissionsItem(PermissionScopeInterface::INSIDER_ID, $identifier, $permissions, $insider_admin));
     }
     foreach ($individual_permissions as $identifier => $permissions) {
-      $calculated_permissions->addItem(new CalculatedGroupPermissionsItem(PermissionScopeInterface::INDIVIDUAL_ID, $identifier, $permissions, $individual_admin));
+      $calculated_permissions->addItem(new CalculatedPermissionsItem(PermissionScopeInterface::INDIVIDUAL_ID, $identifier, $permissions, $individual_admin));
     }
 
     $this->permissionCalculator

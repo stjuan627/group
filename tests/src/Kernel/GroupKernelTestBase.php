@@ -13,7 +13,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group', 'options', 'entity', 'variationcache'];
+  public static $modules = ['entity', 'flexible_permissions', 'group', 'options', 'variationcache'];
 
   /**
    * The group relation type manager.

@@ -16,7 +16,15 @@ class GroupConfigTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['group', 'options', 'entity', 'variationcache', 'block', 'views'];
+  public static $modules = [
+    'block',
+    'entity',
+    'flexible_permissions',
+    'group',
+    'options',
+    'variationcache',
+    'views',
+  ];
 
   /**
    * Tests that the module's config installs properly.

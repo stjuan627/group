@@ -19,6 +19,6 @@
   "require": {
     "drupal/core": "^8.9 || ^9",
     "drupal/entity": "^1.2",
-    "drupal/variationcache": "^1.0"
+    "drupal/flexible_permissions": "^1.0"
   }
 }

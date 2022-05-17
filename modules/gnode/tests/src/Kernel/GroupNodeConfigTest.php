@@ -16,7 +16,16 @@ class GroupNodeConfigTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['group', 'options', 'entity', 'variationcache', 'node', 'gnode', 'views'];
+  public static $modules = [
+    'entity',
+    'flexible_permissions',
+    'gnode',
+    'group',
+    'node',
+    'options',
+    'variationcache',
+    'views',
+  ];
 
   /**
    * Tests that the module's config installs properly.

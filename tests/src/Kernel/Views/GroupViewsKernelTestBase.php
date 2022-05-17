@@ -19,6 +19,7 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
   public static $modules = [
     'entity',
     'field',
+    'flexible_permissions',
     'group',
     'group_test_views',
     'options',

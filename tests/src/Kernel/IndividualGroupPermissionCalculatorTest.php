@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\group\Access\CalculatedGroupPermissionsInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsInterface;
 use Drupal\group\PermissionScopeInterface;
 
 /**
@@ -14,9 +14,9 @@ use Drupal\group\PermissionScopeInterface;
 class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
 
   /**
-   * The group permissions hash generator service.
+   * The chain permission calculator.
    *
-   * @var \Drupal\group\Access\ChainGroupPermissionCalculatorInterface
+   * @var \Drupal\flexible_permissions\ChainPermissionCalculatorInterface
    */
   protected $permissionCalculator;
 
@@ -25,7 +25,7 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->permissionCalculator = $this->container->get('group_permission.chain_calculator');
+    $this->permissionCalculator = $this->container->get('flexible_permissions.chain_calculator');
   }
 
   /**
@@ -51,7 +51,7 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
 
     $permissions = [];
     $cache_tags = [
-      'group_permissions',
+      'flexible_permissions',
       'group_content_list:plugin:group_membership:entity:' . $account->id(),
     ];
     sort($cache_tags);
@@ -99,13 +99,13 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
    * This is done to make comparison assertions easier. Make sure you use the
    * canonicalize option of assertEquals.
    *
-   * @param \Drupal\group\Access\CalculatedGroupPermissionsInterface $calculated_permissions
+   * @param \Drupal\flexible_permissions\CalculatedPermissionsInterface $calculated_permissions
    *   The calculated permissions object to convert.
    *
    * @return string[]
    *   The permissions, keyed by scope identifier.
    */
-  protected function convertCalculatedPermissionsToArray(CalculatedGroupPermissionsInterface $calculated_permissions) {
+  protected function convertCalculatedPermissionsToArray(CalculatedPermissionsInterface $calculated_permissions) {
     $permissions = [];
     foreach ($calculated_permissions->getItems() as $item) {
       $permissions[$item->getScope()][$item->getIdentifier()] = $item->getPermissions();

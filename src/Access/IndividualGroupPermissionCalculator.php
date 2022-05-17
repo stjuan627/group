@@ -4,13 +4,15 @@ namespace Drupal\group\Access;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsItem;
+use Drupal\flexible_permissions\PermissionCalculatorBase;
 use Drupal\group\GroupMembershipLoaderInterface;
 use Drupal\group\PermissionScopeInterface;
 
 /**
  * Calculates individual group permissions for an account.
  */
-class IndividualGroupPermissionCalculator extends GroupPermissionCalculatorBase {
+class IndividualGroupPermissionCalculator extends PermissionCalculatorBase {
 
   /**
    * The entity type manager.
@@ -58,7 +60,7 @@ class IndividualGroupPermissionCalculator extends GroupPermissionCalculatorBase 
       $calculated_permissions->addCacheableDependency($group_membership);
 
       foreach ($group_membership->getRoles(FALSE) as $group_role) {
-        $item = new CalculatedGroupPermissionsItem(
+        $item = new CalculatedPermissionsItem(
           $group_role->getScope(),
           $group_membership->getGroup()->id(),
           $group_role->getPermissions(),

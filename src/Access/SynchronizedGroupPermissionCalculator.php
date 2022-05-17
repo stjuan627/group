@@ -4,13 +4,15 @@ namespace Drupal\group\Access;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\flexible_permissions\CalculatedPermissionsItem;
+use Drupal\flexible_permissions\PermissionCalculatorBase;
 use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\group\PermissionScopeInterface;
 
 /**
  * Calculates synchronized group permissions for an account.
  */
-class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBase {
+class SynchronizedGroupPermissionCalculator extends PermissionCalculatorBase {
 
   /**
    * The entity type manager.
@@ -52,7 +54,7 @@ class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBas
 
     foreach ($group_roles as $group_role) {
       assert($group_role instanceof GroupRoleInterface);
-      $item = new CalculatedGroupPermissionsItem(
+      $item = new CalculatedPermissionsItem(
         $group_role->getScope(),
         $group_role->getGroupTypeId(),
         $group_role->getPermissions(),

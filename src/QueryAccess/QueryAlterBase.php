@@ -10,7 +10,7 @@ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Access\ChainGroupPermissionCalculatorInterface;
+use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -95,7 +95,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   /**
    * Constructs a new QueryAlterBase object.
    *
-   * @param \Drupal\group\Access\ChainGroupPermissionCalculatorInterface $permission_calculator
+   * @param \Drupal\group\Access\GroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
@@ -104,7 +104,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
-  public function __construct(ChainGroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
+  public function __construct(GroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
     $this->permissionCalculator = $permission_calculator;
     $this->renderer = $renderer;
     $this->requestStack = $request_stack;
@@ -117,7 +117,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('group_permission.chain_calculator'),
+      $container->get('group_permission.calculator'),
       $container->get('renderer'),
       $container->get('request_stack'),
       $container->get('current_user')
