@@ -5,6 +5,7 @@
  * Install, update and uninstall functions for the group module.
  */
 
+use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\group\Entity\GroupTypeInterface;
@@ -22,27 +23,37 @@ function group_update_last_removed() {
  * Add plugin_id and group_type fields and update indexes for group content.
  */
 function group_update_9201() {
-  $manager = \Drupal::entityDefinitionUpdateManager();
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+
+  $entity_type = $definition_update_manager->getEntityType('group_content');
+  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
 
   // Add the plugin_id and group_type field.
-  $plugin_id = BaseFieldDefinition::create('string')
+  $field_storage_definitions['plugin_id'] = BaseFieldDefinition::create('string')
+    ->setName('plugin_id')
+    ->setTargetEntityTypeId('group_content')
+    ->setTargetBundle(NULL)
     ->setLabel(t('Plugin ID'))
     ->setRequired(TRUE)
     ->setReadOnly(TRUE)
-    ->setInitialValue('TEMP');
+    ->setInitialValue('TEMP')
+    ->setProvider('group');
 
-  $group_type = BaseFieldDefinition::create('entity_reference')
+  $field_storage_definitions['group_type'] = BaseFieldDefinition::create('entity_reference')
+    ->setName('group_type')
+    ->setTargetEntityTypeId('group_content')
+    ->setTargetBundle(NULL)
     ->setLabel(t('Group type'))
     ->setSetting('target_type', 'group_type')
     ->setRequired(TRUE)
     ->setReadOnly(TRUE)
-    ->setInitialValue('TEMP');
+    ->setInitialValue('TEMP')
+    ->setProvider('group');
 
-  $manager->installFieldStorageDefinition('plugin_id', 'group_content', 'group', $plugin_id);
-  $manager->installFieldStorageDefinition('group_type', 'group_content', 'group', $group_type);
-
-  // Regenerate entity type indexes.
-  $manager->updateEntityType($manager->getEntityType('group_content'));
+  // Update the fields and regenerate indexes.
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions);
 
   // Map group content types to plugin IDs and group types.
   $config_factory = \Drupal::configFactory();
@@ -57,7 +68,7 @@ function group_update_9201() {
   }
 
   // Populate the actual values based on the group content types.
-  $data_table = \Drupal::entityTypeManager()->getDefinition('group_content')->getDataTable();
+  $data_table = $entity_type->getDataTable();
 
   $database = \Drupal::database();
   foreach ($map['group_type'] as $group_type_id => $group_content_type_ids) {
