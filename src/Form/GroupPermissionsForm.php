@@ -306,6 +306,9 @@ abstract class GroupPermissionsForm extends FormBase {
   function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
       assert($group_role instanceof GroupRoleInterface);
+      if ($group_role->isAdmin()) {
+        continue;
+      }
       $permissions = $form_state->getValue($role_name);
       $group_role->changePermissions($permissions)->trustData()->save();
     }
