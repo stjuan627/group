@@ -295,6 +295,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
     $permission['title'] = $title;
     $permission['title_args'] = $t_args;
 
+    if ($this->definition['entity_type_id']) {
+      $permission['unique_name'] = $this->definition['entity_type_id'];
+      if ($this->definition['entity_bundle']) {
+        $permission['unique_name'] .= '__' . $this->definition['entity_bundle'];
+      }
+    }
+
     if (isset($description)) {
       $permission['description'] = $description;
       $permission['description_args'] = $t_args;
