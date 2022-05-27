@@ -104,9 +104,11 @@ abstract class GroupPermissionsForm extends FormBase {
     // Create a list of group permissions ordered by their provider and section.
     foreach ($this->groupPermissionHandler->getPermissionsByGroupType($this->getGroupType()) as $permission_name => $permission) {
 
+      // Plugins can define the unique name for the permision.
       if (isset($permission['unique_name'])) {
         $section_id = $permission['unique_name'];
       }
+      // If it's not defined use the section name.
       else {
         $section_id = $permission['section'];
       }
