@@ -103,7 +103,20 @@ abstract class GroupPermissionsForm extends FormBase {
 
     // Create a list of group permissions ordered by their provider and section.
     foreach ($this->groupPermissionHandler->getPermissionsByGroupType($this->getGroupType()) as $permission_name => $permission) {
-      $by_provider_and_section[$permission['provider']][$permission['section']][$permission_name] = $permission;
+
+      // Plugins can define the unique name for the permision.
+      if (isset($permission['unique_name'])) {
+        $section_id = $permission['unique_name'];
+      }
+      // If it's not defined use the section name.
+      else {
+        $section_id = $permission['section'];
+      }
+
+      if ($permission) {
+        $by_provider_and_section[$permission['provider']][$section_id]['section_label'] = $permission['section'];
+        $by_provider_and_section[$permission['provider']][$section_id][$permission_name] = $permission;
+      }
     }
 
     // Always put the 'General' section at the top if provided.
@@ -182,10 +195,7 @@ abstract class GroupPermissionsForm extends FormBase {
         ]
       ];
 
-      foreach ($sections as $section => $permissions) {
-        // Create a clean section ID.
-        $section_id = $provider . '-' . preg_replace('/[^a-z0-9_]+/', '_', strtolower($section));
-
+      foreach ($sections as $section_id => $permissions) {
         // Start each section with a full width row containing the section name.
         $form['permissions'][$section_id] = [
           [
@@ -194,12 +204,16 @@ abstract class GroupPermissionsForm extends FormBase {
               'class' => ['section'],
               'id' => 'section-' . $section_id,
             ],
-            '#markup' => $section,
+            '#markup' => $permissions['section_label'],
           ]
         ];
 
         // Then list all of the permissions for that provider and section.
         foreach ($permissions as $perm => $perm_item) {
+          // Check edge case where the permission is just a label.
+          if (!is_array(($perm_item))) {
+            continue;
+          }
           // Create a row for the permission, starting with the description cell.
           $form['permissions'][$perm]['description'] = [
             '#type' => 'inline_template',
