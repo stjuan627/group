@@ -194,7 +194,6 @@ abstract class GroupPermissionsForm extends FormBase {
       ];
 
       foreach ($sections as $section_id => $permissions) {
-
         // Start each section with a full width row containing the section name.
         $form['permissions'][$section_id] = [
           [
@@ -209,6 +208,10 @@ abstract class GroupPermissionsForm extends FormBase {
 
         // Then list all of the permissions for that provider and section.
         foreach ($permissions as $perm => $perm_item) {
+          // Check edge case where the permission is just a label.
+          if (!is_array(($perm_item))) {
+            continue;
+          }
           // Create a row for the permission, starting with the description cell.
           $form['permissions'][$perm]['description'] = [
             '#type' => 'inline_template',
