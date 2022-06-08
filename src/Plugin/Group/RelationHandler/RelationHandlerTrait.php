@@ -38,6 +38,13 @@ trait RelationHandlerTrait {
   protected $groupRelationType;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $currentUser;
+
+  /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -60,6 +67,19 @@ trait RelationHandlerTrait {
     }
     $this->pluginId = $plugin_id;
     $this->groupRelationType = $group_relation_type;
+  }
+
+  /**
+   * Gets the current user.
+   *
+   * @return \Drupal\Core\Session\AccountProxyInterface
+   *   The current user.
+   */
+  protected function currentUser() {
+    if (!$this->currentUser) {
+      $this->currentUser = \Drupal::currentUser();
+    }
+    return $this->currentUser;
   }
 
   /**

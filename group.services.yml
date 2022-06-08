@@ -141,7 +141,7 @@ services:
     shared: false
   group.relation_handler.operation_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider'
-    arguments: ['@entity_type.manager', '@module_handler', '@string_translation']
+    arguments: ['@module_handler', '@current_user', '@entity_type.manager', '@group_relation_type.manager', '@string_translation']
     shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
@@ -162,7 +162,7 @@ services:
     shared: false
   group.relation_handler.operation_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipOperationProvider'
-    arguments: ['@group.relation_handler.operation_provider', '@string_translation', '@current_user']
+    arguments: ['@group.relation_handler.operation_provider', '@current_user', '@string_translation']
     shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'

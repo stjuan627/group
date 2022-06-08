@@ -4,10 +4,12 @@ namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderTrait;
 
@@ -28,16 +30,22 @@ class OperationProvider implements OperationProviderInterface {
   /**
    * Constructs a new OperationProvider.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $groupRelationTypeManager
+   *   The group relation type manager.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, TranslationInterface $string_translation) {
-    $this->entityTypeManager = $entity_type_manager;
+  public function __construct(ModuleHandlerInterface $module_handler, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager, TranslationInterface $string_translation) {
     $this->moduleHandler = $module_handler;
+    $this->currentUser = $current_user;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->groupRelationTypeManager = $groupRelationTypeManager;
     $this->stringTranslation = $string_translation;
   }
 
@@ -87,7 +95,33 @@ class OperationProvider implements OperationProviderInterface {
    * {@inheritdoc}
    */
   public function getGroupOperations(GroupInterface $group) {
-    return [];
+    $operations = [];
+
+    $create_permission = $this->permissionProvider->getPermission('create', 'entity');
+    if ($create_permission && $group->hasPermission($create_permission, $this->currentUser())) {
+      $key_parts = [$this->groupRelationType->id(), 'create'];
+      if ($bundle_id = $this->groupRelationType->getEntityBundle()) {
+        $key_parts[] = $bundle_id;
+      }
+
+      $bundle_entity_type = $this->entityType->getBundleEntityType();
+      if ($bundle_id && $bundle_entity_type) {
+        $bundle = $this->entityTypeManager()->getStorage($bundle_entity_type)->load($bundle_id);
+        $label = $bundle->label();
+      }
+      else {
+        $label = $this->entityType->getSingularLabel();
+      }
+
+      $route_params = ['group' => $group->id(), 'plugin_id' => $this->pluginId];
+      $operations[implode('-', $key_parts)] = [
+        'title' => $this->t('Add @type', ['@type' => $label]),
+        'url' => new Url('entity.group_content.create_form', $route_params),
+        'weight' => 30,
+      ];
+    }
+
+    return $operations;
   }
 
 }

@@ -2,8 +2,10 @@
 
 namespace Drupal\Tests\group\Unit {
 
+  use Drupal\Core\Entity\EntityTypeInterface;
   use Drupal\Core\Entity\EntityTypeManagerInterface;
   use Drupal\Core\Extension\ModuleHandlerInterface;
+  use Drupal\Core\Session\AccountProxyInterface;
   use Drupal\Core\StringTranslation\TranslationInterface;
   use Drupal\group\Entity\GroupContentTypeInterface;
   use Drupal\group\Entity\GroupInterface;
@@ -11,6 +13,8 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationType;
   use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+  use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+  use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
   use Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider;
   use Drupal\Tests\UnitTestCase;
   use Prophecy\Argument;
@@ -45,7 +49,20 @@ namespace Drupal\Tests\group\Unit {
       $group_type->id()->willReturn('some_type');
       $group_type->hasPlugin($plugin_id)->willReturn($installed);
 
-      $operation_provider = $this->createOperationProvider($plugin_id, $definition, $field_ui);
+      $module_handler = $this->prophesize(ModuleHandlerInterface::class);
+      $module_handler->moduleExists('field_ui')->willReturn($field_ui);
+
+      $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+      $entity_type = $this->prophesize(EntityTypeInterface::class);
+      $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
+      $entity = $this->prophesize(GroupContentTypeInterface::class);
+      $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
+      $storage->getGroupContentTypeId(Argument::cetera())->willReturn('foobar');
+      $storage->load('foobar')->willReturn($entity->reveal());
+      $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
+
+      $operation_provider = $this->createOperationProvider($plugin_id, $definition, $module_handler->reveal(), NULL, $entity_type_manager->reveal());
       $this->assertEquals($expected, array_keys($operation_provider->getOperations($group_type->reveal())));
     }
 
@@ -59,31 +76,42 @@ namespace Drupal\Tests\group\Unit {
       $cases = [];
 
       foreach ($this->getOperationProviderScenarios() as $key => $scenario) {
-        $operation_keys = [];
+        $keys[0] = $key;
 
-        $case = $scenario;
-        $ui_allowed = !$case['definition']->isEnforced() && !$case['definition']->isCodeOnly();
+        foreach ([TRUE, FALSE] as $installed) {
+          $keys[1] = $installed ? 'installed' : 'not_installed';
 
-        if ($case['installed']) {
-          $operation_keys[] = 'configure';
-          if ($ui_allowed) {
-            $operation_keys[] = 'uninstall';
-          }
-          if ($case['field_ui']) {
-            $operation_keys[] = 'bar';
+          foreach ([TRUE, FALSE] as $field_ui) {
+            $keys[2] = $field_ui ? 'field_ui' : 'no_field_ui';
+
+            $operation_keys = [];
+
+            $case = $scenario;
+            $ui_allowed = !$case['definition']->isEnforced() && !$case['definition']->isCodeOnly();
+
+            if ($installed) {
+              $operation_keys[] = 'configure';
+              if ($ui_allowed) {
+                $operation_keys[] = 'uninstall';
+              }
+              if ($field_ui) {
+                $operation_keys[] = 'bar';
+              }
+            }
+            elseif ($ui_allowed) {
+              $operation_keys[] = 'install';
+            }
+
+            $case['expected'] = $operation_keys;
+            $case['installed'] = $installed;
+            $case['field_ui'] = $field_ui;
+            $cases[implode('-', $keys)] = $case;
           }
         }
-        elseif ($ui_allowed) {
-          $operation_keys[] = 'install';
-        }
-
-        $case['expected'] = $operation_keys;
-        $cases[$key] = $case;
       }
 
       return $cases;
     }
-
 
     /**
      * Tests the retrieval of group operations.
@@ -94,13 +122,26 @@ namespace Drupal\Tests\group\Unit {
      *   The plugin ID.
      * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface $definition
      *   The plugin definition.
+     * @param bool $has_create_permission
+     *   Whether the user can create new grouped entities.
      *
      * @covers ::getGroupOperations
      * @dataProvider getGroupOperationsProvider
      */
-    public function testGetGroupOperations($expected, $plugin_id, GroupRelationTypeInterface $definition) {
+    public function testGetGroupOperations($expected, $plugin_id, GroupRelationTypeInterface $definition, $has_create_permission) {
+      $create_permission = $this->randomMachineName();
+      $permission_provider = $this->prophesize(PermissionProviderInterface::class);
+      $permission_provider->getPermission('create', 'entity')->willReturn($create_permission);
+      $relation_type_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
+      $relation_type_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
+      $current_user = $this->prophesize(AccountProxyInterface::class)->reveal();
+      $operation_provider = $this->createOperationProvider($plugin_id, $definition, NULL, $current_user, NULL, $relation_type_manager->reveal());
+
       $group = $this->prophesize(GroupInterface::class);
-      $operation_provider = $this->createOperationProvider($plugin_id, $definition, FALSE);
+      $group->hasPermission($create_permission, $current_user)->willReturn($has_create_permission);
+      if ($has_create_permission) {
+        $group->id()->willReturn('does-not-matter-only-used-in-route');
+      }
       $this->assertEquals($expected, array_keys($operation_provider->getGroupOperations($group->reveal())));
     }
 
@@ -114,8 +155,31 @@ namespace Drupal\Tests\group\Unit {
       $cases = [];
 
       foreach ($this->getOperationProviderScenarios() as $key => $scenario) {
-        $cases[$key] = $scenario;
-        $cases[$key]['expected'] = [];
+        $keys[0] = $key;
+
+        foreach ([TRUE, FALSE] as $has_create_permission) {
+          $keys[1] = $has_create_permission ? 'has_create_perm' : 'not_has_create_perm';
+
+          foreach ([TRUE, FALSE] as $has_bundles) {
+            $keys[2] = $has_bundles ? 'has_bundles' : 'not_has_bundles';
+            $case = $scenario;
+            $case['definition'] = clone $scenario['definition'];
+
+            $operation_keys = [];
+            if ($has_create_permission) {
+              $operation_key = $case['definition']->id() . '-create';
+              if ($has_bundles) {
+                $case['definition']->set('entity_bundle', 'baz');
+                $operation_key .= '-' . $case['definition']->getEntityBundle();
+              }
+              $operation_keys[] = $operation_key;
+            }
+
+            $case['expected'] = $operation_keys;
+            $case['has_create_permission'] = $has_create_permission;
+            $cases[implode('-', $keys)] = $case;
+          }
+        }
       }
 
       return $cases;
@@ -130,34 +194,24 @@ namespace Drupal\Tests\group\Unit {
     protected function getOperationProviderScenarios() {
       $scenarios = [];
 
-      foreach ([TRUE, FALSE] as $installed) {
-        $keys[0] = $installed ? 'installed' : 'not_installed';
+      foreach ([TRUE, FALSE] as $is_enforced) {
+        $keys[0] = $is_enforced ? 'enforced' : 'not_enforced';
 
-        foreach ([TRUE, FALSE] as $field_ui) {
-          $keys[1] = $field_ui ? 'field_ui' : 'no_field_ui';
+        foreach ([TRUE, FALSE] as $is_code_only) {
+          $keys[1] = $is_code_only ? 'code_only' : 'not_code_only';
 
-          foreach ([TRUE, FALSE] as $is_enforced) {
-            $keys[2] = $is_enforced ? 'enforced' : 'not_enforced';
-
-            foreach ([TRUE, FALSE] as $is_code_only) {
-              $keys[3] = $is_code_only ? 'code_only' : 'not_code_only';
-
-              $scenarios[implode('-', $keys)] = [
-                'expected' => NULL,
-                // We use a derivative ID to prove these work.
-                'plugin_id' => 'foo:baz',
-                'definition' => new GroupRelationType([
-                  'id' => 'foo',
-                  'label' => 'Foo',
-                  'entity_type_id' => 'bar',
-                  'enforced' => $is_enforced,
-                  'code_only' => $is_code_only,
-                ]),
-                'installed' => $installed,
-                'field_ui' => $field_ui,
-              ];
-            }
-          }
+          $scenarios[implode('-', $keys)] = [
+            'expected' => NULL,
+            // We use a derivative ID to prove these work.
+            'plugin_id' => 'foo:baz',
+            'definition' => new GroupRelationType([
+              'id' => 'foo',
+              'label' => 'Foo',
+              'entity_type_id' => 'bar',
+              'enforced' => $is_enforced,
+              'code_only' => $is_code_only,
+            ]),
+          ];
         }
       }
 
@@ -170,20 +224,37 @@ namespace Drupal\Tests\group\Unit {
      * @return \Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider
      *   The default permission provider handler.
      */
-    protected function createOperationProvider($plugin_id, $definition, $field_ui) {
-      $entity = $this->prophesize(GroupContentTypeInterface::class);
-      $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
-      $storage->getGroupContentTypeId(Argument::cetera())->willReturn('foobar');
-      $storage->load('foobar')->willReturn($entity->reveal());
+    protected function createOperationProvider(
+      $plugin_id,
+      $definition,
+      ModuleHandlerInterface $module_handler = NULL,
+      AccountProxyInterface $current_user = NULL,
+      EntityTypeManagerInterface $entity_type_manager = NULL,
+      GroupRelationTypeManagerInterface $relation_type_manager = NULL
+    ) {
+      if (!isset($module_handler)) {
+        $module_handler = $this->prophesize(ModuleHandlerInterface::class)->reveal();
+      }
+      if (!isset($current_user)) {
+        $current_user = $this->prophesize(AccountProxyInterface::class)->reveal();
+      }
+      if (!isset($entity_type_manager)) {
+        $entity_type = $this->prophesize(EntityTypeInterface::class);
+        $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+        $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+        $entity_type_manager = $entity_type_manager->reveal();
+      }
+      if (!isset($relation_type_manager)) {
+        $relation_type_manager = $this->prophesize(GroupRelationTypeManagerInterface::class)->reveal();
+      }
 
-      $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
-      $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
-
-      $module_handler = $this->prophesize(ModuleHandlerInterface::class);
-      $module_handler->moduleExists('field_ui')->willReturn($field_ui);
-      $string_translation = $this->prophesize(TranslationInterface::class);
-
-      $operation_provider = new OperationProvider($entity_type_manager->reveal(), $module_handler->reveal(), $string_translation->reveal());
+      $operation_provider = new OperationProvider(
+        $module_handler,
+        $current_user,
+        $entity_type_manager,
+        $relation_type_manager,
+        $this->prophesize(TranslationInterface::class)->reveal()
+      );
       $operation_provider->init($plugin_id, $definition);
       return $operation_provider;
     }
@@ -207,4 +278,3 @@ namespace {
   }
 
 }
-

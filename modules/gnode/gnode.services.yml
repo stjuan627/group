@@ -5,10 +5,6 @@ services:
       - { name: 'event_subscriber' }
 
   # Group relation plugin handlers.
-  group.relation_handler.operation_provider.group_node:
-    class: 'Drupal\gnode\Plugin\Group\RelationHandler\GroupNodeOperationProvider'
-    arguments: ['@group.relation_handler.operation_provider', '@entity_type.manager', '@string_translation', '@current_user']
-    shared: false
   group.relation_handler.permission_provider.group_node:
     class: 'Drupal\gnode\Plugin\Group\RelationHandler\GroupNodePermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']

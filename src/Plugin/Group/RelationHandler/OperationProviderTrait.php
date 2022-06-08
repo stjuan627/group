@@ -17,8 +17,33 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
  */
 trait OperationProviderTrait {
 
-  use RelationHandlerTrait;
+  use RelationHandlerTrait {
+    init as traitInit;
+  }
   use StringTranslationTrait;
+
+  /**
+   * The entity type the plugin handler is for.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeInterface
+   */
+  protected $entityType;
+
+  /**
+   * The plugin's permission provider.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface
+   */
+  protected $permissionProvider;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function init($plugin_id, GroupRelationTypeInterface $group_relation_type) {
+    $this->traitInit($plugin_id, $group_relation_type);
+    $this->entityType = $this->entityTypeManager()->getDefinition($group_relation_type->getEntityTypeId());
+    $this->permissionProvider = $this->groupRelationTypeManager()->getPermissionProvider($plugin_id);
+  }
 
   /**
    * {@inheritdoc}
