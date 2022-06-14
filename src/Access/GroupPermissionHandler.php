@@ -114,14 +114,14 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    */
   public function getPermissions($include_plugins = FALSE) {
     $plugins = $include_plugins ? iterator_to_array($this->pluginManager->getAll()) : [];
-    return $this->getPermissionsWithPlugins($plugins);
+    return $this->getPermissionsIncludingPlugins($plugins);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPermissionsByGroupType(GroupTypeInterface $group_type) {
-    return $this->getPermissionsWithPlugins(iterator_to_array($group_type->getInstalledContentPlugins()));
+    return $this->getPermissionsIncludingPlugins(iterator_to_array($group_type->getInstalledContentPlugins()));
   }
 
   /**
@@ -133,7 +133,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    * @return array
    *   The permission list, structured as specified by ::getPermissions().
    */
-  protected function getPermissionsWithPlugins(array $plugins) {
+  protected function getPermissionsIncludingPlugins(array $plugins) {
     $all_permissions = $this->buildPermissionsYaml();
 
     /** @var \Drupal\group\Plugin\GroupContentEnablerInterface $plugin */
