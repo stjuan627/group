@@ -45,11 +45,14 @@ class GroupPermissionChecker implements GroupPermissionCheckerInterface {
   public function hasPermissionInGroup($permission, AccountInterface $account, GroupInterface $group) {
     $calculated_permissions = $this->groupPermissionCalculator->calculateFullPermissions($account);
 
+    // First check if anything gave the user individual access to the group.
+    $item = $calculated_permissions->getItem(PermissionScopeInterface::INDIVIDUAL_ID, $group->id());
+    if ($item && $item->hasPermission($permission)) {
+      return TRUE;
+    }
+
+    // Then check their synchronized access depending on if they are a member.
     if ($this->groupMembershipLoader->load($group, $account)) {
-      $item = $calculated_permissions->getItem(PermissionScopeInterface::INDIVIDUAL_ID, $group->id());
-      if ($item && $item->hasPermission($permission)) {
-        return TRUE;
-      }
       $item = $calculated_permissions->getItem(PermissionScopeInterface::INSIDER_ID, $group->bundle());
     }
     else {
