@@ -172,6 +172,17 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
   public function getInstalledIds(GroupTypeInterface $group_type);
 
   /**
+   * Returns the ID of all plugins that deal with a given entity type.
+   *
+   * @param string $entity_type_id
+   *   The entity type ID.
+   *
+   * @return string[]
+   *   The plugin IDs.
+   */
+  public function getPluginIdsByEntityTypeId($entity_type_id);
+
+  /**
    * Returns the ID of all plugins that define access for a given entity type.
    *
    * @param string $entity_type_id

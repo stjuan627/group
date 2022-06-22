@@ -89,20 +89,12 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
    * {@inheritdoc}
    */
   public function loadByEntityTypeId($entity_type_id) {
-    $plugin_ids = [];
-
     if (isset($this->byEntityTypeCache[$entity_type_id])) {
       return $this->byEntityTypeCache[$entity_type_id];
     }
 
-    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      assert($group_relation_type instanceof GroupRelationTypeInterface);
-      if ($group_relation_type->getEntityTypeId() === $entity_type_id) {
-        $plugin_ids[] = $plugin_id;
-      }
-    }
-
-    // If no responsible group relations were found, we return nothing.
+    // If no responsible group relation types were found, we return nothing.
+    $plugin_ids = $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
     if (empty($plugin_ids)) {
       $this->byEntityTypeCache[$entity_type_id] = [];
       return [];

@@ -4,8 +4,11 @@ namespace Drupal\group\Entity\Storage;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the storage handler class for group content entities.
@@ -14,6 +17,13 @@ use Drupal\group\Entity\GroupInterface;
  * loading group content entities based on group and plugin information.
  */
 class GroupContentStorage extends SqlContentEntityStorage implements GroupContentStorageInterface {
+
+  /**
+   * The group relation type manager.
+   *
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
+   */
+  protected $pluginManager;
 
   /**
    * Static cache for looking up group content entities for groups.
@@ -35,6 +45,15 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
    * @var array
    */
   protected $loadByPluginCache = [];
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->pluginManager = $container->get('group_relation_type.manager');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -124,16 +143,20 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     $entity_type_id = $entity->getEntityTypeId();
     $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
-      $query = $this->database
-        ->select($this->dataTable, 'd')
-        ->fields('d', ['id'])
-        ->condition('entity_id', $entity_id);
+      $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
 
-      if ($plugin_id) {
-        $query->condition('plugin_id', $plugin_id);
+      $result = [];
+      if (!empty($plugin_ids)) {
+        $result = $this->database
+          ->select($this->dataTable, 'd')
+          ->fields('d', ['id'])
+          ->condition('entity_id', $entity_id)
+          ->condition('plugin_id', $plugin_ids, 'IN')
+          ->execute()
+          ->fetchCol();
       }
 
-      $this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key] = $query->execute()->fetchCol();
+      $this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key] = $result;
     }
 
     if (!empty($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {

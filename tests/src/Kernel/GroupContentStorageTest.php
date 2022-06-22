@@ -198,9 +198,16 @@ class GroupContentStorageTest extends GroupKernelTestBase {
    * @covers ::loadByEntity
    */
   public function testLoadByEntity() {
-    $this->createGroup(['type' => $this->groupType->id()]);
+    $group_a = $this->createGroup(['type' => $this->groupType->id()]);
+    $group_b = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
     $account = $this->getCurrentUser();
-    $this->assertCount(1, $this->storage->loadByEntity($account), 'Managed to load the group creator membership by user.');
+
+    // Both entities should have ID 2 to test
+    $this->assertSame($group_b->id(), $account->id());
+
+    // Add the group as content so we can verify only the user is returned.
+    $group_a->addContent($group_b, 'group_as_content');
+    $this->assertCount(2, $this->storage->loadByEntity($account), 'Managed to load the group creator memberships by user.');
   }
 
   /**
