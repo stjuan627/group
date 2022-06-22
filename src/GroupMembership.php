@@ -10,6 +10,8 @@ use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
  * Wrapper class for a GroupContent entity representing a membership.
  *
  * Should be loaded through the 'group.membership_loader' service.
+ *
+ * @todo Consider refactoring, e.g.: getRoles() seems pointless.
  */
 class GroupMembership implements CacheableDependencyInterface {
 
@@ -70,13 +72,17 @@ class GroupMembership implements CacheableDependencyInterface {
   /**
    * Returns the group roles for the membership.
    *
+   * @param boolean $include_synchronized
+   *   (optional) Whether to include the synchronized roles from the outsider or
+   *   insider scope. Defaults to TRUE.
+   *
    * @return \Drupal\group\Entity\GroupRoleInterface[]
    *   An array of group roles, keyed by their ID.
    */
-  public function getRoles() {
+  public function getRoles($include_synchronized = TRUE) {
     $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
     assert($group_role_storage instanceof GroupRoleStorageInterface);
-    return $group_role_storage->loadByUserAndGroup($this->getUser(), $this->getGroup());
+    return $group_role_storage->loadByUserAndGroup($this->getUser(), $this->getGroup(), $include_synchronized);
   }
 
   /**

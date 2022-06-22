@@ -4,6 +4,7 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\flexible_permissions\CalculatedPermissionsInterface;
 use Drupal\group\PermissionScopeInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the calculation of individual group permissions.
@@ -44,6 +45,14 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
         'view group',
         'leave group',
       ],
+    ]);
+
+    // Also create a member role to see if it's ignored.
+    $this->createGroupRole([
+      'group_type' => $group_type->id(),
+      'scope' => PermissionScopeInterface::INSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
+      'permissions' => ['delete group'],
     ]);
 
     $account = $this->createUser();
