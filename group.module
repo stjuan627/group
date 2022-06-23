@@ -8,6 +8,7 @@
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -47,6 +48,36 @@ function group_element_info_alter(array &$types) {
   if (isset($types['toolbar'])) {
     $types['toolbar']['#attached']['library'][] = 'group/toolbar';
   }
+}
+
+/**
+ * Implements hook_entity_bundle_info().
+ */
+function group_entity_bundle_info() {
+  $plugin_manager = _group_relation_type_manager();
+  $installed_ids = array_unique(array_merge(...array_values($plugin_manager->getGroupTypePluginMap())));
+  $installed_ids = array_combine($installed_ids, $installed_ids);
+
+  $installed_config_entity_types = [];
+  foreach (array_intersect_key($plugin_manager->getDefinitions(), $installed_ids) as $group_relation_type) {
+    if ($config_entity_type_id = $group_relation_type->getConfigEntityTypeId()) {
+      $installed_config_entity_types[$config_entity_type_id] = $config_entity_type_id;
+    }
+  }
+
+  $config_entity_types = [];
+  foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type_id => $entity_type) {
+    if ($entity_type->entityClassImplements(ConfigEntityInterface::class)) {
+      $config_entity_types[$entity_type_id] = $entity_type->getLabel();
+    }
+  }
+
+  $bundles = [];
+  foreach (array_intersect_key($config_entity_types, $installed_config_entity_types) as $entity_type_id => $entity_type_label) {
+    $bundles['group_config_wrapper'][$entity_type_id]['label'] = $entity_type_label;
+  }
+
+  return $bundles;
 }
 
 /**

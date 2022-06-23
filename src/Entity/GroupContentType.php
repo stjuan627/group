@@ -173,6 +173,8 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
     parent::postSave($storage, $update);
 
     if (!$update) {
+      $plugin_manager = $this->getGroupRelationTypeManager();
+
       // When a new GroupContentType is saved, we clear the views data cache to
       // make sure that all of the views data which relies on group content
       // types is up to date.
@@ -181,14 +183,20 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       }
 
       // Run the post install tasks on the plugin.
-      $post_install_handler = $this->getGroupRelationTypeManager()->getPostInstallHandler($this->getPluginId());
+      $post_install_handler = $plugin_manager->getPostInstallHandler($this->getPluginId());
       $task_arguments = [$this, \Drupal::isConfigSyncing()];
       foreach ($post_install_handler->getInstallTasks() as $task) {
         call_user_func_array($task, $task_arguments);
       }
 
       // We need to reset the plugin ID map cache as it will be out of date now.
-      $this->getGroupRelationTypeManager()->clearCachedPluginMaps();
+      $plugin_manager->clearCachedPluginMaps();
+
+      // If the plugin handles config entities, it might affect the available
+      // bundles for ConfigWrapper, so we need to clear the bundle info cache.
+      if ($plugin_manager->getDefinition($this->getPluginId())->handlesConfigEntityType()) {
+        \Drupal::service('entity_type.bundle.info')->clearCachedBundles();
+      }
     }
   }
 

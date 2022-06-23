@@ -61,6 +61,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $expected += count($this->pluginManager->getPermissionProvider('user_as_content')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:article')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:page')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('node_type_as_content')->buildPermissions());
     $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml file and defined by plugins.');
   }
 

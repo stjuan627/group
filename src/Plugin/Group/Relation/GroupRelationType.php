@@ -215,6 +215,23 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   /**
    * {@inheritdoc}
    */
+  public function handlesConfigEntityType() {
+    return $this->getEntityTypeId() === 'group_config_wrapper';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConfigEntityTypeId() {
+    if ($this->handlesConfigEntityType()) {
+      return $this->getEntityBundle();
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function definesEntityAccess() {
     return $this->entity_access;
   }

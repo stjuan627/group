@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
@@ -18,7 +19,20 @@ class ConfigWrapperTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test', 'node'];
+  public static $modules = ['group_test_plugin', 'node'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp() {
+    parent::setUp();
+    $this->installEntitySchema('node');
+
+    // Install the node type handling plugin on a group type.
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
+    $storage->save($storage->createFromPlugin($this->createGroupType(), 'node_type_as_content'));
+  }
 
   /**
    * Tests the wrapped config entity getter.
@@ -51,7 +65,7 @@ class ConfigWrapperTest extends GroupKernelTestBase {
    * @param array $values
    *   (optional) The values used to create the entity.
    *
-   * @return \Drupal\group\Entity\ConfigWrapper
+   * @return \Drupal\group\Entity\ConfigWrapperInterface
    *   The created config wrapper entity.
    */
   protected function createConfigWrapper(array $values = []) {
