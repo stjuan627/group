@@ -5,6 +5,7 @@ namespace Drupal\Tests\group\Kernel\QueryAlter;
 use Drupal\Core\Render\RenderContext;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\Tests\group\Kernel\GroupKernelTestBase;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
  * Tests grouped entities query access cacheability.
@@ -13,6 +14,8 @@ use Drupal\Tests\group\Kernel\GroupKernelTestBase;
  * @group group
  */
 class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -105,25 +108,6 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
     $node->enforceIsNew();
     $this->storage->save($node);
     return $node;
-  }
-
-  /**
-   * Creates a node type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\node\Entity\NodeType
-   *   The created node type entity.
-   */
-  protected function createNodeType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('node_type');
-    $node_type = $storage->create($values + [
-      'type' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($node_type);
-    return $node_type;
   }
 
 }

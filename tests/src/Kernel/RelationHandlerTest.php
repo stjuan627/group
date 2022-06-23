@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
  * Tests that relation handlers work as expected.
@@ -13,6 +14,8 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  * @group group
  */
 class RelationHandlerTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -50,25 +53,6 @@ class RelationHandlerTest extends GroupKernelTestBase {
     $message = "Test entity plugin also has bazfoo appended, proving decoration_priority is respected within specific alters";
     $expected = 'administer entity_test_as_content' . 'foobar' . 'bazfoo';
     $this->assertSame($expected, $relation_manager->getPermissionProvider('entity_test_as_content')->getAdminPermission(), $message);
-  }
-
-  /**
-   * Creates a node type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\node\Entity\NodeType
-   *   The created node type entity.
-   */
-  protected function createNodeType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('node_type');
-    $node_type = $storage->create($values + [
-        'type' => $this->randomMachineName(),
-        'label' => $this->randomString(),
-      ]);
-    $storage->save($node_type);
-    return $node_type;
   }
 
 }

@@ -6,6 +6,7 @@ use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\PermissionScopeInterface;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 use Drupal\user\RoleInterface;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @group group
  */
 class GroupContentCreateAccessTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -324,25 +327,6 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     // Push the request to the request stack so `current_route_match` works.
     $this->container->get('request_stack')->push($request);
     return $request;
-  }
-
-  /**
-   * Creates a node type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\node\Entity\NodeType
-   *   The created node type entity.
-   */
-  protected function createNodeType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('node_type');
-    $node_type = $storage->create($values + [
-      'type' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($node_type);
-    return $node_type;
   }
 
 }

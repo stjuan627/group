@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel\QueryAlter;
 
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
  * Tests that Group properly checks access for "complex" grouped entities.
@@ -15,6 +16,8 @@ use Drupal\group\Entity\GroupTypeInterface;
  * @group group
  */
 class EntityQueryAlterComplexTest extends EntityQueryAlterTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -76,25 +79,6 @@ class EntityQueryAlterComplexTest extends EntityQueryAlterTestBase {
     $node->enforceIsNew();
     $storage->save($node);
     return $node;
-  }
-
-  /**
-   * Creates a node type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\node\Entity\NodeType
-   *   The created node type entity.
-   */
-  protected function createNodeType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('node_type');
-    $node_type = $storage->create($values + [
-      'type' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($node_type);
-    return $node_type;
   }
 
 }
