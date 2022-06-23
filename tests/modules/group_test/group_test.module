@@ -15,3 +15,14 @@ function group_test_user_update(UserInterface $user) {
     $user->setChangedTime(530496000)->save();
   }
 }
+
+/**
+ * Implements hook_entity_bundle_info().
+ */
+function group_test_entity_bundle_info() {
+  $bundles = [];
+  if (\Drupal::moduleHandler()->moduleExists('node')) {
+    $bundles['group_config_wrapper']['node_type']['label'] = t('Node type');
+  }
+  return $bundles;
+}

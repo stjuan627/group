@@ -249,3 +249,14 @@ function group_update_9207() {
     $group_content_type->save(TRUE);
   }
 }
+
+/**
+ * Introduce the group_config_wrapper entity type.
+ */
+function group_update_9208() {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  if (!$definition_update_manager->getEntityType('group_config_wrapper')) {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition('group_config_wrapper');
+    $definition_update_manager->installEntityType($entity_type);
+  }
+}

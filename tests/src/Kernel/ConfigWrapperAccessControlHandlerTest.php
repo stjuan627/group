@@ -1,0 +1,62 @@
+<?php
+
+namespace Drupal\Tests\group\Kernel;
+
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
+
+/**
+ * Tests the general access behavior of config wrapper entities.
+ *
+ * @coversDefaultClass \Drupal\group\Entity\Access\ConfigWrapperAccessControlHandler
+ * @group group
+ */
+class ConfigWrapperAccessControlHandlerTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static $modules = ['group_test', 'node'];
+
+  /**
+   * Tests that any operation is denied.
+   *
+   * @param string $operation
+   *   The operation to test.
+   *
+   * @covers ::checkAccess
+   * @dataProvider operationAccessProvider
+   */
+  public function testOperationAccess($operation) {
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_config_wrapper');
+    $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+    $wrapper = $storage->create(['bundle' => 'node_type', 'entity_id' => $this->createNodeType()->id()]);
+    $this->assertFalse($access_control_handler->access($wrapper, $operation));
+  }
+
+  /**
+   * Data provider for testOperationAccess().
+   *
+   * @return array
+   *   A list of testOperationAccess method arguments.
+   */
+  public function operationAccessProvider() {
+    $cases = [];
+    foreach (['view', 'update', 'delete', 'anything_really'] as $operation) {
+      $cases[$operation] = [$operation];
+    }
+    return $cases;
+  }
+
+  /**
+   * Tests that the create operation is denied.
+   *
+   * @covers ::checkCreateAccess
+   */
+  public function testCreateAccess() {
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_config_wrapper');
+    $this->assertFalse($access_control_handler->createAccess('node_type'));
+  }
+
+}
