@@ -22,6 +22,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   ),
  *   handlers = {
  *     "access" = "Drupal\group\Entity\Access\ConfigWrapperAccessControlHandler",
+ *     "storage" = "Drupal\group\Entity\Storage\ConfigWrapperStorage",
  *     "storage_schema" = "Drupal\group\Entity\Storage\ConfigWrapperStorageSchema",
  *   },
  *   base_table = "group_config_wrapper",
