@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Entity\Storage;
 
-use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -58,7 +58,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function createForEntityInGroup(ContentEntityInterface $entity, GroupInterface $group, $plugin_id, $values = []) {
+  public function createForEntityInGroup(EntityInterface $entity, GroupInterface $group, $plugin_id, $values = []) {
     // An unsaved entity cannot have any group content.
     if ($entity->id() === NULL) {
       throw new EntityStorageException("Cannot add an unsaved entity to a group.");
@@ -81,6 +81,13 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
       if ($entity->bundle() != $supported_bundle) {
         throw new EntityStorageException("The provided plugin provided does not support the entity's bundle.");
       }
+    }
+
+    // If the entity is config, we need to use the wrapper for it.
+    if ($group_relation_type->handlesConfigEntityType()) {
+      $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+      assert($storage instanceof ConfigWrapperStorageInterface);
+      $entity = $storage->wrapEntity($entity);
     }
 
     $storage = $this->entityTypeManager->getStorage('group_content_type');
@@ -133,7 +140,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function loadByEntity(ContentEntityInterface $entity, $plugin_id = NULL) {
+  public function loadByEntity(EntityInterface $entity, $plugin_id = NULL) {
     // An unsaved entity cannot have any group content.
     $entity_id = $entity->id();
     if ($entity_id === NULL) {
@@ -144,6 +151,13 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
       $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
+
+      // If the entity is config, we need to use the wrapper for it.
+      if ($entity instanceof ConfigEntityInterface) {
+        $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+        assert($storage instanceof ConfigWrapperStorageInterface);
+        $entity_id = $storage->wrapEntity($entity)->id();
+      }
 
       $result = [];
       if (!empty($plugin_ids)) {

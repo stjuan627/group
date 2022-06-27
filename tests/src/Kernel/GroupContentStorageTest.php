@@ -3,7 +3,9 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
  * Tests the behavior of group content storage handler.
@@ -12,6 +14,8 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
  * @group group
  */
 class GroupContentStorageTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -46,6 +50,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
     assert($storage instanceof GroupContentTypeStorageInterface);
     $storage->createFromPlugin($this->groupType, 'user_as_content')->save();
     $storage->createFromPlugin($this->groupType, 'group_as_content')->save();
+    $storage->createFromPlugin($this->groupType, 'node_type_as_content')->save();
   }
 
   /**
@@ -163,6 +168,24 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests the creation of a GroupContent entity using a config entity.
+   *
+   * @covers ::createForEntityInGroup
+   */
+  public function testCreateForConfig() {
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $node_type = $this->createNodeType();
+
+    $group_content = $this->storage->createForEntityInGroup($node_type, $group, 'node_type_as_content');
+    $this->assertInstanceOf('\Drupal\group\Entity\GroupContentInterface', $group_content, 'Created a GroupContent entity using a config handling plugin.');
+
+    $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+    assert($storage instanceof ConfigWrapperStorageInterface);
+    $wrapper = $storage->wrapEntity($node_type);
+    $this->assertSame($wrapper->id(), $group_content->get('entity_id')->target_id);
+  }
+
+  /**
    * Tests the loading of GroupContent entities for an unsaved group.
    *
    * @covers ::loadByGroup
@@ -193,11 +216,11 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   }
 
   /**
-   * Tests the loading of GroupContent entities for an entity.
+   * Tests the loading of GroupContent entities for a content entity.
    *
    * @covers ::loadByEntity
    */
-  public function testLoadByEntity() {
+  public function testLoadByContentEntity() {
     $group_a = $this->createGroup(['type' => $this->groupType->id()]);
     $group_b = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
     $account = $this->getCurrentUser();
@@ -208,6 +231,25 @@ class GroupContentStorageTest extends GroupKernelTestBase {
     // Add the group as content so we can verify only the user is returned.
     $group_a->addContent($group_b, 'group_as_content');
     $this->assertCount(2, $this->storage->loadByEntity($account), 'Managed to load the group creator memberships by user.');
+  }
+
+  /**
+   * Tests the loading of GroupContent entities for a config entity.
+   *
+   * @covers ::loadByEntity
+   */
+  public function testLoadByConfigEntity() {
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $node_type = $this->createNodeType();
+    $group->addRelationship($node_type, 'node_type_as_content');
+
+    $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+    assert($storage instanceof ConfigWrapperStorageInterface);
+    $wrapper = $storage->wrapEntity($node_type);
+
+    $group_contents = $this->storage->loadByEntity($node_type);
+    $this->assertCount(1, $group_contents, 'Managed to load the grouped node types by node type.');
+    $this->assertSame($wrapper->id(), reset($group_contents)->get('entity_id')->target_id);
   }
 
   /**

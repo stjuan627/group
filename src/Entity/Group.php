@@ -4,6 +4,7 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Entity\EditorialContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -151,9 +152,18 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []) {
+    @trigger_error('Group::addContent() is deprecated in group:2.0.0 and is removed from group:3.0.0. Instead you should use Group::addRelationship(). See https://www.drupal.org/node/3292844', E_USER_DEPRECATED);
+    $this->addRelationship($entity, $plugin_id, $values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addRelationship(EntityInterface $entity, $plugin_id, $values = []) {
     $storage = $this->groupContentStorage();
     $group_content = $storage->createForEntityInGroup($entity, $this, $plugin_id, $values);
     $storage->save($group_content);
+    return $group_content;
   }
 
   /**
@@ -166,12 +176,8 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function getContentByEntityId($plugin_id, $id) {
-    return $this->groupContentStorage()->loadByProperties([
-      'gid' => $this->id(),
-      'plugin_id' => $plugin_id,
-      'entity_id' => $id,
-    ]);
+  public function getContentByEntity(EntityInterface $entity, $plugin_id = NULL) {
+    return $this->groupContentStorage()->loadByEntity($entity, $plugin_id);
   }
 
   /**

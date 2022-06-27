@@ -115,7 +115,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
     // Enforce the entity cardinality if it's not set to unlimited.
     if ($entity_cardinality > 0) {
       // Get the current instances of this content entity in the group.
-      $entity_instances = $group->getContentByEntityId($plugin->getRelationTypeId(), $entity->id());
+      $entity_instances = $group->getContentByEntity($entity, $plugin->getRelationTypeId());
       $entity_count = count($entity_instances);
 
       // If the current group content entity has an ID, exclude that one.

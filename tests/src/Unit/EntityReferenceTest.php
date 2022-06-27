@@ -56,4 +56,28 @@ class EntityReferenceTest extends UnitTestCase {
     $this->assertEquals(['target_bundles' => [$group_relation_type->getEntityBundle()]], $base_field_definition->getSetting('handler_settings'));
   }
 
+  /**
+   * Tests the field modifier.
+   *
+   * @covers ::configureField
+   */
+  public function testConfigureFieldForConfig() {
+    $base_field_definition = BaseFieldDefinition::create('entity_reference');
+    $group_relation_type = new GroupRelationType([
+      'reference_label' => 'orange',
+      'reference_description' => 'cherry',
+      'entity_type_id' => 'banana',
+      'config_entity_type' => TRUE,
+    ]);
+
+    $entity_reference_handler = new EntityReference();
+    $entity_reference_handler->init('foo', $group_relation_type);
+    $entity_reference_handler->configureField($base_field_definition);
+
+    $this->assertEquals($group_relation_type->getEntityReferenceLabel(), $base_field_definition->getLabel());
+    $this->assertEquals($group_relation_type->getEntityReferenceDescription(), $base_field_definition->getDescription());
+    $this->assertEquals('group_config_wrapper', $base_field_definition->getSetting('target_type'));
+    $this->assertEquals(['target_bundles' => [$group_relation_type->getEntityTypeId()]], $base_field_definition->getSetting('handler_settings'));
+  }
+
 }

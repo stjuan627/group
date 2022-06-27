@@ -2,8 +2,8 @@
 
 namespace Drupal\group\Entity\Storage;
 
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -12,12 +12,12 @@ use Drupal\group\Entity\GroupInterface;
 interface GroupContentStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Creates a GroupContent entity for placing a content entity in a group.
+   * Creates a GroupContent entity for placing an entity in a group.
    *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   The content entity to add to the group.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to add to the group.
    * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group to add the content entity to.
+   *   The group to add the entity to.
    * @param string $plugin_id
    *   The group relation type ID to add the entity with.
    * @param array $values
@@ -26,7 +26,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * @return \Drupal\group\Entity\GroupContentInterface
    *   A new GroupContent entity.
    */
-  public function createForEntityInGroup(ContentEntityInterface $entity, GroupInterface $group, $plugin_id, $values = []);
+  public function createForEntityInGroup(EntityInterface $entity, GroupInterface $group, $plugin_id, $values = []);
 
   /**
    * Retrieves all GroupContent entities for a group.
@@ -44,7 +44,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
   /**
    * Retrieves all GroupContent entities that represent a given entity.
    *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   An entity which may be within one or more groups.
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
@@ -52,7 +52,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   A list of GroupContent entities which refer to the given entity.
    */
-  public function loadByEntity(ContentEntityInterface $entity, $plugin_id = NULL);
+  public function loadByEntity(EntityInterface $entity, $plugin_id = NULL);
 
   /**
    * Retrieves all GroupContent entities by their responsible plugin ID.

@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
@@ -42,8 +43,28 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param array $values
    *   (optional) Extra values to add to the group content relationship. You
    *   cannot overwrite the group ID (gid) or entity ID (entity_id).
+   *
+   * @deprecated in group:2.0.0 and is removed from group:3.0.0.
+   *   Instead you should use Group::addRelationship().
+   * @see https://www.drupal.org/node/3292844
    */
   public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []);
+
+  /**
+   * Adds an entity to a group.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to add to the group.
+   * @param string $plugin_id
+   *   The group relation type ID to add the entity with.
+   * @param array $values
+   *   (optional) Extra values to add to the group relationship. You cannot
+   *   overwrite the group ID (gid) or entity ID (entity_id).
+   *
+   * @return \Drupal\group\Entity\GroupContentInterface
+   *   The GroupContent entity for the newly added relationship.
+   */
+  public function addRelationship(EntityInterface $entity, $plugin_id, $values = []);
 
   /**
    * Retrieves all GroupContent entities for the group.
@@ -57,17 +78,17 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getContent($plugin_id = NULL);
 
   /**
-   * Retrieves all GroupContent entities for a specific entity.
+   * Retrieves all GroupContent entities for a specific entity in the group.
    *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to load the GroupContent entities for in the group.
    * @param string $plugin_id
-   *   A group relation type ID to filter on.
-   * @param int $id
-   *   The ID of the entity to retrieve the GroupContent entities for.
+   *   (optional) A group relation type ID to filter on.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
    *   A list of GroupContent entities matching the criteria.
    */
-  public function getContentByEntityId($plugin_id, $id);
+  public function getContentByEntity(EntityInterface $entity, $plugin_id = NULL);
 
   /**
    * Retrieves all group content for the group.

@@ -3,7 +3,9 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\group\Entity\GroupContent;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
  * Tests for the GroupContent entity.
@@ -13,6 +15,8 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
  * @coversDefaultClass \Drupal\group\Entity\GroupContent
  */
 class GroupContentTest extends GroupKernelTestBase {
+
+  use NodeTypeCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -86,11 +90,35 @@ class GroupContentTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests the retrieval of the grouped entity.
+   */
+  public function testGetEntity() {
+    // Create a group type and enable adding users and node types as content.
+    $group_type = $this->createGroupType();
+
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
+    $storage->createFromPlugin($group_type, 'user_as_content')->save();
+    $storage->createFromPlugin($group_type, 'node_type_as_content')->save();
+    $group = $this->createGroup(['type' => $group_type->id()]);
+
+    $account = $this->createUser();
+    $group_content = $group->addRelationship($account, 'user_as_content');
+    $this->assertEquals($account->id(), $group_content->getEntity()->id());
+    $this->assertEquals('user', $group_content->getEntity()->getEntityTypeId());
+
+    $node_type = $this->createNodeType();
+    $group_content = $group->addRelationship($node_type, 'node_type_as_content');
+    $this->assertEquals('node_type', $group_content->getEntity()->getEntityTypeId());
+    $this->assertEquals($node_type->id(), $group_content->getEntity()->id());
+  }
+
+  /**
    * Tests that custom list cache tags are properly invalidated.
    *
    * @covers ::getListCacheTagsToInvalidate
    */
-  public function testGetCacheTagsToInvalidate() {
+  public function testListCacheTagInvalidation() {
     $cache = \Drupal::cache();
 
     // Create a group type and enable adding users as content.
@@ -174,6 +202,38 @@ class GroupContentTest extends GroupKernelTestBase {
     $this->assertFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin cleared.');
     $this->assertFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin cleared.');
     $this->assertFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin cleared.');
+  }
+
+  /**
+   * Tests that custom list cache tags are properly set for config entities.
+   *
+   * @covers ::getListCacheTagsToInvalidate
+   * @depends testListCacheTagInvalidation
+   */
+  public function testGetListCacheTagsToInvalidateForConfig() {
+    // Create a group type and enable adding node types as content.
+    $group_type = $this->createGroupType();
+
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupContentTypeStorageInterface);
+    $storage->createFromPlugin($group_type, 'node_type_as_content')->save();
+
+    $group = $this->createGroup(['type' => $group_type->id()]);
+    $node_type = $this->createNodeType();
+
+    $group_content = $group->addRelationship($node_type, 'node_type_as_content');
+    $expected = [
+      'group_content_list',
+      'group_content_list:' . $group_content->bundle(),
+      'group_content_list:group:' . $group->id(),
+      'group_content_list:entity:' . $node_type->id(),
+      'group_content_list:plugin:node_type_as_content',
+      'group_content_list:plugin:node_type_as_content:group:' . $group->id(),
+      'group_content_list:plugin:node_type_as_content:entity:' . $node_type->id(),
+    ];
+    // We can call this method because we made it public.
+    assert($group_content instanceof GroupContent);
+    $this->assertSame($expected, $group_content->getListCacheTagsToInvalidate());
   }
 
 }
