@@ -60,7 +60,8 @@ function group_entity_bundle_info() {
 
   $installed_config_entity_types = [];
   foreach (array_intersect_key($plugin_manager->getDefinitions(), $installed_ids) as $group_relation_type) {
-    if ($config_entity_type_id = $group_relation_type->getConfigEntityTypeId()) {
+    if ($group_relation_type->handlesConfigEntityType()) {
+      $config_entity_type_id = $group_relation_type->getEntityTypeId();
       $installed_config_entity_types[$config_entity_type_id] = $config_entity_type_id;
     }
   }

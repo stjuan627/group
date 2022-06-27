@@ -17,7 +17,7 @@ class GroupContentTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test', 'group_test_plugin'];
+  public static $modules = ['group_test', 'group_test_plugin', 'node'];
 
   /**
    * Tests that entity url templates are functional.

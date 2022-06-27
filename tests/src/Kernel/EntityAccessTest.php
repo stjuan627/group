@@ -16,7 +16,7 @@ class EntityAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin'];
+  public static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The test entity storage to use in testing.

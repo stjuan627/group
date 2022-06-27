@@ -68,6 +68,15 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $entity_bundle = FALSE;
 
   /**
+   * (optional) Whether the supported entity type is config.
+   *
+   * This will be determined by the plugin manager, no need to set it.
+   *
+   * @var bool
+   */
+  protected $config_entity_type = FALSE;
+
+  /**
    * (optional) Whether the plugin defines entity access.
    *
    * This controls whether you can create entities within the group (TRUE) or
@@ -216,17 +225,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    * {@inheritdoc}
    */
   public function handlesConfigEntityType() {
-    return $this->getEntityTypeId() === 'group_config_wrapper';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getConfigEntityTypeId() {
-    if ($this->handlesConfigEntityType()) {
-      return $this->getEntityBundle();
-    }
-    return FALSE;
+    return $this->config_entity_type;
   }
 
   /**

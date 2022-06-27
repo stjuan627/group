@@ -103,14 +103,6 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
   public function handlesConfigEntityType();
 
   /**
-   * Returns the config entity type ID this plugin deals with, if any.
-   *
-   * @return string|false
-   *   The config entity type ID this plugin deals with, if any.
-   */
-  public function getConfigEntityTypeId();
-
-  /**
    * Returns whether this plugin defines entity access.
    *
    * @return bool

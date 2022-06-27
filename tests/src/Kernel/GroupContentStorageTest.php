@@ -16,7 +16,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin'];
+  public static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The group content storage handler.

@@ -5,6 +5,7 @@ namespace Drupal\group\Plugin\Group\Relation;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
@@ -125,13 +126,18 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function processDefinition(&$definition, $plugin_id) {
     parent::processDefinition($definition, $plugin_id);
-
     assert($definition instanceof GroupRelationTypeInterface);
-    if ($definition->getEntityTypeId() === 'group_content') {
+
+    $entity_type_id = $definition->getEntityTypeId();
+    if ($entity_type_id === 'group_content') {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_content entities, which is simply not possible.', $plugin_id));
     }
-    elseif ($definition->definesEntityAccess() && $definition->getEntityTypeId() === 'group') {
+    elseif ($definition->definesEntityAccess() && $entity_type_id === 'group') {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin defines entity access over group entities. This should be dealt with by altering the group permissions of the current user.', $plugin_id));
+    }
+
+    if ($this->entityTypeManager->getDefinition($entity_type_id)->entityClassImplements(ConfigEntityInterface::class)) {
+      $definition->set('config_entity_type', TRUE);
     }
   }
 

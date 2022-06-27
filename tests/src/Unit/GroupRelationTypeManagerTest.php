@@ -6,8 +6,10 @@ use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
@@ -120,6 +122,10 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
     $this->discovery->getDefinitions()->willReturn($definitions);
 
     foreach ($definitions as $definition) {
+      $entity_type = $this->prophesize(EntityTypeInterface::class);
+      $entity_type->entityClassImplements(ConfigEntityInterface::class)->willReturn(FALSE);
+      $this->entityTypeManager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
+
       foreach ($handlers as $handler_name => $class_name) {
         $service_name = "group.relation_handler.$handler_name.{$definition->id()}";
         if ($class_name === FALSE) {
@@ -180,6 +186,33 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "some_plugin" plugin tries to group group_content entities, which is simply not possible.');
     $this->groupRelationTypeManager->getDefinitions();
+  }
+
+  /**
+   * Tests that definitions are flagged as serving config entity types.
+   *
+   * @covers ::processDefinition
+   */
+  public function testFlagDefinitionAsConfig() {
+    $this->setUpPluginDefinitions([
+      'some_content_plugin' => (new GroupRelationType([
+        'id' => 'some_content_plugin',
+        'entity_type_id' => 'some_content_entity_type',
+      ]))->setClass(GroupRelationTypeInterface::class),
+      'some_config_plugin' => (new GroupRelationType([
+        'id' => 'setClass',
+        'entity_type_id' => 'some_config_entity_type',
+      ]))->setClass(GroupRelationTypeInterface::class),
+    ]);
+
+    $entity_type = $this->prophesize(EntityTypeInterface::class);
+    $entity_type->entityClassImplements(ConfigEntityInterface::class)->willReturn(TRUE);
+    $this->entityTypeManager->getDefinition('some_config_entity_type')->willReturn($entity_type->reveal());
+
+    $definition = $this->groupRelationTypeManager->getDefinition('some_content_plugin');
+    $this->assertFalse($definition->handlesConfigEntityType());
+    $definition = $this->groupRelationTypeManager->getDefinition('some_config_plugin');
+    $this->assertTrue($definition->handlesConfigEntityType());
   }
 
   /**
