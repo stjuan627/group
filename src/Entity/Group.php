@@ -118,16 +118,6 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   }
 
   /**
-   * Gets the group role storage.
-   *
-   * @return \Drupal\group\Entity\Storage\GroupRoleStorageInterface
-   *   The group role storage.
-   */
-  protected function groupRoleStorage() {
-    return $this->entityTypeManager()->getStorage('group_role');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function getCreatedTime() {
