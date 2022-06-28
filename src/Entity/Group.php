@@ -3,7 +3,6 @@
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Entity\EditorialContentEntityBase;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -108,12 +107,12 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   }
 
   /**
-   * Gets the group content storage.
+   * Gets the relationship storage.
    *
    * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
-   *   The group content storage.
+   *   The relationship storage.
    */
-  protected function groupContentStorage() {
+  protected function relationshipStorage() {
     return $this->entityTypeManager()->getStorage('group_content');
   }
 
@@ -141,43 +140,35 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
-  public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []) {
-    @trigger_error('Group::addContent() is deprecated in group:2.0.0 and is removed from group:3.0.0. Instead you should use Group::addRelationship(). See https://www.drupal.org/node/3292844', E_USER_DEPRECATED);
-    $this->addRelationship($entity, $plugin_id, $values);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function addRelationship(EntityInterface $entity, $plugin_id, $values = []) {
-    $storage = $this->groupContentStorage();
-    $group_content = $storage->createForEntityInGroup($entity, $this, $plugin_id, $values);
-    $storage->save($group_content);
-    return $group_content;
+    $storage = $this->relationshipStorage();
+    $relationship = $storage->createForEntityInGroup($entity, $this, $plugin_id, $values);
+    $storage->save($relationship);
+    return $relationship;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContent($plugin_id = NULL) {
-    return $this->groupContentStorage()->loadByGroup($this, $plugin_id);
+  public function getRelationships($plugin_id = NULL) {
+    return $this->relationshipStorage()->loadByGroup($this, $plugin_id);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentByEntity(EntityInterface $entity, $plugin_id = NULL) {
-    return $this->groupContentStorage()->loadByEntity($entity, $plugin_id);
+  public function getRelationshipsByEntity(EntityInterface $entity, $plugin_id = NULL) {
+    return $this->relationshipStorage()->loadByEntity($entity, $plugin_id);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getContentEntities($plugin_id = NULL) {
+  public function getRelatedEntities($plugin_id = NULL) {
     $entities = [];
 
-    foreach ($this->getContent($plugin_id) as $group_content) {
-      $entities[] = $group_content->getEntity();
+    foreach ($this->getRelationships($plugin_id) as $relationship) {
+      $entities[] = $relationship->getEntity();
     }
 
     return $entities;
@@ -188,7 +179,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    */
   public function addMember(UserInterface $account, $values = []) {
     if (!$this->getMember($account)) {
-      $this->addContent($account, 'group_membership', $values);
+      $this->addRelationship($account, 'group_membership', $values);
     }
   }
 
@@ -377,10 +368,10 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public static function preDelete(EntityStorageInterface $storage, array $entities) {
-    // Remove all group content from these groups as well.
+    // Remove all relationships from these groups as well.
     foreach ($entities as $group) {
-      foreach ($group->getContent() as $group_content) {
-        $group_content->delete();
+      foreach ($group->getRelationships() as $relationship) {
+        $relationship->delete();
       }
     }
   }

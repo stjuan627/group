@@ -29,7 +29,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
    * Checks access to an operation on the relation.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content for which to check access.
+   *   The relationship for which to check access.
    * @param string $operation
    *   The operation access should be checked for. Usually one of "view",
    *   "update" or "delete".
@@ -51,7 +51,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
    * Checks access to create a relation.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group to check for group content create access.
+   *   The group to check for relationship create access.
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user for which to check access.
    * @param bool $return_as_object

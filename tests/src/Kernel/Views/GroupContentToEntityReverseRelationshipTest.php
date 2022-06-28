@@ -2,10 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel\Views;
 
-use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
-use Drupal\views\Tests\ViewTestData;
-use Drupal\views\Views;
-
 /**
  * Tests the group_content_to_entity_reverse relationship handler.
  *

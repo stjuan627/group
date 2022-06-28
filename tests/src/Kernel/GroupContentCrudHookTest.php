@@ -3,7 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 /**
- * Tests the way group content entities react to entity CRUD events.
+ * Tests the way relationship entities react to entity CRUD events.
  *
  * @group group
  */
@@ -20,26 +20,26 @@ class GroupContentCrudHookTest extends GroupKernelTestBase {
   }
 
   /**
-   * Tests that a grouped entity deletion triggers group content deletion.
+   * Tests that a grouped entity deletion triggers relationship deletion.
    */
   public function testGroupedEntityDeletion() {
     $account = $this->createUser();
     $group = $this->createGroup(['type' => $this->createGroupType()->id(), 'uid' => $account->id()]);
 
-    $count = count($group->getContent());
+    $count = count($group->getRelationships());
     $account->delete();
-    $this->assertCount($count - 1, $group->getContent(), "Deleting the group owner's account reduces the group content count by one.");
+    $this->assertCount($count - 1, $group->getRelationships(), "Deleting the group owner's account reduces the relationship count by one.");
   }
 
   /**
-   * Tests that an ungrouped entity deletion triggers no group content deletion.
+   * Tests that an ungrouped entity deletion triggers no relationship deletion.
    */
   public function testUngroupedEntityDeletion() {
     $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
 
-    $count = count($group->getContent());
+    $count = count($group->getRelationships());
     $this->createUser()->delete();
-    $this->assertCount($count, $group->getContent(), "Deleting an ungrouped user account does not remove any group content.");
+    $this->assertCount($count, $group->getRelationships(), "Deleting an ungrouped user account does not remove any relationship.");
   }
 
 }

@@ -52,7 +52,7 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
 
     foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
       assert($group_relation_type instanceof GroupRelationTypeInterface);
-      if ($group_relation_type->getProvider() == $module && $this->hasGroupContent($plugin_id)) {
+      if ($group_relation_type->getProvider() == $module && $this->hasRelationships($plugin_id)) {
         $plugin_names[] = $group_relation_type->getLabel();
       }
     }
@@ -65,25 +65,25 @@ class GroupContentUninstallValidator implements ModuleUninstallValidatorInterfac
   }
 
   /**
-   * Determines if there is any group content for a group relation.
+   * Determines if there is any relationship for a group relation.
    *
    * @param string $plugin_id
-   *   The group relation type ID to check for group content.
+   *   The group relation type ID to check for relationships.
    *
    * @return bool
-   *   Whether there are group content entities for the given plugin ID.
+   *   Whether there are relationships for the given plugin ID.
    */
-  protected function hasGroupContent($plugin_id) {
-    $group_content_types = array_keys(GroupContentType::loadByPluginId($plugin_id));
+  protected function hasRelationships($plugin_id) {
+    $relationship_types = array_keys(GroupContentType::loadByPluginId($plugin_id));
 
-    if (empty($group_content_types)) {
+    if (empty($relationship_types)) {
       return FALSE;
     }
 
     $entity_count = $this->entityTypeManager->getStorage('group_content')
       ->getQuery()
       ->accessCheck(FALSE)
-      ->condition('type', $group_content_types, 'IN')
+      ->condition('type', $relationship_types, 'IN')
       ->count()
       ->execute();
 

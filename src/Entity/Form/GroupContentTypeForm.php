@@ -11,7 +11,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Form controller for group content type forms.
+ * Form controller for relationship type forms.
  */
 class GroupContentTypeForm extends EntityForm {
 
@@ -42,25 +42,25 @@ class GroupContentTypeForm extends EntityForm {
   }
 
   /**
-   * Returns the configurable plugin for the group content type.
+   * Returns the configurable plugin for the relationship type.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The configurable group relation.
    */
   protected function getPlugin() {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $group_type = $group_content_type->getGroupType();
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $group_type = $relationship_type->getGroupType();
 
     // Initialize an empty plugin so we can show a default configuration form.
     if ($this->operation == 'add') {
-      $plugin_id = $group_content_type->getPluginId();
+      $plugin_id = $relationship_type->getPluginId();
       $configuration['group_type_id'] = $group_type->id();
       return $this->pluginManager->createInstance($plugin_id, $configuration);
     }
-    // Return the already configured plugin for existing group content types.
+    // Return the already configured plugin for existing relationship types.
     else {
-      return $group_content_type->getPlugin();
+      return $relationship_type->getPlugin();
     }
   }
 
@@ -68,9 +68,9 @@ class GroupContentTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $group_type = $group_content_type->getGroupType();
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $group_type = $relationship_type->getGroupType();
     $group_relation = $this->getPlugin();
     $group_relation_type = $this->getPlugin()->getRelationType();
 
@@ -127,9 +127,9 @@ class GroupContentTypeForm extends EntityForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $group_type = $group_content_type->getGroupType();
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $group_type = $relationship_type->getGroupType();
     $plugin = $this->getPlugin();
     $plugin->submitConfigurationForm($form, $form_state);
 
@@ -139,7 +139,7 @@ class GroupContentTypeForm extends EntityForm {
     // Extract the values as configuration that should be saved.
     $config = $form_state->getValues();
 
-    // If we are on an 'add' form, we create the group content type using the
+    // If we are on an 'add' form, we create the relationship type using the
     // plugin configuration submitted using this form.
     if ($this->operation == 'add') {
       $storage = $this->entityTypeManager->getStorage('group_content_type');
@@ -147,9 +147,9 @@ class GroupContentTypeForm extends EntityForm {
       $storage->createFromPlugin($group_type, $plugin->getRelationTypeId(), $config)->save();
       $this->messenger()->addStatus($this->t('The content plugin was installed on the group type.'));
     }
-    // Otherwise, we update the existing group content type's configuration.
+    // Otherwise, we update the existing relationship type's configuration.
     else {
-      $group_content_type->updateContentPlugin($config);
+      $relationship_type->updatePlugin($config);
       $this->messenger()->addStatus($this->t('The content plugin configuration was saved.'));
     }
 

@@ -8,16 +8,18 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
 /**
- * Defines the Group content type configuration entity.
+ * Defines the Group relationship type configuration entity.
+ *
+ * @todo Rename to RelationshipType / group_relationship_type.
  *
  * @ConfigEntityType(
  *   id = "group_content_type",
- *   label = @Translation("Group content type"),
- *   label_singular = @Translation("group content type"),
- *   label_plural = @Translation("group content types"),
+ *   label = @Translation("Group relationship type"),
+ *   label_singular = @Translation("group relationship type"),
+ *   label_plural = @Translation("group relationship types"),
  *   label_count = @PluralTranslation(
- *     singular = "@count group content type",
- *     plural = "@count group content types"
+ *     singular = "@count group relationship type",
+ *     plural = "@count group relationship types"
  *   ),
  *   handlers = {
  *     "storage" = "Drupal\group\Entity\Storage\GroupContentTypeStorage",
@@ -49,21 +51,21 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 class GroupContentType extends ConfigEntityBundleBase implements GroupContentTypeInterface {
 
   /**
-   * The machine name of the group content type.
+   * The machine name of the relationship type.
    *
    * @var string
    */
   protected $id;
 
   /**
-   * The group type ID for the group content type.
+   * The group type ID for the relationship type.
    *
    * @var string
    */
   protected $group_type;
 
   /**
-   * The group relation type ID for the group content type.
+   * The group relation type ID for the relationship type.
    *
    * @var string
    * @todo 2.0.x Replace with other name.
@@ -71,7 +73,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   protected $content_plugin;
 
   /**
-   * The group relation configuration for group content type.
+   * The group relation configuration for the relationship type.
    *
    * @var array
    */
@@ -137,7 +139,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
   /**
    * {@inheritdoc}
    */
-  public function updateContentPlugin(array $configuration) {
+  public function updatePlugin(array $configuration) {
     $this->plugin_config = $configuration;
     $this->save();
 
@@ -176,7 +178,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
       $plugin_manager = $this->getGroupRelationTypeManager();
 
       // When a new GroupContentType is saved, we clear the views data cache to
-      // make sure that all of the views data which relies on group content
+      // make sure that all of the views data which relies on relationship
       // types is up to date.
       if (\Drupal::moduleHandler()->moduleExists('views')) {
         \Drupal::service('views.views_data')->clear();
@@ -205,7 +207,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    */
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
     // When a GroupContentType is deleted, we clear the views data cache to make
-    // sure that all of the views data which relies on group content types is up
+    // sure that all of the views data which relies on relationship types is up
     // to date.
     if (\Drupal::moduleHandler()->moduleExists('views')) {
       \Drupal::service('views.views_data')->clear();
@@ -222,7 +224,7 @@ class GroupContentType extends ConfigEntityBundleBase implements GroupContentTyp
    * {@inheritdoc}
    */
   public function calculateDependencies() {
-    // By adding the group type as a dependency, we ensure the group content
+    // By adding the group type as a dependency, we ensure the relationship
     // type is deleted along with the group type.
     $this->addDependency('config', $this->getGroupType()->getConfigDependencyName());
 

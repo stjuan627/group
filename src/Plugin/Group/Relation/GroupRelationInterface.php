@@ -36,18 +36,18 @@ interface GroupRelationInterface extends DerivativeInspectionInterface, Configur
   public function getRelationType();
 
   /**
-   * Returns the amount of groups the same content can be added to.
+   * Returns the amount of groups the same entity can be added to.
    *
    * @return int
-   *   The group content's group cardinality.
+   *   The relation's group cardinality.
    */
   public function getGroupCardinality();
 
   /**
-   * Returns the amount of times the same content can be added to a group.
+   * Returns the amount of times the same entity can be added to a group.
    *
    * @return int
-   *   The group content's entity cardinality.
+   *   The relation's entity cardinality.
    */
   public function getEntityCardinality();
 

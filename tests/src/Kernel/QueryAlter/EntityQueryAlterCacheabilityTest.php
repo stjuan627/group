@@ -77,11 +77,11 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
 
     // Install the plugin and add a node to a group so query access kicks in and
     // cacheable metadata is added to the query.
-    $gct_storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($gct_storage instanceof GroupContentTypeStorageInterface);
-    $gct_storage->save($gct_storage->createFromPlugin($this->groupType, 'node_as_content:page'));
+    $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($relationship_type_storage instanceof GroupContentTypeStorageInterface);
+    $relationship_type_storage->save($relationship_type_storage->createFromPlugin($this->groupType, 'node_as_content:page'));
     $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addContent($this->createNode(['type' => 'page']), 'node_as_content:page');
+    $group->addRelationship($this->createNode(['type' => 'page']), 'node_as_content:page');
 
     $render_context = new RenderContext();
     $renderer->executeInRenderContext($render_context, static function () use ($storage) {

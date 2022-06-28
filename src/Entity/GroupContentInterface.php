@@ -7,95 +7,95 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 
 /**
- * Provides an interface defining a Group content entity.
+ * Provides an interface defining a Group relationship entity.
  *
  * @ingroup group
  */
 interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
-   * Returns the group content type entity the group content uses.
+   * Returns the relationship type entity the relationship uses.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface
-   *   The group content type entity the group content uses.
+   *   The relationship type entity the relationship uses.
    */
-  public function getGroupContentType();
+  public function getRelationshipType();
 
   /**
-   * Returns the group the group content belongs to.
+   * Returns the group the relationship belongs to.
    *
    * @return \Drupal\group\Entity\GroupInterface
-   *   The group the group content belongs to.
+   *   The group the relationship belongs to.
    */
   public function getGroup();
 
   /**
-   * Returns the group ID the group content belongs to.
+   * Returns the group ID the relationship belongs to.
    *
    * @return string
-   *   The group ID the group content belongs to.
+   *   The group ID the relationship belongs to.
    */
   public function getGroupId();
 
   /**
-   * Returns the group type the group content belongs to.
+   * Returns the group type the relationship belongs to.
    *
    * @return \Drupal\group\Entity\GroupTypeInterface
-   *   The group type the group content belongs to.
+   *   The group type the relationship belongs to.
    */
   public function getGroupType();
 
   /**
-   * Returns the group type ID the group content belongs to.
+   * Returns the group type ID the relationship belongs to.
    *
    * @return string
-   *   The group type ID the group content belongs to.
+   *   The group type ID the relationship belongs to.
    */
   public function getGroupTypeId();
 
   /**
-   * Returns the entity that was added as group content.
+   * Returns the entity that was added as a relationship.
    *
    * @return \Drupal\Core\Entity\EntityInterface
-   *  The entity that was added as group content.
+   *  The entity that was added as a relationship.
    */
   public function getEntity();
 
   /**
-   * Returns the group relation that handles the group content.
+   * Returns the group relation that handles the relationship.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
-   *   The group relation that handles the group content.
+   *   The group relation that handles the relationship.
    */
   public function getPlugin();
 
   /**
-   * Gets the group relation type ID the group content uses.
+   * Gets the group relation type ID the relationship uses.
    *
    * @return string
-   *   The group relation type ID the group content uses.
+   *   The group relation type ID the relationship uses.
    */
   public function getPluginId();
 
   /**
-   * Loads group content entities by their responsible plugin ID.
+   * Loads relationship entities by their responsible plugin ID.
    *
    * @param string $plugin_id
    *   The group relation type ID.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
-   *   An array of group content entities indexed by their IDs.
+   *   An array of relationship entities indexed by their IDs.
    */
   public static function loadByPluginId($plugin_id);
 
   /**
-   * Loads group content entities which reference a given entity.
+   * Loads relationship entities which reference a given entity.
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   An entity which may be within one or more groups.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
-   *   An array of group content entities which reference the given entity.
+   *   An array of relationship entities which reference the given entity.
    */
   public static function loadByEntity(ContentEntityInterface $entity);
 

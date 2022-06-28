@@ -440,7 +440,7 @@ display:
           relationship: group_content
           group_type: group
           admin_label: 'View relation link'
-          label: 'Link to Group content'
+          label: 'Link to Group relationship'
           exclude: true
           alter:
             alter_text: false
@@ -493,7 +493,7 @@ display:
           relationship: group_content
           group_type: group
           admin_label: 'Edit relation link'
-          label: 'Link to edit Group content'
+          label: 'Link to edit Group relationship'
           exclude: true
           alter:
             alter_text: false
@@ -544,7 +544,7 @@ display:
           relationship: group_content
           group_type: group
           admin_label: 'Delete relation link'
-          label: 'Link to delete Group content'
+          label: 'Link to delete Group relationship'
           exclude: true
           alter:
             alter_text: false

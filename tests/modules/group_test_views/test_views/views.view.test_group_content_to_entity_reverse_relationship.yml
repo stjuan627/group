@@ -84,7 +84,7 @@ display:
           relationship: group_content
           group_type: group
           admin_label: ''
-          label: 'Group content ID'
+          label: 'Group relationship ID'
           exclude: false
           alter:
             alter_text: false
@@ -221,7 +221,7 @@ display:
           field: group_content
           relationship: none
           group_type: group
-          admin_label: 'User group content'
+          admin_label: 'User group relationships'
           required: true
           group_content_plugins:
             group_membership: group_membership

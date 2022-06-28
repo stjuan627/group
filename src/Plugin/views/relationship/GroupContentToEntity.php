@@ -3,7 +3,7 @@
 namespace Drupal\group\Plugin\views\relationship;
 
 /**
- * A relationship handler for group content entity references.
+ * A relationship handler for group relationship entity references.
  *
  * Definition items:
  * - target_entity_type: The ID of the entity type this relationship maps to.

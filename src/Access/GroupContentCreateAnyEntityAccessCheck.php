@@ -10,12 +10,12 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access for group content target entity creation.
+ * Determines access for relationship target entity creation.
  */
 class GroupContentCreateAnyEntityAccessCheck implements AccessInterface {
 
   /**
-   * Checks access for group content target entity creation routes.
+   * Checks access for relationship target entity creation routes.
    *
    * All routes using this access check should have a group parameter and have
    * the _group_content_create_any_entity_access requirement set to 'TRUE' or

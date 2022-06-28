@@ -6,14 +6,13 @@ use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentTypeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a form for group content type deletion.
+ * Provides a form for relationship type deletion.
  *
- * Instead of just deleting the group content type here, we use this form as a
+ * Instead of just deleting the relationship type here, we use this form as a
  * mean of uninstalling a group relation which will actually trigger the
- * deletion of the group content type.
+ * deletion of the relationship type.
  */
 class GroupContentTypeDeleteForm extends EntityDeleteForm {
 
@@ -21,10 +20,10 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
     return $this->t('Are you sure you want to uninstall the %plugin plugin?', [
-      '%plugin' => $group_content_type->getPlugin()->getRelationType()->getLabel(),
+      '%plugin' => $relationship_type->getPlugin()->getRelationType()->getLabel(),
     ]);
   }
 
@@ -32,21 +31,21 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    return Url::fromRoute('entity.group_type.content_plugins', ['group_type' => $group_content_type->getGroupTypeId()]);
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    return Url::fromRoute('entity.group_type.content_plugins', ['group_type' => $relationship_type->getGroupTypeId()]);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDescription() {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $entity_type_id = $group_content_type->getPlugin()->getRelationType()->getEntityTypeId();
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $entity_type_id = $relationship_type->getPlugin()->getRelationType()->getEntityTypeId();
     $replace = [
       '%entity_type' => $this->entityTypeManager->getDefinition($entity_type_id)->getLabel(),
-      '%group_type' => $group_content_type->getGroupType()->label(),
+      '%group_type' => $relationship_type->getGroupType()->label(),
     ];
     return $this->t('You will no longer be able to add %entity_type entities to %group_type groups.', $replace);
   }
@@ -85,12 +84,12 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $group_content_type = $this->getEntity();
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $group_type = $group_content_type->getGroupType();
-    $group_relation_type = $group_content_type->getPlugin()->getRelationType();
+    $relationship_type = $this->getEntity();
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $group_type = $relationship_type->getGroupType();
+    $group_relation_type = $relationship_type->getPlugin()->getRelationType();
 
-    $group_content_type->delete();
+    $relationship_type->delete();
     \Drupal::logger('group_content_type')->notice('Uninstalled %plugin from %group_type.', [
       '%plugin' => $group_relation_type->getLabel(),
       '%group_type' => $group_type->label(),

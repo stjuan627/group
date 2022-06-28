@@ -11,10 +11,10 @@ use Drupal\group\Entity\GroupInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines the storage handler class for group content entities.
+ * Defines the storage handler class for relationship entities.
  *
  * This extends the base storage class, adding required special handling for
- * loading group content entities based on group and plugin information.
+ * loading relationship entities based on group and plugin information.
  */
 class GroupContentStorage extends SqlContentEntityStorage implements GroupContentStorageInterface {
 
@@ -26,21 +26,21 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   protected $pluginManager;
 
   /**
-   * Static cache for looking up group content entities for groups.
+   * Static cache for looking up relationship entities for groups.
    *
    * @var array
    */
   protected $loadByGroupCache = [];
 
   /**
-   * Static cache for looking up group content entities for entities.
+   * Static cache for looking up relationship entities for entities.
    *
    * @var array
    */
   protected $loadByEntityCache = [];
 
   /**
-   * Static cache for looking up group content entities for plugins.
+   * Static cache for looking up relationship entities for plugins.
    *
    * @var array
    */
@@ -59,12 +59,12 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
    * {@inheritdoc}
    */
   public function createForEntityInGroup(EntityInterface $entity, GroupInterface $group, $plugin_id, $values = []) {
-    // An unsaved entity cannot have any group content.
+    // An unsaved entity cannot have any relationships.
     if ($entity->id() === NULL) {
       throw new EntityStorageException("Cannot add an unsaved entity to a group.");
     }
 
-    // An unsaved group cannot have any content.
+    // An unsaved group cannot have any relationships.
     if ($group->id() === NULL) {
       throw new EntityStorageException("Cannot add an entity to an unsaved group.");
     }
@@ -92,11 +92,11 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
 
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     assert($storage instanceof GroupContentTypeStorageInterface);
-    $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
+    $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin_id);
 
     // Set the necessary keys for a valid GroupContent entity.
     $keys = [
-      'type' => $group_content_type_id,
+      'type' => $relationship_type_id,
       'gid' => $group->id(),
       'entity_id' => $entity->id(),
     ];
@@ -141,7 +141,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
    * {@inheritdoc}
    */
   public function loadByEntity(EntityInterface $entity, $plugin_id = NULL) {
-    // An unsaved entity cannot have any group content.
+    // An unsaved entity cannot have any relationships.
     $entity_id = $entity->id();
     if ($entity_id === NULL) {
       return [];

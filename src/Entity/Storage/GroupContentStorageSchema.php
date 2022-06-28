@@ -7,7 +7,7 @@ use Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
 /**
- * Defines the group content schema handler.
+ * Defines the relationship schema handler.
  */
 class GroupContentStorageSchema extends SqlContentEntityStorageSchema {
 

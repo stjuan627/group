@@ -10,7 +10,7 @@ use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * A relationship handler base for group content entity references.
+ * A relationship handler base for group relationship entity references.
  */
 abstract class GroupContentToEntityBase extends RelationshipPluginBase {
 

@@ -39,7 +39,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param string $operation
    *   The operation to test access for.
    * @param bool $has_content
-   *   Whether group content exists for the entity type.
+   *   Whether relationships exist for the entity type.
    * @param bool $has_access
    *   Whether the user should gain access.
    * @param bool $is_admin
@@ -161,7 +161,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   public function queryAccessProvider() {
     // @todo Test mixed (own and any combined) operations.
     foreach (['view', 'update', 'delete'] as $operation) {
-      // Case when there is no group content for the entity type.
+      // Case when there is no relationship for the entity type.
       $cases['no-content-' . $operation] = [
         'operation' => $operation,
         'has_content' => FALSE,
@@ -413,7 +413,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   }
 
   /**
-   * Joins the group content field data table for memberships.
+   * Joins the relationship field data table for memberships.
    *
    * @param \Drupal\Core\Database\Query\SelectInterface $query
    *   The query to add the join to.

@@ -69,7 +69,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Group content ID'
+          label: 'Group relationship ID'
           exclude: false
           alter:
             alter_text: false
@@ -206,7 +206,7 @@ display:
           field: gc__user
           relationship: none
           group_type: group
-          admin_label: 'Group content User'
+          admin_label: 'Group relationship User'
           required: true
           group_content_plugins:
             group_membership: group_membership

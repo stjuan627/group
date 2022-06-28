@@ -10,12 +10,12 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access for group content target entity creation.
+ * Determines access for relationship target entity creation.
  */
 class GroupContentCreateEntityAccessCheck implements AccessInterface {
 
   /**
-   * Checks access for group content target entity creation routes.
+   * Checks access for relationship target entity creation routes.
    *
    * All routes using this access check should have a group and plugin_id
    * parameter and have the _group_content_create_entity_access requirement set
@@ -28,7 +28,7 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group in which the content should be created.
    * @param string $plugin_id
-   *   The group relation type ID to use for the group content entity.
+   *   The group relation type ID to use for the relationship entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
@@ -36,7 +36,7 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
   public function access(Route $route, AccountInterface $account, GroupInterface $group, $plugin_id) {
     $needs_access = $route->getRequirement('_group_content_create_entity_access') === 'TRUE';
 
-    // We can only get the group content type ID if the plugin is installed.
+    // We can only get the relationship type ID if the plugin is installed.
     if (!$group->getGroupType()->hasPlugin($plugin_id)) {
       return AccessResult::neutral();
     }
@@ -46,7 +46,7 @@ class GroupContentCreateEntityAccessCheck implements AccessInterface {
     $access_handler = $plugin_manager->getAccessControlHandler($plugin_id);
     $access = $access_handler->entityCreateAccess($group, $account);
 
-    // Only allow access if the user can create group content target entities
+    // Only allow access if the user can create relationship target entities
     // using the provided plugin or if he doesn't need access to do so.
     return AccessResult::allowedIf($access xor !$needs_access);
   }

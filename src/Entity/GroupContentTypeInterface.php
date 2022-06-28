@@ -5,7 +5,7 @@ namespace Drupal\group\Entity;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
 /**
- * Provides an interface defining a group content type entity.
+ * Provides an interface defining a relationship type entity.
  */
 interface GroupContentTypeInterface extends ConfigEntityInterface {
 
@@ -49,29 +49,29 @@ interface GroupContentTypeInterface extends ConfigEntityInterface {
    * @param array $configuration
    *   An array of group relation configuration.
    */
-  public function updateContentPlugin(array $configuration);
+  public function updatePlugin(array $configuration);
 
   /**
-   * Loads group content type entities by their responsible plugin ID.
+   * Loads relationship type entities by their responsible plugin ID.
    *
    * @param string|string[] $plugin_id
    *   The group relation type ID or an array of plugin IDs. If more than one
-   *   plugin ID is provided, this will load all of the group content types that
+   *   plugin ID is provided, this will load all of the relationship types that
    *   match any of the provided plugin IDs.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
-   *   An array of group content type entities indexed by their IDs.
+   *   An array of relationship type entities indexed by their IDs.
    */
   public static function loadByPluginId($plugin_id);
 
   /**
-   * Loads group content type entities which could serve a given entity type.
+   * Loads relationship type entities which could serve a given entity type.
    *
    * @param string $entity_type_id
-   *   An entity type ID which may be served by one or more group content types.
+   *   An entity type ID which may be served by one or more relationship types.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
-   *   An array of group content type entities which serve the given entity.
+   *   An array of relationship type entities which serve the given entity.
    */
   public static function loadByEntityTypeId($entity_type_id);
 

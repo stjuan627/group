@@ -109,7 +109,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
   public function testUnsupportedOperation() {
     $node = $this->createNode(['type' => 'page']);
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addContent($node, 'node_as_content:page');
+    $group->addRelationship($node, 'node_as_content:page');
 
     $result = $this->accessControlHandler->access($node, 'take me to the moon', $this->createUser([], ['access content']), TRUE);
     $this->assertTrue($result->isNeutral(), 'Unsupported operations are not checked.');
@@ -126,7 +126,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
+    $group->addRelationship($node_1, 'node_as_content:page');
     $group->addMember($this->getCurrentUser());
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Cannot view the grouped node.');
@@ -141,7 +141,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode(['type' => 'page']);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
+    $group->addRelationship($node_1, 'node_as_content:page');
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Cannot view the grouped node.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Only the ungrouped node shows up.');
@@ -162,7 +162,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     ]);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
+    $group->addRelationship($node_1, 'node_as_content:page');
     $group->addMember($this->getCurrentUser());
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Members can see grouped nodes.');
@@ -184,7 +184,7 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     ]);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addContent($node_1, 'node_as_content:page');
+    $group->addRelationship($node_1, 'node_as_content:page');
     $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Outsiders can see grouped nodes.');
@@ -204,13 +204,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -259,12 +259,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see any published grouped nodes without permission.');
@@ -313,11 +313,11 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
 
     $this->setCurrentUser(new AnonymousUserSession());
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Anonymous cannot see published grouped nodes without permission.');
@@ -353,13 +353,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -408,12 +408,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see their own published grouped nodes without permission.');
@@ -461,13 +461,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -516,12 +516,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see any unpublished grouped nodes without permission.');
@@ -570,11 +570,11 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
 
     $this->setCurrentUser(new AnonymousUserSession());
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Anonymous cannot see unpublished grouped nodes without permission.');
@@ -610,13 +610,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -665,12 +665,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode(['type' => 'page']);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_4, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_4, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see their own unpublished grouped nodes without permission.');
@@ -723,12 +723,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -765,11 +765,11 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'update'), 'Non-members can update any published grouped nodes.');
@@ -807,14 +807,14 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_2, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_2, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_3, 'node_as_content:page');
-    $group_b->addContent($node_4, 'node_as_content:page');
+    $group_b->addRelationship($node_3, 'node_as_content:page');
+    $group_b->addRelationship($node_4, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -859,13 +859,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_2, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_2, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_3, 'node_as_content:page');
-    $group_b->addContent($node_4, 'node_as_content:page');
+    $group_b->addRelationship($node_3, 'node_as_content:page');
+    $group_b->addRelationship($node_4, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'update'), 'Non-members can update their own published grouped nodes.');
@@ -907,12 +907,12 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -949,11 +949,11 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_2, 'node_as_content:page');
+    $group_b->addRelationship($node_2, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'delete'), 'Non-members can delete any published grouped nodes.');
@@ -991,14 +991,14 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_2, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_2, 'node_as_content:page');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_3, 'node_as_content:page');
-    $group_b->addContent($node_4, 'node_as_content:page');
+    $group_b->addRelationship($node_3, 'node_as_content:page');
+    $group_b->addRelationship($node_4, 'node_as_content:page');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -1043,13 +1043,13 @@ class EntityAccessComplexTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addContent($node_1, 'node_as_content:page');
-    $group_a->addContent($node_2, 'node_as_content:page');
+    $group_a->addRelationship($node_1, 'node_as_content:page');
+    $group_a->addRelationship($node_2, 'node_as_content:page');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addContent($node_3, 'node_as_content:page');
-    $group_b->addContent($node_4, 'node_as_content:page');
+    $group_b->addRelationship($node_3, 'node_as_content:page');
+    $group_b->addRelationship($node_4, 'node_as_content:page');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($node_1, 'delete'), 'Non-members can delete their own published grouped nodes.');

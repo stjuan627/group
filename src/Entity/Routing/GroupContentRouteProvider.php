@@ -7,7 +7,7 @@ use Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider;
 use Symfony\Component\Routing\Route;
 
 /**
- * Provides routes for group content.
+ * Provides routes for relationships.
  */
 class GroupContentRouteProvider extends DefaultHtmlRouteProvider {
 

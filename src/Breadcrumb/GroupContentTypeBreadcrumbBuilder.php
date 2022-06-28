@@ -10,7 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Provides a custom breadcrumb builder for group content type paths.
+ * Provides a custom breadcrumb builder for relationship type paths.
  */
 class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   use StringTranslationTrait;
@@ -19,7 +19,7 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * @inheritdoc
    */
   public function applies(RouteMatchInterface $route_match) {
-    // Only apply to paths containing a group content type.
+    // Only apply to paths containing a relationship type.
     if ($route_match->getParameter('group_content_type') instanceof GroupContentTypeInterface) {
       return TRUE;
     }
@@ -29,9 +29,9 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * @inheritdoc
    */
   public function build(RouteMatchInterface $route_match) {
-    $group_content_type = $route_match->getParameter('group_content_type');
-    assert($group_content_type instanceof GroupContentTypeInterface);
-    $group_type = $group_content_type->getGroupType();
+    $relationship_type = $route_match->getParameter('group_content_type');
+    assert($relationship_type instanceof GroupContentTypeInterface);
+    $group_type = $relationship_type->getGroupType();
 
     $breadcrumb = new Breadcrumb();
     $breadcrumb->addLink(Link::createFromRoute($this->t('Home'), '<front>'));
@@ -43,13 +43,13 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
     // Add a link to the Configure page for any non-default tab.
     if ($route_match->getRouteName() != 'entity.group_content_type.edit_form') {
-      $breadcrumb->addLink(Link::createFromRoute($this->t('Configure'), 'entity.group_content_type.edit_form', ['group_content_type' => $group_content_type->id()]));
+      $breadcrumb->addLink(Link::createFromRoute($this->t('Configure'), 'entity.group_content_type.edit_form', ['group_content_type' => $relationship_type->id()]));
     }
 
-    // Breadcrumb needs to have the group type and group content type as
+    // Breadcrumb needs to have the group type and relationship type as
     // cacheable dependencies because any changes to them should be reflected.
     $breadcrumb->addCacheableDependency($group_type);
-    $breadcrumb->addCacheableDependency($group_content_type);
+    $breadcrumb->addCacheableDependency($relationship_type);
 
     // This breadcrumb builder is based on a route parameter, and hence it
     // depends on the 'route' cache context.

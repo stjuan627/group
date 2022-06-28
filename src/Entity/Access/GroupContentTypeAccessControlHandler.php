@@ -8,7 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentTypeInterface;
 
 /**
- * Defines the access control handler for the group content type entity type.
+ * Defines the access control handler for the relationship type entity type.
  *
  * @see \Drupal\group\Entity\GroupContentType
  */

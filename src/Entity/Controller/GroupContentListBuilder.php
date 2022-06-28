@@ -12,7 +12,7 @@ use Drupal\group\Entity\GroupContentInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a list controller for group content entities.
+ * Provides a list controller for relationship entities.
  *
  * @ingroup group
  */
@@ -55,7 +55,7 @@ class GroupContentListBuilder extends EntityListBuilder {
     parent::__construct($entity_type, $entity_type_manager->getStorage($entity_type->id()));
     $this->entityTypeManager = $entity_type_manager;
     $this->redirectDestination = $redirect_destination;
-    // There should always be a group on the route for group content lists.
+    // There should always be a group on the route for relationship lists.
     $this->group = $route_match->getParameters()->get('group');
   }
 
@@ -78,7 +78,7 @@ class GroupContentListBuilder extends EntityListBuilder {
     $query = $this->getStorage()->getQuery();
     $query->sort($this->entityType->getKey('id'));
 
-    // Only show group content for the group on the route.
+    // Only show relationships for the group on the route.
     $query->condition('gid', $this->group->id());
 
     // Only add the pager if a limit is specified.

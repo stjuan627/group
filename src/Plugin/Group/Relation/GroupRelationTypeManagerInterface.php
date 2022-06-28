@@ -203,21 +203,21 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
   public function installEnforced(GroupTypeInterface $group_type = NULL);
 
   /**
-   * Retrieves all of the group content type IDs for a content plugin.
+   * Retrieves all of the relationship type IDs for a content plugin.
    *
    * @param string $plugin_id
-   *   The ID of the plugin to retrieve group content type IDs for.
+   *   The ID of the plugin to retrieve relationship type IDs for.
    *
    * @return string[]
-   *   An array of group content type IDs.
+   *   An array of relationship type IDs.
    */
-  public function getGroupContentTypeIds($plugin_id);
+  public function getRelationshipTypeIds($plugin_id);
 
   /**
-   * Retrieves a list of group content type IDs per plugin ID.
+   * Retrieves a list of relationship type IDs per plugin ID.
    *
    * @return array
-   *   An array of group content type ID arrays, keyed by plugin ID.
+   *   An array of relationship type ID arrays, keyed by plugin ID.
    */
   public function getPluginGroupContentTypeMap();
 

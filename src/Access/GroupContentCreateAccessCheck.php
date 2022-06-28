@@ -11,7 +11,7 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access for group content creation.
+ * Determines access for relationship creation.
  */
 class GroupContentCreateAccessCheck implements AccessInterface {
 
@@ -33,7 +33,7 @@ class GroupContentCreateAccessCheck implements AccessInterface {
   }
 
   /**
-   * Checks access for group content creation routes.
+   * Checks access for relationship creation routes.
    *
    * All routes using this access check should have a group and plugin_id
    * parameter and have the _group_content_create_access requirement set to
@@ -46,7 +46,7 @@ class GroupContentCreateAccessCheck implements AccessInterface {
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group in which the content should be created.
    * @param string $plugin_id
-   *   The group relation type ID to use for the group content entity.
+   *   The group relation type ID to use for the relationship entity.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
@@ -54,7 +54,7 @@ class GroupContentCreateAccessCheck implements AccessInterface {
   public function access(Route $route, AccountInterface $account, GroupInterface $group, $plugin_id) {
     $needs_access = $route->getRequirement('_group_content_create_access') === 'TRUE';
 
-    // We can only get the group content type ID if the plugin is installed.
+    // We can only get the relationship type ID if the plugin is installed.
     if (!$group->getGroupType()->hasPlugin($plugin_id)) {
       return AccessResult::neutral();
     }
@@ -63,11 +63,11 @@ class GroupContentCreateAccessCheck implements AccessInterface {
     assert($storage instanceof GroupContentTypeStorageInterface);
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
 
-    // Determine whether the user can create group content using the plugin.
-    $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin_id);
-    $access = $access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group]);
+    // Determine whether the user can create relationships using the plugin.
+    $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin_id);
+    $access = $access_control_handler->createAccess($relationship_type_id, $account, ['group' => $group]);
 
-    // Only allow access if the user can create group content using the
+    // Only allow access if the user can create relationships using the
     // provided plugin or if he doesn't need access to do so.
     return AccessResult::allowedIf($access xor !$needs_access);
   }

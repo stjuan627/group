@@ -224,7 +224,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       // @todo Remove this line when https://www.drupal.org/node/2645202 lands.
       $this->setOriginalId($group_type_id);
 
-      // The code below will create group content types for enforced plugins. It
+      // The code below will create relationship types for enforced plugins. It
       // is extremely important that we only run this code when we're not
       // dealing with config synchronization.
       //

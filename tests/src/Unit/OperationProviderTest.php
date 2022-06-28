@@ -58,7 +58,7 @@ namespace Drupal\Tests\group\Unit {
 
       $entity = $this->prophesize(GroupContentTypeInterface::class);
       $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
-      $storage->getGroupContentTypeId(Argument::cetera())->willReturn('foobar');
+      $storage->getRelationshipTypeId(Argument::cetera())->willReturn('foobar');
       $storage->load('foobar')->willReturn($entity->reveal());
       $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
 

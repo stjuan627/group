@@ -61,7 +61,7 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
       return;
     }
 
-    // Get the plugin for the group content entity.
+    // Get the plugin for the relationship entity.
     $plugin = $group_content->getPlugin();
 
     // Get the cardinality settings from the plugin.
@@ -80,10 +80,10 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
     if ($group_cardinality > 0) {
       $storage = $this->entityTypeManager->getStorage('group_content_type');
       assert($storage instanceof GroupContentTypeStorageInterface);
-      $group_content_type_id = $storage->getGroupContentTypeId($group->bundle(), $plugin->getRelationTypeId());
+      $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin->getRelationTypeId());
 
-      // Get the group content entities for this piece of content.
-      $properties = ['type' => $group_content_type_id, 'entity_id' => $entity->id()];
+      // Get the relationships for this entity.
+      $properties = ['type' => $relationship_type_id, 'entity_id' => $entity->id()];
       $group_instances = $this->entityTypeManager
         ->getStorage('group_content')
         ->loadByProperties($properties);
@@ -115,10 +115,10 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
     // Enforce the entity cardinality if it's not set to unlimited.
     if ($entity_cardinality > 0) {
       // Get the current instances of this content entity in the group.
-      $entity_instances = $group->getContentByEntity($entity, $plugin->getRelationTypeId());
+      $entity_instances = $group->getRelationshipsByEntity($entity, $plugin->getRelationTypeId());
       $entity_count = count($entity_instances);
 
-      // If the current group content entity has an ID, exclude that one.
+      // If the current relationship entity has an ID, exclude that one.
       if ($group_content_id = $group_content->id()) {
         foreach ($entity_instances as $instance) {
           assert($instance instanceof GroupContentInterface);

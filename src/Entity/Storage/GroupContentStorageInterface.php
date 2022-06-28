@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
- * Defines an interface for group content entity storage classes.
+ * Defines an interface for relationship entity storage classes.
  */
 interface GroupContentStorageInterface extends ContentEntityStorageInterface {
 
@@ -32,7 +32,7 @@ interface GroupContentStorageInterface extends ContentEntityStorageInterface {
    * Retrieves all GroupContent entities for a group.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
-   *   The group entity to load the group content entities for.
+   *   The group entity to load the relationship entities for.
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *

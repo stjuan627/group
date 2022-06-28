@@ -73,7 +73,7 @@ class PermissionProvider implements PermissionProviderInterface {
   public function buildPermissions() {
     $permissions = [];
 
-    // Provide permissions for the relation (i.e.: The group content entity).
+    // Provide permissions for the relationship.
     $prefix = 'Relation:';
     if ($name = $this->getAdminPermission()) {
       $permissions[$name] = $this->buildPermission("$prefix Administer relations");

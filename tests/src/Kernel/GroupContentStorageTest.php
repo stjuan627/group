@@ -8,7 +8,7 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
- * Tests the behavior of group content storage handler.
+ * Tests the behavior of relationship storage handler.
  *
  * @coversDefaultClass \Drupal\group\Entity\Storage\GroupContentStorage
  * @group group
@@ -23,7 +23,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   public static $modules = ['group_test_plugin', 'node'];
 
   /**
-   * The group content storage handler.
+   * The relationship storage handler.
    *
    * @var \Drupal\group\Entity\Storage\GroupContentStorageInterface
    */
@@ -229,7 +229,7 @@ class GroupContentStorageTest extends GroupKernelTestBase {
     $this->assertSame($group_b->id(), $account->id());
 
     // Add the group as content so we can verify only the user is returned.
-    $group_a->addContent($group_b, 'group_as_content');
+    $group_a->addRelationship($group_b, 'group_as_content');
     $this->assertCount(2, $this->storage->loadByEntity($account), 'Managed to load the group creator memberships by user.');
   }
 

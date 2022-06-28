@@ -66,13 +66,13 @@ class GroupContentToEntityRelationshipTest extends GroupViewsKernelTestBase {
   }
 
   /**
-   * Tests that any other group content is not returned by the view.
+   * Tests that any other relationship is not returned by the view.
    *
    * @depends testGroupOwnerIsListed
    */
   public function testOtherContentIsNotListed() {
     $group = $this->createGroup();
-    $group->addContent($this->createUser(), 'user_as_content');
+    $group->addRelationship($this->createUser(), 'user_as_content');
     $this->assertEquals(1, count($this->getViewResults()), 'The view only displays the user for default member and not the one that was added as content.');
   }
 

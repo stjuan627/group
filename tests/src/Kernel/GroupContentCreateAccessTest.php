@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Tests the group content create access for groups.
+ * Tests the relationship create access for groups.
  *
  * @group group
  */

@@ -275,7 +275,7 @@ function group_query_entity_query_alter(SelectInterface $query) {
     $entity_type = $entity_type_manager->getDefinition($entity_type_id);
 
     // Add specific access checks based on the entity type. Please note that we
-    // first check for the group and group content entity types because we have
+    // first check for the group and relationship entity types because we have
     // full control over those and can therefore optimize the query more. If the
     // query is for a different entity type, we fall back to the default query
     // alter.
@@ -360,7 +360,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  // If any new group content entity is added using any of the retrieved
+  // If any new relationship entity is added using any of the retrieved
   // plugins, it might change access.
   $plugin_cache_tags = [];
   foreach ($plugin_ids as $plugin_id) {
@@ -431,7 +431,7 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
     return AccessResult::neutral();
   }
 
-  // We only care if it is attached to a group content entity.
+  // We only care if it is attached to a relationship type entity.
   if ($items->getEntity()->getEntityTypeId() != 'group_content') {
     return AccessResult::neutral();
   }
@@ -439,7 +439,7 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
   $group_content = $items->getEntity();
   assert($group_content instanceof GroupContentInterface);
 
-  // We only care if the group content entity is a group membership.
+  // We only care if the relationship entity is a group membership.
   if ($group_content->getPluginId() != 'group_membership') {
     return AccessResult::neutral();
   }
@@ -643,7 +643,7 @@ function group_content_wizard_store($form, FormStateInterface $form_state) {
 }
 
 /**
- * Cancels the wizard for group content creation.
+ * Cancels the wizard for relationship creation.
  *
  * @see group_form_alter()
  * @see \Drupal\group\Entity\Controller\GroupContentController::createForm()
@@ -673,12 +673,12 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 
   $group = $form_state->get('group');
   assert($group instanceof GroupInterface);
-  $group->addContent($entity, $form_state->get('group_relation'));
+  $group->addRelationship($entity, $form_state->get('group_relation'));
 
   // This submit handler is only called when creating new content within a group
   // without using the 2-step wizard. We can therefore safely assume the user
-  // wants to see the entity itself and not the relationship (group content).
-  // This only applies if there was no destination GET parameter set in the URL.
+  // wants to see the entity itself and not the relationship. This only applies
+  // if there was no destination GET parameter set in the URL.
   if ($entity->access('view')) {
     $form_state->setRedirectUrl($entity->toUrl());
   }

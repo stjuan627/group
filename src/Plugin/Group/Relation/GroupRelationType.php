@@ -112,8 +112,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    *
    * This is exposed through tokens so modules like Pathauto may use it. Only
    * use this if your plugin has something meaningful to show on the actual
-   * group content entity; i.e.: the relationship. Otherwise leave blank so it
-   * defaults to 'content'.
+   * relationship entity. Otherwise leave blank so it defaults to 'content'.
    *
    * @var string
    */

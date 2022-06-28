@@ -60,7 +60,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
    * Returns the label for the entity reference field.
    *
    * This allows you to specify the label for the entity reference field
-   * pointing to the entity that is to become group content.
+   * pointing to the entity that is to be added as a relationship.
    *
    * @return \Drupal\Core\Annotation\Translation|null
    *   The label for the entity reference field or NULL if none was set.
@@ -71,7 +71,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
    * Returns the description for the entity reference field.
    *
    * This allows you to specify the description for the entity reference field
-   * pointing to the entity that is to become group content.
+   * pointing to the entity that is to be added as a relationship.
    *
    * @return \Drupal\Core\Annotation\Translation|null
    *   The description for the entity reference field or NULL if none was set.

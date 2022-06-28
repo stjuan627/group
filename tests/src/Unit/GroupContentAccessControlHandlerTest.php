@@ -20,7 +20,7 @@ use Prophecy\Argument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Tests the group content access control handler.
+ * Tests the relationship access control handler.
  *
  * @coversDefaultClass \Drupal\group\Entity\Access\GroupContentAccessControlHandler
  * @group group
@@ -122,11 +122,11 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
   public function testCheckCreateAccess() {
     $group = $this->prophesize(GroupInterface::class);
 
-    $group_content_type = $this->prophesize(GroupContentTypeInterface::class);
-    $group_content_type->getPluginId()->willReturn('bar');
-    $group_content_type_storage = $this->prophesize(GroupContentTypeStorageInterface::class);
-    $group_content_type_storage->load('foo')->willReturn($group_content_type->reveal());
-    $this->entityTypeManager->getStorage('group_content_type')->willReturn($group_content_type_storage->reveal());
+    $relationship_type = $this->prophesize(GroupContentTypeInterface::class);
+    $relationship_type->getPluginId()->willReturn('bar');
+    $relationship_type_storage = $this->prophesize(GroupContentTypeStorageInterface::class);
+    $relationship_type_storage->load('foo')->willReturn($relationship_type->reveal());
+    $this->entityTypeManager->getStorage('group_content_type')->willReturn($relationship_type_storage->reveal());
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);

@@ -11,7 +11,7 @@ use Drupal\group\Entity\GroupInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access for group content creation.
+ * Determines access for relationship creation.
  */
 class GroupContentCreateAnyAccessCheck implements AccessInterface {
 
@@ -33,7 +33,7 @@ class GroupContentCreateAnyAccessCheck implements AccessInterface {
   }
 
   /**
-   * Checks access for group content creation routes.
+   * Checks access for relationship creation routes.
    *
    * All routes using this access check should have a group parameter and have
    * the _group_content_create_any_access requirement set to 'TRUE' or 'FALSE'.
@@ -55,16 +55,16 @@ class GroupContentCreateAnyAccessCheck implements AccessInterface {
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
     $storage = $this->entityTypeManager->getStorage('group_content_type');
 
-    // Find out which group content types the user has access to create.
-    foreach ($storage->loadByProperties(['group_type' => $group->bundle()]) as $group_content_type) {
-      assert($group_content_type instanceof GroupContentTypeInterface);
+    // Find out which relationship types the user has access to create.
+    foreach ($storage->loadByProperties(['group_type' => $group->bundle()]) as $relationship_type) {
+      assert($relationship_type instanceof GroupContentTypeInterface);
 
       // Filter on derivatives if a base plugin ID was provided.
-      if ($base_plugin_id && $group_content_type->getPlugin()->getBaseId() !== $base_plugin_id) {
+      if ($base_plugin_id && $relationship_type->getPlugin()->getBaseId() !== $base_plugin_id) {
         continue;
       }
 
-      if ($access_control_handler->createAccess($group_content_type->id(), $account, ['group' => $group])) {
+      if ($access_control_handler->createAccess($relationship_type->id(), $account, ['group' => $group])) {
         // Allow access if the route flag was set to 'TRUE'.
         return AccessResult::allowedIf($needs_access);
       }

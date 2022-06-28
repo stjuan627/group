@@ -58,7 +58,7 @@ class EntityQueryAlterComplexTest extends EntityQueryAlterTestBase {
     $this->createNodeType(['id' => 'page']);
     $this->createNode(['type' => 'page']);
     $group = $this->createGroup(['type' => $group_type->id()]);
-    $group->addContent($this->createNode(['type' => 'page']), $this->pluginId);
+    $group->addRelationship($this->createNode(['type' => 'page']), $this->pluginId);
     return $group;
   }
 

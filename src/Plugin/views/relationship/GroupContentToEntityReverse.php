@@ -3,7 +3,7 @@
 namespace Drupal\group\Plugin\views\relationship;
 
 /**
- * A relationship handler which reverses group content entity references.
+ * A relationship handler which reverses group relationship entity references.
  *
  * @ingroup views_relationship_handlers
  *

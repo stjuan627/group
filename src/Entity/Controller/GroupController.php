@@ -113,12 +113,12 @@ class GroupController extends ControllerBase {
     }
     // Wizard step 2: Group membership form.
     else {
-      $gct_storage = $this->entityTypeManager()->getStorage('group_content_type');
-      assert($gct_storage instanceof GroupContentTypeStorageInterface);
+      $relationship_type_storage = $this->entityTypeManager()->getStorage('group_content_type');
+      assert($relationship_type_storage instanceof GroupContentTypeStorageInterface);
 
       // Create an empty group membership that does not yet have a group set.
       $values = [
-        'type' => $gct_storage->getGroupContentTypeId($group_type->id(), 'group_membership'),
+        'type' => $relationship_type_storage->getRelationshipTypeId($group_type->id(), 'group_membership'),
         'entity_id' => $this->currentUser()->id(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);

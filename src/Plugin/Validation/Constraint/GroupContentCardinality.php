@@ -5,15 +5,15 @@ namespace Drupal\group\Plugin\Validation\Constraint;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Checks the cardinality limits for a piece of group content.
+ * Checks the cardinality limits for a relationship.
  *
- * Content enabler plugins may limit the amount of times a single content entity
- * can be added to a group as well as the amount of groups that single entity
- * can be added to. This constraint will enforce that behavior.
+ * Group relation plugins may limit the amount of times a single entity can be
+ * added to a group as well as the amount of groups that single entity can be
+ * added to. This constraint will enforce that behavior.
  *
  * @Constraint(
  *   id = "GroupContentCardinality",
- *   label = @Translation("Group content cardinality check", context = "Validation"),
+ *   label = @Translation("Relation cardinality check", context = "Validation"),
  *   type = "entity:group_content"
  * )
  */

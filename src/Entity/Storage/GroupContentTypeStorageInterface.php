@@ -6,50 +6,50 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**
- * Defines an interface for group content type entity storage classes.
+ * Defines an interface for relationship type entity storage classes.
  */
 interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface {
 
   /**
-   * Retrieves all group content types for a group type.
+   * Retrieves all relationship types for a group type.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type to load the group content types for.
+   *   The group type to load the relationship types for.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
-   *   An array of group content types indexed by their IDs.
+   *   An array of relationship types indexed by their IDs.
    */
   public function loadByGroupType(GroupTypeInterface $group_type);
 
   /**
-   * Retrieves group content types by their responsible plugin ID.
+   * Retrieves relationship types by their responsible plugin ID.
    *
    * @param string|string[] $plugin_id
    *   The group relation type ID or an array of plugin IDs. If more than one
-   *   plugin ID is provided, this will load all of the group content types that
+   *   plugin ID is provided, this will load all of the relationship types that
    *   match any of the provided plugin IDs.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
-   *   An array of group content types indexed by their IDs.
+   *   An array of relationship types indexed by their IDs.
    */
   public function loadByPluginId($plugin_id);
 
   /**
-   * Retrieves group content types which could serve a given entity type.
+   * Retrieves relationship types which could serve a given entity type.
    *
    * @param string $entity_type_id
-   *   An entity type ID which may be served by one or more group content types.
+   *   An entity type ID which may be served by one or more relationship types.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface[]
-   *   An array of group content types indexed by their IDs.
+   *   An array of relationship types indexed by their IDs.
    */
   public function loadByEntityTypeId($entity_type_id);
 
   /**
-   * Creates a group content type for a group type using a specific plugin.
+   * Creates a relationship type for a group type using a specific plugin.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type to create the group content type for.
+   *   The group type to create the relationship type for.
    * @param string $plugin_id
    *   The group relation type ID to use.
    * @param array $configuration
@@ -61,7 +61,7 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
   public function createFromPlugin(GroupTypeInterface $group_type, $plugin_id, array $configuration = []);
 
   /**
-   * Constructs a group content type ID based on a group type and plugin.
+   * Constructs a relationship type ID based on a group type and plugin.
    *
    * @param string $group_type_id
    *   The group type ID.
@@ -69,8 +69,8 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    *   The ID of the plugin (to be) installed on the group type.
    *
    * @return string
-   *   The group content type ID.
+   *   The relationship type ID.
    */
-  public function getGroupContentTypeId($group_type_id, $plugin_id);
+  public function getRelationshipTypeId($group_type_id, $plugin_id);
 
 }

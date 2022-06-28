@@ -48,9 +48,7 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $this->configImporter()->import();
 
     // Check that the group type was created.
-    $group_type = $this->entityTypeManager
-      ->getStorage('group_type')
-      ->load('import');
+    $group_type = $this->entityTypeManager->getStorage('group_type')->load('import');
     assert($group_type instanceof GroupTypeInterface);
     $this->assertNotNull($group_type, 'Group type was loaded successfully.');
 
@@ -59,12 +57,12 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
     assert($plugin instanceof GroupRelationInterface);
 
-    $group_content_type_storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($group_content_type_storage instanceof GroupContentTypeStorageInterface);
-    $group_content_type = $group_content_type_storage->load(
-      $group_content_type_storage->getGroupContentTypeId($group_type->id(), $plugin->getRelationTypeId())
+    $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($relationship_type_storage instanceof GroupContentTypeStorageInterface);
+    $relationship_type = $relationship_type_storage->load(
+      $relationship_type_storage->getRelationshipTypeId($group_type->id(), $plugin->getRelationTypeId())
     );
-    $this->assertNotNull($group_content_type, 'Enforced plugins were installed after config import.');
+    $this->assertNotNull($relationship_type, 'Enforced plugins were installed after config import.');
   }
 
 }

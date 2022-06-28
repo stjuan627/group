@@ -66,20 +66,20 @@ trait OperationProviderTrait {
   }
 
   /**
-   * Gets the group content type ID for the plugin on the group type.
+   * Gets the relationship type ID for the plugin on the group type.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
-   *   The group type to get the group content type ID from.
+   *   The group type to get the relationship type ID from.
    *
    * @return string|false
-   *   Either the group content type ID if the plugin was installed on the group
+   *   Either the relationship type ID if the plugin was installed on the group
    *   type or FALSE otherwise.
    */
-  protected function getGroupContentTypeId(GroupTypeInterface $group_type) {
+  protected function getRelationshipTypeId(GroupTypeInterface $group_type) {
     if ($group_type->hasPlugin($this->pluginId)) {
       $storage = $this->entityTypeManager()->getStorage('group_content_type');
       assert($storage instanceof GroupContentTypeStorageInterface);
-      return $storage->getGroupContentTypeId($group_type->id(), $this->pluginId);
+      return $storage->getRelationshipTypeId($group_type->id(), $this->pluginId);
     }
     return FALSE;
   }

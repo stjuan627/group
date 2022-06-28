@@ -34,23 +34,6 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
   public function getGroupType();
 
   /**
-   * Adds a content entity as a group content entity.
-   *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   The content entity to add to the group.
-   * @param string $plugin_id
-   *   The group relation type ID to add the entity with.
-   * @param array $values
-   *   (optional) Extra values to add to the group content relationship. You
-   *   cannot overwrite the group ID (gid) or entity ID (entity_id).
-   *
-   * @deprecated in group:2.0.0 and is removed from group:3.0.0.
-   *   Instead you should use Group::addRelationship().
-   * @see https://www.drupal.org/node/3292844
-   */
-  public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []);
-
-  /**
    * Adds an entity to a group.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -62,39 +45,39 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   overwrite the group ID (gid) or entity ID (entity_id).
    *
    * @return \Drupal\group\Entity\GroupContentInterface
-   *   The GroupContent entity for the newly added relationship.
+   *   The relationship entity for the newly added relationship.
    */
   public function addRelationship(EntityInterface $entity, $plugin_id, $values = []);
 
   /**
-   * Retrieves all GroupContent entities for the group.
+   * Retrieves all relationship entities for the group.
    *
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
-   *   A list of GroupContent entities matching the criteria.
+   *   A list of relationship entities matching the criteria.
    */
-  public function getContent($plugin_id = NULL);
+  public function getRelationships($plugin_id = NULL);
 
   /**
-   * Retrieves all GroupContent entities for a specific entity in the group.
+   * Retrieves all relationship entities for a specific entity in the group.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to load the GroupContent entities for in the group.
+   *   The entity to load the relationship entities for in the group.
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *
    * @return \Drupal\group\Entity\GroupContentInterface[]
-   *   A list of GroupContent entities matching the criteria.
+   *   A list of relationship entities matching the criteria.
    */
-  public function getContentByEntity(EntityInterface $entity, $plugin_id = NULL);
+  public function getRelationshipsByEntity(EntityInterface $entity, $plugin_id = NULL);
 
   /**
-   * Retrieves all group content for the group.
+   * Retrieves all related entities for the group.
    *
-   * Unlike GroupInterface::getContent(), this function actually returns the
-   * entities that were added to the group through GroupContent entities.
+   * Unlike GroupInterface::getRelationships(), this function actually returns
+   * the entities that were added to the group through relationship entities.
    *
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
@@ -103,9 +86,9 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   A list of entities matching the criteria. This list does not have keys
    *   that represent the entity IDs as we could have collisions that way.
    *
-   * @see \Drupal\group\Entity\GroupInterface::getContent()
+   * @see \Drupal\group\Entity\GroupInterface::getRelationships()
    */
-  public function getContentEntities($plugin_id = NULL);
+  public function getRelatedEntities($plugin_id = NULL);
 
   /**
    * Adds a user as a member of the group.

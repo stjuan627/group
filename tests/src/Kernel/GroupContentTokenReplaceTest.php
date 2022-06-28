@@ -7,7 +7,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\BubbleableMetadata;
 
 /**
- * Generates text using placeholders for dummy content to check group content
+ * Generates text using placeholders for dummy content to check relationship
  * token replacement.
  *
  * @group group
@@ -15,7 +15,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
 
   /**
-   * Tests the tokens replacement for group content.
+   * Tests the tokens replacement for relationship.
    */
   function testGroupContentTokenReplacement() {
     $url_options = [
@@ -23,7 +23,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
       'language' => $this->interfaceLanguage,
     ];
 
-    // Create a group and retrieve the group content for the owner's membership.
+    // Create a group and retrieve the relationship for the owner's membership.
     $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
     $account = $group->getOwner();
     $group_content = $group->getMember($account)->getGroupContent();
@@ -61,7 +61,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
     foreach ($tests as $token => $expected) {
       $bubbleable_metadata = new BubbleableMetadata();
       $output = $this->tokenService->replace($token, ['group_content' => $group_content], ['langcode' => $this->interfaceLanguage->getId()], $bubbleable_metadata);
-      $this->assertEquals($output, $expected, new FormattableMarkup('Group content token %token replaced.', ['%token' => $token]));
+      $this->assertEquals($output, $expected, sprintf('Group relationship token %s replaced.', $token));
       $this->assertEquals($bubbleable_metadata, $metadata_tests[$token]);
     }
   }

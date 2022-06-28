@@ -8,7 +8,7 @@ use Drupal\group\Entity\GroupContentInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Form controller for the group content edit forms.
+ * Form controller for the relationship edit forms.
  *
  * @ingroup group
  */
@@ -31,7 +31,7 @@ class GroupContentForm extends ContentEntityForm {
   }
 
   /**
-   * Returns the plugin responsible for this piece of group content.
+   * Returns the plugin responsible for this relationship.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The responsible group relation.
@@ -48,7 +48,7 @@ class GroupContentForm extends ContentEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    // Do not allow to edit the group content subject through the UI. Also hide
+    // Do not allow to edit the relationship subject through the UI. Also hide
     // the field when we are on step 2 of a creation wizard.
     if ($this->operation !== 'add' || $form_state->get('group_wizard')) {
       $form['entity_id']['#access'] = FALSE;
@@ -92,7 +92,7 @@ class GroupContentForm extends ContentEntityForm {
           $actions['submit']['#value'] = $this->t('Add new @entity_type to @group', $replace);
         }
 
-        // Make sure we complete the wizard before saving the group content.
+        // Make sure we complete the wizard before saving the relationship.
         $index = array_search('::save', $actions['submit']['#submit']);
         array_splice($actions['submit']['#submit'], $index, 0, '::complete');
       }
@@ -111,9 +111,9 @@ class GroupContentForm extends ContentEntityForm {
     assert($group_content instanceof GroupContentInterface);
 
     // The below redirect ensures the user will be redirected to something they
-    // can view in the following order: The relationship entity (group content),
-    // they target entity itself, the group and finally the front page. This
-    // only applies if there was no destination GET parameter set in the URL.
+    // can view in the following order: The relationship, the target entity
+    // itself, the group and finally the front page. This only applies if there
+    // was no destination GET parameter set in the URL.
     if ($group_content->access('view')) {
       $form_state->setRedirectUrl($group_content->toUrl());
     }
@@ -182,7 +182,7 @@ class GroupContentForm extends ContentEntityForm {
     $form_object->setEntity($entity);
     $form_object->save($form, $form_state);
 
-    // Add the newly saved entity's ID to the group content entity.
+    // Add the newly saved entity's ID to the relationship entity.
     $property = $wizard_id == 'group_creator' ? 'gid' : 'entity_id';
     $this->entity->set($property, $entity->id());
 

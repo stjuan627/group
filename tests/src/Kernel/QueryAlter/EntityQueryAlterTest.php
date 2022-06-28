@@ -40,7 +40,7 @@ class EntityQueryAlterTest extends EntityQueryAlterTestBase {
     // Add two entities, one of which belongs to a group.
     $this->createTestEntity();
     $group = $this->createGroup(['type' => $group_type->id()]);
-    $group->addContent($this->createTestEntity(['type' => 'page']), 'entity_test_as_content');
+    $group->addRelationship($this->createTestEntity(['type' => 'page']), 'entity_test_as_content');
     return $group;
   }
 

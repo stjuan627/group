@@ -56,8 +56,8 @@ class OperationProvider implements OperationProviderInterface {
     $operations = [];
 
     $ui_allowed = !$this->groupRelationType->isEnforced() && !$this->groupRelationType->isCodeOnly();
-    if ($group_content_type_id = $this->getGroupContentTypeId($group_type)) {
-      $route_params = ['group_content_type' => $group_content_type_id];
+    if ($relationship_type_id = $this->getRelationshipTypeId($group_type)) {
+      $route_params = ['group_content_type' => $relationship_type_id];
       $operations['configure'] = [
         'title' => $this->t('Configure'),
         'url' => new Url('entity.group_content_type.edit_form', $route_params),
@@ -74,8 +74,8 @@ class OperationProvider implements OperationProviderInterface {
       // This could be in its own decorator, but then it would live in a module
       // of its own purely for field_ui support. So let's keep it here.
       if ($this->moduleHandler->moduleExists('field_ui')) {
-        $group_content_type = $this->entityTypeManager()->getStorage('group_content_type')->load($group_content_type_id);
-        $operations += field_ui_entity_operation($group_content_type);
+        $relationship_type = $this->entityTypeManager()->getStorage('group_content_type')->load($relationship_type_id);
+        $operations += field_ui_entity_operation($relationship_type);
       }
     }
     elseif ($ui_allowed) {

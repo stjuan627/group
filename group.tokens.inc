@@ -77,24 +77,24 @@ function group_token_info() {
   ];
 
   $types['group_content'] = [
-    'name' => t('Group content'),
+    'name' => t('Group relationship'),
     'description' => t('Tokens related to the relationships between a group and its content.'),
     'needs-data' => 'group_content',
   ];
 
   $tokens['group_content']['id'] = [
-    'name' => t('Group content ID'),
-    'description' => t('The unique ID of the group content.'),
+    'name' => t('Group relationship ID'),
+    'description' => t('The unique ID of the group relationship.'),
   ];
 
   $tokens['group_content']['langcode'] = [
     'name' => t('Language code'),
-    'description' => t('The language code of the language the group content is in.'),
+    'description' => t('The language code of the language the group relationship is in.'),
   ];
 
   $tokens['group_content']['url'] = [
     'name' => t('URL'),
-    'description' => t('The URL of the group content.'),
+    'description' => t('The URL of the group relationship.'),
   ];
 
   $tokens['group_content']['edit-url'] = [
@@ -109,7 +109,7 @@ function group_token_info() {
 
   $tokens['group_content']['changed'] = [
     'name' => t('Date changed'),
-    'description' => t('The date the group content was most recently updated.'),
+    'description' => t('The date the group relationship was most recently updated.'),
     'type' => 'date',
   ];
 
@@ -120,7 +120,7 @@ function group_token_info() {
 
   $tokens['group_content']['pretty-path-key'] = [
     'name' => t('Pretty path key'),
-    'description' => t('A prettier way of labeling group content of the same plugin type.'),
+    'description' => t('A prettier way of labeling group relationship of the same relation type.'),
   ];
 
   return ['types' => $types, 'tokens' => $tokens];

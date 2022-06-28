@@ -33,7 +33,7 @@ class GroupContentQueryAlter extends QueryAlterBase {
    * {@inheritdoc}
    */
   protected function doAlter($operation) {
-    // If any new group content is added, it might change access.
+    // If any new relationship is added, it might change access.
     $this->cacheableMetadata->addCacheTags(['group_content_list']);
 
     // Retrieve the full list of group permissions for the user.

@@ -81,7 +81,7 @@ class GroupContentTest extends GroupKernelTestBase {
     $account = $this->createUser(['changed' => $changed]);
 
     $group = $this->createGroup(['type' => $this->createGroupType()->id()]);
-    $group->addContent($account, 'group_membership');
+    $group->addRelationship($account, 'group_membership');
 
     // All users whose changed time was set to 123456789 get their changed time
     // set to 530496000 in group_test_user_update() when the account is updated.
@@ -155,7 +155,7 @@ class GroupContentTest extends GroupKernelTestBase {
     }
 
     // Add another user to another group and verify cache entries.
-    $extra_group->addContent($extra_account, 'user_as_content');
+    $extra_group->addRelationship($extra_account, 'user_as_content');
     $this->assertNotFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin found.');
     $this->assertNotFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin found.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
@@ -163,7 +163,7 @@ class GroupContentTest extends GroupKernelTestBase {
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
     // Add another user as content to the group and verify cache entries.
-    $test_group->addContent($extra_account, 'user_as_content');
+    $test_group->addRelationship($extra_account, 'user_as_content');
     $this->assertFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin cleared.');
     $this->assertNotFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin found.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
@@ -171,7 +171,7 @@ class GroupContentTest extends GroupKernelTestBase {
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
     // Add the user as content to another group and verify cache entries.
-    $extra_group->addContent($test_account, 'user_as_content');
+    $extra_group->addRelationship($test_account, 'user_as_content');
     $this->assertFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin cleared.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin found.');

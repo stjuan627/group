@@ -8,12 +8,12 @@ use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentInterface;
 
 /**
- * Provides a form for deleting a group content entity.
+ * Provides a form for deleting a relationship entity.
  */
 class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
 
   /**
-   * Returns the plugin responsible for this piece of group content.
+   * Returns the plugin responsible for this relationship.
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
    *   The responsible group relation.

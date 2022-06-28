@@ -51,11 +51,11 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   protected $groupTypeStorage;
 
   /**
-   * A group content type storage handler.
+   * A relationship type storage handler.
    *
    * @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface
    */
-  protected $groupContentTypeStorage;
+  protected $relationshipTypeStorage;
 
   /**
    * A collection of vanilla instances of all group relations.
@@ -65,21 +65,21 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   protected $allPlugins;
 
   /**
-   * An list each group type's installed plugins as plugin collections.
+   * A list each group type's installed plugins as plugin collections.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationCollection[]
    */
   protected $groupTypeInstalled = [];
 
   /**
-   * An static cache of group content type IDs per plugin ID.
+   * A static cache of relationship type IDs per plugin ID.
    *
    * @var array[]
    */
   protected $pluginGroupContentTypeMap;
 
   /**
-   * The cache key for the group content type IDs per plugin ID map.
+   * The cache key for the relationship type IDs per plugin ID map.
    *
    * @var string
    */
@@ -228,16 +228,16 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   }
 
   /**
-   * Returns the group content type storage handler.
+   * Returns the relationship type storage handler.
    *
    * @return \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface
-   *   The group content type storage handler.
+   *   The relationship type storage handler.
    */
-  protected function getGroupContentTypeStorage() {
-    if (!isset($this->groupContentTypeStorage)) {
-      $this->groupContentTypeStorage = $this->entityTypeManager->getStorage('group_content_type');
+  protected function getRelationshipTypeStorage() {
+    if (!isset($this->relationshipTypeStorage)) {
+      $this->relationshipTypeStorage = $this->entityTypeManager->getStorage('group_content_type');
     }
-    return $this->groupContentTypeStorage;
+    return $this->relationshipTypeStorage;
   }
 
   /**
@@ -246,17 +246,17 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   public function getInstalled(GroupTypeInterface $group_type) {
     if (!isset($this->groupTypeInstalled[$group_type->id()])) {
       $configurations = [];
-      $group_content_types = $this->getGroupContentTypeStorage()->loadByGroupType($group_type);
+      $relationship_types = $this->getRelationshipTypeStorage()->loadByGroupType($group_type);
 
-      // Get the plugin config from every group content type for the group type.
-      foreach ($group_content_types as $group_content_type) {
-        $plugin_id = $group_content_type->getPluginId();
+      // Get the plugin config from every relationship type for the group type.
+      foreach ($relationship_types as $relationship_type) {
+        $plugin_id = $relationship_type->getPluginId();
 
-        // Grab the plugin config from every group content type and amend it
+        // Grab the plugin config from every relationship type and amend it
         // with the group type ID so the plugin knows what group type to use. We
         // also specify the 'id' key because DefaultLazyPluginCollection throws
         // an exception if it is not present.
-        $configuration = $group_content_type->get('plugin_config');
+        $configuration = $relationship_type->get('plugin_config');
         $configuration['group_type_id'] = $group_type->id();
         $configuration['id'] = $plugin_id;
 
@@ -332,7 +332,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
 
       foreach ($enforced as $plugin_id) {
         if (!in_array($plugin_id, $installed)) {
-          $this->getGroupContentTypeStorage()->createFromPlugin($group_type, $plugin_id)->save();
+          $this->getRelationshipTypeStorage()->createFromPlugin($group_type, $plugin_id)->save();
         }
       }
     }
@@ -341,7 +341,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * {@inheritdoc}
    */
-  public function getGroupContentTypeIds($plugin_id) {
+  public function getRelationshipTypeIds($plugin_id) {
     $map = $this->getPluginGroupContentTypeMap();
     return isset($map[$plugin_id]) ? $map[$plugin_id] : [];
   }
@@ -355,10 +355,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     if (!isset($map)) {
       $map = [];
 
-      $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
-      foreach ($group_content_types as $group_content_type) {
-        assert($group_content_type instanceof GroupContentTypeInterface);
-        $map[$group_content_type->getPluginId()][] = $group_content_type->id();
+      $relationship_types = $this->getRelationshipTypeStorage()->loadMultiple();
+      foreach ($relationship_types as $relationship_type) {
+        assert($relationship_type instanceof GroupContentTypeInterface);
+        $map[$relationship_type->getPluginId()][] = $relationship_type->id();
       }
 
       $this->setCachedPluginGroupContentTypeMap($map);
@@ -368,10 +368,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   }
 
   /**
-   * Returns the cached group content type ID map.
+   * Returns the cached relationship type ID map.
    *
    * @return array|null
-   *   On success this will return the group content ID map (array). On failure
+   *   On success this will return the relationship ID map (array). On failure
    *   this should return NULL, indicating to other methods that this has not
    *   yet been defined. Success with no values should return as an empty array.
    */
@@ -383,10 +383,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   }
 
   /**
-   * Sets a cache of the group content type ID map.
+   * Sets a cache of the relationship type ID map.
    *
    * @param array $map
-   *   The group content type ID map to store in cache.
+   *   The relationship type ID map to store in cache.
    */
   protected function setCachedPluginGroupContentTypeMap(array $map) {
     $this->cacheSet($this->pluginGroupContentTypeMapCacheKey, $map, Cache::PERMANENT);
@@ -402,10 +402,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     if (!isset($map)) {
       $map = [];
 
-      $group_content_types = $this->getGroupContentTypeStorage()->loadMultiple();
-      foreach ($group_content_types as $group_content_type) {
-        assert($group_content_type instanceof GroupContentTypeInterface);
-        $map[$group_content_type->getGroupTypeId()][] = $group_content_type->getPluginId();
+      $relationship_types = $this->getRelationshipTypeStorage()->loadMultiple();
+      foreach ($relationship_types as $relationship_type) {
+        assert($relationship_type instanceof GroupContentTypeInterface);
+        $map[$relationship_type->getGroupTypeId()][] = $relationship_type->getPluginId();
       }
 
       $this->setCachedGroupTypePluginMap($map);

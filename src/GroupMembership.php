@@ -16,7 +16,7 @@ use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 class GroupMembership implements CacheableDependencyInterface {
 
   /**
-   * The group content entity to wrap.
+   * The relationship entity to wrap.
    *
    * @var \Drupal\group\Entity\GroupContentInterface
    */
@@ -26,7 +26,7 @@ class GroupMembership implements CacheableDependencyInterface {
    * Constructs a new GroupMembership.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The group content entity representing the membership.
+   *   The relationship entity representing the membership.
    *
    * @throws \Exception
    *   Exception thrown when trying to instantiate this class with a
@@ -34,7 +34,7 @@ class GroupMembership implements CacheableDependencyInterface {
    *   enabler plugin.
    */
   public function __construct(GroupContentInterface $group_content) {
-    if ($group_content->getGroupContentType()->getPluginId() == 'group_membership') {
+    if ($group_content->getRelationshipType()->getPluginId() == 'group_membership') {
       $this->groupContent = $group_content;
     }
     else {

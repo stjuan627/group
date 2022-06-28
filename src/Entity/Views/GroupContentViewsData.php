@@ -8,7 +8,7 @@ use Drupal\views\EntityViewsData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides the views data for the group content entity type.
+ * Provides the views data for the relationship entity type.
  */
 class GroupContentViewsData extends EntityViewsData {
 
@@ -74,18 +74,18 @@ class GroupContentViewsData extends EntityViewsData {
         '@entity_type' => $entity_type->getLabel(),
       ];
 
-      // This relationship will allow a group content entity to easily map to a
+      // This relationship will allow a relationship entity to easily map to a
       // content entity that it ties to a group, optionally filtering by plugin.
       $data[$data_table][$field_name] = [
-        'title' => $this->t('@entity_type from group content', $t_args),
-        'help' => $this->t('Relates to the @entity_type entity the group content represents.', $t_args),
+        'title' => $this->t('@entity_type from group relationship', $t_args),
+        'help' => $this->t('Relates to the @entity_type entity the group relationship represents.', $t_args),
         'relationship' => [
           'group' => $entity_type->getLabel(),
           'base' => $entity_data_table,
           'base field' => $entity_type->getKey('id'),
           'relationship field' => 'entity_id',
           'id' => 'group_content_to_entity',
-          'label' => $this->t('Group content @entity_type', $t_args),
+          'label' => $this->t('Group relationship @entity_type', $t_args),
           'target_entity_type' => $entity_type_id,
         ],
       ];

@@ -49,11 +49,11 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
   }
 
   /**
-   * Gets the group content storage.
+   * Gets the relationship storage.
    *
    * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
    */
-  protected function groupContentStorage() {
+  protected function groupRelationshipStorage() {
     return $this->entityTypeManager->getStorage('group_content');
   }
 
@@ -78,7 +78,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * {@inheritdoc}
    */
   public function load(GroupInterface $group, AccountInterface $account) {
-    $ids = $this->groupContentStorage()
+    $ids = $this->groupRelationshipStorage()
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('gid', $group->id())
@@ -86,7 +86,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       ->condition('plugin_id', 'group_membership')
       ->execute();
 
-    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
       $group_memberships = $this->wrapGroupContentEntities($group_contents);
       return reset($group_memberships);
     }
@@ -98,7 +98,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * {@inheritdoc}
    */
   public function loadByGroup(GroupInterface $group, $roles = NULL) {
-    $query = $this->groupContentStorage()
+    $query = $this->groupRelationshipStorage()
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('gid', $group->id())
@@ -109,7 +109,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     }
 
     $ids = $query->execute();
-    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
       return $this->wrapGroupContentEntities($group_contents);
     }
 
@@ -124,7 +124,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       $account = $this->currentUser;
     }
 
-    $query = $this->groupContentStorage()
+    $query = $this->groupRelationshipStorage()
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('entity_id', $account->id())
@@ -135,7 +135,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     }
 
     $ids = $query->execute();
-    if ($ids && $group_contents = $this->groupContentStorage()->loadMultiple($ids)) {
+    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
       return $this->wrapGroupContentEntities($group_contents);
     }
 

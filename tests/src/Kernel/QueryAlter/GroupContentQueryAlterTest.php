@@ -9,7 +9,7 @@ use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\group\QueryAccess\GroupContentQueryAlter;
 
 /**
- * Tests the behavior of group content query alter.
+ * Tests the behavior of relationship query alter.
  *
  * @coversDefaultClass \Drupal\group\QueryAccess\GroupContentQueryAlter
  * @group group

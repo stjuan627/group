@@ -70,7 +70,7 @@ class EntityQueryAlter extends QueryAlterBase {
       return;
     }
 
-    // If any new group content entity is added using any of the retrieved
+    // If any new relationship entity is added using any of the retrieved
     // plugins, it might change access.
     $cache_tags = [];
     foreach ($plugin_ids as $plugin_id) {
@@ -78,7 +78,7 @@ class EntityQueryAlter extends QueryAlterBase {
     }
     $this->cacheableMetadata->addCacheTags($cache_tags);
 
-    // If there is no group content using the plugins, there's no point in going
+    // If there are no relationships using the plugins, there's no point in going
     // any further. The cache tags above will invalidate our result if new group
     // content is created using the plugins that define access. Retrieve the
     // plugin IDs in use to optimize a loop further below.
@@ -98,7 +98,7 @@ class EntityQueryAlter extends QueryAlterBase {
     // we need to check access, so we can LEFT JOIN the necessary table.
     $id_key = $this->entityType->getKey('id');
 
-    // Join the group content table, but only for used plugins.
+    // Join the relationship table, but only for used plugins.
     $base_table = $this->ensureBaseTable();
     $this->joinAliasPlugins = $this->query->leftJoin(
       'group_content_field_data',

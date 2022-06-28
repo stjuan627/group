@@ -13,20 +13,21 @@ use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 use Drupal\user\EntityOwnerTrait;
 
 /**
- * Defines the Group content entity.
+ * Defines the relationship entity.
  *
  * @ingroup group
+ * @todo Rename to Relationship / group_relationship.
  *
  * @ContentEntityType(
  *   id = "group_content",
- *   label = @Translation("Group content"),
- *   label_singular = @Translation("group content item"),
- *   label_plural = @Translation("group content items"),
+ *   label = @Translation("Group relationship"),
+ *   label_singular = @Translation("group relationship"),
+ *   label_plural = @Translation("group relationships"),
  *   label_count = @PluralTranslation(
- *     singular = "@count group content item",
- *     plural = "@count group content items"
+ *     singular = "@count group relationship",
+ *     plural = "@count group relationships"
  *   ),
- *   bundle_label = @Translation("Group content type"),
+ *   bundle_label = @Translation("Group relationship type"),
  *   handlers = {
  *     "storage" = "Drupal\group\Entity\Storage\GroupContentStorage",
  *     "storage_schema" = "Drupal\group\Entity\Storage\GroupContentStorageSchema",
@@ -82,7 +83,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public function getGroupContentType() {
+  public function getRelationshipType() {
     return $this->get('type')->entity;
   }
 
@@ -128,7 +129,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public function getPlugin() {
-    return $this->getGroupContentType()->getPlugin();
+    return $this->getRelationshipType()->getPlugin();
   }
 
   /**
@@ -208,8 +209,8 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     parent::preSave($storage);
 
     // Set the denormalized data from the bundle entity.
-    $this->set('plugin_id', $this->getGroupContentType()->getPluginId());
-    $this->set('group_type', $this->getGroupContentType()->getGroupTypeId());
+    $this->set('plugin_id', $this->getRelationshipType()->getPluginId());
+    $this->set('group_type', $this->getRelationshipType()->getGroupTypeId());
 
     // Set the label so the DB also reflects it.
     $this->set('label', $this->label());
@@ -264,7 +265,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
         // we need to re-save entities that were removed from one. See
         // ::postSave(). We only save the entity if it still exists to avoid
         // trying to save an entity that just got deleted and triggered the
-        // deletion of its group content entities.
+        // deletion of its relationship entities.
         // @todo Revisit when https://www.drupal.org/node/2754399 lands.
         $entity->save();
 
@@ -287,7 +288,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     $tags = parent::getListCacheTagsToInvalidate();
 
     $group_id = $this->get('gid')->target_id;
-    $plugin_id = $this->getGroupContentType()->getPluginId();
+    $plugin_id = $this->getRelationshipType()->getPluginId();
     if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
       $entity_id = $this->get('entity_id')->entity->getConfigEntityId();
     }
@@ -361,19 +362,19 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
       ]);
 
     $fields['uid']
-      ->setLabel(t('Group content creator'))
-      ->setDescription(t('The username of the group content creator.'))
+      ->setLabel(t('Group relationship creator'))
+      ->setDescription(t('The username of the group relationship creator.'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created on'))
-      ->setDescription(t('The time that the group content was created.'))
+      ->setDescription(t('The time that the group relationship was created.'))
       ->setTranslatable(TRUE);
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed on'))
-      ->setDescription(t('The time that the group content was last edited.'))
+      ->setDescription(t('The time that the group relationship was last edited.'))
       ->setTranslatable(TRUE);
 
     // The following fields are denormalizations of info found on the bundle,
@@ -409,11 +410,11 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
-    if ($group_content_type = GroupContentType::load($bundle)) {
-      assert($group_content_type instanceof GroupContentTypeInterface);
+    if ($relationship_type = GroupContentType::load($bundle)) {
+      assert($relationship_type instanceof GroupContentTypeInterface);
       $fields['entity_id'] = clone $base_field_definitions['entity_id'];
       _group_relation_type_manager()
-        ->getEntityReferenceHandler($group_content_type->getPluginId())
+        ->getEntityReferenceHandler($relationship_type->getPluginId())
         ->configureField($fields['entity_id']);
 
       return $fields;

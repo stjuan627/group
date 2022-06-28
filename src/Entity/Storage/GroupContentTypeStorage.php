@@ -10,15 +10,14 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines the storage handler class for group content type entities.
+ * Defines the storage handler class for relationship type entities.
  *
  * This extends the base storage class, adding required special handling for
- * loading group content type entities based on group type and plugin ID.
+ * loading relationship type entities based on group type and plugin ID.
  */
 class GroupContentTypeStorage extends ConfigEntityStorage implements GroupContentTypeStorageInterface {
 
@@ -30,7 +29,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   protected $pluginManager;
 
   /**
-   * Statically caches loaded group content types by target entity type ID.
+   * Statically caches loaded relationship types by target entity type ID.
    *
    * @var \Drupal\group\Entity\GroupContentTypeInterface[][]
    */
@@ -100,7 +99,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
       return [];
     }
 
-    // Otherwise load all group content types being handled by gathered plugins.
+    // Otherwise load all relationship types being handled by gathered plugins.
     $this->byEntityTypeCache[$entity_type_id] = $this->loadByPluginId($plugin_ids);
     return $this->byEntityTypeCache[$entity_type_id];
   }
@@ -116,9 +115,9 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
     $plugin = $this->pluginManager->createInstance($plugin_id, $configuration);
     assert($plugin instanceof GroupRelationInterface);
 
-    // Create the group content type using plugin generated info.
+    // Create the relationship type using plugin generated info.
     $values = [
-      'id' => $this->getGroupContentTypeId($group_type->id(), $plugin_id),
+      'id' => $this->getRelationshipTypeId($group_type->id(), $plugin_id),
       'group_type' => $group_type->id(),
       'content_plugin' => $plugin_id,
       'plugin_config' => $plugin->getConfiguration(),
@@ -130,7 +129,7 @@ class GroupContentTypeStorage extends ConfigEntityStorage implements GroupConten
   /**
    * {@inheritdoc}
    */
-  public function getGroupContentTypeId($group_type_id, $plugin_id) {
+  public function getRelationshipTypeId($group_type_id, $plugin_id) {
     $preferred_id = $group_type_id . '-' . str_replace(':', '-', $plugin_id);
 
     // Return a hashed ID if the readable ID would exceed the maximum length.
