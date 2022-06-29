@@ -11,7 +11,7 @@ use Drupal\user\RoleInterface;
  *
  * @group group
  */
-class EntityAccessTest extends GroupKernelTestBase {
+class ContentEntityAccessTest extends GroupKernelTestBase {
 
   /**
    * {@inheritdoc}

@@ -13,6 +13,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  *   description = @Translation("Adds node types to groups."),
  *   entity_type_id = "node_type",
  *   entity_access = TRUE,
+ *   admin_permission = "administer node_type_as_content",
  * )
  */
 class NodeTypeAsContent extends GroupRelationBase {

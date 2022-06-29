@@ -104,7 +104,7 @@ class AccessControl implements AccessControlInterface {
    */
   public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account, $return_as_object = FALSE) {
     // The Group module's ideology is that if you want to do something to a
-    // group's content, you need Group to explicitly allow access or else the
+    // grouped entity, you need Group to explicitly allow access or else the
     // result will be forbidden. Having said that, if we do not support an
     // operation yet, it's probably nicer to return neutral here. This way, any
     // module that exposes new operations will work as intended AND NOT HAVE
@@ -113,12 +113,12 @@ class AccessControl implements AccessControlInterface {
       return AccessResult::neutral();
     }
 
-    $group_contents = $this->entityTypeManager()
+    $group_relationships = $this->entityTypeManager()
       ->getStorage('group_content')
       ->loadByEntity($entity, $this->pluginId);
 
     // If this plugin is not being used by the entity, we have nothing to say.
-    if (empty($group_contents)) {
+    if (empty($group_relationships)) {
       return AccessResult::neutral();
     }
 
@@ -150,8 +150,8 @@ class AccessControl implements AccessControlInterface {
     }
     $permissions = array_filter($permissions);
 
-    foreach ($group_contents as $group_content) {
-      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
+    foreach ($group_relationships as $group_relationship) {
+      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_relationship->getGroup(), $account, $permissions, 'OR');
       if ($result->isAllowed()) {
         break;
       }

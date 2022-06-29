@@ -16,7 +16,7 @@ use Drupal\user\RoleInterface;
  *
  * @group group
  */
-class EntityAccessComplexTest extends GroupKernelTestBase {
+class ContentEntityAccessComplexTest extends GroupKernelTestBase {
 
   use NodeTypeCreationTrait;
 

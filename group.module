@@ -7,7 +7,6 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -20,9 +19,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
 use Drupal\group\Entity\Storage\GroupContentStorageInterface;
 use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
-use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\QueryAccess\EntityQueryAlter;
 use Drupal\group\QueryAccess\GroupContentQueryAlter;
 use Drupal\group\QueryAccess\GroupQueryAlter;
@@ -351,8 +350,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     return AccessResult::neutral();
   }
 
-  $plugin_manager = \Drupal::service('group_relation_type.manager');
-  assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
+  $plugin_manager = _group_relation_type_manager();
 
   // Find all of the group relations that define access.
   $plugin_ids = $plugin_manager->getPluginIdsByEntityTypeAccess($entity->getEntityTypeId());
@@ -368,6 +366,16 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
   }
   $access = AccessResult::neutral()->addCacheTags($plugin_cache_tags);
 
+  // If the entity is config, we need to find the wrapper for it.
+  if ($entity instanceof ConfigEntityInterface) {
+    $wrapper_storage = \Drupal::entityTypeManager()->getStorage('group_config_wrapper');
+    assert($wrapper_storage instanceof ConfigWrapperStorageInterface);
+    $entity_id = $wrapper_storage->wrapEntity($entity)->id();
+  }
+  else {
+    $entity_id = $entity->id();
+  }
+
   // Reduce the plugin IDs to those that are actually in use.
   $data_table = \Drupal::entityTypeManager()
     ->getDefinition('group_content')
@@ -376,7 +384,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
   $plugin_ids_used = \Drupal::database()
     ->select($data_table, 'd')
     ->fields('d', ['plugin_id'])
-    ->condition('entity_id', $entity->id())
+    ->condition('entity_id', $entity_id)
     ->condition('plugin_id', $plugin_ids, 'IN')
     ->distinct(TRUE)
     ->execute()
