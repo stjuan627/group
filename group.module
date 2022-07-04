@@ -408,14 +408,21 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
  * Implements hook_entity_delete().
  */
 function group_entity_delete(EntityInterface $entity) {
-  if ($entity instanceof ContentEntityInterface) {
-    $storage = \Drupal::entityTypeManager()->getStorage('group_content');
-    assert($storage instanceof GroupContentStorageInterface);
+  $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+  assert($storage instanceof GroupContentStorageInterface);
 
-    if ($group_contents = $storage->loadByEntity($entity)) {
-      foreach ($group_contents as $group_content) {
-        $group_content->delete();
-      }
+  // See if any relationships exist for the entity and delete them as well.
+  if ($relationships = $storage->loadByEntity($entity)) {
+    $storage->delete($relationships);
+  }
+
+  // Now that we've deleted all of the relationships, we can also see if the
+  // entity was wrapped and delete the wrapper if necessary.
+  if ($entity instanceof ConfigEntityInterface) {
+    $storage = \Drupal::entityTypeManager()->getStorage('group_config_wrapper');
+    assert($storage instanceof ConfigWrapperStorageInterface);
+    if ($wrapper = $storage->wrapEntity($entity, FALSE)) {
+      $storage->delete([$wrapper]);
     }
   }
 }

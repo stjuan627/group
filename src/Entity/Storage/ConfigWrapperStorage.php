@@ -13,7 +13,7 @@ class ConfigWrapperStorage extends SqlContentEntityStorage implements ConfigWrap
   /**
    * {@inheritdoc}
    */
-  public function wrapEntity(ConfigEntityInterface $entity) {
+  public function wrapEntity(ConfigEntityInterface $entity, $create_if_missing = TRUE) {
     $properties = [
       'bundle' => $entity->getEntityTypeId(),
       'entity_id' => $entity->id()
@@ -23,9 +23,13 @@ class ConfigWrapperStorage extends SqlContentEntityStorage implements ConfigWrap
       return reset($wrappers);
     }
 
-    $wrapper = $this->create($properties);
-    $this->save($wrapper);
-    return $wrapper;
+    if ($create_if_missing) {
+      $wrapper = $this->create($properties);
+      $this->save($wrapper);
+      return $wrapper;
+    }
+
+    return FALSE;
   }
 
 }

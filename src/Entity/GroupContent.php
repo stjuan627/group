@@ -5,6 +5,7 @@ namespace Drupal\group\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -151,7 +152,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
-  public static function loadByEntity(ContentEntityInterface $entity) {
+  public static function loadByEntity(EntityInterface $entity) {
     $storage = \Drupal::entityTypeManager()->getStorage('group_content');
     assert($storage instanceof GroupContentStorageInterface);
     return $storage->loadByEntity($entity);

@@ -11,14 +11,18 @@ use Drupal\Core\Entity\ContentEntityStorageInterface;
 interface ConfigWrapperStorageInterface extends ContentEntityStorageInterface {
 
   /**
-   * Creates a ConfigWrapper entity a config entity is none exists yet.
+   * Retrieves a ConfigWrapper entity for a given config entity.
    *
    * @param \Drupal\Core\Config\Entity\ConfigEntityInterface $entity
    *   The content entity to add to the group.
+   * @param bool $create_if_missing
+   *   (optional) Whether to create a wrapper if none exists yet. Defaults to
+   *   TRUE.
    *
-   * @return \Drupal\group\Entity\ConfigWrapperInterface
-   *   A new or loaded ConfigWrapper entity.
+   * @return \Drupal\group\Entity\ConfigWrapperInterface|false
+   *   A new or loaded ConfigWrapper entity or FALSE if $create_if_missing was
+   *   set to FALSE and no wrapper could be loaded.
    */
-  public function wrapEntity(ConfigEntityInterface $entity);
+  public function wrapEntity(ConfigEntityInterface $entity, $create_if_missing = TRUE);
 
 }

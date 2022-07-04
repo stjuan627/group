@@ -53,6 +53,19 @@ class ConfigWrapperStorageTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests that nothing is wrapped if flag is set to only load.
+   *
+   * @covers ::wrapEntity
+   * @depends testWrapEntity
+   */
+  public function testWrapEntityNoCreate() {
+    $node_type = $this->createNodeType();
+    $this->assertFalse($this->storage->wrapEntity($node_type, FALSE));
+    $this->storage->wrapEntity($node_type);
+    $this->assertNotFalse($this->storage->wrapEntity($node_type, FALSE));
+  }
+
+  /**
    * Tests the loading of a ConfigWrapper entity.
    *
    * @covers ::wrapEntity

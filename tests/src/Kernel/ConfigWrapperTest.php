@@ -22,11 +22,19 @@ class ConfigWrapperTest extends GroupKernelTestBase {
   public static $modules = ['group_test_plugin', 'node'];
 
   /**
+   * The config wrapper storage.
+   *
+   * @var \Drupal\group\Entity\Storage\ConfigWrapperStorageInterface
+   */
+  protected $storage;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
     $this->installEntitySchema('node');
+    $this->storage = $this->entityTypeManager->getStorage('group_config_wrapper');
 
     // Install the node type handling plugin on a group type.
     $storage = $this->entityTypeManager->getStorage('group_content_type');
@@ -41,7 +49,7 @@ class ConfigWrapperTest extends GroupKernelTestBase {
    */
   public function testGetConfigEntity() {
     $node_type = $this->createNodeType();
-    $wrapper = $this->createConfigWrapper(['bundle' => 'node_type', 'entity_id' => $node_type->id()]);
+    $wrapper = $this->storage->wrapEntity($node_type);
     $wrapped = $wrapper->getConfigEntity();
 
     $this->assertEquals($node_type->id(), $wrapped->id());
@@ -55,24 +63,23 @@ class ConfigWrapperTest extends GroupKernelTestBase {
    */
   public function testGetConfigEntityId() {
     $node_type = $this->createNodeType();
-    $wrapper = $this->createConfigWrapper(['bundle' => 'node_type', 'entity_id' => $node_type->id()]);
+    $wrapper = $this->storage->wrapEntity($node_type);
     $this->assertEquals($node_type->id(), $wrapper->getConfigEntityId());
   }
 
   /**
-   * Creates a config wrapper.
+   * Tests that wrappers are deleted along with their config entity.
    *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\ConfigWrapperInterface
-   *   The created config wrapper entity.
+   * @covers \group_entity_delete
    */
-  protected function createConfigWrapper(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
-    $wrapper = $storage->create($values);
-    $storage->save($wrapper);
-    return $wrapper;
+  public function testDeleteConfigEntity() {
+    $node_type = $this->createNodeType();
+    $this->storage->wrapEntity($node_type);
+
+    $properties = ['bundle' => 'node_type', 'entity_id' => $node_type->id()];
+    $this->assertNotEmpty($this->storage->loadByProperties($properties));
+    $node_type->delete();
+    $this->assertEmpty($this->storage->loadByProperties($properties));
   }
 
 }
