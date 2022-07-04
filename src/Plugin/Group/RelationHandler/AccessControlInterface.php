@@ -18,7 +18,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
    * @param string $operation
    *   The permission operation. Usually "create", "view", "update" or "delete".
    * @param string $target
-   *   The target of the operation. Can be 'relation' or 'entity'.
+   *   The target of the operation. Can be 'relationship' or 'entity'.
    *
    * @return bool
    *   Whether the operation is supported.
@@ -26,7 +26,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
   public function supportsOperation($operation, $target);
 
   /**
-   * Checks access to an operation on the relation.
+   * Checks access to an operation on the relationship.
    *
    * @param \Drupal\group\Entity\GroupContentInterface $group_content
    *   The relationship for which to check access.
@@ -45,10 +45,10 @@ interface AccessControlInterface extends RelationHandlerInterface {
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
    */
-  public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE);
+  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE);
 
   /**
-   * Checks access to create a relation.
+   * Checks access to create a relationship.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to check for relationship create access.
@@ -64,7 +64,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
    */
-  public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE);
+  public function relationshipCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE);
 
   /**
    * Checks access to an operation on the entity.

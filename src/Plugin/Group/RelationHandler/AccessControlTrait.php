@@ -77,21 +77,21 @@ trait AccessControlTrait {
   /**
    * {@inheritdoc}
    */
-  public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
     if (!isset($this->parent)) {
       throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
     }
-    return $this->parent->relationAccess($group_content, $operation, $account, $return_as_object);
+    return $this->parent->relationshipAccess($group_content, $operation, $account, $return_as_object);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
+  public function relationshipCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
     if (!isset($this->parent)) {
       throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
     }
-    return $this->parent->relationCreateAccess($group, $account, $return_as_object);
+    return $this->parent->relationshipCreateAccess($group, $account, $return_as_object);
   }
 
   /**

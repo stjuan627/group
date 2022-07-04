@@ -44,8 +44,8 @@ class GroupContentQueryAlter extends QueryAlterBase {
     foreach (array_keys($this->pluginManager->getDefinitions()) as $plugin_id) {
       $handler = $this->pluginManager->getPermissionProvider($plugin_id);
       $admin_permission = $handler->getAdminPermission();
-      $any_permission = $handler->getPermission($operation, 'relation', 'any');
-      $own_permission = $handler->getPermission($operation, 'relation', 'own');
+      $any_permission = $handler->getPermission($operation, 'relationship', 'any');
+      $own_permission = $handler->getPermission($operation, 'relationship', 'own');
 
       foreach ($calculated_permissions->getItems() as $item) {
         if ($admin_permission !== FALSE && $item->hasPermission($admin_permission)) {

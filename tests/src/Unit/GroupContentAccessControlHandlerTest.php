@@ -102,7 +102,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);
-    $access_control->relationAccess($group_content->reveal(), 'some_operation', $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
+    $access_control->relationshipAccess($group_content->reveal(), 'some_operation', $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
     $this->groupRelationTypeManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
 
     $result = $this->accessControlHandler->access(
@@ -130,7 +130,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);
-    $access_control->relationCreateAccess($group->reveal(), $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
+    $access_control->relationshipCreateAccess($group->reveal(), $this->account->reveal(), TRUE)->shouldBeCalled()->willReturn($access_result);
     $this->groupRelationTypeManager->getAccessControlHandler('bar')->willReturn($access_control->reveal());
 
     $result = $this->accessControlHandler->createAccess(

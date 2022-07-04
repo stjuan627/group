@@ -25,7 +25,7 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
   public function getPermission($operation, $target, $scope = 'any') {
     // The following permissions are handled by the admin permission or have a
     // different permission name.
-    if ($target === 'relation') {
+    if ($target === 'relationship') {
       switch ($operation) {
         case 'create':
           return FALSE;
@@ -56,29 +56,29 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
     ];
 
     // Alter the update own permission.
-    if ($name = $this->parent->getPermission('update', 'relation', 'own')) {
+    if ($name = $this->parent->getPermission('update', 'relationship', 'own')) {
       $permissions[$name]['title'] = 'Edit own membership';
       $permissions[$name]['allowed for'] = ['member'];
     }
 
     // Alter and rename the delete own permission.
-    if ($name = $this->parent->getPermission('delete', 'relation', 'own')) {
+    if ($name = $this->parent->getPermission('delete', 'relationship', 'own')) {
       $permissions[$name]['title'] = 'Leave group';
       $permissions[$name]['allowed for'] = ['member'];
-      $permissions[$this->getPermission('delete', 'relation', 'own')] = $permissions[$name];
+      $permissions[$this->getPermission('delete', 'relationship', 'own')] = $permissions[$name];
       unset($permissions[$name]);
     }
 
     // The following permissions are handled by the admin permission.
     foreach (['create', 'update', 'delete'] as $operation) {
-      if ($name = $this->parent->getPermission($operation, 'relation')) {
+      if ($name = $this->parent->getPermission($operation, 'relationship')) {
         unset($permissions[$name]);
       }
     }
 
     // Update the labels of the default permissions.
     $permissions[$this->getAdminPermission()]['title'] = 'Administer group members';
-    $permissions[$this->getPermission('view', 'relation')]['title'] = 'View individual group members';
+    $permissions[$this->getPermission('view', 'relationship')]['title'] = 'View individual group members';
 
     return $permissions;
   }

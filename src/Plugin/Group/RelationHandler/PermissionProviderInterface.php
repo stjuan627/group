@@ -21,7 +21,7 @@ interface PermissionProviderInterface extends RelationHandlerInterface {
    * @param string $operation
    *   The permission operation. Usually "create", "view", "update" or "delete".
    * @param string $target
-   *   The target of the operation. Can be 'relation' or 'entity'.
+   *   The target of the operation. Can be 'relationship' or 'entity'.
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
    *   Defaults to 'any'.

@@ -79,9 +79,9 @@ class GroupContentQueryAlterTest extends QueryAlterTestBase {
    */
   protected function getPermission($operation, $scope, $unpublished = FALSE) {
     if ($operation === 'view') {
-      return "$operation $this->pluginId relation";
+      return "$operation $this->pluginId relationship";
     }
-    return "$operation $scope $this->pluginId relation";
+    return "$operation $scope $this->pluginId relationship";
   }
 
   /**

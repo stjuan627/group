@@ -48,7 +48,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     assert($entity instanceof GroupContentInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($entity->getPluginId());
-    return $access_control->relationAccess($entity, $operation, $account, TRUE);
+    return $access_control->relationshipAccess($entity, $operation, $account, TRUE);
   }
 
   /**
@@ -58,7 +58,7 @@ class GroupContentAccessControlHandler extends EntityAccessControlHandler implem
     $relationship_type = $this->entityTypeManager->getStorage('group_content_type')->load($entity_bundle);
     assert($relationship_type instanceof GroupContentTypeInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($relationship_type->getPluginId());
-    return $access_control->relationCreateAccess($context['group'], $account, TRUE);
+    return $access_control->relationshipCreateAccess($context['group'], $account, TRUE);
   }
 
 }

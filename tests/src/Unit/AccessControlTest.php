@@ -56,7 +56,7 @@ class AccessControlTest extends UnitTestCase {
    * @param string $operation
    *   The permission operation. Usually "create", "view", "update" or "delete".
    * @param string $target
-   *   The target of the operation. Can be 'relation' or 'entity'.
+   *   The target of the operation. Can be 'relationship' or 'entity'.
    * @param string|false $permission
    *   The operation permission.
    * @param string|false $own_permission
@@ -79,7 +79,7 @@ class AccessControlTest extends UnitTestCase {
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getPermission($operation, $target, 'any')->willReturn($permission);
-    if ($target === 'relation' || $is_ownable) {
+    if ($target === 'relationship' || $is_ownable) {
       $permission_provider->getPermission($operation, $target, 'own')->willReturn($own_permission);
     }
     else {
@@ -102,7 +102,7 @@ class AccessControlTest extends UnitTestCase {
    *   A list of testSupportsOperation method arguments.
    */
   public function supportsOperationProvider() {
-    foreach (['relation', 'entity'] as $target) {
+    foreach (['relationship', 'entity'] as $target) {
       $keys[0] = $target;
 
       foreach (['administer foo', FALSE] as $admin_permission) {
@@ -120,7 +120,7 @@ class AccessControlTest extends UnitTestCase {
               foreach ([TRUE, FALSE] as $is_publishable) {
                 $keys[5] = $is_publishable ? 'pub' : 'nopub';
 
-                if ($target === 'relation') {
+                if ($target === 'relationship') {
                   $expected = $any_permission || $own_permission;
                 }
                 else {
@@ -179,16 +179,16 @@ class AccessControlTest extends UnitTestCase {
    * @param bool $is_owner
    *   Whether the account owns the relation.
    *
-   * @covers ::relationAccess
-   * @dataProvider relationAccessProvider
+   * @covers ::relationshipAccess
+   * @dataProvider relationshipAccessProvider
    */
-  public function testRelationAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_owner) {
+  public function testRelationshipAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_owner) {
     $operation = $this->randomMachineName();
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
-    $permission_provider->getPermission($operation, 'relation', 'any')->willReturn($permission);
-    $permission_provider->getPermission($operation, 'relation', 'own')->willReturn($own_permission);
+    $permission_provider->getPermission($operation, 'relationship', 'any')->willReturn($permission);
+    $permission_provider->getPermission($operation, 'relationship', 'own')->willReturn($own_permission);
 
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
@@ -235,17 +235,17 @@ class AccessControlTest extends UnitTestCase {
       $group->hasPermission($own_permission, $account)->shouldNotBeCalled();
     }
 
-    $result = $access_control_handler->relationAccess($group_content->reveal(), $operation, $account, TRUE);
+    $result = $access_control_handler->relationshipAccess($group_content->reveal(), $operation, $account, TRUE);
     $this->assertEquals($expected(), $result);
   }
 
   /**
-   * Data provider for testRelationAccess().
+   * Data provider for testRelationshipAccess().
    *
    * @return array
-   *   A list of testRelationAccess method arguments.
+   *   A list of testRelationshipAccess method arguments.
    */
-  public function relationAccessProvider() {
+  public function relationshipAccessProvider() {
     $cases = [];
 
     foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
@@ -328,13 +328,13 @@ class AccessControlTest extends UnitTestCase {
    * @param string|false $permission
    *   The relation create permission.
    *
-   * @covers ::relationCreateAccess
-   * @dataProvider relationCreateAccessProvider
+   * @covers ::relationshipCreateAccess
+   * @dataProvider relationshipCreateAccessProvider
    */
-  public function testRelationCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
+  public function testRelationshipCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
-    $permission_provider->getPermission('create', 'relation')->willReturn($permission);
+    $permission_provider->getPermission('create', 'relationship')->willReturn($permission);
 
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
@@ -364,17 +364,17 @@ class AccessControlTest extends UnitTestCase {
       $group->hasPermission($permission, $account)->shouldNotBeCalled();
     }
 
-    $result = $access_control_handler->relationCreateAccess($group->reveal(), $account, TRUE);
+    $result = $access_control_handler->relationshipCreateAccess($group->reveal(), $account, TRUE);
     $this->assertEquals($expected(), $result);
   }
 
   /**
-   * Data provider for testRelationCreateAccess.
+   * Data provider for testRelationshipCreateAccess.
    *
    * @return array
-   *   A list of testRelationCreateAccess method arguments.
+   *   A list of testRelationshipCreateAccess method arguments.
    */
-  public function relationCreateAccessProvider() {
+  public function relationshipCreateAccessProvider() {
     $cases = [];
 
     foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {

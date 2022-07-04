@@ -78,7 +78,7 @@ class PermissionProviderTest extends UnitTestCase {
    */
   public function testGetRelationViewPermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
-    $this->assertEquals($expected, $permission_provider->getPermission('view', 'relation', $scope));
+    $this->assertEquals($expected, $permission_provider->getPermission('view', 'relationship', $scope));
   }
 
   /**
@@ -96,7 +96,7 @@ class PermissionProviderTest extends UnitTestCase {
 
         // View own relation is not present in version 1.x.
         $case['expected'] = $scope === 'any'
-          ? "view {$scenario['plugin_id']} relation"
+          ? "view {$scenario['plugin_id']} relationship"
           : FALSE;
 
         $cases[] = $case;
@@ -126,7 +126,7 @@ class PermissionProviderTest extends UnitTestCase {
    */
   public function testGetRelationUpdatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
-    $this->assertEquals($expected, $permission_provider->getPermission('update', 'relation', $scope));
+    $this->assertEquals($expected, $permission_provider->getPermission('update', 'relationship', $scope));
   }
 
   /**
@@ -141,7 +141,7 @@ class PermissionProviderTest extends UnitTestCase {
       foreach (['any', 'own'] as $scope) {
         $case = $scenario;
         $case['scope'] = $scope;
-        $case['expected'] = "update $scope {$scenario['plugin_id']} relation";
+        $case['expected'] = "update $scope {$scenario['plugin_id']} relationship";
         $cases[] = $case;
       }
     }
@@ -169,7 +169,7 @@ class PermissionProviderTest extends UnitTestCase {
    */
   public function testGetRelationDeletePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published, $scope) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
-    $this->assertEquals($expected, $permission_provider->getPermission('delete', 'relation', $scope));
+    $this->assertEquals($expected, $permission_provider->getPermission('delete', 'relationship', $scope));
   }
 
   /**
@@ -184,7 +184,7 @@ class PermissionProviderTest extends UnitTestCase {
       foreach (['any', 'own'] as $scope) {
         $case = $scenario;
         $case['scope'] = $scope;
-        $case['expected'] = "delete $scope {$scenario['plugin_id']} relation";
+        $case['expected'] = "delete $scope {$scenario['plugin_id']} relationship";
         $cases[] = $case;
       }
     }
@@ -210,7 +210,7 @@ class PermissionProviderTest extends UnitTestCase {
    */
   public function testGetRelationCreatePermission($expected, $plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
     $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
-    $this->assertEquals($expected, $permission_provider->getPermission('create', 'relation'));
+    $this->assertEquals($expected, $permission_provider->getPermission('create', 'relationship'));
   }
 
   /**
@@ -223,7 +223,7 @@ class PermissionProviderTest extends UnitTestCase {
     $cases = [];
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
       $case = $scenario;
-      $case['expected'] = "create {$scenario['plugin_id']} relation";
+      $case['expected'] = "create {$scenario['plugin_id']} relationship";
       $cases[] = $case;
     }
     return $cases;
@@ -494,9 +494,9 @@ class PermissionProviderTest extends UnitTestCase {
     // We do not test all permissions here as they are thoroughly covered in
     // their dedicated getter test. Simply test that the labels of common
     // permissions are prefixed properly.
-    if ($permission = $permission_provider->getPermission('view', 'relation')) {
+    if ($permission = $permission_provider->getPermission('view', 'relationship')) {
       $this->assertArrayHasKey($permission, $permissions);
-      $this->assertStringStartsWith('Relation: ', $permissions[$permission]['title']);
+      $this->assertStringStartsWith('Relationship: ', $permissions[$permission]['title']);
     }
     if ($permission = $permission_provider->getPermission('view', 'entity')) {
       $this->assertArrayHasKey($permission, $permissions);

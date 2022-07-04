@@ -150,7 +150,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['create-page-with-add-access'] = [
       'entity.group_content.create_page',
       [],
-      ['create entity_test_as_content relation'],
+      ['create entity_test_as_content relationship'],
       FALSE,
       FALSE,
       TRUE,
@@ -160,7 +160,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['add-page-access-one'] = [
       'entity.group_content.add_page',
       [],
-      ['create entity_test_as_content relation'],
+      ['create entity_test_as_content relationship'],
       FALSE,
       TRUE,
       TRUE,
@@ -170,7 +170,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['add-page-access-multi'] = [
       'entity.group_content.add_page',
       [],
-      ['create entity_test_as_content relation', 'create node_as_content:page relation'],
+      ['create entity_test_as_content relationship', 'create node_as_content:page relationship'],
       FALSE,
       TRUE,
       TRUE,
@@ -255,7 +255,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['create-form-with-add-access'] = [
       'entity.group_content.create_form',
       [],
-      ['create entity_test_as_content relation'],
+      ['create entity_test_as_content relationship'],
       FALSE,
       FALSE,
       TRUE,
@@ -265,7 +265,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['add-form-access'] = [
       'entity.group_content.add_form',
       [],
-      ['create entity_test_as_content relation'],
+      ['create entity_test_as_content relationship'],
       FALSE,
       TRUE,
       TRUE,
@@ -275,7 +275,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
     $cases['add-form-access-wrong-plugin'] = [
       'entity.group_content.add_form',
       [],
-      ['create node_as_content:page relation'],
+      ['create node_as_content:page relationship'],
       FALSE,
       FALSE,
       TRUE,

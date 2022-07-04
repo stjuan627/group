@@ -34,19 +34,19 @@ class PermissionProvider implements PermissionProviderInterface {
    * {@inheritdoc}
    */
   public function getPermission($operation, $target, $scope = 'any') {
-    assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
-    assert(in_array($scope, ['any', 'own'], TRUE), '$target must be either "relation" or "entity"');
+    assert(in_array($target, ['relationship', 'entity'], TRUE), '$target must be either "relationship" or "entity"');
+    assert(in_array($scope, ['any', 'own'], TRUE), '$scope must be either "any" or "own"');
 
-    if ($target === 'relation') {
+    if ($target === 'relationship') {
       switch ($operation) {
         case 'view':
-          return $this->getRelationViewPermission($scope);
+          return $this->getRelationshipViewPermission($scope);
         case 'update':
-          return $this->getRelationUpdatePermission($scope);
+          return $this->getRelationshipUpdatePermission($scope);
         case 'delete':
-          return $this->getRelationDeletePermission($scope);
+          return $this->getRelationshipDeletePermission($scope);
         case 'create':
-          return $this->getRelationCreatePermission();
+          return $this->getRelationshipCreatePermission();
       }
     }
     elseif ($target === 'entity') {
@@ -74,32 +74,32 @@ class PermissionProvider implements PermissionProviderInterface {
     $permissions = [];
 
     // Provide permissions for the relationship.
-    $prefix = 'Relation:';
+    $prefix = 'Relationship:';
     if ($name = $this->getAdminPermission()) {
       $permissions[$name] = $this->buildPermission("$prefix Administer relations");
       $permissions[$name]['restrict access'] = TRUE;
     }
 
-    if ($name = $this->getPermission('view', 'relation')) {
+    if ($name = $this->getPermission('view', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix View any entity relations");
     }
-    if ($name = $this->getPermission('view', 'relation', 'own')) {
+    if ($name = $this->getPermission('view', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix View own entity relations");
     }
-    if ($name = $this->getPermission('update', 'relation')) {
+    if ($name = $this->getPermission('update', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit any entity relations");
     }
-    if ($name = $this->getPermission('update', 'relation', 'own')) {
+    if ($name = $this->getPermission('update', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit own entity relations");
     }
-    if ($name = $this->getPermission('delete', 'relation')) {
+    if ($name = $this->getPermission('delete', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete any entity relations");
     }
-    if ($name = $this->getPermission('delete', 'relation', 'own')) {
+    if ($name = $this->getPermission('delete', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete own entity relations");
     }
 
-    if ($name = $this->getPermission('create', 'relation')) {
+    if ($name = $this->getPermission('create', 'relationship')) {
       $permissions[$name] = $this->buildPermission(
         "$prefix Add entity relations",
         'Allows you to add an existing %entity_type entity to the group.'
@@ -144,7 +144,7 @@ class PermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * Gets the name of the view permission for the relation.
+   * Gets the name of the view permission for the relationship.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -153,17 +153,17 @@ class PermissionProvider implements PermissionProviderInterface {
    * @return string|false
    *   The permission name or FALSE if it does not apply.
    */
-  protected function getRelationViewPermission($scope = 'any') {
+  protected function getRelationshipViewPermission($scope = 'any') {
     // @todo Implement view own permission.
     if ($scope === 'any') {
       // Backwards compatible permission name for 'any' scope.
-      return "view $this->pluginId relation";
+      return "view $this->pluginId relationship";
     }
     return FALSE;
   }
 
   /**
-   * Gets the name of the update permission for the relation.
+   * Gets the name of the update permission for the relationship.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -172,12 +172,12 @@ class PermissionProvider implements PermissionProviderInterface {
    * @return string|false
    *   The permission name or FALSE if it does not apply.
    */
-  protected function getRelationUpdatePermission($scope = 'any') {
-    return "update $scope $this->pluginId relation";
+  protected function getRelationshipUpdatePermission($scope = 'any') {
+    return "update $scope $this->pluginId relationship";
   }
 
   /**
-   * Gets the name of the delete permission for the relation.
+   * Gets the name of the delete permission for the relationship.
    *
    * @param string $scope
    *   (optional) Whether the 'any' or 'own' permission name should be returned.
@@ -186,18 +186,18 @@ class PermissionProvider implements PermissionProviderInterface {
    * @return string|false
    *   The permission name or FALSE if it does not apply.
    */
-  protected function getRelationDeletePermission($scope = 'any') {
-    return "delete $scope $this->pluginId relation";
+  protected function getRelationshipDeletePermission($scope = 'any') {
+    return "delete $scope $this->pluginId relationship";
   }
 
   /**
-   * Gets the name of the create permission for the relation.
+   * Gets the name of the create permission for the relationship.
    *
    * @return string|false
    *   The permission name or FALSE if it does not apply.
    */
-  protected function getRelationCreatePermission() {
-    return "create $this->pluginId relation";
+  protected function getRelationshipCreatePermission() {
+    return "create $this->pluginId relationship";
   }
 
   /**

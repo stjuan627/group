@@ -37,14 +37,14 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function supportsOperation($operation, $target) {
-    assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
+    assert(in_array($target, ['relationship', 'entity'], TRUE), '$target must be either "relationship" or "entity"');
     $permissions = [$this->permissionProvider->getPermission($operation, $target, 'any')];
 
     // We know relations have owners, but need to check for the target entity.
     // Please note that we do not check for "view" vs "view unpublished" here
     // because you usually can't have the latter without the former so a regular
     // check vs the passed in operation should suffice for most use cases.
-    if ($target === 'relation' || $this->implementsOwnerInterface) {
+    if ($target === 'relationship' || $this->implementsOwnerInterface) {
       $permissions[] = $this->permissionProvider->getPermission($operation, $target, 'own');
     }
 
@@ -60,7 +60,7 @@ class AccessControl implements AccessControlInterface {
   /**
    * {@inheritdoc}
    */
-  public function relationAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
     $result = AccessResult::neutral();
 
     // Check if the account is the owner.
@@ -68,8 +68,8 @@ class AccessControl implements AccessControlInterface {
 
     // Add in the admin permission and filter out the unsupported permissions.
     $permissions = [$this->permissionProvider->getAdminPermission()];
-    $permissions[] = $this->permissionProvider->getPermission($operation, 'relation', 'any');
-    $own_permission = $this->permissionProvider->getPermission($operation, 'relation', 'own');
+    $permissions[] = $this->permissionProvider->getPermission($operation, 'relationship', 'any');
+    $own_permission = $this->permissionProvider->getPermission($operation, 'relationship', 'own');
     if ($is_owner) {
       $permissions[] = $own_permission;
     }
@@ -94,8 +94,8 @@ class AccessControl implements AccessControlInterface {
   /**
    * {@inheritdoc}
    */
-  public function relationCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    $permission = $this->permissionProvider->getPermission('create', 'relation');
+  public function relationshipCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
+    $permission = $this->permissionProvider->getPermission('create', 'relationship');
     return $this->combinedPermissionCheck($group, $account, $permission, $return_as_object);
   }
 
