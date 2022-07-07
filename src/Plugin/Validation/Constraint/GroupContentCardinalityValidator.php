@@ -2,9 +2,11 @@
 
 namespace Drupal\group\Plugin\Validation\Constraint;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\Storage\GroupContentStorageInterface;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -23,13 +25,23 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
   protected $entityTypeManager;
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * Constructs a GroupContentCardinalityValidator object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->database = $database;
   }
 
   /**
@@ -37,7 +49,8 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('database')
     );
   }
 
@@ -76,28 +89,25 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
     // Get the entity_id field label for error messages.
     $field_name = $group_content->getFieldDefinition('entity_id')->getLabel();
 
+    // Get the entity ID to look for, we directly use the entity_id field
+    // because it reflects what's actually stored in the DB, even if we're
+    // dealing with a wrapped config entity.
+    $entity_id = $group_content->get('entity_id')->target_id;
+    $data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
+
     // Enforce the group cardinality if it's not set to unlimited.
     if ($group_cardinality > 0) {
-      $storage = $this->entityTypeManager->getStorage('group_content_type');
-      assert($storage instanceof GroupContentTypeStorageInterface);
-      $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin->getRelationTypeId());
-
-      // Get the relationships for this entity.
-      $properties = ['type' => $relationship_type_id, 'entity_id' => $entity->id()];
-      $group_instances = $this->entityTypeManager
-        ->getStorage('group_content')
-        ->loadByProperties($properties);
-
       // Get the groups this content entity already belongs to, not counting
       // the current group towards the limit.
-      $group_ids = [];
-      foreach ($group_instances as $instance) {
-        assert($instance instanceof GroupContentInterface);
-        if ($instance->getGroupId() != $group->id()) {
-          $group_ids[] = $instance->getGroupId();
-        }
-      }
-      $group_count = count(array_unique($group_ids));
+      $group_count = $this->database->select($data_table, 'gc')
+        ->fields('gc', ['gid'])
+        ->condition('plugin_id', $group_content->getPluginId())
+        ->condition('entity_id', $entity_id)
+        ->condition('gid', $group->id(), '!=')
+        ->distinct()
+        ->countQuery()
+        ->execute()
+        ->fetchField();
 
       // Raise a violation if the content has reached the cardinality limit.
       if ($group_count >= $group_cardinality) {
@@ -114,20 +124,19 @@ class GroupContentCardinalityValidator extends ConstraintValidator implements Co
 
     // Enforce the entity cardinality if it's not set to unlimited.
     if ($entity_cardinality > 0) {
-      // Get the current instances of this content entity in the group.
-      $entity_instances = $group->getRelationshipsByEntity($entity, $plugin->getRelationTypeId());
-      $entity_count = count($entity_instances);
-
-      // If the current relationship entity has an ID, exclude that one.
-      if ($group_content_id = $group_content->id()) {
-        foreach ($entity_instances as $instance) {
-          assert($instance instanceof GroupContentInterface);
-          if ($instance->id() == $group_content_id) {
-            $entity_count--;
-            break;
-          }
-        }
-      }
+      // We need to exclude the current relationship from the count, but only if
+      // it already existed in the database.
+      $relationship_id = $group_content->id() ?? -1;
+      $entity_count = $this->database->select($data_table, 'gc')
+        ->fields('gc', ['gid'])
+        ->condition('plugin_id', $group_content->getPluginId())
+        ->condition('entity_id', $entity_id)
+        ->condition('gid', $group->id())
+        ->condition('id', $relationship_id, '!=')
+        ->distinct()
+        ->countQuery()
+        ->execute()
+        ->fetchField();
 
       // Raise a violation if the content has reached the cardinality limit.
       if ($entity_count >= $entity_cardinality) {
