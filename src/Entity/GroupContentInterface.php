@@ -33,7 +33,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
   /**
    * Returns the group ID the relationship belongs to.
    *
-   * @return string
+   * @return int
    *   The group ID the relationship belongs to.
    */
   public function getGroupId();
@@ -61,6 +61,14 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    *  The entity that was added as a relationship.
    */
   public function getEntity();
+
+  /**
+   * Returns the ID of the related entity.
+   *
+   * @return int|string
+   *   The ID of the related entity.
+   */
+  public function getEntityId();
 
   /**
    * Returns the group relation that handles the relationship.

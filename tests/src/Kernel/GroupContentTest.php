@@ -91,6 +91,9 @@ class GroupContentTest extends GroupKernelTestBase {
 
   /**
    * Tests the retrieval of the grouped entity.
+   *
+   * @covers ::getEntity
+   * @covers ::getEntityId
    */
   public function testGetEntity() {
     // Create a group type and enable adding users and node types as content.
@@ -105,12 +108,14 @@ class GroupContentTest extends GroupKernelTestBase {
     $account = $this->createUser();
     $group_content = $group->addRelationship($account, 'user_as_content');
     $this->assertEquals($account->id(), $group_content->getEntity()->id());
+    $this->assertEquals($account->id(), $group_content->getEntityId());
     $this->assertEquals('user', $group_content->getEntity()->getEntityTypeId());
 
     $node_type = $this->createNodeType();
     $group_content = $group->addRelationship($node_type, 'node_type_as_content');
     $this->assertEquals('node_type', $group_content->getEntity()->getEntityTypeId());
     $this->assertEquals($node_type->id(), $group_content->getEntity()->id());
+    $this->assertEquals($node_type->id(), $group_content->getEntityId());
   }
 
   /**

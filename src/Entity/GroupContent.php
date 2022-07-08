@@ -129,6 +129,16 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public function getEntityId() {
+    if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
+      return $this->get('entity_id')->entity->getConfigEntityId();
+    }
+    return $this->get('entity_id')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPlugin() {
     return $this->getRelationshipType()->getPlugin();
   }
@@ -290,12 +300,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     $group_id = $this->get('gid')->target_id;
     $plugin_id = $this->getRelationshipType()->getPluginId();
-    if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
-      $entity_id = $this->get('entity_id')->entity->getConfigEntityId();
-    }
-    else {
-      $entity_id = $this->get('entity_id')->target_id;
-    }
+    $entity_id = $this->getEntityId();
 
     // A specific group gets any content, regardless of plugin used.
     // E.g.: A group's list of entities can be flushed with this.
