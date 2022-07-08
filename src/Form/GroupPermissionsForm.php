@@ -190,7 +190,7 @@ abstract class GroupPermissionsForm extends FormBase {
     $hide_descriptions = system_admin_compact_mode();
     foreach ($this->getPermissions() as $provider => $sections) {
       // Print a full width row containing the provider name for each provider.
-      $form['permissions'][$provider] = [
+      $form['permissions']['module-' . $provider] = [
         [
           '#wrapper_attributes' => [
             'colspan' => count($group_roles) + 1,
@@ -203,7 +203,7 @@ abstract class GroupPermissionsForm extends FormBase {
 
       foreach ($sections as $section_id => $permissions) {
         // Start each section with a full width row containing the section name.
-        $form['permissions'][$section_id] = [
+        $form['permissions']['section-' . $section_id] = [
           [
             '#wrapper_attributes' => [
               'colspan' => count($group_roles) + 1,
