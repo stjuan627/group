@@ -81,15 +81,7 @@ class GroupContentCardinalityTest extends GroupKernelTestBase {
     $entity = $this->createTestEntity();
 
     // Try creating a first relationship.
-    $relationship = $this->relationshipStorage->createForEntityInGroup(
-      $entity,
-      $this->createGroup(['type' => $this->groupType->id()]),
-      'entity_test_as_content',
-      [
-        'plugin_id' => 'entity_test_as_content',
-        'group_type' => $this->groupType->id(),
-      ]
-    );
+    $relationship = $this->relationshipStorage->createForEntityInGroup($entity, $this->createGroup(['type' => $this->groupType->id()]), 'entity_test_as_content');
     $violations = $relationship->validate();
     $this->assertEquals(0, $violations->count(), 'No violations when unsaved entity did not reach limit');
 
@@ -99,15 +91,7 @@ class GroupContentCardinalityTest extends GroupKernelTestBase {
     $this->assertEquals(0, $violations->count(), 'No violations when saved entity did not reach limit');
 
     // Create a second one in a different group and check for violations.
-    $relationship = $this->relationshipStorage->createForEntityInGroup(
-      $entity,
-      $this->createGroup(['type' => $this->groupType->id()]),
-      'entity_test_as_content',
-      [
-        'plugin_id' => 'entity_test_as_content',
-        'group_type' => $this->groupType->id(),
-      ]
-    );
+    $relationship = $this->relationshipStorage->createForEntityInGroup($entity, $this->createGroup(['type' => $this->groupType->id()]), 'entity_test_as_content');
     $violations = $relationship->validate();
     $this->assertEquals(1, $violations->count(), 'Violation when unsaved entity reaches limit');
     $message = new TranslatableMarkup(
@@ -136,15 +120,7 @@ class GroupContentCardinalityTest extends GroupKernelTestBase {
     $entity = $this->createTestEntity();
 
     // Try creating a first relationship.
-    $relationship = $this->relationshipStorage->createForEntityInGroup(
-      $entity,
-      $group,
-      'entity_test_as_content',
-      [
-        'plugin_id' => 'entity_test_as_content',
-        'group_type' => $this->groupType->id(),
-      ]
-    );
+    $relationship = $this->relationshipStorage->createForEntityInGroup($entity, $group, 'entity_test_as_content');
     $violations = $relationship->validate();
     $this->assertEquals(0, $violations->count(), 'No violations when unsaved entity did not reach limit');
 
@@ -154,15 +130,7 @@ class GroupContentCardinalityTest extends GroupKernelTestBase {
     $this->assertEquals(0, $violations->count(), 'No violations when saved entity did not reach limit');
 
     // Create a second one in a different group and check for violations.
-    $relationship = $this->relationshipStorage->createForEntityInGroup(
-      $entity,
-      $group,
-      'entity_test_as_content',
-      [
-        'plugin_id' => 'entity_test_as_content',
-        'group_type' => $this->groupType->id(),
-      ]
-    );
+    $relationship = $this->relationshipStorage->createForEntityInGroup($entity, $group, 'entity_test_as_content');
     $violations = $relationship->validate();
     $this->assertEquals(1, $violations->count(), 'Violation when unsaved entity reaches limit');
     $message = new TranslatableMarkup(

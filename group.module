@@ -9,7 +9,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Database\Query\SelectInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -85,6 +84,30 @@ function group_entity_bundle_info() {
  */
 function group_config_translation_info_alter(&$info) {
   $info['group_role']['class'] = 'Drupal\group\ConfigTranslation\GroupRoleMapper';
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function group_field_widget_info_alter(array &$info) {
+  // Anything that supports entity reference fields should also work for ours.
+  foreach ($info as $key => $widget_info) {
+    if (in_array('entity_reference', $widget_info['field_types'], TRUE)) {
+      $info[$key]['field_types'][] = 'group_relationship_target';
+    }
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ */
+function group_field_formatter_info_alter(array &$info) {
+  // Anything that supports entity reference fields should also work for ours.
+  foreach ($info as $key => $formatter_info) {
+    if (in_array('entity_reference', $formatter_info['field_types'], TRUE)) {
+      $info[$key]['field_types'][] = 'group_relationship_target';
+    }
+  }
 }
 
 /**
@@ -643,7 +666,6 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
  */
 function group_content_wizard_store($form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
-  assert($entity instanceof ContentEntityInterface);
 
   // Store the unsaved entity in the temp store.
   $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
@@ -684,8 +706,6 @@ function group_content_wizard_cancel($form, FormStateInterface $form_state) {
  */
 function group_content_entity_submit($form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
-  assert($entity instanceof ContentEntityInterface);
-
   $group = $form_state->get('group');
   assert($group instanceof GroupInterface);
   $group->addRelationship($entity, $form_state->get('group_relation'));
@@ -693,7 +713,7 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
   // This submit handler is only called when creating new content within a group
   // without using the 2-step wizard. We can therefore safely assume the user
   // wants to see the entity itself and not the relationship. This only applies
-  // if there was no destination GET parameter set in the URL.
+  // if there was no "destination" query argument.
   if ($entity->access('view')) {
     $form_state->setRedirectUrl($entity->toUrl());
   }

@@ -25,6 +25,7 @@ class EntityReference implements EntityReferenceInterface {
     if ($this->groupRelationType->handlesConfigEntityType()) {
       $bundle = $entity_type_id;
       $entity_type_id = 'group_config_wrapper';
+      $entity_reference->setSetting('handler', 'group_config_wrapper:target_entity');
     }
 
     $entity_reference->setSetting('target_type', $entity_type_id);

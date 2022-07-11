@@ -121,7 +121,9 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   public function getEntity() {
     if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
-      return $this->get('entity_id')->entity->getConfigEntity();
+      if ($entity = $this->get('entity_id')->entity) {
+        return $entity->getConfigEntity();
+      }
     }
     return $this->get('entity_id')->entity;
   }
@@ -216,10 +218,23 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   /**
    * {@inheritdoc}
    */
+  public function postCreate(EntityStorageInterface $storage) {
+    parent::postCreate($storage);
+
+    // Set the denormalized data from the bundle entity.
+    $this->set('plugin_id', $this->getRelationshipType()->getPluginId());
+    $this->set('group_type', $this->getRelationshipType()->getGroupTypeId());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
-    // Set the denormalized data from the bundle entity.
+    // Set the denormalized data from the bundle entity. We repeat this after
+    // having set it in ::postCreate() because it's imperative that no-one
+    // changes this at all.
     $this->set('plugin_id', $this->getRelationshipType()->getPluginId());
     $this->set('group_type', $this->getRelationshipType()->getGroupTypeId());
 
@@ -341,7 +356,7 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
 
     // Borrowed this logic from the Comment module.
     // Warning! May change in the future: https://www.drupal.org/node/2346347
-    $fields['entity_id'] = BaseFieldDefinition::create('entity_reference')
+    $fields['entity_id'] = BaseFieldDefinition::create('group_relationship_target')
       ->setLabel(t('Content'))
       ->setDescription(t('The entity to add to the group.'))
       ->setDisplayOptions('form', [

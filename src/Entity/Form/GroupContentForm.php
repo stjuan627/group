@@ -5,6 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -181,6 +182,13 @@ class GroupContentForm extends ContentEntityForm {
     $form_object = $this->entityTypeManager->getFormObject($entity->getEntityTypeId(), $operation);
     $form_object->setEntity($entity);
     $form_object->save($form, $form_state);
+
+    // Wrap the entity if it's a config entity.
+    if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
+      $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+      assert($storage instanceof ConfigWrapperStorageInterface);
+      $entity = $storage->wrapEntity($entity);
+    }
 
     // Add the newly saved entity's ID to the relationship entity.
     $property = $wizard_id == 'group_creator' ? 'gid' : 'entity_id';

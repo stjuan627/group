@@ -346,7 +346,7 @@ class GroupContentController extends ControllerBase {
     // See if we are on the second step of the form.
     $step2 = $extra['group_wizard'] && $store->get("$store_id:step") === 2;
 
-    // Content entity form, potentially as wizard step 1.
+    // Grouped entity form, potentially as wizard step 1.
     if (!$step2) {
       // Figure out what entity type the plugin is serving.
       $entity_type_id = $group_relation_type->getEntityTypeId();

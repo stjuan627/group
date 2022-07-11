@@ -44,6 +44,43 @@ class ConfigWrapperStorageTest extends GroupKernelTestBase {
   /**
    * Tests the creation of a ConfigWrapper entity.
    *
+   * @covers ::wrapEntityId
+   */
+  public function testWrapEntityId() {
+    $node_type = $this->createNodeType();
+    $wrapper = $this->storage->wrapEntityId('node_type', $node_type->id());
+    $this->assertSame($node_type->id(), $wrapper->getConfigEntityId());
+  }
+
+  /**
+   * Tests that nothing is wrapped if flag is set to only load.
+   *
+   * @covers ::wrapEntityId
+   * @depends testWrapEntityId
+   */
+  public function testWrapEntityIdNoCreate() {
+    $node_type = $this->createNodeType();
+    $this->assertFalse($this->storage->wrapEntityId('node_type', $node_type->id(), FALSE));
+    $this->storage->wrapEntity($node_type);
+    $this->assertNotFalse($this->storage->wrapEntityId('node_type', $node_type->id(), FALSE));
+  }
+
+  /**
+   * Tests the loading of a ConfigWrapper entity.
+   *
+   * @covers ::wrapEntityId
+   * @depends testWrapEntityId
+   */
+  public function testWrapWrappedEntityId() {
+    $node_type = $this->createNodeType();
+    $wrapper_a = $this->storage->wrapEntityId('node_type', $node_type->id());
+    $wrapper_b = $this->storage->wrapEntityId('node_type', $node_type->id());
+    $this->assertSame($wrapper_a->id(), $wrapper_b->id());
+  }
+
+  /**
+   * Tests the creation of a ConfigWrapper entity.
+   *
    * @covers ::wrapEntity
    */
   public function testWrapEntity() {
