@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
 use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
@@ -42,6 +43,26 @@ class ConfigWrapperStorageTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests the support for an entity.
+   *
+   * @covers ::supportsEntity
+   */
+  public function testSupportsEntity() {
+    $this->assertTrue($this->storage->supportsEntity($this->createNodeType()));
+    $this->assertFalse($this->storage->supportsEntity($this->createGroupType()));
+  }
+
+  /**
+   * Tests the support for an entity type ID.
+   *
+   * @covers ::supportsEntityTypeId
+   */
+  public function testSupportsEntityTypeId() {
+    $this->assertTrue($this->storage->supportsEntityTypeId('node_type'));
+    $this->assertFalse($this->storage->supportsEntityTypeId('group_type'));
+  }
+
+  /**
    * Tests the creation of a ConfigWrapper entity.
    *
    * @covers ::wrapEntityId
@@ -50,6 +71,18 @@ class ConfigWrapperStorageTest extends GroupKernelTestBase {
     $node_type = $this->createNodeType();
     $wrapper = $this->storage->wrapEntityId('node_type', $node_type->id());
     $this->assertSame($node_type->id(), $wrapper->getConfigEntityId());
+  }
+
+  /**
+   * Tests the loading of a ConfigWrapper entity.
+   *
+   * @covers ::wrapEntityId
+   */
+  public function testWrapUnsupportedEntityId() {
+    $group_type = $this->createGroupType();
+    $this->expectException(EntityStorageException::class);
+    $this->expectExceptionMessage('Trying to wrap an unsupported entity of type "group_type".');
+    $this->storage->wrapEntityId('group_type', $group_type->id());
   }
 
   /**
@@ -87,6 +120,17 @@ class ConfigWrapperStorageTest extends GroupKernelTestBase {
     $node_type = $this->createNodeType();
     $wrapper = $this->storage->wrapEntity($node_type);
     $this->assertSame($node_type->id(), $wrapper->getConfigEntityId());
+  }
+
+  /**
+   * Tests the loading of a ConfigWrapper entity.
+   *
+   * @covers ::wrapEntity
+   */
+  public function testWrapUnsupportedEntity() {
+    $this->expectException(EntityStorageException::class);
+    $this->expectExceptionMessage('Trying to wrap an unsupported entity of type "group_type".');
+    $this->storage->wrapEntity($this->createGroupType());
   }
 
   /**

@@ -148,19 +148,27 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     }
 
     $entity_type_id = $entity->getEntityTypeId();
-    $cache_key = $plugin_id ?: '---ALL---';
+    $cache_key = '---ALL---';
+    if (isset($plugin_id)) {
+      $cache_key = $plugin_id;
+
+      if ($entity_type_id !== $this->pluginManager->getDefinition($plugin_id)->getEntityTypeId()) {
+        throw new EntityStorageException(sprintf('Loading relationships for the given entity of type "%s" not supported by the provided plugin "%s".', $entity_type_id, $plugin_id));
+      }
+    }
+
     if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
       $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
 
-      // If the entity is config, we need to use the wrapper for it.
-      if ($entity instanceof ConfigEntityInterface) {
-        $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
-        assert($storage instanceof ConfigWrapperStorageInterface);
-        $entity_id = $storage->wrapEntity($entity)->id();
-      }
-
       $result = [];
       if (!empty($plugin_ids)) {
+        // If the entity is config, we need to use the wrapper for it.
+        if ($entity instanceof ConfigEntityInterface) {
+          $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+          assert($storage instanceof ConfigWrapperStorageInterface);
+          $entity_id = $storage->wrapEntity($entity)->id();
+        }
+
         $result = $this->database
           ->select($this->dataTable, 'd')
           ->fields('d', ['id'])

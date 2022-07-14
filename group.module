@@ -444,7 +444,8 @@ function group_entity_delete(EntityInterface $entity) {
   if ($entity instanceof ConfigEntityInterface) {
     $storage = \Drupal::entityTypeManager()->getStorage('group_config_wrapper');
     assert($storage instanceof ConfigWrapperStorageInterface);
-    if ($wrapper = $storage->wrapEntity($entity, FALSE)) {
+
+    if ($storage->supportsEntity($entity) && $wrapper = $storage->wrapEntity($entity, FALSE)) {
       $storage->delete([$wrapper]);
     }
   }

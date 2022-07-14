@@ -216,6 +216,19 @@ class GroupContentStorageTest extends GroupKernelTestBase {
   }
 
   /**
+   * Tests the loading of GroupContent entities for an unsupported entity.
+   *
+   * @covers ::loadByEntity
+   */
+  public function testLoadByUnsupportedEntity() {
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+
+    $this->expectException(EntityStorageException::class);
+    $this->expectExceptionMessage('Loading relationships for the given entity of type "group" not supported by the provided plugin "user_as_content".');
+    $this->storage->loadByEntity($group, 'user_as_content');
+  }
+
+  /**
    * Tests the loading of GroupContent entities for a content entity.
    *
    * @covers ::loadByEntity
