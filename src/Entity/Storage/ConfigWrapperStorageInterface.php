@@ -52,7 +52,7 @@ interface ConfigWrapperStorageInterface extends ContentEntityStorageInterface {
    *   set to FALSE and no wrapper could be loaded.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
-   *   Thrown when an unsupported entity type ID is passed.
+   *   Thrown when an unsupported entity is passed.
    */
   public function wrapEntity(ConfigEntityInterface $entity, $create_if_missing = TRUE);
 
