@@ -145,7 +145,7 @@ services:
     shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
-    arguments: ['@entity_type.manager']
+    arguments: ['@entity_type.manager', '@group_relation_type.manager']
     shared: false
   group.relation_handler.post_install:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall'

@@ -7,7 +7,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider;
+use Drupal\group_test_plugin\Plugin\Group\RelationHandler\FullEntityPermissionProvider;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 
@@ -50,9 +52,9 @@ class PermissionProviderTest extends UnitTestCase {
   public function adminPermissionProvider() {
     $cases = [];
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
-        $case = $scenario;
-        $case['expected'] = $case['definition']->getAdminPermission();
-        $cases[] = $case;
+      $case = $scenario;
+      $case['expected'] = $case['definition']->getAdminPermission();
+      $cases[] = $case;
     }
     return $cases;
   }
@@ -480,7 +482,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @dataProvider buildPermissionsProvider
    */
   public function testBuildPermissions($plugin_id, GroupRelationTypeInterface $definition, $implements_owner, $implements_published) {
-    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published);
+    $permission_provider = $this->createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, TRUE);
     $permissions = $permission_provider->buildPermissions();
 
     // Test the admin permission being restricted.
@@ -494,13 +496,19 @@ class PermissionProviderTest extends UnitTestCase {
     // We do not test all permissions here as they are thoroughly covered in
     // their dedicated getter test. Simply test that the labels of common
     // permissions are prefixed properly.
-    if ($permission = $permission_provider->getPermission('view', 'relationship')) {
+    if ($permission = $permission_provider->getPermission('update', 'relationship')) {
       $this->assertArrayHasKey($permission, $permissions);
       $this->assertStringStartsWith('Relationship: ', $permissions[$permission]['title']);
     }
-    if ($permission = $permission_provider->getPermission('view', 'entity')) {
+    if ($permission = $permission_provider->getPermission('update', 'entity')) {
       $this->assertArrayHasKey($permission, $permissions);
       $this->assertStringStartsWith('Entity: ', $permissions[$permission]['title']);
+    }
+
+    // Test that we call the full chain for permission names.
+    if ($implements_owner && $definition->definesEntityAccess()) {
+      $this->assertFalse($permission_provider->getPermission('view', 'entity', 'own'), 'The handler does not support view own entity');
+      $this->assertArrayHasKey("view own $plugin_id entity", $permissions, 'The full chain does support view own entity and therefore the permission is built');
     }
   }
 
@@ -528,10 +536,18 @@ class PermissionProviderTest extends UnitTestCase {
     $scenarios = [];
 
     foreach ([TRUE, FALSE] as $implements_owner) {
+      $keys[0] = $implements_owner ? 'owner' : 'no_owner';
+
       foreach ([TRUE, FALSE] as $implements_published) {
+        $keys[1] = $implements_published ? 'pub' : 'no_pub';
+
         foreach ([TRUE, FALSE] as $entity_access) {
+          $keys[2] = $entity_access ? 'access' : 'no_access';
+
           foreach (['administer foo', FALSE] as $admin_permission) {
-            $scenarios[] = [
+            $keys[3] = $admin_permission ? 'admin' : 'no_admin';
+
+            $scenarios[implode('-', $keys)] = [
               'expected' => NULL,
               // We use a derivative ID to prove these work.
               'plugin_id' => 'foo:baz',
@@ -559,7 +575,7 @@ class PermissionProviderTest extends UnitTestCase {
    * @return \Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider
    *   The default permission provider handler.
    */
-  protected function createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published) {
+  protected function createPermissionProvider($plugin_id, $definition, $implements_owner, $implements_published, $set_up_chain = FALSE) {
     $this->assertNotEmpty($definition->getEntityTypeId());
 
     $entity_type = $this->prophesize(EntityTypeInterface::class);
@@ -570,8 +586,17 @@ class PermissionProviderTest extends UnitTestCase {
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
     $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
 
-    $permission_provider = new PermissionProvider($entity_type_manager->reveal());
+    $relation_type_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
+    $permission_provider = new PermissionProvider($entity_type_manager->reveal(), $relation_type_manager->reveal());
     $permission_provider->init($plugin_id, $definition);
+
+    $chained = $permission_provider;
+    if ($set_up_chain) {
+      $chained = new FullEntityPermissionProvider($permission_provider, $entity_type_manager->reveal());
+      $chained->init($plugin_id, $definition);
+    }
+    $relation_type_manager->getPermissionProvider($plugin_id)->willReturn($chained);
+
     return $permission_provider;
   }
 

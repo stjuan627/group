@@ -34,19 +34,4 @@ class GroupNodePermissionProvider implements PermissionProviderInterface {
     return $this->parent->getPermission($operation, $target, $scope);
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function buildPermissions() {
-    $permissions = $this->parent->buildPermissions();
-
-    // Rename the view any unpublished entity permission.
-    if ($name = $this->parent->getPermission('view', 'entity', 'any')) {
-      $permissions[$this->getPermission('view', 'entity', 'any')] = $permissions[$name];
-      unset($permissions[$name]);
-    }
-
-    return $permissions;
-  }
-
 }

@@ -44,34 +44,6 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function buildPermissions() {
-    $permissions = $this->parent->buildPermissions();
-
-    // Rename view any permissions.
-    if ($name = $this->parent->getPermission('view', 'entity')) {
-      $permissions[$this->getPermission('view', 'entity')] = $permissions[$name];
-      unset($permissions[$name]);
-    }
-    if ($name = $this->parent->getPermission('view unpublished', 'entity')) {
-      $permissions[$this->getPermission('view unpublished', 'entity')] = $permissions[$name];
-      unset($permissions[$name]);
-    }
-
-    // Support view own permissions.
-    $prefix = 'Entity:';
-    if ($name = $this->getPermission('view', 'entity', 'own')) {
-      $permissions[$name] = $this->buildPermission("$prefix View own %entity_type entities");
-    }
-    if ($name = $this->getPermission('view unpublished', 'entity', 'own')) {
-      $permissions[$name] = $this->buildPermission("$prefix View own unpublished %entity_type entities");
-    }
-
-    return $permissions;
-  }
-
-  /**
    * Gets the name of the view permission for the entity.
    *
    * @param string $scope

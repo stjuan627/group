@@ -55,30 +55,23 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
       'allowed for' => ['outsider'],
     ];
 
-    // Alter the update own permission.
-    if ($name = $this->parent->getPermission('update', 'relationship', 'own')) {
+    if ($name = $this->getPermission('update', 'relationship', 'own')) {
       $permissions[$name]['title'] = 'Edit own membership';
       $permissions[$name]['allowed for'] = ['member'];
     }
 
-    // Alter and rename the delete own permission.
-    if ($name = $this->parent->getPermission('delete', 'relationship', 'own')) {
+    if ($name = $this->getPermission('delete', 'relationship', 'own')) {
       $permissions[$name]['title'] = 'Leave group';
       $permissions[$name]['allowed for'] = ['member'];
-      $permissions[$this->getPermission('delete', 'relationship', 'own')] = $permissions[$name];
-      unset($permissions[$name]);
     }
 
-    // The following permissions are handled by the admin permission.
-    foreach (['create', 'update', 'delete'] as $operation) {
-      if ($name = $this->parent->getPermission($operation, 'relationship')) {
-        unset($permissions[$name]);
-      }
+    if ($name = $this->getAdminPermission()) {
+      $permissions[$name]['title'] = 'Administer group members';
     }
 
-    // Update the labels of the default permissions.
-    $permissions[$this->getAdminPermission()]['title'] = 'Administer group members';
-    $permissions[$this->getPermission('view', 'relationship')]['title'] = 'View individual group members';
+    if ($name = $this->getPermission('view', 'relationship')) {
+      $permissions[$name]['title'] = 'View individual group members';
+    }
 
     return $permissions;
   }

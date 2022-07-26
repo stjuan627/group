@@ -3,6 +3,7 @@
 namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderTrait;
 
@@ -18,9 +19,12 @@ class PermissionProvider implements PermissionProviderInterface {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $groupRelationTypeManager
+   *   The group relation type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->groupRelationTypeManager = $groupRelationTypeManager;
   }
 
   /**
@@ -73,33 +77,39 @@ class PermissionProvider implements PermissionProviderInterface {
   public function buildPermissions() {
     $permissions = [];
 
+    // Instead of checking whether this specific permission provider allows for
+    // a permission to exist, we check the entire decorator chain. This avoids a
+    // lot of copy-pasted code to turn off or rename a permission in a decorator
+    // further down the chain.
+    $provider_chain = $this->groupRelationTypeManager()->getPermissionProvider($this->pluginId);
+
     // Provide permissions for the relationship.
     $prefix = 'Relationship:';
-    if ($name = $this->getAdminPermission()) {
+    if ($name = $provider_chain->getAdminPermission()) {
       $permissions[$name] = $this->buildPermission("$prefix Administer relations");
       $permissions[$name]['restrict access'] = TRUE;
     }
 
-    if ($name = $this->getPermission('view', 'relationship')) {
+    if ($name = $provider_chain->getPermission('view', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix View any entity relations");
     }
-    if ($name = $this->getPermission('view', 'relationship', 'own')) {
+    if ($name = $provider_chain->getPermission('view', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix View own entity relations");
     }
-    if ($name = $this->getPermission('update', 'relationship')) {
+    if ($name = $provider_chain->getPermission('update', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit any entity relations");
     }
-    if ($name = $this->getPermission('update', 'relationship', 'own')) {
+    if ($name = $provider_chain->getPermission('update', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit own entity relations");
     }
-    if ($name = $this->getPermission('delete', 'relationship')) {
+    if ($name = $provider_chain->getPermission('delete', 'relationship')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete any entity relations");
     }
-    if ($name = $this->getPermission('delete', 'relationship', 'own')) {
+    if ($name = $provider_chain->getPermission('delete', 'relationship', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete own entity relations");
     }
 
-    if ($name = $this->getPermission('create', 'relationship')) {
+    if ($name = $provider_chain->getPermission('create', 'relationship')) {
       $permissions[$name] = $this->buildPermission(
         "$prefix Add entity relations",
         'Allows you to add an existing %entity_type entity to the group.'
@@ -108,32 +118,32 @@ class PermissionProvider implements PermissionProviderInterface {
 
     // Provide permissions for the actual entity being added to the group.
     $prefix = 'Entity:';
-    if ($name = $this->getPermission('view', 'entity')) {
+    if ($name = $provider_chain->getPermission('view', 'entity')) {
       $permissions[$name] = $this->buildPermission("$prefix View any %entity_type entities");
     }
-    if ($name = $this->getPermission('view', 'entity', 'own')) {
+    if ($name = $provider_chain->getPermission('view', 'entity', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix View own %entity_type entities");
     }
-    if ($name = $this->getPermission('view unpublished', 'entity')) {
+    if ($name = $provider_chain->getPermission('view unpublished', 'entity')) {
       $permissions[$name] = $this->buildPermission("$prefix View any unpublished %entity_type entities");
     }
-    if ($name = $this->getPermission('view unpublished', 'entity', 'own')) {
+    if ($name = $provider_chain->getPermission('view unpublished', 'entity', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix View own unpublished %entity_type entities");
     }
-    if ($name = $this->getPermission('update', 'entity')) {
+    if ($name = $provider_chain->getPermission('update', 'entity')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit any %entity_type entities");
     }
-    if ($name = $this->getPermission('update', 'entity', 'own')) {
+    if ($name = $provider_chain->getPermission('update', 'entity', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Edit own %entity_type entities");
     }
-    if ($name = $this->getPermission('delete', 'entity')) {
+    if ($name = $provider_chain->getPermission('delete', 'entity')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete any %entity_type entities");
     }
-    if ($name = $this->getPermission('delete', 'entity', 'own')) {
+    if ($name = $provider_chain->getPermission('delete', 'entity', 'own')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete own %entity_type entities");
     }
 
-    if ($name = $this->getPermission('create', 'entity')) {
+    if ($name = $provider_chain->getPermission('create', 'entity')) {
       $permissions[$name] = $this->buildPermission(
         "$prefix Add %entity_type entities",
         'Allows you to create a new %entity_type entity and add it to the group.'
