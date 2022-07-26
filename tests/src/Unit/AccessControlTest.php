@@ -271,7 +271,7 @@ class AccessControlTest extends UnitTestCase {
               };
 
               $admin_permission = $case['definition']->getAdminPermission();
-              if ($admin_permission || $any_permission || $own_permission) {
+              if ($any_permission || $own_permission) {
                 $has_admin = $admin_permission && $case['has_admin_permission'];
                 $has_any = $any_permission && $case['has_permission'];
                 $has_own = $is_owner && $own_permission && $has_own_permission;
@@ -334,7 +334,7 @@ class AccessControlTest extends UnitTestCase {
   public function testRelationshipCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
-    $permission_provider->getPermission('create', 'relationship')->willReturn($permission);
+    $permission_provider->getPermission('create', 'relationship', Argument::cetera())->willReturn($permission);
 
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
@@ -391,8 +391,7 @@ class AccessControlTest extends UnitTestCase {
           return AccessResult::neutral();
         };
 
-        $permission_exists = $case['definition']->getAdminPermission() || $permission;
-        if ($permission_exists) {
+        if ($permission) {
           $has_admin = $case['definition']->getAdminPermission() && $case['has_admin_permission'];
           $has_regular = $permission && $case['has_permission'];
           $case['expected'] = function() use ($has_admin, $has_regular) {
@@ -455,13 +454,15 @@ class AccessControlTest extends UnitTestCase {
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
-    $permission_provider->getPermission($operation, 'entity', 'any')->willReturn($permission);
-    $permission_provider->getPermission($operation, 'entity', 'own')->willReturn($own_permission);
 
     $check_published = $operation === 'view' && $is_publishable;
     if ($check_published && !$is_published) {
       $permission_provider->getPermission("$operation unpublished", 'entity', 'any')->willReturn($permission);
       $permission_provider->getPermission("$operation unpublished", 'entity', 'own')->willReturn($own_permission);
+    }
+    else {
+      $permission_provider->getPermission($operation, 'entity', 'any')->willReturn($permission);
+      $permission_provider->getPermission($operation, 'entity', 'own')->willReturn($own_permission);
     }
 
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
@@ -585,11 +586,16 @@ class AccessControlTest extends UnitTestCase {
                         else {
                           $check_published = $operation === 'view' && $is_publishable;
 
+                          $admin_permission = $case['definition']->getAdminPermission();
+                          $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission);
+
                           // Default varies on whether the entity is grouped.
-                          $case['expected'] = function() use ($is_grouped, $own_permission, $check_published) {
+                          $case['expected'] = function() use ($is_grouped, $own_permission, $check_published, $permissions_were_checked) {
                             $result = AccessResult::forbiddenIf($is_grouped);
                             if ($is_grouped) {
-                              $result->addCacheContexts(['user.group_permissions']);
+                              if ($permissions_were_checked) {
+                                $result->addCacheContexts(['user.group_permissions']);
+                              }
 
                               if ($own_permission) {
                                 $result->addCacheContexts(['user']);
@@ -603,8 +609,7 @@ class AccessControlTest extends UnitTestCase {
                             return $result;
                           };
 
-                          $admin_permission = $case['definition']->getAdminPermission();
-                          if ($is_grouped && ($admin_permission || $any_permission || $own_permission)) {
+                          if ($is_grouped && ($any_permission || $own_permission)) {
                             $admin_access = $admin_permission && $case['has_admin_permission'];
 
                             if (!$check_published || $is_published) {
@@ -620,7 +625,7 @@ class AccessControlTest extends UnitTestCase {
                               $own_access = FALSE;
                             }
 
-                            $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published) {
+                            $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published, $permissions_were_checked) {
                               $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
 
                               if (!$result->isAllowed()) {
@@ -636,7 +641,11 @@ class AccessControlTest extends UnitTestCase {
                                 $result->mergeCacheMaxAge(9999);
                               }
 
-                              return $result->addCacheContexts(['user.group_permissions']);
+                              if ($permissions_were_checked) {
+                                $result->addCacheContexts(['user.group_permissions']);
+                              }
+
+                              return $result;
                             };
                           }
                         }
@@ -685,7 +694,7 @@ class AccessControlTest extends UnitTestCase {
   public function testEntityCreateAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $permission) {
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);
     $permission_provider->getAdminPermission()->willReturn($definition->getAdminPermission());
-    $permission_provider->getPermission('create', 'entity')->willReturn($permission);
+    $permission_provider->getPermission('create', 'entity', Argument::cetera())->willReturn($permission);
 
     $relation_manager = $this->prophesize(GroupRelationTypeManagerInterface::class);
     $relation_manager->getPermissionProvider($plugin_id)->willReturn($permission_provider->reveal());
@@ -731,33 +740,27 @@ class AccessControlTest extends UnitTestCase {
     foreach ($this->getAccessControlHandlerScenarios() as $key => $scenario) {
       $keys[0] = $key;
 
-      foreach ([TRUE, FALSE] as $entity_access) {
-        $keys[1] = $entity_access ? 'entacc' : 'noentacc';
+      foreach (['some permission name', FALSE] as $permission) {
+        $keys[1] = $permission ? 'perm' : 'noperm';
+        $case = $scenario;
+        $case['definition'] = clone $scenario['definition'];
 
-        foreach (['some permission name', FALSE] as $permission) {
-          $keys[2] = $permission ? 'perm' : 'noperm';
-          $case = $scenario;
-          $case['definition'] = clone $scenario['definition'];
+        // Default is neutral result if no permissions are defined or entity
+        // access control is turned off for the plugin.
+        $case['expected'] = function() {
+          return AccessResult::neutral();
+        };
 
-          // Default is neutral result if no permissions are defined or entity
-          // access control is turned off for the plugin.
-          $case['expected'] = function() {
-            return AccessResult::neutral();
+        if ($permission) {
+          $has_admin = $case['definition']->getAdminPermission() && $case['has_admin_permission'];
+          $has_regular = $permission && $case['has_permission'];
+          $case['expected'] = function() use ($has_admin, $has_regular) {
+            return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
           };
-
-          $permission_exists = $case['definition']->getAdminPermission() || $permission;
-          if ($permission_exists && $entity_access) {
-            $has_admin = $case['definition']->getAdminPermission() && $case['has_admin_permission'];
-            $has_regular = $permission && $case['has_permission'];
-            $case['expected'] = function() use ($has_admin, $has_regular) {
-              return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
-            };
-          }
-
-          $case['definition']->set('entity_access', $entity_access);
-          $case['permission'] = $permission;
-          $cases[implode('-', $keys)] = $case;
         }
+
+        $case['permission'] = $permission;
+        $cases[implode('-', $keys)] = $case;
       }
     }
 

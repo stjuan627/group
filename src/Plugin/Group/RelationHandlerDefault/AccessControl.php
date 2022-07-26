@@ -41,9 +41,6 @@ class AccessControl implements AccessControlInterface {
     $permissions = [$this->permissionProvider->getPermission($operation, $target, 'any')];
 
     // We know relations have owners, but need to check for the target entity.
-    // Please note that we do not check for "view" vs "view unpublished" here
-    // because you usually can't have the latter without the former so a regular
-    // check vs the passed in operation should suffice for most use cases.
     if ($target === 'relationship' || $this->implementsOwnerInterface) {
       $permissions[] = $this->permissionProvider->getPermission($operation, $target, 'own');
     }
@@ -61,14 +58,18 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
-    $result = AccessResult::neutral();
+    if (!$this->supportsOperation($operation, 'relationship')) {
+      return $return_as_object ? AccessResult::neutral() : FALSE;
+    }
 
     // Check if the account is the owner.
     $is_owner = $group_content->getOwnerId() === $account->id();
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [$this->permissionProvider->getAdminPermission()];
-    $permissions[] = $this->permissionProvider->getPermission($operation, 'relationship', 'any');
+    $permissions = [
+      $this->permissionProvider->getAdminPermission(),
+      $this->permissionProvider->getPermission($operation, 'relationship', 'any'),
+    ];
     $own_permission = $this->permissionProvider->getPermission($operation, 'relationship', 'own');
     if ($is_owner) {
       $permissions[] = $own_permission;
@@ -76,6 +77,7 @@ class AccessControl implements AccessControlInterface {
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.
+    $result = AccessResult::neutral();
     if (!empty($permissions)) {
       $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
     }
@@ -95,6 +97,9 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function relationshipCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
+    if (!$this->supportsOperation('create', 'relationship')) {
+      return $return_as_object ? AccessResult::neutral() : FALSE;
+    }
     $permission = $this->permissionProvider->getPermission('create', 'relationship');
     return $this->combinedPermissionCheck($group, $account, $permission, $return_as_object);
   }
@@ -103,14 +108,24 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function entityAccess(EntityInterface $entity, $operation, AccountInterface $account, $return_as_object = FALSE) {
+    // We only check unpublished vs published for "view" right now. If we ever
+    // start supporting other operations, we need to remove the "view" check.
+    $check_published = $operation === 'view' && $this->implementsPublishedInterface;
+
+    // Figure out which operation to check.
+    $operation_to_check = $operation;
+    if ($check_published && !$entity->isPublished()) {
+      $operation_to_check = "$operation unpublished";
+    }
+
     // The Group module's ideology is that if you want to do something to a
     // grouped entity, you need Group to explicitly allow access or else the
     // result will be forbidden. Having said that, if we do not support an
     // operation yet, it's probably nicer to return neutral here. This way, any
     // module that exposes new operations will work as intended AND NOT HAVE
     // GROUP ACCESS CHECKS until Group specifically implements said operations.
-    if (!$this->supportsOperation($operation, 'entity')) {
-      return AccessResult::neutral();
+    if (!$this->supportsOperation($operation_to_check, 'entity')) {
+      return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
     $group_relationships = $this->entityTypeManager()
@@ -119,12 +134,8 @@ class AccessControl implements AccessControlInterface {
 
     // If this plugin is not being used by the entity, we have nothing to say.
     if (empty($group_relationships)) {
-      return AccessResult::neutral();
+      return $return_as_object ? AccessResult::neutral() : FALSE;
     }
-
-    // We only check unpublished vs published for "view" right now. If we ever
-    // start supporting other operations, we need to remove the "view" check.
-    $check_published = $operation === 'view' && $this->implementsPublishedInterface;
 
     // Check if the account is the owner and an owner permission is supported.
     $is_owner = FALSE;
@@ -133,27 +144,24 @@ class AccessControl implements AccessControlInterface {
     }
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [$this->permissionProvider->getAdminPermission()];
-    if (!$check_published || $entity->isPublished()) {
-      $permissions[] = $this->permissionProvider->getPermission($operation, 'entity', 'any');
-      $own_permission = $this->permissionProvider->getPermission($operation, 'entity', 'own');
-      if ($is_owner) {
-        $permissions[] = $own_permission;
-      }
-    }
-    elseif ($check_published && !$entity->isPublished()) {
-      $permissions[] = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
-      $own_permission = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'own');
-      if ($is_owner) {
-        $permissions[] = $own_permission;
-      }
+    $permissions = [
+      $this->permissionProvider->getAdminPermission(),
+      $this->permissionProvider->getPermission($operation_to_check, 'entity', 'any'),
+    ];
+    $own_permission = $this->permissionProvider->getPermission($operation_to_check, 'entity', 'own');
+    if ($is_owner) {
+      $permissions[] = $own_permission;
     }
     $permissions = array_filter($permissions);
 
-    foreach ($group_relationships as $group_relationship) {
-      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_relationship->getGroup(), $account, $permissions, 'OR');
-      if ($result->isAllowed()) {
-        break;
+    // If we still have permissions left, check for access.
+    $result = AccessResult::neutral();
+    if (!empty($permissions)) {
+      foreach ($group_relationships as $group_relationship) {
+        $result = GroupAccessResult::allowedIfHasGroupPermissions($group_relationship->getGroup(), $account, $permissions, 'OR');
+        if ($result->isAllowed()) {
+          break;
+        }
       }
     }
 
@@ -161,7 +169,7 @@ class AccessControl implements AccessControlInterface {
     // other modules from granting access where Group promised the entity would
     // be inaccessible.
     if (!$result->isAllowed()) {
-      $result = AccessResult::forbidden()->addCacheContexts(['user.group_permissions']);
+      $result = AccessResult::forbidden()->addCacheableDependency($result);
     }
 
     // If there was an owner permission to check, the result needs to vary per
@@ -187,8 +195,7 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    // You cannot create target entities if the plugin does not support it.
-    if (!$this->groupRelationType->definesEntityAccess()) {
+    if (!$this->supportsOperation('create', 'entity')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
     $permission = $this->permissionProvider->getPermission('create', 'entity');
