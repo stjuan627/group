@@ -60,6 +60,7 @@ class GroupMembershipPermissionProvider implements PermissionProviderInterface {
       $permissions[$name]['allowed for'] = ['member'];
     }
 
+    // We know this exists, but check either way just to be safe.
     if ($name = $this->getPermission('delete', 'relationship', 'own')) {
       $permissions[$name]['title'] = 'Leave group';
       $permissions[$name]['allowed for'] = ['member'];
