@@ -109,7 +109,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * Gets the relationship storage.
    *
-   * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
+   * @return \Drupal\group\Entity\Storage\GroupRelationshipStorageInterface
    *   The relationship storage.
    */
   protected function relationshipStorage() {
@@ -188,7 +188,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    */
   public function removeMember(UserInterface $account) {
     if ($member = $this->getMember($account)) {
-      $member->getGroupContent()->delete();
+      $member->getGroupRelationship()->delete();
     }
   }
 

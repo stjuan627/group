@@ -4,7 +4,7 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -28,7 +28,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
   /**
    * Checks access to an operation on the relationship.
    *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   * @param \Drupal\group\Entity\GroupRelationshipInterface $group_relationship
    *   The relationship for which to check access.
    * @param string $operation
    *   The operation access should be checked for. Usually one of "view",
@@ -45,7 +45,7 @@ interface AccessControlInterface extends RelationHandlerInterface {
    *   returned, i.e. TRUE means access is explicitly allowed, FALSE means
    *   access is either explicitly forbidden or "no opinion".
    */
-  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE);
+  public function relationshipAccess(GroupRelationshipInterface $group_relationship, $operation, AccountInterface $account, $return_as_object = FALSE);
 
   /**
    * Checks access to create a relationship.

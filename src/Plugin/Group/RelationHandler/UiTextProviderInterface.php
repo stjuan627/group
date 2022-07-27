@@ -2,7 +2,7 @@
 
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 
 /**
  * Provides a common interface for group relation UI text providers.
@@ -10,16 +10,16 @@ use Drupal\group\Entity\GroupContentInterface;
 interface UiTextProviderInterface extends RelationHandlerInterface {
 
   /**
-   * Retrieves the label for the relation.
+   * Retrieves the label for the relationship.
    *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
-   *   The relation to retrieve the label for. WARNING: Do not call
-   *   $group_content->label() because that method actually points here.
+   * @param \Drupal\group\Entity\GroupRelationshipInterface $group_relationship
+   *   The relationship to retrieve the label for. WARNING: Do not call
+   *   $group_relationship->label() because that method actually points here.
    *
    * @return \Drupal\Core\StringTranslation\TranslatableMarkup
-   *   The relation label.
+   *   The relationship label.
    */
-  public function getRelationLabel(GroupContentInterface $group_content);
+  public function getRelationshipLabel(GroupRelationshipInterface $group_relationship);
 
   /**
    * Retrieves the label for the add page.

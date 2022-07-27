@@ -219,7 +219,7 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
    * @return array
    *   An array of relationship type ID arrays, keyed by plugin ID.
    */
-  public function getPluginGroupContentTypeMap();
+  public function getPluginGroupRelationshipTypeMap();
 
   /**
    * Retrieves a list of plugin IDs per group type ID.

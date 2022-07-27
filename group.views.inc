@@ -15,7 +15,7 @@ function group_views_data_alter(array &$data) {
   $entity_type_manager = \Drupal::entityTypeManager();
   $entity_types = $entity_type_manager->getDefinitions();
 
-  // Get the data table for GroupContent entities.
+  // Get the data table for GroupRelationship entities.
   $data_table = $entity_types['group_content']->getDataTable();
 
   $plugin_manager = \Drupal::service('group_relation_type.manager');

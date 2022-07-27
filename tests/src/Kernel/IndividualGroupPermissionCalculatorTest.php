@@ -74,9 +74,9 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
     // @todo This displays a desperate need for addRole() and removeRole().
     $group->addMember($account);
     $member = $group->getMember($account);
-    $group_content = $member->getGroupContent();
-    $group_content->group_roles[] = $group_role->id();
-    $group_content->save();
+    $group_relationship = $member->getGroupRelationship();
+    $group_relationship->group_roles[] = $group_role->id();
+    $group_relationship->save();
 
     $permissions[$scope][$group->id()][] = 'view group';
     $permissions[$scope][$group->id()][] = 'leave group';

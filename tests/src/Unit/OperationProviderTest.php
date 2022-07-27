@@ -7,10 +7,10 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\Core\Extension\ModuleHandlerInterface;
   use Drupal\Core\Session\AccountProxyInterface;
   use Drupal\Core\StringTranslation\TranslationInterface;
-  use Drupal\group\Entity\GroupContentTypeInterface;
+  use Drupal\group\Entity\GroupRelationshipTypeInterface;
   use Drupal\group\Entity\GroupInterface;
   use Drupal\group\Entity\GroupTypeInterface;
-  use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+  use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationType;
   use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
@@ -56,8 +56,8 @@ namespace Drupal\Tests\group\Unit {
       $entity_type = $this->prophesize(EntityTypeInterface::class);
       $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
 
-      $entity = $this->prophesize(GroupContentTypeInterface::class);
-      $storage = $this->prophesize(GroupContentTypeStorageInterface::class);
+      $entity = $this->prophesize(GroupRelationshipTypeInterface::class);
+      $storage = $this->prophesize(GroupRelationshipTypeStorageInterface::class);
       $storage->getRelationshipTypeId(Argument::cetera())->willReturn('foobar');
       $storage->load('foobar')->willReturn($entity->reveal());
       $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());

@@ -3,7 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Component\Discovery\YamlDiscovery;
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 
 /**
  * Tests the gathering and processing of group permissions.
@@ -82,7 +82,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_c), 'Permission count matches what is in Yaml file and membership plugin.');
 
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($storage instanceof GroupContentTypeStorageInterface);
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($group_type_a, 'group_as_content'));
     $storage->save($storage->createFromPlugin($group_type_b, 'user_as_content'));
 

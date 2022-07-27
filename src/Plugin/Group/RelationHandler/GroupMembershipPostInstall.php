@@ -5,7 +5,7 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\group\Entity\GroupContentTypeInterface;
+use Drupal\group\Entity\GroupRelationshipTypeInterface;
 
 /**
  * Provides post install tasks for the group_membership relation plugin.
@@ -43,12 +43,12 @@ class GroupMembershipPostInstall implements PostInstallInterface {
   /**
    * Installs the group_roles field.
    *
-   * @param \Drupal\group\Entity\GroupContentTypeInterface $relationship_type
-   *   The GroupContentType created by installing the plugin.
+   * @param \Drupal\group\Entity\GroupRelationshipTypeInterface $relationship_type
+   *   The GroupRelationshipType created by installing the plugin.
    * @param $is_syncing
    *   Whether config is syncing.
    */
-  public function installGroupRolesField(GroupContentTypeInterface $relationship_type, $is_syncing) {
+  public function installGroupRolesField(GroupRelationshipTypeInterface $relationship_type, $is_syncing) {
     // Only create config objects while config import is not in progress.
     if ($is_syncing === TRUE) {
       return;

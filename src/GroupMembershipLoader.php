@@ -7,16 +7,16 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
- * Loader for wrapped GroupContent entities using the 'group_membership' plugin.
+ * Loader for wrapped GroupRelationship entities using the 'group_membership' plugin.
  *
  * Seeing as this class is part of the main module, we could have easily put its
- * functionality in GroupContentStorage. We chose not to because other modules
+ * functionality in GroupRelationshipStorage. We chose not to because other modules
  * won't have that power and we should provide them with an example of how to
- * write such a plugin-specific GroupContent loader.
+ * write such a plugin-specific GroupRelationship loader.
  *
- * Also note that we don't simply return GroupContent entities, but wrapped
+ * Also note that we don't simply return GroupRelationship entities, but wrapped
  * copies of said entities, namely \Drupal\group\GroupMembership. In a future
- * version we should investigate the feasibility of extending GroupContent
+ * version we should investigate the feasibility of extending GroupRelationship
  * entities rather than wrapping them.
  */
 class GroupMembershipLoader implements GroupMembershipLoaderInterface {
@@ -51,25 +51,25 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
   /**
    * Gets the relationship storage.
    *
-   * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
+   * @return \Drupal\group\Entity\Storage\GroupRelationshipStorageInterface
    */
   protected function groupRelationshipStorage() {
     return $this->entityTypeManager->getStorage('group_content');
   }
 
   /**
-   * Wraps GroupContent entities in a GroupMembership object.
+   * Wraps GroupRelationship entities in a GroupMembership object.
    *
-   * @param \Drupal\group\Entity\GroupContentInterface[] $entities
-   *   An array of GroupContent entities to wrap.
+   * @param \Drupal\group\Entity\GroupRelationshipInterface[] $entities
+   *   An array of GroupRelationship entities to wrap.
    *
    * @return \Drupal\group\GroupMembership[]
    *   A list of GroupMembership wrapper objects.
    */
-  protected function wrapGroupContentEntities($entities) {
+  protected function wrapGroupRelationshipEntities($entities) {
     $group_memberships = [];
-    foreach ($entities as $group_content) {
-      $group_memberships[] = new GroupMembership($group_content);
+    foreach ($entities as $group_relationship) {
+      $group_memberships[] = new GroupMembership($group_relationship);
     }
     return $group_memberships;
   }
@@ -86,8 +86,8 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       ->condition('plugin_id', 'group_membership')
       ->execute();
 
-    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
-      $group_memberships = $this->wrapGroupContentEntities($group_contents);
+    if ($ids && $group_relationships = $this->groupRelationshipStorage()->loadMultiple($ids)) {
+      $group_memberships = $this->wrapGroupRelationshipEntities($group_relationships);
       return reset($group_memberships);
     }
 
@@ -109,8 +109,8 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     }
 
     $ids = $query->execute();
-    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
-      return $this->wrapGroupContentEntities($group_contents);
+    if ($ids && $group_relationships = $this->groupRelationshipStorage()->loadMultiple($ids)) {
+      return $this->wrapGroupRelationshipEntities($group_relationships);
     }
 
     return [];
@@ -135,8 +135,8 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
     }
 
     $ids = $query->execute();
-    if ($ids && $group_contents = $this->groupRelationshipStorage()->loadMultiple($ids)) {
-      return $this->wrapGroupContentEntities($group_contents);
+    if ($ids && $group_relationships = $this->groupRelationshipStorage()->loadMultiple($ids)) {
+      return $this->wrapGroupRelationshipEntities($group_relationships);
     }
 
     return [];

@@ -9,9 +9,9 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\Storage\GroupContentStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
@@ -207,12 +207,12 @@ class AccessControlTest extends UnitTestCase {
     $account = $account->reveal();
 
     $group = $this->prophesize(GroupInterface::class);
-    $group_content = $this->prophesize(GroupContentInterface::class);
-    $group_content->getGroup()->willReturn($group->reveal());
-    $group_content->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
-    $group_content->getCacheContexts()->willReturn([]);
-    $group_content->getCachetags()->willReturn(['group_content:foo']);
-    $group_content->getCacheMaxAge()->willReturn(9999);
+    $group_relationship = $this->prophesize(GroupRelationshipInterface::class);
+    $group_relationship->getGroup()->willReturn($group->reveal());
+    $group_relationship->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
+    $group_relationship->getCacheContexts()->willReturn([]);
+    $group_relationship->getCachetags()->willReturn(['group_content:foo']);
+    $group_relationship->getCacheMaxAge()->willReturn(9999);
 
     if ($definition->getAdminPermission()) {
       $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);
@@ -235,7 +235,7 @@ class AccessControlTest extends UnitTestCase {
       $group->hasPermission($own_permission, $account)->shouldNotBeCalled();
     }
 
-    $result = $access_control_handler->relationshipAccess($group_content->reveal(), $operation, $account, TRUE);
+    $result = $access_control_handler->relationshipAccess($group_relationship->reveal(), $operation, $account, TRUE);
     $this->assertEquals($expected(), $result);
   }
 
@@ -443,7 +443,7 @@ class AccessControlTest extends UnitTestCase {
    * @dataProvider entityAccessProvider
    */
   public function testEntityAccess(\Closure $expected, $plugin_id, GroupRelationTypeInterface $definition, $has_admin_permission, $has_permission, $has_own_permission, $permission, $own_permission, $is_grouped, $is_ownable, $is_owner, $is_publishable, $is_published, $operation) {
-    $storage = $this->prophesize(GroupContentStorageInterface::class);
+    $storage = $this->prophesize(GroupRelationshipStorageInterface::class);
     $entity_type = $this->prophesize(EntityTypeInterface::class);
     $entity_type->entityClassImplements(EntityPublishedInterface::class)->willReturn($is_publishable);
     $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($is_ownable);
@@ -493,17 +493,17 @@ class AccessControlTest extends UnitTestCase {
     }
     else {
       $group = $this->prophesize(GroupInterface::class);
-      $group_content = $this->prophesize(GroupContentInterface::class);
-      $group_content->getGroup()->willReturn($group->reveal());
-      $group_content->getPluginId()->willReturn('foo:baz');
-      $group_content = $group_content->reveal();
+      $group_relationship = $this->prophesize(GroupRelationshipInterface::class);
+      $group_relationship->getGroup()->willReturn($group->reveal());
+      $group_relationship->getPluginId()->willReturn('foo:baz');
+      $group_relationship = $group_relationship->reveal();
 
-      $group_content_2 = $this->prophesize(GroupContentInterface::class);
-      $group_content_2->getGroup()->willReturn($group->reveal());
-      $group_content_2->getPluginId()->willReturn('cat:dog');
-      $group_content_2 = $group_content_2->reveal();
+      $group_relationship_2 = $this->prophesize(GroupRelationshipInterface::class);
+      $group_relationship_2->getGroup()->willReturn($group->reveal());
+      $group_relationship_2->getPluginId()->willReturn('cat:dog');
+      $group_relationship_2 = $group_relationship_2->reveal();
 
-      $storage->loadByEntity($entity, $plugin_id)->willReturn([1 => $group_content, 2 => $group_content_2]);
+      $storage->loadByEntity($entity, $plugin_id)->willReturn([1 => $group_relationship, 2 => $group_relationship_2]);
 
       if ($definition->getAdminPermission()) {
         $group->hasPermission($definition->getAdminPermission(), $account)->willReturn($has_admin_permission);

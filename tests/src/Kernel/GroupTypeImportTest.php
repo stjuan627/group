@@ -4,7 +4,7 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Site\Settings;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationInterface;
 
 /**
@@ -58,7 +58,7 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     assert($plugin instanceof GroupRelationInterface);
 
     $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($relationship_type_storage instanceof GroupContentTypeStorageInterface);
+    assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
     $relationship_type = $relationship_type_storage->load(
       $relationship_type_storage->getRelationshipTypeId($group_type->id(), $plugin->getRelationTypeId())
     );

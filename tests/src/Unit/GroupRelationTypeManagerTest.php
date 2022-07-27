@@ -175,7 +175,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    *
    * @covers ::processDefinition
    */
-  public function testPluginForGroupContentException() {
+  public function testPluginForGroupRelationshipException() {
     $this->setUpPluginDefinitions(
       ['some_plugin' => (new GroupRelationType([
         'id' => 'some_plugin',

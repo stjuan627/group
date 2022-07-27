@@ -3,7 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 
 /**
  * Tests the creation of group type entities.
@@ -20,7 +20,7 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
    */
   public function testCreate() {
     $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($relationship_type_storage instanceof GroupContentTypeStorageInterface);
+    assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
     $this->assertCount(0, $relationship_type_storage->loadByEntityTypeId('user'));
 
     // Check that the group type was created and saved properly.

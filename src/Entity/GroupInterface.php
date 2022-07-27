@@ -44,7 +44,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   (optional) Extra values to add to the group relationship. You cannot
    *   overwrite the group ID (gid) or entity ID (entity_id).
    *
-   * @return \Drupal\group\Entity\GroupContentInterface
+   * @return \Drupal\group\Entity\GroupRelationshipInterface
    *   The relationship entity for the newly added relationship.
    */
   public function addRelationship(EntityInterface $entity, $plugin_id, $values = []);
@@ -55,7 +55,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *
-   * @return \Drupal\group\Entity\GroupContentInterface[]
+   * @return \Drupal\group\Entity\GroupRelationshipInterface[]
    *   A list of relationship entities matching the criteria.
    */
   public function getRelationships($plugin_id = NULL);
@@ -68,7 +68,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *
-   * @return \Drupal\group\Entity\GroupContentInterface[]
+   * @return \Drupal\group\Entity\GroupRelationshipInterface[]
    *   A list of relationship entities matching the criteria.
    */
   public function getRelationshipsByEntity(EntityInterface $entity, $plugin_id = NULL);

@@ -3,11 +3,11 @@
 namespace Drupal\group;
 
 use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 
 /**
- * Wrapper class for a GroupContent entity representing a membership.
+ * Wrapper class for a GroupRelationship entity representing a membership.
  *
  * Should be loaded through the 'group.membership_loader' service.
  *
@@ -18,37 +18,37 @@ class GroupMembership implements CacheableDependencyInterface {
   /**
    * The relationship entity to wrap.
    *
-   * @var \Drupal\group\Entity\GroupContentInterface
+   * @var \Drupal\group\Entity\GroupRelationshipInterface
    */
-  protected $groupContent;
+  protected $groupRelationship;
 
   /**
    * Constructs a new GroupMembership.
    *
-   * @param \Drupal\group\Entity\GroupContentInterface $group_content
+   * @param \Drupal\group\Entity\GroupRelationshipInterface $group_relationship
    *   The relationship entity representing the membership.
    *
    * @throws \Exception
    *   Exception thrown when trying to instantiate this class with a
-   *   GroupContent entity that was not based on the GroupMembership content
+   *   GroupRelationship entity that was not based on the GroupMembership content
    *   enabler plugin.
    */
-  public function __construct(GroupContentInterface $group_content) {
-    if ($group_content->getRelationshipType()->getPluginId() == 'group_membership') {
-      $this->groupContent = $group_content;
+  public function __construct(GroupRelationshipInterface $group_relationship) {
+    if ($group_relationship->getRelationshipType()->getPluginId() == 'group_membership') {
+      $this->groupRelationship = $group_relationship;
     }
     else {
-      throw new \Exception('Trying to create a GroupMembership from an incompatible GroupContent entity.');
+      throw new \Exception('Trying to create a GroupMembership from an incompatible GroupRelationship entity.');
     }
   }
 
   /**
-   * Returns the fieldable GroupContent entity for the membership.
+   * Returns the fieldable GroupRelationship entity for the membership.
    *
-   * @return \Drupal\group\Entity\GroupContentInterface
+   * @return \Drupal\group\Entity\GroupRelationshipInterface
    */
-  public function getGroupContent() {
-    return $this->groupContent;
+  public function getGroupRelationship() {
+    return $this->groupRelationship;
   }
 
   /**
@@ -57,7 +57,7 @@ class GroupMembership implements CacheableDependencyInterface {
    * @return \Drupal\group\Entity\GroupInterface
    */
   public function getGroup() {
-    return $this->groupContent->getGroup();
+    return $this->groupRelationship->getGroup();
   }
 
   /**
@@ -66,7 +66,7 @@ class GroupMembership implements CacheableDependencyInterface {
    * @return \Drupal\user\UserInterface
    */
   public function getUser() {
-    return $this->groupContent->getEntity();
+    return $this->groupRelationship->getEntity();
   }
 
   /**
@@ -102,21 +102,21 @@ class GroupMembership implements CacheableDependencyInterface {
    * {@inheritdoc}
    */
   public function getCacheContexts() {
-    return $this->getGroupContent()->getCacheContexts();
+    return $this->getGroupRelationship()->getCacheContexts();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    return $this->getGroupContent()->getCacheTags();
+    return $this->getGroupRelationship()->getCacheTags();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheMaxAge() {
-    return $this->getGroupContent()->getCacheMaxAge();
+    return $this->getGroupRelationship()->getCacheMaxAge();
   }
 
   /**

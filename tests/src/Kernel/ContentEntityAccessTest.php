@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\user\RoleInterface;
 
@@ -64,7 +64,7 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
 
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($storage instanceof GroupContentTypeStorageInterface);
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_as_content'));
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_as_content'));
 

@@ -5,7 +5,7 @@ namespace Drupal\group\Plugin\Group\RelationHandler;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
 /**
@@ -78,7 +78,7 @@ trait OperationProviderTrait {
   protected function getRelationshipTypeId(GroupTypeInterface $group_type) {
     if ($group_type->hasPlugin($this->pluginId)) {
       $storage = $this->entityTypeManager()->getStorage('group_content_type');
-      assert($storage instanceof GroupContentTypeStorageInterface);
+      assert($storage instanceof GroupRelationshipTypeStorageInterface);
       return $storage->getRelationshipTypeId($group_type->id(), $this->pluginId);
     }
     return FALSE;

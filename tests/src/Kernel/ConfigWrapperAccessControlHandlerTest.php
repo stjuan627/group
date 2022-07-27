@@ -2,7 +2,7 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\group\Entity\Storage\GroupContentTypeStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 
 /**
@@ -29,7 +29,7 @@ class ConfigWrapperAccessControlHandlerTest extends GroupKernelTestBase {
 
     // Install the node type handling plugin on a group type.
     $storage = $this->entityTypeManager->getStorage('group_content_type');
-    assert($storage instanceof GroupContentTypeStorageInterface);
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($this->createGroupType(), 'node_type_as_content'));
   }
 

@@ -3,7 +3,7 @@
 namespace Drupal\group\Access;
 
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -45,13 +45,13 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
     }
 
     // Don't interfere if the relationship isn't a real relationship entity.
-    $group_content = $parameters->get('group_content');
-    if (!$group_content instanceof GroupContentInterface) {
+    $group_relationship = $parameters->get('group_content');
+    if (!$group_relationship instanceof GroupRelationshipInterface) {
       return AccessResult::neutral();
     }
 
     // If we have a group and relationship, see if the owner matches.
-    $group_owns_content = $group_content->getGroupId() == $group->id();
+    $group_owns_content = $group_relationship->getGroupId() == $group->id();
 
     // Only allow access if the relationship is owned by the group and
     // _group_owns_content is set to TRUE or the other way around.

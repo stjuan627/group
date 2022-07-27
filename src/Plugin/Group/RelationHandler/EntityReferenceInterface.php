@@ -10,7 +10,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 interface EntityReferenceInterface extends RelationHandlerInterface {
 
   /**
-   * Sets up the entity reference field on the GroupContent entity.
+   * Sets up the entity reference field on the GroupRelationship entity.
    *
    * When you add content to a group using a plugin, the entity reference field
    * that allows you to select the content you wish to add may need specific

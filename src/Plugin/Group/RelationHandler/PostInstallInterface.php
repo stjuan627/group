@@ -21,7 +21,7 @@ interface PostInstallInterface extends RelationHandlerInterface {
    *   your callback if they wish to change it.
    *
    *   The callbacks will receive 2 arguments:
-   *   - The GroupContentTypeInterface created by installing the plugin.
+   *   - The GroupRelationshipTypeInterface created by installing the plugin.
    *   - A boolean indicating whether the config is syncing. If TRUE, do not add
    *     any one-off config because they will already be added by the sync.
    */

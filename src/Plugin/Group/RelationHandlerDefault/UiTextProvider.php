@@ -4,7 +4,7 @@ namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\RelationHandler\UiTextProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\UiTextProviderTrait;
 
@@ -31,8 +31,8 @@ class UiTextProvider implements UiTextProviderInterface {
   /**
    * {@inheritdoc}
    */
-  public function getRelationLabel(GroupContentInterface $group_content) {
-    return $group_content->getEntity()->label();
+  public function getRelationshipLabel(GroupRelationshipInterface $group_relationship) {
+    return $group_relationship->getEntity()->label();
   }
 
   /**

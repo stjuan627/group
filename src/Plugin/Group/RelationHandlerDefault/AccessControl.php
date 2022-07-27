@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
@@ -57,13 +57,13 @@ class AccessControl implements AccessControlInterface {
   /**
    * {@inheritdoc}
    */
-  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+  public function relationshipAccess(GroupRelationshipInterface $group_relationship, $operation, AccountInterface $account, $return_as_object = FALSE) {
     if (!$this->supportsOperation($operation, 'relationship')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
     // Check if the account is the owner.
-    $is_owner = $group_content->getOwnerId() === $account->id();
+    $is_owner = $group_relationship->getOwnerId() === $account->id();
 
     // Add in the admin permission and filter out the unsupported permissions.
     $permissions = [
@@ -79,7 +79,7 @@ class AccessControl implements AccessControlInterface {
     // If we still have permissions left, check for access.
     $result = AccessResult::neutral();
     if (!empty($permissions)) {
-      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_content->getGroup(), $account, $permissions, 'OR');
+      $result = GroupAccessResult::allowedIfHasGroupPermissions($group_relationship->getGroup(), $account, $permissions, 'OR');
     }
 
     // If there was an owner permission to check, the result needs to vary per
@@ -87,7 +87,7 @@ class AccessControl implements AccessControlInterface {
     // owner changes, someone might suddenly gain or lose access.
     if ($own_permission) {
       // @todo Not necessary if admin, could boost performance here.
-      $result->cachePerUser()->addCacheableDependency($group_content);
+      $result->cachePerUser()->addCacheableDependency($group_relationship);
     }
 
     return $return_as_object ? $result : $result->isAllowed();

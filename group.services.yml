@@ -16,21 +16,21 @@ services:
     tags:
       - { name: 'access_check', applies_to: '_group_owns_content' }
   access_check.group_content.create:
-    class: 'Drupal\group\Access\GroupContentCreateAccessCheck'
+    class: 'Drupal\group\Access\GroupRelationshipCreateAccessCheck'
     arguments: ['@entity_type.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_access' }
   access_check.group_content.create_any:
-    class: 'Drupal\group\Access\GroupContentCreateAnyAccessCheck'
+    class: 'Drupal\group\Access\GroupRelationshipCreateAnyAccessCheck'
     arguments: ['@entity_type.manager']
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_access' }
   access_check.group_content.create_entity:
-    class: 'Drupal\group\Access\GroupContentCreateEntityAccessCheck'
+    class: 'Drupal\group\Access\GroupRelationshipCreateEntityAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_entity_access' }
   access_check.group_content.create_any_entity:
-    class: 'Drupal\group\Access\GroupContentCreateAnyEntityAccessCheck'
+    class: 'Drupal\group\Access\GroupRelationshipCreateAnyEntityAccessCheck'
     tags:
       - { name: 'access_check', applies_to: '_group_content_create_any_entity_access' }
   access_check.group_latest_revision:
@@ -113,14 +113,14 @@ services:
       - { name: flexible_permission_calculator, priority: -50 }
 
   group.uninstall_validator.group_content:
-    class: 'Drupal\group\UninstallValidator\GroupContentUninstallValidator'
+    class: 'Drupal\group\UninstallValidator\GroupRelationshipUninstallValidator'
     tags:
       - { name: 'module_install.uninstall_validator' }
     arguments: ['@string_translation', '@entity_type.manager', '@group_relation_type.manager']
     lazy: 'true'
 
   group_content_type.breadcrumb:
-    class: 'Drupal\group\Breadcrumb\GroupContentTypeBreadcrumbBuilder'
+    class: 'Drupal\group\Breadcrumb\GroupRelationshipTypeBreadcrumbBuilder'
     tags:
       - { name: 'breadcrumb_builder', priority: 100 }
 

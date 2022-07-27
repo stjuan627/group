@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\Storage\GroupContentStorageInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -68,13 +68,13 @@ class GroupMembershipController extends ControllerBase {
    */
   public function join(GroupInterface $group) {
     $storage = $this->entityTypeManager->getStorage('group_content');
-    assert($storage instanceof GroupContentStorageInterface);
+    assert($storage instanceof GroupRelationshipStorageInterface);
 
     // Pre-populate a group membership with the current user.
     $user = $this->entityTypeManager->getStorage('user')->load($this->currentUser->id());
-    $group_content = $storage->createForEntityInGroup($user, $group, 'group_membership');
+    $group_relationship = $storage->createForEntityInGroup($user, $group, 'group_membership');
 
-    return $this->entityFormBuilder->getForm($group_content, 'group-join');
+    return $this->entityFormBuilder->getForm($group_relationship, 'group-join');
   }
 
   /**
@@ -100,8 +100,8 @@ class GroupMembershipController extends ControllerBase {
    *   A group leave form.
    */
   public function leave(GroupInterface $group) {
-    $group_content = $group->getMember($this->currentUser)->getGroupContent();
-    return $this->entityFormBuilder->getForm($group_content, 'group-leave');
+    $group_relationship = $group->getMember($this->currentUser)->getGroupRelationship();
+    return $this->entityFormBuilder->getForm($group_relationship, 'group-leave');
   }
 
 }

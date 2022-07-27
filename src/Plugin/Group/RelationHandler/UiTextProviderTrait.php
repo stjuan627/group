@@ -3,7 +3,7 @@
 namespace Drupal\group\Plugin\Group\RelationHandler;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
 /**
@@ -34,11 +34,11 @@ trait UiTextProviderTrait {
   /**
    * {@inheritdoc}
    */
-  public function getRelationLabel(GroupContentInterface $group_content) {
+  public function getRelationshipLabel(GroupRelationshipInterface $group_relationship) {
     if (!isset($this->parent)) {
       throw new \LogicException('Using UiTextProviderTrait without assigning a parent or overwriting the methods.');
     }
-    return $this->parent->getRelationLabel($group_content);
+    return $this->parent->getRelationshipLabel($group_relationship);
   }
 
   /**

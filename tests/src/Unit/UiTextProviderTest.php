@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\UiTextProvider;
 use Drupal\Tests\UnitTestCase;
@@ -75,19 +75,19 @@ class UiTextProviderTest extends UnitTestCase {
   }
 
   /**
-   * Tests the relation label getter.
+   * Tests the relationship label getter.
    *
-   * @covers ::getRelationLabel
+   * @covers ::getRelationshipLabel
    */
   public function testGetRelationLabel() {
     $label = new TranslatableMarkup('Foo bar');
 
     $target_entity = $this->prophesize(EntityInterface::class);
     $target_entity->label()->willReturn($label);
-    $group_content = $this->prophesize(GroupContentInterface::class);
-    $group_content->getEntity()->willReturn($target_entity->reveal());
+    $group_relationship = $this->prophesize(GroupRelationshipInterface::class);
+    $group_relationship->getEntity()->willReturn($target_entity->reveal());
 
-    $this->assertEquals($label, $this->uiTextProvider->getRelationLabel($group_content->reveal()), 'The relation label matches the grouped entity label.');
+    $this->assertEquals($label, $this->uiTextProvider->getRelationshipLabel($group_relationship->reveal()), 'The relationship label matches the grouped entity label.');
   }
 
   /**

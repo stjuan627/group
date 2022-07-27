@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\user\EntityOwnerInterface;
@@ -77,11 +77,11 @@ trait AccessControlTrait {
   /**
    * {@inheritdoc}
    */
-  public function relationshipAccess(GroupContentInterface $group_content, $operation, AccountInterface $account, $return_as_object = FALSE) {
+  public function relationshipAccess(GroupRelationshipInterface $group_relationship, $operation, AccountInterface $account, $return_as_object = FALSE) {
     if (!isset($this->parent)) {
       throw new \LogicException('Using AccessControlTrait without assigning a parent or overwriting the methods.');
     }
-    return $this->parent->relationshipAccess($group_content, $operation, $account, $return_as_object);
+    return $this->parent->relationshipAccess($group_relationship, $operation, $account, $return_as_object);
   }
 
   /**

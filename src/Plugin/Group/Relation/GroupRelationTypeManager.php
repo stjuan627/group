@@ -9,7 +9,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
-use Drupal\group\Entity\GroupContentTypeInterface;
+use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -53,7 +53,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * A relationship type storage handler.
    *
-   * @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface
+   * @var \Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface
    */
   protected $relationshipTypeStorage;
 
@@ -76,14 +76,14 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *
    * @var array[]
    */
-  protected $pluginGroupContentTypeMap;
+  protected $pluginGroupRelationshipTypeMap;
 
   /**
    * The cache key for the relationship type IDs per plugin ID map.
    *
    * @var string
    */
-  protected $pluginGroupContentTypeMapCacheKey;
+  protected $pluginGroupRelationshipTypeMapCacheKey;
 
   /**
    * An static cache of plugin IDs per group type ID.
@@ -117,7 +117,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     $this->alterInfo('group_relation_type');
     $this->setCacheBackend($cache_backend, 'group_relations');
     $this->entityTypeManager = $entity_type_manager;
-    $this->pluginGroupContentTypeMapCacheKey = $this->cacheKey . '_GCT_map';
+    $this->pluginGroupRelationshipTypeMapCacheKey = $this->cacheKey . '_GCT_map';
     $this->groupTypePluginMapCacheKey = $this->cacheKey . '_GT_map';
   }
 
@@ -233,7 +233,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * Returns the relationship type storage handler.
    *
-   * @return \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface
+   * @return \Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface
    *   The relationship type storage handler.
    */
   protected function getRelationshipTypeStorage() {
@@ -345,26 +345,26 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    * {@inheritdoc}
    */
   public function getRelationshipTypeIds($plugin_id) {
-    $map = $this->getPluginGroupContentTypeMap();
+    $map = $this->getPluginGroupRelationshipTypeMap();
     return isset($map[$plugin_id]) ? $map[$plugin_id] : [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPluginGroupContentTypeMap() {
-    $map = $this->getCachedPluginGroupContentTypeMap();
+  public function getPluginGroupRelationshipTypeMap() {
+    $map = $this->getCachedPluginGroupRelationshipTypeMap();
 
     if (!isset($map)) {
       $map = [];
 
       $relationship_types = $this->getRelationshipTypeStorage()->loadMultiple();
       foreach ($relationship_types as $relationship_type) {
-        assert($relationship_type instanceof GroupContentTypeInterface);
+        assert($relationship_type instanceof GroupRelationshipTypeInterface);
         $map[$relationship_type->getPluginId()][] = $relationship_type->id();
       }
 
-      $this->setCachedPluginGroupContentTypeMap($map);
+      $this->setCachedPluginGroupRelationshipTypeMap($map);
     }
 
     return $map;
@@ -378,11 +378,11 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   this should return NULL, indicating to other methods that this has not
    *   yet been defined. Success with no values should return as an empty array.
    */
-  protected function getCachedPluginGroupContentTypeMap() {
-    if (!isset($this->pluginGroupContentTypeMap) && $cache = $this->cacheGet($this->pluginGroupContentTypeMapCacheKey)) {
-      $this->pluginGroupContentTypeMap = $cache->data;
+  protected function getCachedPluginGroupRelationshipTypeMap() {
+    if (!isset($this->pluginGroupRelationshipTypeMap) && $cache = $this->cacheGet($this->pluginGroupRelationshipTypeMapCacheKey)) {
+      $this->pluginGroupRelationshipTypeMap = $cache->data;
     }
-    return $this->pluginGroupContentTypeMap;
+    return $this->pluginGroupRelationshipTypeMap;
   }
 
   /**
@@ -391,9 +391,9 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    * @param array $map
    *   The relationship type ID map to store in cache.
    */
-  protected function setCachedPluginGroupContentTypeMap(array $map) {
-    $this->cacheSet($this->pluginGroupContentTypeMapCacheKey, $map, Cache::PERMANENT);
-    $this->pluginGroupContentTypeMap = $map;
+  protected function setCachedPluginGroupRelationshipTypeMap(array $map) {
+    $this->cacheSet($this->pluginGroupRelationshipTypeMapCacheKey, $map, Cache::PERMANENT);
+    $this->pluginGroupRelationshipTypeMap = $map;
   }
 
   /**
@@ -407,7 +407,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
 
       $relationship_types = $this->getRelationshipTypeStorage()->loadMultiple();
       foreach ($relationship_types as $relationship_type) {
-        assert($relationship_type instanceof GroupContentTypeInterface);
+        assert($relationship_type instanceof GroupRelationshipTypeInterface);
         $map[$relationship_type->getGroupTypeId()][] = $relationship_type->getPluginId();
       }
 
@@ -460,10 +460,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function clearCachedPluginMaps() {
     if ($this->cacheBackend) {
-      $this->cacheBackend->delete($this->pluginGroupContentTypeMapCacheKey);
+      $this->cacheBackend->delete($this->pluginGroupRelationshipTypeMapCacheKey);
       $this->cacheBackend->delete($this->groupTypePluginMapCacheKey);
     }
-    $this->pluginGroupContentTypeMap = NULL;
+    $this->pluginGroupRelationshipTypeMap = NULL;
     $this->groupTypePluginMap = NULL;
 
     // Also clear the array of per group type plugin collections as it shares
