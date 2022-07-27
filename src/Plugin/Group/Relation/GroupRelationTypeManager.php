@@ -132,6 +132,9 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     if ($entity_type_id === 'group_content') {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_content entities, which is simply not possible.', $plugin_id));
     }
+    elseif ($entity_type_id === 'group_config_wrapper') {
+      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_config_wrapper entities, which is simply not possible.', $plugin_id));
+    }
     elseif ($definition->definesEntityAccess() && $entity_type_id === 'group') {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin defines entity access over group entities. This should be dealt with by altering the group permissions of the current user.', $plugin_id));
     }

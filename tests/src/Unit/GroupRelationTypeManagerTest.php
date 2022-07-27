@@ -189,6 +189,24 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
   }
 
   /**
+   * Tests that you may not define a plugin for group_content entities.
+   *
+   * @covers ::processDefinition
+   */
+  public function testPluginForConfigWrapperException() {
+    $this->setUpPluginDefinitions(
+      ['some_plugin' => (new GroupRelationType([
+        'id' => 'some_plugin',
+        'entity_type_id' => 'group_config_wrapper',
+      ]))->setClass(GroupRelationTypeInterface::class)]
+    );
+
+    $this->expectException(InvalidPluginDefinitionException::class);
+    $this->expectExceptionMessage('The "some_plugin" plugin tries to group group_config_wrapper entities, which is simply not possible.');
+    $this->groupRelationTypeManager->getDefinitions();
+  }
+
+  /**
    * Tests that definitions are flagged as serving config entity types.
    *
    * @covers ::processDefinition
