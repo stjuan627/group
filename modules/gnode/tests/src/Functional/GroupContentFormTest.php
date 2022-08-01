@@ -5,7 +5,9 @@ namespace Drupal\Tests\gnode\Functional;
 use Drupal\Tests\group\Functional\GroupBrowserTestBase;
 
 /**
+ * Test that a group member can create / attach content to the group.
  *
+ * @group gnode
  */
 class GroupContentFormTest extends GroupBrowserTestBase {
 
@@ -67,24 +69,38 @@ class GroupContentFormTest extends GroupBrowserTestBase {
    */
   protected function setUp() {
     parent::setUp();
+
+    // Create a node type.
     $this->nodeType = $this->createContentType([
       'type' => self::NODE_TYPE_BUNDLE,
     ]);
+
+    // Get the group type created from the parent setup.
     $this->groupType = $this->entityTypeManager->getStorage('group_type')->load('default');
+
+    // Enable the node type we created as an available group content type
+    // for our group type.
     $this->groupContentType = $this->entityTypeManager->getStorage('group_content_type')
       ->createFromPlugin($this->groupType, 'group_node:' . self::NODE_TYPE_BUNDLE)
       ->save();
+
+    // Create a group.
     $this->group = $this->createGroup([
       'uid' => $this->groupCreator->id(),
     ]);
+
+    // Create a user and add him to the group as a member.
     $this->groupMember = $this->drupalCreateUser([
       'create ' . self::NODE_TYPE_BUNDLE . ' content',
     ]);
     $this->group->addMember($this->groupMember);
-    $this->memberRole = $this->entityTypeManager->getStorage('group_role')->load($this->group->bundle() . '-member');
 
-    // Rebuild the routes since gnode module has been enabled before we created
-    // our content type, the route to create an entity of this content type
+    // Load the group member role.
+    $this->memberRole = $this->entityTypeManager->getStorage('group_role')
+      ->load($this->group->bundle() . '-member');
+
+    // Rebuild the routes since gnode module has been enabled before our content
+    // type has been created, the route to create an entity of this content type
     // in the group doesn't exist yet.
     $this->container->get('router.builder')->rebuild();
   }
