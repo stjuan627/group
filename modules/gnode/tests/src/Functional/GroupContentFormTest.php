@@ -136,7 +136,6 @@ class GroupContentFormTest extends GroupBrowserTestBase {
     $this->drupalGet($gnode_add_url);
     $this->assertSession()->statusCodeEquals(403);
 
-
     // Check that member with "create group_node:bundle entity" permission
     // can't access the form.
     $this->memberRole->grantPermission('create group_node:' . self::NODE_TYPE_BUNDLE . ' entity');
