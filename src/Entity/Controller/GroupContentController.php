@@ -105,9 +105,16 @@ class GroupContentController extends ControllerBase {
     }
 
     // Filter out the bundles the user doesn't have access to.
-    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
     foreach ($bundle_names as $plugin_id => $bundle_name) {
-      $access = $access_control_handler->createAccess($bundle_name, NULL, ['group' => $group], TRUE);
+      if ($create_mode) {
+        $plugin = $group->getGroupType()->getContentPlugin($plugin_id);
+        $access = $plugin->createEntityAccess($group, $this->currentUser());
+      }
+      else {
+        $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
+        $access = $access_control_handler->createAccess($bundle_name, NULL, ['group' => $group], TRUE);
+      }
+
       if (!$access->isAllowed()) {
         unset($bundle_names[$plugin_id]);
       }
