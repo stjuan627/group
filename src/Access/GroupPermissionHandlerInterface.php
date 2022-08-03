@@ -57,9 +57,9 @@ interface GroupPermissionHandlerInterface {
    *   - section_id: (optional) The machine name to identify the section by,
    *     defaults to the plugin ID for plugin provided permissions and to
    *     "general" for all other permissions. This is not a great solution and
-   *     should be refactored in 2.0.0.
+   *     should be refactored in 3.0.0.
    *
-   * @todo Refactor before full release.
+   * @todo Refactor before 3.0.0.
    */
   public function getPermissions($include_plugins = FALSE);
 
