@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -53,6 +54,22 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     $instance = parent::createInstance($container, $entity_type);
     $instance->pluginManager = $container->get('group_relation_type.manager');
     return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function restore(EntityInterface $entity) {
+    assert($entity instanceof GroupRelationshipInterface);
+    // It seems that SqlFieldableEntityTypeListenerTrait::copyData() does not
+    // know how to get the denormalized data. Let's make sure it's always there.
+    if (!$entity->getPluginId()) {
+      $entity->set('plugin_id', $entity->getRelationshipType()->getPluginId());
+    }
+    if (!$entity->getGroupTypeId()) {
+      $entity->set('group_type', $entity->getRelationshipType()->getGroupTypeId());
+    }
+    parent::restore($entity);
   }
 
   /**

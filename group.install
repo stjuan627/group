@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\group\Entity\GroupRelationship;
+use Drupal\group\Entity\GroupRelationshipType;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\user\RoleInterface;
@@ -21,17 +22,54 @@ function group_update_last_removed() {
 }
 
 /**
- * Add plugin_id and group_type fields and update indexes for group_content.
+ * Update class name and handler class names for group_content_type.
  */
 function group_update_9201() {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Update the class name and handlers for group_content_type.
+  $new_handlers = \Drupal::entityTypeManager()->getDefinition('group_content_type')->getHandlerClasses();
+  $entity_type = $definition_update_manager->getEntityType('group_content_type');
+  $entity_type->setClass(GroupRelationshipType::class);
+  $entity_type->set('handlers', $new_handlers);
+  $definition_update_manager->updateEntityType($entity_type);
+}
+
+/**
+ * Update class name and handler class names for group_content.
+ */
+function group_update_9202() {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
 
+  // Update the class name and handlers for group_content.
+  $new_handlers = \Drupal::entityTypeManager()->getDefinition('group_content')->getHandlerClasses();
   $entity_type = $definition_update_manager->getEntityType('group_content');
-  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
+  $entity_type->setClass(GroupRelationship::class);
+  $entity_type->set('handlers', $new_handlers);
+
+  // Instead of using the entity definition update manager, we immediately write
+  // these changes as they would otherwise trigger a data migration and choke on
+  // the fact that the old storage class no longer exists.
+  $last_installed_schema_repository->setLastInstalledDefinition($entity_type);
+}
+
+/**
+ * Update group_content DB table, fields and indexes.
+ */
+function group_update_9203(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+
+  // Update the database tables.
+  $entity_type = $definition_update_manager->getEntityType('group_content');
+  $entity_type->set('base_table', 'group_relationship');
+  $entity_type->set('data_table', 'group_relationship_field_data');
 
   // Add the plugin_id and group_type field.
+  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
   $field_storage_definitions['plugin_id'] = BaseFieldDefinition::create('string')
     ->setName('plugin_id')
     ->setTargetEntityTypeId('group_content')
@@ -53,44 +91,15 @@ function group_update_9201() {
     ->setInitialValue('TEMP')
     ->setProvider('group');
 
-  // Update the fields and regenerate indexes.
-  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions);
-
-  // Map relationship types to plugin IDs and group types.
-  $config_factory = \Drupal::configFactory();
-
-  $map = ['group_type' => [], 'plugin_id' => []];
-  foreach ($config_factory->listAll('group.content_type.') as $config_name) {
-    $relationship_type = $config_factory->get($config_name);
-
-    $id = $relationship_type->get('id');
-    $map['group_type'][$relationship_type->get('group_type')][] = $id;
-    $map['plugin_id'][$relationship_type->get('content_plugin')][] = $id;
-  }
-
-  // Populate the actual values based on the relationship types.
-  $data_table = $entity_type->getDataTable();
-
-  $database = \Drupal::database();
-  foreach ($map['group_type'] as $group_type_id => $relationship_type_ids) {
-    $database->update($data_table)
-      ->fields(['group_type' => $group_type_id])
-      ->condition('type', $relationship_type_ids, 'IN')
-      ->execute();
-  }
-
-  foreach ($map['plugin_id'] as $plugin_id => $relationship_type_ids) {
-    $database->update($data_table)
-      ->fields(['plugin_id' => $plugin_id])
-      ->condition('type', $relationship_type_ids, 'IN')
-      ->execute();
-  }
+  // Update the fields and regenerate indexes, the correct initial values will
+  // be retrieved from GroupRelationshipStorage::restore().
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
 }
 
 /**
  * Remove the 'bypass group access' permission from all roles.
  */
-function group_update_9202() {
+function group_update_9204() {
   $config_factory = \Drupal::configFactory();
   foreach ($config_factory->listAll('user.role.') as $config_name) {
     $role = $config_factory->getEditable($config_name);
@@ -102,7 +111,7 @@ function group_update_9202() {
 /**
  * Convert group roles with the 'administer group' permission to admin roles.
  */
-function group_update_9203() {
+function group_update_9205() {
   $config_factory = \Drupal::configFactory();
   foreach ($config_factory->listAll('group.role.') as $config_name) {
     $role = $config_factory->getEditable($config_name);
@@ -120,7 +129,7 @@ function group_update_9203() {
 /**
  * Convert synchronized group roles to new scope and target_role structure.
  */
-function group_update_9204() {
+function group_update_9206() {
   $config_factory = \Drupal::configFactory();
 
   $synchronized_role_ids = [];
@@ -173,7 +182,7 @@ function group_update_9204() {
 /**
  * Convert default group roles to new scope and target_role structure.
  */
-function group_update_9205() {
+function group_update_9207() {
   $config_factory = \Drupal::configFactory();
 
   $group_role_info = [
@@ -215,7 +224,7 @@ function group_update_9205() {
 /**
  * Convert user created group roles to new scope and target_role structure.
  */
-function group_update_9206() {
+function group_update_9208() {
   $config_factory = \Drupal::configFactory();
 
   foreach ($config_factory->listAll('group.role.') as $config_name) {
@@ -240,7 +249,7 @@ function group_update_9206() {
 /**
  * Remove label and description from relationship types.
  */
-function group_update_9207() {
+function group_update_9209() {
   $config_factory = \Drupal::configFactory();
 
   foreach ($config_factory->listAll('group.content_type.') as $config_name) {
@@ -254,37 +263,10 @@ function group_update_9207() {
 /**
  * Introduce the group_config_wrapper entity type.
  */
-function group_update_9208() {
+function group_update_9210() {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   if (!$definition_update_manager->getEntityType('group_config_wrapper')) {
     $entity_type = \Drupal::entityTypeManager()->getDefinition('group_config_wrapper');
     $definition_update_manager->installEntityType($entity_type);
   }
-}
-
-/**
- * Update the group_content handlers.
- */
-function group_update_9209() {
-  $new_handlers = \Drupal::entityTypeManager()->getDefinition('group_content')->getHandlerClasses();
-  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  $entity_type = $definition_update_manager->getEntityType('group_content');
-  $entity_type->set('handlers', $new_handlers);
-  $definition_update_manager->updateEntityType($entity_type);
-}
-
-/**
- * Update the group_content database tables.
- */
-function group_update_9210(&$sandbox) {
-  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
-  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
-  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
-
-  $entity_type = $definition_update_manager->getEntityType('group_content');
-  $entity_type->setClass(GroupRelationship::class);
-  $entity_type->set('base_table', 'group_relationship');
-  $entity_type->set('data_table', 'group_relationship_field_data');
-  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
 }
