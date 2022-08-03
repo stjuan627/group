@@ -215,7 +215,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     $full_permissions = [];
 
     foreach ($this->getYamlDiscovery()->findAll() as $provider => $permissions) {
-      $permission_sets = [$permissions];
+      $permission_sets = [];
 
       // The top-level 'permissions_callback' is a list of methods in controller
       // syntax, see \Drupal\Core\Controller\ControllerResolver. These methods
@@ -229,6 +229,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
         }
         unset($permissions['permission_callbacks']);
       }
+      $permission_sets[] = $permissions;
 
       foreach (array_merge(...$permission_sets) as $permission_name => $permission) {
         if (!is_array($permission)) {
