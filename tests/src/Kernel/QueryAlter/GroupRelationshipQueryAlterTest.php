@@ -105,7 +105,7 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function getMembershipJoinTable() {
-    return 'group_content';
+    return 'group_relationship';
   }
 
   /**
@@ -134,8 +134,8 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    */
   protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions) {
     $sub_condition = $conditions->andConditionGroup();
-    $sub_condition->condition('group_content_field_data.group_type', $allowed_ids, 'IN');
-    $sub_condition->condition('group_content_field_data.plugin_id', $this->pluginId);
+    $sub_condition->condition('group_relationship_field_data.group_type', $allowed_ids, 'IN');
+    $sub_condition->condition('group_relationship_field_data.plugin_id', $this->pluginId);
     $sub_condition->isNull('gcfd.entity_id');
     $conditions->condition($sub_condition);
   }
@@ -145,8 +145,8 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    */
   protected function addIndividualConditions(array $allowed_ids, ConditionInterface $conditions) {
     $sub_condition = $conditions->andConditionGroup();
-    $sub_condition->condition('group_content_field_data.gid', $allowed_ids, 'IN');
-    $sub_condition->condition('group_content_field_data.plugin_id', $this->pluginId);
+    $sub_condition->condition('group_relationship_field_data.gid', $allowed_ids, 'IN');
+    $sub_condition->condition('group_relationship_field_data.plugin_id', $this->pluginId);
     $conditions->condition($sub_condition);
   }
 

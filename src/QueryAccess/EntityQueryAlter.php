@@ -16,13 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class EntityQueryAlter extends QueryAlterBase {
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The group relation type manager.
    *
    * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface
@@ -48,7 +41,6 @@ class EntityQueryAlter extends QueryAlterBase {
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
-    $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->pluginManager = $container->get('group_relation_type.manager');
     $instance->database = $container->get('database');
     return $instance;
@@ -82,8 +74,9 @@ class EntityQueryAlter extends QueryAlterBase {
     // any further. The cache tags above will invalidate our result if new group
     // content is created using the plugins that define access. Retrieve the
     // plugin IDs in use to optimize a loop further below.
+    $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
     $plugin_ids_in_use = $this->database
-      ->select('group_content_field_data', 'gc')
+      ->select($group_relationship_data_table, 'gc')
       ->fields('gc', ['plugin_id'])
       ->condition('plugin_id', $plugin_ids, 'IN')
       ->distinct()
@@ -101,7 +94,7 @@ class EntityQueryAlter extends QueryAlterBase {
     // Join the relationship table, but only for used plugins.
     $base_table = $this->ensureBaseTable();
     $this->joinAliasPlugins = $this->query->leftJoin(
-      'group_content_field_data',
+      $group_relationship_data_table,
       'gcfd',
       "$base_table.$id_key=%alias.entity_id AND %alias.plugin_id IN (:plugin_ids_in_use[])",
       [':plugin_ids_in_use[]' => $plugin_ids_in_use]

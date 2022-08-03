@@ -129,7 +129,7 @@ display:
           plugin_id: field
         id_1:
           id: id_1
-          table: group_content_field_data
+          table: group_relationship_field_data
           field: id
           relationship: group_content_id
           group_type: group

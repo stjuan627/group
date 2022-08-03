@@ -25,7 +25,7 @@ class GroupViewsData extends EntityViewsData {
       'title' => $this->t('Group relationship'),
       'help' => $this->t('Relate to the group relationship entities. From there you can relate to the actual grouped entities.'),
       'id' => 'group_to_group_content',
-      'base' => 'group_content_field_data',
+      'base' => 'group_relationship_field_data',
       'base field' => 'gid',
       'field' => 'id',
       'label' => $this->t('Group relationship'),

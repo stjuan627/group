@@ -8,6 +8,7 @@
 use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\group\Entity\GroupRelationship;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\user\RoleInterface;
@@ -259,4 +260,31 @@ function group_update_9208() {
     $entity_type = \Drupal::entityTypeManager()->getDefinition('group_config_wrapper');
     $definition_update_manager->installEntityType($entity_type);
   }
+}
+
+/**
+ * Update the group_content handlers.
+ */
+function group_update_9209() {
+  $new_handlers = \Drupal::entityTypeManager()->getDefinition('group_content')->getHandlerClasses();
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $entity_type = $definition_update_manager->getEntityType('group_content');
+  $entity_type->set('handlers', $new_handlers);
+  $definition_update_manager->updateEntityType($entity_type);
+}
+
+/**
+ * Update the group_content database tables.
+ */
+function group_update_9210(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
+
+  $entity_type = $definition_update_manager->getEntityType('group_content');
+  $entity_type->setClass(GroupRelationship::class);
+  $entity_type->set('base_table', 'group_relationship');
+  $entity_type->set('data_table', 'group_relationship_field_data');
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
 }

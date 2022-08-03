@@ -34,15 +34,15 @@ class GroupRelationshipViewsData extends EntityViewsData {
   public function getViewsData() {
     $data = parent::getViewsData();
 
+    // Get the data table for GroupRelationship entities.
+    $data_table = $this->entityType->getDataTable();
+
     // Add a custom numeric argument for the parent group ID that allows us to
     // use replacement titles with the parent group's label.
-    $data['group_content_field_data']['gid']['argument'] = [
+    $data[$data_table]['gid']['argument'] = [
       'id' => 'group_id',
       'numeric' => TRUE,
     ];
-
-    // Get the data table for GroupRelationship entities.
-    $data_table = $this->entityType->getDataTable();
 
     // Unset the 'entity_id' field relationship as we want a more powerful one.
     // @todo Eventually, we may want to replace all of 'entity_id'.

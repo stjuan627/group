@@ -424,7 +424,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
     $r_field = $this->getMembershipJoinRightField();
 
     $query->leftJoin(
-      'group_content_field_data',
+      'group_relationship_field_data',
       'gcfd',
       "$table.$l_field=%alias.$r_field AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
       [':account_id' => $this->getCurrentUser()->id()]

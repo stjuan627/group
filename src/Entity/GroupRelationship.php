@@ -48,8 +48,8 @@ use Drupal\user\EntityOwnerTrait;
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupRelationshipAccessControlHandler",
  *   },
- *   base_table = "group_content",
- *   data_table = "group_content_field_data",
+ *   base_table = "group_relationship",
+ *   data_table = "group_relationship_field_data",
  *   translatable = TRUE,
  *   entity_keys = {
  *     "id" = "id",

@@ -8,6 +8,7 @@ use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupPermissionCalculatorInterface;
@@ -21,6 +22,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * @internal
  */
 abstract class QueryAlterBase implements ContainerInjectionInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * The group permission calculator.
@@ -95,6 +103,8 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   /**
    * Constructs a new QueryAlterBase object.
    *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    * @param \Drupal\group\Access\GroupPermissionCalculatorInterface $permission_calculator
    *   The group permission calculator.
    * @param \Drupal\Core\Render\RendererInterface $renderer
@@ -104,7 +114,8 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
-  public function __construct(GroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
+    $this->entityTypeManager = $entity_type_manager;
     $this->permissionCalculator = $permission_calculator;
     $this->renderer = $renderer;
     $this->requestStack = $request_stack;
@@ -117,6 +128,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('entity_type.manager'),
       $container->get('group_permission.calculator'),
       $container->get('renderer'),
       $container->get('request_stack'),
@@ -298,8 +310,9 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
       $r_field = $this->getMembershipJoinRightField();
 
       // Join the memberships of the current user.
+      $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
       $this->joinAliasMemberships = $this->query->leftJoin(
-        'group_content_field_data',
+        $group_relationship_data_table,
         'gcfd',
         "$table.$l_field=%alias.$r_field AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
         [':account_id' => $this->currentUser->id()]

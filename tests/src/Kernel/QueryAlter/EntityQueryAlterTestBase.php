@@ -51,7 +51,7 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
     $base_table = $entity_type->getBaseTable();
     $id_key = $entity_type->getKey('id');
     $query->leftJoin(
-      'group_content_field_data',
+      'group_relationship_field_data',
       'gcfd',
       "$base_table.$id_key=%alias.entity_id AND %alias.plugin_id IN (:plugin_ids_in_use[])",
       [':plugin_ids_in_use[]' => [$this->pluginId]]

@@ -79,7 +79,7 @@ display:
       fields:
         id:
           id: id
-          table: group_content_field_data
+          table: group_relationship_field_data
           field: id
           relationship: group_content
           group_type: group
