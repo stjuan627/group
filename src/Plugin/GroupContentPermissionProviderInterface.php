@@ -146,4 +146,12 @@ interface GroupContentPermissionProviderInterface {
    */
   public function buildPermissions();
 
+  /**
+   * Get operations that require entity status check.
+   *
+   * @return array
+   *   The operations.
+   */
+  public function getEntityStatusOperations();
+
 }

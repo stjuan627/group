@@ -112,9 +112,9 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
       return AccessResult::neutral();
     }
 
-    // We only check unpublished vs published for "view" right now. If we ever
-    // start supporting other operations, we need to remove the "view" check.
-    $check_published = $operation === 'view'
+    // We check unpublished vs published for operations that require the status
+    // of the entity.
+    $check_published = in_array($operation, $this->permissionProvider->getEntityStatusOperations())
       && $entity->getEntityType()->entityClassImplements(EntityPublishedInterface::class);
 
     // Check if the account is the owner and an owner permission is supported.

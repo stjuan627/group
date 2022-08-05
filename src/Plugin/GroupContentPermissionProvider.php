@@ -303,4 +303,11 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
     return $permission;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityStatusOperations() {
+    return ['view'];
+  }
+
 }
