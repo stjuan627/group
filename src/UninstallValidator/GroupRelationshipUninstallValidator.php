@@ -80,7 +80,7 @@ class GroupRelationshipUninstallValidator implements ModuleUninstallValidatorInt
       return FALSE;
     }
 
-    $entity_count = $this->entityTypeManager->getStorage('group_content')
+    $entity_count = $this->entityTypeManager->getStorage('group_relationship')
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('type', $relationship_types, 'IN')

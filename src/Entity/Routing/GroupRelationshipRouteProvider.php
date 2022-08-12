@@ -18,11 +18,11 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
     $collection = parent::getRoutes($entity_type);
 
     if ($create_page_route = $this->getCreatePageRoute($entity_type)) {
-      $collection->add("entity.group_content.create_page", $create_page_route);
+      $collection->add("entity.group_relationship.create_page", $create_page_route);
     }
 
     if ($create_form_route = $this->getCreateFormRoute($entity_type)) {
-      $collection->add("entity.group_content.create_form", $create_form_route);
+      $collection->add("entity.group_relationship.create_form", $create_form_route);
     }
 
     return $collection;
@@ -37,7 +37,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
       $route
         ->setDefault('_controller', '\Drupal\group\Entity\Controller\GroupRelationshipController::addPage')
         ->setDefault('_title', 'Add existing content')
-        ->setRequirement('_group_content_create_any_access', 'TRUE')
+        ->setRequirement('_group_relationship_create_any_access', 'TRUE')
         ->setOption('_group_operation_route', TRUE);
 
       return $route;
@@ -55,7 +55,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
           '_controller' => '\Drupal\group\Entity\Controller\GroupRelationshipController::addForm',
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupRelationshipController::addFormTitle',
         ])
-        ->setRequirement('_group_content_create_access', 'TRUE')
+        ->setRequirement('_group_relationship_create_access', 'TRUE')
         ->setOption('_group_operation_route', TRUE);
 
       return $route;
@@ -78,7 +78,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
         ->setDefault('_controller', '\Drupal\group\Entity\Controller\GroupRelationshipController::addPage')
         ->setDefault('_title', 'Add new content')
         ->setDefault('create_mode', TRUE)
-        ->setRequirement('_group_content_create_any_entity_access', 'TRUE')
+        ->setRequirement('_group_relationship_create_any_entity_access', 'TRUE')
         ->setOption('_group_operation_route', TRUE);
 
       return $route;
@@ -102,7 +102,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
           '_controller' => '\Drupal\group\Entity\Controller\GroupRelationshipController::createForm',
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupRelationshipController::createFormTitle',
         ])
-        ->setRequirement('_group_content_create_entity_access', 'TRUE')
+        ->setRequirement('_group_relationship_create_entity_access', 'TRUE')
         ->setOption('_group_operation_route', TRUE);
 
       return $route;
@@ -123,7 +123,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
       $route = new Route($entity_type->getLinkTemplate('collection'));
       $route
         ->addDefaults([
-          '_entity_list' => 'group_content',
+          '_entity_list' => 'group_relationship',
           '_title_callback' => '\Drupal\group\Entity\Controller\GroupRelationshipController::collectionTitle',
         ])
         ->setRequirement('_group_permission', "access content overview")
@@ -144,7 +144,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
       ->setRequirement('_group_owns_content', 'TRUE')
       ->setOption('parameters', [
         'group' => ['type' => 'entity:group'],
-        'group_content' => ['type' => 'entity:group_content'],
+        'group_relationship' => ['type' => 'entity:group_relationship'],
       ]);
   }
 
@@ -158,7 +158,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
       ->setOption('_group_operation_route', TRUE)
       ->setOption('parameters', [
         'group' => ['type' => 'entity:group'],
-        'group_content' => ['type' => 'entity:group_content'],
+        'group_relationship' => ['type' => 'entity:group_relationship'],
       ]);
   }
 
@@ -171,7 +171,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
       ->setOption('_group_operation_route', TRUE)
       ->setOption('parameters', [
         'group' => ['type' => 'entity:group'],
-        'group_content' => ['type' => 'entity:group_content'],
+        'group_relationship' => ['type' => 'entity:group_relationship'],
       ]);
   }
 

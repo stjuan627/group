@@ -34,7 +34,7 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
    */
   protected function doAlter($operation) {
     // If any new relationship is added, it might change access.
-    $this->cacheableMetadata->addCacheTags(['group_content_list']);
+    $this->cacheableMetadata->addCacheTags(['group_relationship_list']);
 
     // Retrieve the full list of group permissions for the user.
     $this->cacheableMetadata->addCacheContexts(['user.group_permissions']);

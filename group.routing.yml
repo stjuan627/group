@@ -82,26 +82,26 @@ entity.group_role.permissions_form:
 
 # todo This route needs a requirement which only allows access if the plugin
 #      isn't installed on the group type yet.
-entity.group_content_type.add_form:
+entity.group_relationship_type.add_form:
   path: '/admin/group/content/install/{group_type}/{plugin_id}'
   defaults:
-    _entity_form: 'group_content_type.add'
+    _entity_form: 'group_relationship_type.add'
     _title: 'Install content plugin'
   requirements:
     _permission: 'administer group'
 
-entity.group_content_type.edit_form:
-  path: '/admin/group/content/manage/{group_content_type}'
+entity.group_relationship_type.edit_form:
+  path: '/admin/group/content/manage/{group_relationship_type}'
   defaults:
-    _entity_form: 'group_content_type.edit'
+    _entity_form: 'group_relationship_type.edit'
     _title: 'Configure content plugin'
   requirements:
     _permission: 'administer group'
 
-entity.group_content_type.delete_form:
-  path: '/admin/group/content/manage/{group_content_type}/uninstall'
+entity.group_relationship_type.delete_form:
+  path: '/admin/group/content/manage/{group_relationship_type}/uninstall'
   defaults:
-    _entity_form: 'group_content_type.delete'
+    _entity_form: 'group_relationship_type.delete'
     _title: 'Uninstall content plugin'
   requirements:
     _permission: 'administer group'

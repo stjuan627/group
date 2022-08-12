@@ -77,7 +77,7 @@ trait OperationProviderTrait {
    */
   protected function getRelationshipTypeId(GroupTypeInterface $group_type) {
     if ($group_type->hasPlugin($this->pluginId)) {
-      $storage = $this->entityTypeManager()->getStorage('group_content_type');
+      $storage = $this->entityTypeManager()->getStorage('group_relationship_type');
       assert($storage instanceof GroupRelationshipTypeStorageInterface);
       return $storage->getRelationshipTypeId($group_type->id(), $this->pluginId);
     }

@@ -34,7 +34,7 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
 
     // Don't interfere if no group or relationship was specified.
     $parameters = $route_match->getParameters();
-    if (!$parameters->has('group') || !$parameters->has('group_content')) {
+    if (!$parameters->has('group') || !$parameters->has('group_relationship')) {
       return AccessResult::neutral();
     }
 
@@ -45,7 +45,7 @@ class GroupOwnsContentAccessCheck implements AccessInterface {
     }
 
     // Don't interfere if the relationship isn't a real relationship entity.
-    $group_relationship = $parameters->get('group_content');
+    $group_relationship = $parameters->get('group_relationship');
     if (!$group_relationship instanceof GroupRelationshipInterface) {
       return AccessResult::neutral();
     }

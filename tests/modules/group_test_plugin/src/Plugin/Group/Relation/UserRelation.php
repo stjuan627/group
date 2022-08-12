@@ -8,15 +8,15 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  * Provides a group relation type for users.
  *
  * @GroupRelationType(
- *   id = "user_as_content",
+ *   id = "user_relation",
  *   label = @Translation("Group user"),
- *   description = @Translation("Adds users to groups without making them members."),
+ *   description = @Translation("Relates users to groups without making them members."),
  *   entity_type_id = "user",
  *   pretty_path_key = "user",
  *   reference_label = @Translation("Username"),
- *   reference_description = @Translation("The name of the user you want to add to the group"),
- *   admin_permission = "administer user_as_content"
+ *   reference_description = @Translation("The name of the user you want to relate to the group"),
+ *   admin_permission = "administer user_relation"
  * )
  */
-class UserAsContent extends GroupRelationBase {
+class UserRelation extends GroupRelationBase {
 }

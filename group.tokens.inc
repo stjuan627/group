@@ -76,49 +76,49 @@ function group_token_info() {
     'type' => 'user',
   ];
 
-  $types['group_content'] = [
+  $types['group_relationship'] = [
     'name' => t('Group relationship'),
     'description' => t('Tokens related to the relationships between a group and its content.'),
-    'needs-data' => 'group_content',
+    'needs-data' => 'group_relationship',
   ];
 
-  $tokens['group_content']['id'] = [
+  $tokens['group_relationship']['id'] = [
     'name' => t('Group relationship ID'),
     'description' => t('The unique ID of the group relationship.'),
   ];
 
-  $tokens['group_content']['langcode'] = [
+  $tokens['group_relationship']['langcode'] = [
     'name' => t('Language code'),
     'description' => t('The language code of the language the group relationship is in.'),
   ];
 
-  $tokens['group_content']['url'] = [
+  $tokens['group_relationship']['url'] = [
     'name' => t('URL'),
     'description' => t('The URL of the group relationship.'),
   ];
 
-  $tokens['group_content']['edit-url'] = [
+  $tokens['group_relationship']['edit-url'] = [
     'name' => t('Edit URL'),
     'description' => t("The URL of the group's edit page."),
   ];
 
-  $tokens['group_content']['created'] = [
+  $tokens['group_relationship']['created'] = [
     'name' => t('Date created'),
     'type' => 'date',
   ];
 
-  $tokens['group_content']['changed'] = [
+  $tokens['group_relationship']['changed'] = [
     'name' => t('Date changed'),
     'description' => t('The date the group relationship was most recently updated.'),
     'type' => 'date',
   ];
 
-  $tokens['group_content']['group'] = [
+  $tokens['group_relationship']['group'] = [
     'name' => t('Group'),
     'type' => 'group',
   ];
 
-  $tokens['group_content']['pretty-path-key'] = [
+  $tokens['group_relationship']['pretty-path-key'] = [
     'name' => t('Pretty path key'),
     'description' => t('A prettier way of labeling group relationship of the same relation type.'),
   ];
@@ -214,8 +214,8 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
       $replacements += $token_service->generate('date', $changed_tokens, ['date' => $group->getChangedTime()], $options, $bubbleable_metadata);
     }
   }
-  elseif ($type == 'group_content' && !empty($data[$type])) {
-    $group_relationship = $data['group_content'];
+  elseif ($type == 'group_relationship' && !empty($data[$type])) {
+    $group_relationship = $data['group_relationship'];
     assert($group_relationship instanceof GroupRelationshipInterface);
 
     foreach ($tokens as $name => $original) {

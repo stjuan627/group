@@ -61,7 +61,7 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
     $permissions = [];
     $cache_tags = [
       'flexible_permissions',
-      'group_content_list:plugin:group_membership:entity:' . $account->id(),
+      'group_relationship_list:plugin:group_membership:entity:' . $account->id(),
     ];
     sort($cache_tags);
 

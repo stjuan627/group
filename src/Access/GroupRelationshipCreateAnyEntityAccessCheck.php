@@ -18,7 +18,7 @@ class GroupRelationshipCreateAnyEntityAccessCheck implements AccessInterface {
    * Checks access for relationship target entity creation routes.
    *
    * All routes using this access check should have a group parameter and have
-   * the _group_content_create_any_entity_access requirement set to 'TRUE' or
+   * the _group_relationship_create_any_entity_access requirement set to 'TRUE' or
    * 'FALSE'.
    *
    * @param \Symfony\Component\Routing\Route $route
@@ -32,7 +32,7 @@ class GroupRelationshipCreateAnyEntityAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, AccountInterface $account, GroupInterface $group) {
-    $needs_access = $route->getRequirement('_group_content_create_any_entity_access') === 'TRUE';
+    $needs_access = $route->getRequirement('_group_relationship_create_any_entity_access') === 'TRUE';
     $base_plugin_id = $route->getDefault('base_plugin_id');
 
     $plugin_manager = \Drupal::service('group_relation_type.manager');

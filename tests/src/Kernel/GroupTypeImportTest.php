@@ -57,7 +57,7 @@ class GroupTypeImportTest extends GroupKernelTestBase {
     $plugin = $this->pluginManager->createInstance('group_membership', $plugin_config);
     assert($plugin instanceof GroupRelationInterface);
 
-    $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    $relationship_type_storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
     $relationship_type = $relationship_type_storage->load(
       $relationship_type_storage->getRelationshipTypeId($group_type->id(), $plugin->getRelationTypeId())

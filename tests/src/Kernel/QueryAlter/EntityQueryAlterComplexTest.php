@@ -32,7 +32,7 @@ class EntityQueryAlterComplexTest extends EntityQueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $pluginId = 'node_as_content:page';
+  protected $pluginId = 'node_relation:page';
 
   /**
    * {@inheritdoc}

@@ -36,7 +36,7 @@ class GroupRelationshipCreateAccessCheck implements AccessInterface {
    * Checks access for relationship creation routes.
    *
    * All routes using this access check should have a group and plugin_id
-   * parameter and have the _group_content_create_access requirement set to
+   * parameter and have the _group_relationship_create_access requirement set to
    * either 'TRUE' or 'FALSE'.
    *
    * @param \Symfony\Component\Routing\Route $route
@@ -52,16 +52,16 @@ class GroupRelationshipCreateAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, AccountInterface $account, GroupInterface $group, $plugin_id) {
-    $needs_access = $route->getRequirement('_group_content_create_access') === 'TRUE';
+    $needs_access = $route->getRequirement('_group_relationship_create_access') === 'TRUE';
 
     // We can only get the relationship type ID if the plugin is installed.
     if (!$group->getGroupType()->hasPlugin($plugin_id)) {
       return AccessResult::neutral();
     }
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_relationship');
 
     // Determine whether the user can create relationships using the plugin.
     $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin_id);

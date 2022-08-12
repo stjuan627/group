@@ -54,7 +54,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * @return \Drupal\group\Entity\Storage\GroupRelationshipStorageInterface
    */
   protected function groupRelationshipStorage() {
-    return $this->entityTypeManager->getStorage('group_content');
+    return $this->entityTypeManager->getStorage('group_relationship');
   }
 
   /**

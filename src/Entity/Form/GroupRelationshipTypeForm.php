@@ -142,7 +142,7 @@ class GroupRelationshipTypeForm extends EntityForm {
     // If we are on an 'add' form, we create the relationship type using the
     // plugin configuration submitted using this form.
     if ($this->operation == 'add') {
-      $storage = $this->entityTypeManager->getStorage('group_content_type');
+      $storage = $this->entityTypeManager->getStorage('group_relationship_type');
       assert($storage instanceof GroupRelationshipTypeStorageInterface);
       $storage->createFromPlugin($group_type, $plugin->getRelationTypeId(), $config)->save();
       $this->messenger()->addStatus($this->t('The content plugin was installed on the group type.'));

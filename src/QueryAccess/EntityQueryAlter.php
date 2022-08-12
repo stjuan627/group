@@ -66,7 +66,7 @@ class EntityQueryAlter extends QueryAlterBase {
     // plugins, it might change access.
     $cache_tags = [];
     foreach ($plugin_ids as $plugin_id) {
-      $cache_tags[] = "group_content_list:plugin:$plugin_id";
+      $cache_tags[] = "group_relationship_list:plugin:$plugin_id";
     }
     $this->cacheableMetadata->addCacheTags($cache_tags);
 
@@ -74,7 +74,7 @@ class EntityQueryAlter extends QueryAlterBase {
     // any further. The cache tags above will invalidate our result if new group
     // content is created using the plugins that define access. Retrieve the
     // plugin IDs in use to optimize a loop further below.
-    $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
+    $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_relationship')->getDataTable();
     $plugin_ids_in_use = $this->database
       ->select($group_relationship_data_table, 'gc')
       ->fields('gc', ['plugin_id'])

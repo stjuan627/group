@@ -56,12 +56,12 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
 
     $permissions = $this->permissionHandler->getPermissions(TRUE);
     $expected += count($this->pluginManager->getPermissionProvider('group_membership')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('entity_test_as_content')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('group_as_content')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('user_as_content')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('node_as_content:article')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('node_as_content:page')->buildPermissions());
-    $expected += count($this->pluginManager->getPermissionProvider('node_type_as_content')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('entity_test_relation')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('group_relation')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('user_relation')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('node_relation:article')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('node_relation:page')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('node_type_relation')->buildPermissions());
     $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml file and defined by plugins.');
   }
 
@@ -81,14 +81,14 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_b), 'Permission count matches what is in Yaml file and membership plugin.');
     $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_c), 'Permission count matches what is in Yaml file and membership plugin.');
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->save($storage->createFromPlugin($group_type_a, 'group_as_content'));
-    $storage->save($storage->createFromPlugin($group_type_b, 'user_as_content'));
+    $storage->save($storage->createFromPlugin($group_type_a, 'group_relation'));
+    $storage->save($storage->createFromPlugin($group_type_b, 'user_relation'));
 
     $expected_a = $expected_b = $expected;
-    $expected_a += count($this->pluginManager->getPermissionProvider('group_as_content')->buildPermissions());
-    $expected_b += count($this->pluginManager->getPermissionProvider('user_as_content')->buildPermissions());
+    $expected_a += count($this->pluginManager->getPermissionProvider('group_relation')->buildPermissions());
+    $expected_b += count($this->pluginManager->getPermissionProvider('user_relation')->buildPermissions());
     $this->assertCount($expected_a, $this->permissionHandler->getPermissionsByGroupType($group_type_a), 'Permission count matches what is in Yaml file and installed plugins.');
     $this->assertCount($expected_b, $this->permissionHandler->getPermissionsByGroupType($group_type_b), 'Permission count matches what is in Yaml file and installed plugins.');
     $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_c), 'Permission count matches what is in Yaml file and membership plugin.');

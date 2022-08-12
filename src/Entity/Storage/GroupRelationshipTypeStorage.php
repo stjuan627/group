@@ -134,7 +134,13 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
 
     // Return a hashed ID if the readable ID would exceed the maximum length.
     if (strlen($preferred_id) > EntityTypeInterface::BUNDLE_MAX_LENGTH) {
-      $hashed_id = 'group_content_type_' . md5($preferred_id);
+      // Try to preserve the group type ID if there is room left for a hash.
+      if (EntityTypeInterface::BUNDLE_MAX_LENGTH - strlen($group_type_id) > 8) {
+        $hashed_id = $group_type_id . '-' . md5($plugin_id);
+      }
+      else {
+        $hashed_id = 'grt_' . md5($preferred_id);
+      }
       $preferred_id = substr($hashed_id, 0, EntityTypeInterface::BUNDLE_MAX_LENGTH);
     }
 

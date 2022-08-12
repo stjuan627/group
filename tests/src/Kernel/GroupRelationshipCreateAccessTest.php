@@ -73,10 +73,10 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
     ]);
 
     // Enable the test plugins on the group type.
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->save($storage->createFromPlugin($this->groupType, 'entity_test_as_content'));
-    $storage->save($storage->createFromPlugin($this->groupType, 'node_as_content:page'));
+    $storage->save($storage->createFromPlugin($this->groupType, 'entity_test_relation'));
+    $storage->save($storage->createFromPlugin($this->groupType, 'node_relation:page'));
 
     $this->adminRole = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
@@ -128,63 +128,63 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
     $cases = [];
 
     $cases['create-page-access-one'] = [
-      'entity.group_content.create_page',
+      'entity.group_relationship.create_page',
       [],
-      ['create entity_test_as_content entity'],
+      ['create entity_test_relation entity'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_any_entity_access route access check with create access from one plugin',
+      'Testing the _group_relationship_create_any_entity_access route access check with create access from one plugin',
     ];
 
     $cases['create-page-access-multi'] = [
-      'entity.group_content.create_page',
+      'entity.group_relationship.create_page',
       [],
-      ['create entity_test_as_content entity', 'create node_as_content:page entity'],
+      ['create entity_test_relation entity', 'create node_relation:page entity'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_any_entity_access route access check with create access from multiple plugins',
+      'Testing the _group_relationship_create_any_entity_access route access check with create access from multiple plugins',
     ];
 
     $cases['create-page-with-add-access'] = [
-      'entity.group_content.create_page',
+      'entity.group_relationship.create_page',
       [],
-      ['create entity_test_as_content relationship'],
+      ['create entity_test_relation relationship'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_any_entity_access route access check with add access from one plugin',
+      'Testing the _group_relationship_create_any_entity_access route access check with add access from one plugin',
     ];
 
     $cases['add-page-access-one'] = [
-      'entity.group_content.add_page',
+      'entity.group_relationship.add_page',
       [],
-      ['create entity_test_as_content relationship'],
+      ['create entity_test_relation relationship'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_any_access route access check with add access from one plugin',
+      'Testing the _group_relationship_create_any_access route access check with add access from one plugin',
     ];
 
     $cases['add-page-access-multi'] = [
-      'entity.group_content.add_page',
+      'entity.group_relationship.add_page',
       [],
-      ['create entity_test_as_content relationship', 'create node_as_content:page relationship'],
+      ['create entity_test_relation relationship', 'create node_relation:page relationship'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_any_access route access check with add access from multiple plugins',
+      'Testing the _group_relationship_create_any_access route access check with add access from multiple plugins',
     ];
 
     $cases['add-page-with-create-access'] = [
-      'entity.group_content.add_page',
+      'entity.group_relationship.add_page',
       [],
-      ['create entity_test_as_content entity'],
+      ['create entity_test_relation entity'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_any_access route access check with create access from one plugin',
+      'Testing the _group_relationship_create_any_access route access check with create access from one plugin',
     ];
 
     return $cases;
@@ -217,7 +217,7 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
     $group->addMember($member);
     $group->addMember($admin, ['group_roles' => [$this->adminRole->id()]]);
 
-    $request = $this->createRequest($route, $group, 'entity_test_as_content');
+    $request = $this->createRequest($route, $group, 'entity_test_relation');
     $this->assertSame($outsider_access, $this->accessManager->checkRequest($request, $outsider), $message);
     $this->assertSame($member_access, $this->accessManager->checkRequest($request, $member), $message);
     $this->assertSame($admin_access, $this->accessManager->checkRequest($request, $admin), $message);
@@ -233,63 +233,63 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
     $cases = [];
 
     $cases['create-form-access'] = [
-      'entity.group_content.create_form',
+      'entity.group_relationship.create_form',
       [],
-      ['create entity_test_as_content entity'],
+      ['create entity_test_relation entity'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_entity_access route access check with create access',
+      'Testing the _group_relationship_create_entity_access route access check with create access',
     ];
 
     $cases['create-form-access-wrong-plugin'] = [
-      'entity.group_content.create_form',
+      'entity.group_relationship.create_form',
       [],
-      ['create node_as_content:page entity'],
+      ['create node_relation:page entity'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_entity_access route access check with create access from the wrong plugin',
+      'Testing the _group_relationship_create_entity_access route access check with create access from the wrong plugin',
     ];
 
     $cases['create-form-with-add-access'] = [
-      'entity.group_content.create_form',
+      'entity.group_relationship.create_form',
       [],
-      ['create entity_test_as_content relationship'],
+      ['create entity_test_relation relationship'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_entity_access route access check with add access',
+      'Testing the _group_relationship_create_entity_access route access check with add access',
     ];
 
     $cases['add-form-access'] = [
-      'entity.group_content.add_form',
+      'entity.group_relationship.add_form',
       [],
-      ['create entity_test_as_content relationship'],
+      ['create entity_test_relation relationship'],
       FALSE,
       TRUE,
       TRUE,
-      'Testing the _group_content_create_access route access check with add access',
+      'Testing the _group_relationship_create_access route access check with add access',
     ];
 
     $cases['add-form-access-wrong-plugin'] = [
-      'entity.group_content.add_form',
+      'entity.group_relationship.add_form',
       [],
-      ['create node_as_content:page relationship'],
+      ['create node_relation:page relationship'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_access route access check with add access from the wrong plugin',
+      'Testing the _group_relationship_create_access route access check with add access from the wrong plugin',
     ];
 
     $cases['add-form-with-create-access'] = [
-      'entity.group_content.add_form',
+      'entity.group_relationship.add_form',
       [],
-      ['create entity_test_as_content entity'],
+      ['create entity_test_relation entity'],
       FALSE,
       FALSE,
       TRUE,
-      'Testing the _group_content_create_access route access check with create access',
+      'Testing the _group_relationship_create_access route access check with create access',
     ];
 
     return $cases;

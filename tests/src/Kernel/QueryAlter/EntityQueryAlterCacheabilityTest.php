@@ -77,11 +77,11 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
 
     // Install the plugin and add a node to a group so query access kicks in and
     // cacheable metadata is added to the query.
-    $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    $relationship_type_storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
-    $relationship_type_storage->save($relationship_type_storage->createFromPlugin($this->groupType, 'node_as_content:page'));
+    $relationship_type_storage->save($relationship_type_storage->createFromPlugin($this->groupType, 'node_relation:page'));
     $group = $this->createGroup(['type' => $this->groupType->id()]);
-    $group->addRelationship($this->createNode(['type' => 'page']), 'node_as_content:page');
+    $group->addRelationship($this->createNode(['type' => 'page']), 'node_relation:page');
 
     $render_context = new RenderContext();
     $renderer->executeInRenderContext($render_context, static function () use ($storage) {
@@ -89,7 +89,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
     });
     $this->assertFalse($render_context->isEmpty(), 'Cacheability was bubbled');
     $this->assertCount(1, $render_context);
-    $this->assertEqualsCanonicalizing(['group_content_list:plugin:node_as_content:article', 'group_content_list:plugin:node_as_content:page'], $render_context[0]->getCacheTags());
+    $this->assertEqualsCanonicalizing(['group_relationship_list:plugin:node_relation:article', 'group_relationship_list:plugin:node_relation:page'], $render_context[0]->getCacheTags());
   }
 
   /**

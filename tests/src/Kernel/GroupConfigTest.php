@@ -33,8 +33,8 @@ class GroupConfigTest extends EntityKernelTestBase {
     $this->installEntitySchema('group');
     $this->installEntitySchema('group_type');
     $this->installEntitySchema('group_role');
-    $this->installEntitySchema('group_content');
-    $this->installEntitySchema('group_content_type');
+    $this->installEntitySchema('group_relationship');
+    $this->installEntitySchema('group_relationship_type');
     $this->installConfig(['group']);
   }
 

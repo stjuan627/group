@@ -129,7 +129,7 @@ class AccessControl implements AccessControlInterface {
     }
 
     $group_relationships = $this->entityTypeManager()
-      ->getStorage('group_content')
+      ->getStorage('group_relationship')
       ->loadByEntity($entity, $this->pluginId);
 
     // If this plugin is not being used by the entity, we have nothing to say.

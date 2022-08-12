@@ -233,7 +233,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       // \Drupal\group\EventSubscriber\ConfigSubscriber after the entire import
       // has finished.
       if (!$this->isSyncing()) {
-        // Enable enforced content plugins for the new group type.
+        // Enable enforced relation plugins for the new group type.
         $this->getGroupRelationTypeManager()->installEnforced($this);
       }
     }

@@ -97,7 +97,7 @@ class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
     $group_relationship->uuid()->willReturn('baz');
     $group_relationship->language()->willReturn($language->reveal());
     $group_relationship->getRevisionId()->willReturn(9001);
-    $group_relationship->getEntityTypeId()->willReturn('group_content');
+    $group_relationship->getEntityTypeId()->willReturn('group_relationship');
     $group_relationship->getPluginId()->willReturn('bar');
 
     $access_result = AccessResult::allowed();
@@ -126,7 +126,7 @@ class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
     $relationship_type->getPluginId()->willReturn('bar');
     $relationship_type_storage = $this->prophesize(GroupRelationshipTypeStorageInterface::class);
     $relationship_type_storage->load('foo')->willReturn($relationship_type->reveal());
-    $this->entityTypeManager->getStorage('group_content_type')->willReturn($relationship_type_storage->reveal());
+    $this->entityTypeManager->getStorage('group_relationship_type')->willReturn($relationship_type_storage->reveal());
 
     $access_result = AccessResult::allowed();
     $access_control = $this->prophesize(AccessControlInterface::class);

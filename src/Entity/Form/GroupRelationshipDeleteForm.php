@@ -40,9 +40,9 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
     $group = $group_relationship->getGroup();
     $route_params = [
       'group' => $group->id(),
-      'group_content' => $group_relationship->id(),
+      'group_relationship' => $group_relationship->id(),
     ];
-    return new Url('entity.group_content.canonical', $route_params);
+    return new Url('entity.group_relationship.canonical', $route_params);
   }
 
   /**
@@ -61,7 +61,7 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
     $group = $group_relationship->getGroup();
     $group_relationship->delete();
 
-    \Drupal::logger('group_content')->notice('@type: deleted %title.', [
+    \Drupal::logger('group_relationship')->notice('@type: deleted %title.', [
       '@type' => $group_relationship->bundle(),
       '%title' => $group_relationship->label(),
     ]);

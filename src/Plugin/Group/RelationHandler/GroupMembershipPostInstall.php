@@ -64,8 +64,8 @@ class GroupMembershipPostInstall implements PostInstallInterface {
     // default handler for 'group_role' target entities in the 'group_type'
     // handler group is GroupTypeRoleSelection.
     $relationship_type_id = $relationship_type->id();
-    $field_storage = $fsc_storage->load('group_content.group_roles');
-    $field = $fc_storage->load("group_content.$relationship_type_id.group_roles");
+    $field_storage = $fsc_storage->load('group_relationship.group_roles');
+    $field = $fc_storage->load("group_relationship.$relationship_type_id.group_roles");
     if (!empty($field)) {
       throw new \RuntimeException(sprintf('The field group_roles already exists on relationship type "%s".', $relationship_type_id));
     }
@@ -82,12 +82,12 @@ class GroupMembershipPostInstall implements PostInstallInterface {
     ]));
 
     // Build the 'default' display ID for both the entity form and view mode.
-    $default_display_id = "group_content.$relationship_type_id.default";
+    $default_display_id = "group_relationship.$relationship_type_id.default";
 
     // Build or retrieve the 'default' form mode.
     if (!$form_display = $efd_storage->load($default_display_id)) {
       $form_display = $efd_storage->create([
-        'targetEntityType' => 'group_content',
+        'targetEntityType' => 'group_relationship',
         'bundle' => $relationship_type_id,
         'mode' => 'default',
         'status' => TRUE,
@@ -97,7 +97,7 @@ class GroupMembershipPostInstall implements PostInstallInterface {
     // Build or retrieve the 'default' view mode.
     if (!$view_display = $evd_storage->load($default_display_id)) {
       $view_display = $evd_storage->create([
-        'targetEntityType' => 'group_content',
+        'targetEntityType' => 'group_relationship',
         'bundle' => $relationship_type_id,
         'mode' => 'default',
         'status' => TRUE,

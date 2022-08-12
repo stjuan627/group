@@ -19,14 +19,14 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $entityTypeId = 'group_content';
+  protected $entityTypeId = 'group_relationship';
 
   /**
    * The plugin ID to use in testing.
    *
    * @var string
    */
-  protected $pluginId = 'user_as_content';
+  protected $pluginId = 'user_relation';
 
   /**
    * {@inheritdoc}
@@ -95,7 +95,7 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function setUpContent(GroupTypeInterface $group_type) {
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($group_type, $this->pluginId));
     return $this->createGroup(['type' => $group_type->id()]);

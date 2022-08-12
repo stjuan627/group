@@ -58,8 +58,8 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   /**
    * Retrieves the entity type ID this plugin targets.
    *
-   * Do not return 'group_content', but the actual entity type ID you're trying
-   * to link up to the group_content entity type.
+   * Do not return 'group_relationship', but the actual entity type ID you're trying
+   * to link up to the group_relationship entity type.
    *
    * @return string
    *   The target entity type ID.

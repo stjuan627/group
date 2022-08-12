@@ -121,7 +121,7 @@ class GroupRelationshipController extends ControllerBase {
     }
 
     // Filter out the bundles the user doesn't have access to.
-    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_relationship');
     foreach ($relationship_types as $relationship_type_id => $relationship_type) {
       $access = $access_control_handler->createAccess($relationship_type_id, NULL, ['group' => $group], TRUE);
       if (!$access->isAllowed()) {
@@ -156,7 +156,7 @@ class GroupRelationshipController extends ControllerBase {
     }
 
     // Add the list cache tags for the GroupRelationshipType entity type.
-    $bundle_entity_type = $this->entityTypeManager->getDefinition('group_content_type');
+    $bundle_entity_type = $this->entityTypeManager->getDefinition('group_relationship_type');
     $build['#cache']['tags'] = $bundle_entity_type->getListCacheTags();
 
     return $build;
@@ -180,7 +180,7 @@ class GroupRelationshipController extends ControllerBase {
    * @see ::addPage()
    */
   protected function addPageBundles(GroupInterface $group, $create_mode, $base_plugin_id) {
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
 
     $relationship_types = $storage->loadByGroupType($group->getGroupType());
@@ -237,8 +237,8 @@ class GroupRelationshipController extends ControllerBase {
    */
   protected function addPageFormRoute(GroupInterface $group, $create_mode) {
     return $create_mode
-      ? 'entity.group_content.create_form'
-      : 'entity.group_content.add_form';
+      ? 'entity.group_relationship.create_form'
+      : 'entity.group_relationship.add_form';
   }
 
   /**
@@ -253,20 +253,20 @@ class GroupRelationshipController extends ControllerBase {
    *   A group submission form.
    */
   public function addForm(GroupInterface $group, $plugin_id) {
-    $storage = $this->entityTypeManager()->getStorage('group_content_type');
+    $storage = $this->entityTypeManager()->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
 
     $values = [
       'type' => $storage->getRelationshipTypeId($group->bundle(), $plugin_id),
       'gid' => $group->id(),
     ];
-    $group_relationship = $this->entityTypeManager()->getStorage('group_content')->create($values);
+    $group_relationship = $this->entityTypeManager()->getStorage('group_relationship')->create($values);
 
     return $this->entityFormBuilder->getForm($group_relationship, 'add');
   }
 
   /**
-   * The _title_callback for the entity.group_content.add_form route.
+   * The _title_callback for the entity.group_relationship.add_form route.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the relationship to.
@@ -281,7 +281,7 @@ class GroupRelationshipController extends ControllerBase {
   }
 
   /**
-   * The _title_callback for the entity.group_content.edit_form route.
+   * The _title_callback for the entity.group_relationship.edit_form route.
    *
    * Overrides the Drupal\Core\Entity\Controller\EntityController::editTitle().
    *
@@ -294,13 +294,13 @@ class GroupRelationshipController extends ControllerBase {
    *   The title for the entity edit page, if an entity was found.
    */
   public function editFormTitle(RouteMatchInterface $route_match, EntityInterface $_entity = NULL) {
-    if ($entity = $route_match->getParameter('group_content')) {
+    if ($entity = $route_match->getParameter('group_relationship')) {
       return $this->t('Edit %label', ['%label' => $entity->label()]);
     }
   }
 
   /**
-   * The _title_callback for the entity.group_content.collection route.
+   * The _title_callback for the entity.group_relationship.collection route.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to add the relationship to.
@@ -369,7 +369,7 @@ class GroupRelationshipController extends ControllerBase {
     }
     // Wizard step 2: Group relationship form.
     else {
-      $relationship_type_storage = $this->entityTypeManager()->getStorage('group_content_type');
+      $relationship_type_storage = $this->entityTypeManager()->getStorage('group_relationship_type');
       assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
 
       // Create an empty relationship entity.
@@ -377,7 +377,7 @@ class GroupRelationshipController extends ControllerBase {
         'type' => $relationship_type_storage->getRelationshipTypeId($group->bundle(), $plugin_id),
         'gid' => $group->id(),
       ];
-      $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);
+      $entity = $this->entityTypeManager()->getStorage('group_relationship')->create($values);
 
       // Group relationship entities have an add form handler.
       $operation = 'add';
@@ -388,7 +388,7 @@ class GroupRelationshipController extends ControllerBase {
   }
 
   /**
-   * The _title_callback for the entity.group_content.create_form route.
+   * The _title_callback for the entity.group_relationship.create_form route.
    *
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group to create the relationship for.

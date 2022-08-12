@@ -63,10 +63,10 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
     $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_as_content'));
-    $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_as_content'));
+    $storage->save($storage->createFromPlugin($this->groupTypeA, 'entity_test_relation'));
+    $storage->save($storage->createFromPlugin($this->groupTypeB, 'entity_test_relation'));
 
     $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner content']));
   }
@@ -85,7 +85,7 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
   public function testUnsupportedOperation() {
     $entity = $this->createTestEntity();
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addRelationship($entity, 'entity_test_as_content');
+    $group->addRelationship($entity, 'entity_test_relation');
 
     $result = $this->accessControlHandler->access($entity, 'take me to the moon', $this->createUser(), TRUE);
     $this->assertTrue($result->isNeutral(), 'Unsupported operations are not checked.');
@@ -102,7 +102,7 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addRelationship($entity_1, 'entity_test_as_content');
+    $group->addRelationship($entity_1, 'entity_test_relation');
     $group->addMember($this->getCurrentUser());
 
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'view'), 'Cannot view the grouped test entity.');
@@ -117,7 +117,7 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $entity_2 = $this->createTestEntity();
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addRelationship($entity_1, 'entity_test_as_content');
+    $group->addRelationship($entity_1, 'entity_test_relation');
 
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'view'), 'Cannot view the grouped test entity.');
     $this->assertTrue($this->accessControlHandler->access($entity_2, 'view'), 'Only the ungrouped test entity shows up.');
@@ -134,11 +134,11 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
       'group_type' => $this->groupTypeA->id(),
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['administer entity_test_as_content'],
+      'permissions' => ['administer entity_test_relation'],
     ]);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addRelationship($entity_1, 'entity_test_as_content');
+    $group->addRelationship($entity_1, 'entity_test_relation');
     $group->addMember($this->getCurrentUser());
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'view'), 'Members can see grouped test entities.');
@@ -156,11 +156,11 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
       'group_type' => $this->groupTypeA->id(),
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['administer entity_test_as_content'],
+      'permissions' => ['administer entity_test_relation'],
     ]);
 
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group->addRelationship($entity_1, 'entity_test_as_content');
+    $group->addRelationship($entity_1, 'entity_test_relation');
     $this->createGroup(['type' => $this->groupTypeA->id()]);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'view'), 'Outsiders can see grouped test entities.');
@@ -179,18 +179,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['view any entity_test_as_content entity'],
+      'permissions' => ['view any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -221,17 +221,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['view any entity_test_as_content entity'],
+      'permissions' => ['view any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'view'), 'Non-members can see any grouped test entities.');
@@ -261,18 +261,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['view own entity_test_as_content entity'],
+      'permissions' => ['view own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -303,17 +303,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['view own entity_test_as_content entity'],
+      'permissions' => ['view own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'view'), 'Non-members can see their own grouped test entities.');
@@ -343,18 +343,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['update any entity_test_as_content entity'],
+      'permissions' => ['update any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -385,17 +385,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['update any entity_test_as_content entity'],
+      'permissions' => ['update any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'update'), 'Non-members can update any grouped test entities.');
@@ -425,18 +425,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['update own entity_test_as_content entity'],
+      'permissions' => ['update own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -467,17 +467,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['update own entity_test_as_content entity'],
+      'permissions' => ['update own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'update'), 'Non-members can update their own grouped test entities.');
@@ -507,18 +507,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['delete any entity_test_as_content entity'],
+      'permissions' => ['delete any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -549,17 +549,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['delete any entity_test_as_content entity'],
+      'permissions' => ['delete any entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'delete'), 'Non-members can delete any grouped test entities.');
@@ -589,18 +589,18 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::INSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['delete own entity_test_as_content entity'],
+      'permissions' => ['delete own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($this->getCurrentUser());
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($this->getCurrentUser());
     $group_b->addMember($account);
 
@@ -631,17 +631,17 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $role_config = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
       'global_role' => RoleInterface::AUTHENTICATED_ID,
-      'permissions' => ['delete own entity_test_as_content entity'],
+      'permissions' => ['delete own entity_test_relation entity'],
     ];
     $this->createGroupRole(['group_type' => $this->groupTypeA->id()] + $role_config);
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $role_config);
 
     $group_a = $this->createGroup(['type' => $this->groupTypeA->id()]);
-    $group_a->addRelationship($entity_1, 'entity_test_as_content');
+    $group_a->addRelationship($entity_1, 'entity_test_relation');
     $group_a->addMember($account);
 
     $group_b = $this->createGroup(['type' => $this->groupTypeB->id()]);
-    $group_b->addRelationship($entity_2, 'entity_test_as_content');
+    $group_b->addRelationship($entity_2, 'entity_test_relation');
     $group_b->addMember($account);
 
     $this->assertTrue($this->accessControlHandler->access($entity_1, 'delete'), 'Non-members can delete their own grouped test entities.');

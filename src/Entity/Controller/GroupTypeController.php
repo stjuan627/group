@@ -97,7 +97,7 @@ class GroupTypeController extends ControllerBase {
       '#title' => $this->t('Information about content plugins'),
     ];
 
-    $page['information']['intro']['#markup'] = $this->t('<p>In order to be able to add entities as content to groups of this group type, a so-called content plugin needs to be installed. This plugin informs the Group module on how the entity type can be added to a group, what rules apply and whether it should control access over said entity type. When a plugin is installed, you should check out its configuration form to see what options are available to further customize the plugin behavior.</p>');
+    $page['information']['intro']['#markup'] = $this->t('<p>In order to be able to relate entities to groups of this group type, a so-called relation plugin needs to be installed. This plugin informs the Group module on how the entity type can be added to a group, what rules apply and whether it should control access over said entity type. When a plugin is installed, you should check out its configuration form to see what options are available to further customize the plugin behavior.</p>');
     $page['information']['fields']['#markup'] = $this->t('<p>Should you choose to show the relationship entities that track which entity belongs to which group or should the module that provided the module enforce this, you can control which fields are available on that relation entity and how they are presented in the front-end.</p>');
     $page['information']['install_types'] = [
       '#theme' => 'item_list',

@@ -8,13 +8,13 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  * Provides a group relation type for node types.
  *
  * @GroupRelationType(
- *   id = "node_type_as_content",
- *   label = @Translation("Node type as content"),
- *   description = @Translation("Adds node types to groups."),
+ *   id = "node_type_relation",
+ *   label = @Translation("Node type relation (generic)"),
+ *   description = @Translation("Relates node types to groups."),
  *   entity_type_id = "node_type",
  *   entity_access = TRUE,
- *   admin_permission = "administer node_type_as_content",
+ *   admin_permission = "administer node_type_relation",
  * )
  */
-class NodeTypeAsContent extends GroupRelationBase {
+class NodeTypeRelation extends GroupRelationBase {
 }

@@ -211,7 +211,7 @@ class AccessControlTest extends UnitTestCase {
     $group_relationship->getGroup()->willReturn($group->reveal());
     $group_relationship->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
     $group_relationship->getCacheContexts()->willReturn([]);
-    $group_relationship->getCachetags()->willReturn(['group_content:foo']);
+    $group_relationship->getCachetags()->willReturn(['group_relationship:foo']);
     $group_relationship->getCacheMaxAge()->willReturn(9999);
 
     if ($definition->getAdminPermission()) {
@@ -291,7 +291,7 @@ class AccessControlTest extends UnitTestCase {
                     $result->addCacheContexts(['user']);
 
                     // Tags and max-age as defined in ::testRelationAccess().
-                    $result->addCacheTags(['group_content:foo']);
+                    $result->addCacheTags(['group_relationship:foo']);
                     $result->mergeCacheMaxAge(9999);
                   }
                   return $result;
@@ -449,7 +449,7 @@ class AccessControlTest extends UnitTestCase {
     $entity_type->entityClassImplements(EntityOwnerInterface::class)->willReturn($is_ownable);
 
     $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
-    $entity_type_manager->getStorage('group_content')->willReturn($storage->reveal());
+    $entity_type_manager->getStorage('group_relationship')->willReturn($storage->reveal());
     $entity_type_manager->getDefinition($definition->getEntityTypeId())->willReturn($entity_type->reveal());
 
     $permission_provider = $this->prophesize(PermissionProviderInterface::class);

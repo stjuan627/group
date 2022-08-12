@@ -129,8 +129,8 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     assert($definition instanceof GroupRelationTypeInterface);
 
     $entity_type_id = $definition->getEntityTypeId();
-    if ($entity_type_id === 'group_content') {
-      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_content entities, which is simply not possible.', $plugin_id));
+    if ($entity_type_id === 'group_relationship') {
+      throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_relationship entities, which is simply not possible.', $plugin_id));
     }
     elseif ($entity_type_id === 'group_config_wrapper') {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin tries to group group_config_wrapper entities, which is simply not possible.', $plugin_id));
@@ -238,7 +238,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   protected function getRelationshipTypeStorage() {
     if (!isset($this->relationshipTypeStorage)) {
-      $this->relationshipTypeStorage = $this->entityTypeManager->getStorage('group_content_type');
+      $this->relationshipTypeStorage = $this->entityTypeManager->getStorage('group_relationship_type');
     }
     return $this->relationshipTypeStorage;
   }

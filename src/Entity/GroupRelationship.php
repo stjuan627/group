@@ -3,7 +3,6 @@
 namespace Drupal\group\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -18,10 +17,8 @@ use Drupal\user\EntityOwnerTrait;
  *
  * @ingroup group
  *
- * @todo Rename machine name group_relationship.
- *
  * @ContentEntityType(
- *   id = "group_content",
+ *   id = "group_relationship",
  *   label = @Translation("Group relationship"),
  *   label_singular = @Translation("group relationship"),
  *   label_plural = @Translation("group relationships"),
@@ -62,15 +59,15 @@ use Drupal\user\EntityOwnerTrait;
  *   links = {
  *     "add-form" = "/group/{group}/content/add/{plugin_id}",
  *     "add-page" = "/group/{group}/content/add",
- *     "canonical" = "/group/{group}/content/{group_content}",
+ *     "canonical" = "/group/{group}/content/{group_relationship}",
  *     "collection" = "/group/{group}/content",
  *     "create-form" = "/group/{group}/content/create/{plugin_id}",
  *     "create-page" = "/group/{group}/content/create",
- *     "delete-form" = "/group/{group}/content/{group_content}/delete",
- *     "edit-form" = "/group/{group}/content/{group_content}/edit"
+ *     "delete-form" = "/group/{group}/content/{group_relationship}/delete",
+ *     "edit-form" = "/group/{group}/content/{group_relationship}/edit"
  *   },
- *   bundle_entity_type = "group_content_type",
- *   field_ui_base_route = "entity.group_content_type.edit_form",
+ *   bundle_entity_type = "group_relationship_type",
+ *   field_ui_base_route = "entity.group_relationship_type.edit_form",
  *   permission_granularity = "bundle",
  *   constraints = {
  *     "GroupRelationshipCardinality" = {}
@@ -157,7 +154,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
    * {@inheritdoc}
    */
   public static function loadByPluginId($plugin_id) {
-    $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+    $storage = \Drupal::entityTypeManager()->getStorage('group_relationship');
     assert($storage instanceof GroupRelationshipStorageInterface);
     return $storage->loadByPluginId($plugin_id);
   }
@@ -166,7 +163,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
    * {@inheritdoc}
    */
   public static function loadByEntity(EntityInterface $entity) {
-    $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+    $storage = \Drupal::entityTypeManager()->getStorage('group_relationship');
     assert($storage instanceof GroupRelationshipStorageInterface);
     return $storage->loadByEntity($entity);
   }
@@ -196,7 +193,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
     // These parameters are not needed here so let's remove them or else they'll
     // get added as query arguments for no reason.
     if ($is_form_rel || $rel == 'create-page') {
-      unset($uri_route_parameters['group_content'], $uri_route_parameters['group_content_type']);
+      unset($uri_route_parameters['group_relationship'], $uri_route_parameters['group_relationship_type']);
     }
 
     return $uri_route_parameters;
@@ -320,23 +317,23 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
 
     // A specific group gets any content, regardless of plugin used.
     // E.g.: A group's list of entities can be flushed with this.
-    $tags[] = "group_content_list:group:$group_id";
+    $tags[] = "group_relationship_list:group:$group_id";
 
     // A specific entity gets added to any group, regardless of plugin used.
     // E.g.: An entity's list of groups can be flushed with this.
-    $tags[] = "group_content_list:entity:$entity_id";
+    $tags[] = "group_relationship_list:entity:$entity_id";
 
     // Any entity gets added to any group using a specific plugin.
     // E.g.: A list of all memberships anywhere can be flushed with this.
-    $tags[] = "group_content_list:plugin:$plugin_id";
+    $tags[] = "group_relationship_list:plugin:$plugin_id";
 
     // A specific group gets any content using a specific plugin.
     // E.g.: A group's list of members can be flushed with this.
-    $tags[] = "group_content_list:plugin:$plugin_id:group:$group_id";
+    $tags[] = "group_relationship_list:plugin:$plugin_id:group:$group_id";
 
     // A specific entity gets added to any group using a specific plugin.
     // E.g.: A user's list of memberships can be flushed with this.
-    $tags[] = "group_content_list:plugin:$plugin_id:entity:$entity_id";
+    $tags[] = "group_relationship_list:plugin:$plugin_id:entity:$entity_id";
 
     return $tags;
   }

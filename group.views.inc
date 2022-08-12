@@ -16,7 +16,7 @@ function group_views_data_alter(array &$data) {
   $entity_types = $entity_type_manager->getDefinitions();
 
   // Get the data table for GroupRelationship entities.
-  $data_table = $entity_types['group_content']->getDataTable();
+  $data_table = $entity_types['group_relationship']->getDataTable();
 
   $plugin_manager = \Drupal::service('group_relation_type.manager');
   assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
@@ -32,8 +32,8 @@ function group_views_data_alter(array &$data) {
     $entity_type = $entity_types[$entity_type_id];
     $entity_data_table = $entity_type->getDataTable() ?: $entity_type->getBaseTable();
 
-    // We only add one 'group_content' entry per entity type.
-    if (isset($data[$entity_data_table]['group_content'])) {
+    // We only add one 'group_relationship' entry per entity type.
+    if (isset($data[$entity_data_table]['group_relationship'])) {
       continue;
     }
 

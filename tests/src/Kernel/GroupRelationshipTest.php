@@ -96,23 +96,23 @@ class GroupRelationshipTest extends GroupKernelTestBase {
    * @covers ::getEntityId
    */
   public function testGetEntity() {
-    // Create a group type and enable adding users and node types as content.
+    // Create a group type and enable relating users and node types.
     $group_type = $this->createGroupType();
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->createFromPlugin($group_type, 'user_as_content')->save();
-    $storage->createFromPlugin($group_type, 'node_type_as_content')->save();
+    $storage->createFromPlugin($group_type, 'user_relation')->save();
+    $storage->createFromPlugin($group_type, 'node_type_relation')->save();
     $group = $this->createGroup(['type' => $group_type->id()]);
 
     $account = $this->createUser();
-    $group_relationship = $group->addRelationship($account, 'user_as_content');
+    $group_relationship = $group->addRelationship($account, 'user_relation');
     $this->assertEquals($account->id(), $group_relationship->getEntity()->id());
     $this->assertEquals($account->id(), $group_relationship->getEntityId());
     $this->assertEquals('user', $group_relationship->getEntity()->getEntityTypeId());
 
     $node_type = $this->createNodeType();
-    $group_relationship = $group->addRelationship($node_type, 'node_type_as_content');
+    $group_relationship = $group->addRelationship($node_type, 'node_type_relation');
     $this->assertEquals('node_type', $group_relationship->getEntity()->getEntityTypeId());
     $this->assertEquals($node_type->id(), $group_relationship->getEntity()->id());
     $this->assertEquals($node_type->id(), $group_relationship->getEntityId());
@@ -126,12 +126,12 @@ class GroupRelationshipTest extends GroupKernelTestBase {
   public function testListCacheTagInvalidation() {
     $cache = \Drupal::cache();
 
-    // Create a group type and enable adding users as content.
+    // Create a group type and enable relating users.
     $group_type = $this->createGroupType();
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->createFromPlugin($group_type, 'user_as_content')->save();
+    $storage->createFromPlugin($group_type, 'user_relation')->save();
 
     // Create a group and user to check the cache tags for.
     $test_group = $this->createGroup(['type' => $group_type->id()]);
@@ -145,39 +145,39 @@ class GroupRelationshipTest extends GroupKernelTestBase {
 
     $scenarios = [
       // Create a list for specific group, any entity, any plugin.
-      'group_content' => ["group_content_list:group:$test_group_id"],
+      'group_relationship' => ["group_relationship_list:group:$test_group_id"],
       // Create a list for any group, specific entity, any plugin.
-      'content_groups' => ["group_content_list:entity:$test_account_id"],
+      'relationship_groups' => ["group_relationship_list:entity:$test_account_id"],
       // Create a list for any group, any entity, specific plugin.
-      'all_memberships' => ["group_content_list:plugin:group_membership"],
+      'all_memberships' => ["group_relationship_list:plugin:group_membership"],
       // Create a list for specific group, any entity, specific plugin.
-      'group_memberships' => ["group_content_list:plugin:group_membership:group:$test_group_id"],
+      'group_memberships' => ["group_relationship_list:plugin:group_membership:group:$test_group_id"],
       // Create a list for any group, specific entity, specific plugin.
-      'user_memberships' => ["group_content_list:plugin:group_membership:entity:$test_account_id"],
+      'user_memberships' => ["group_relationship_list:plugin:group_membership:entity:$test_account_id"],
     ];
     foreach ($scenarios as $cid => $cache_tags) {
       $cache->set($cid, 'foo', CacheBackendInterface::CACHE_PERMANENT, $cache_tags);
     }
 
     // Add another user to another group and verify cache entries.
-    $extra_group->addRelationship($extra_account, 'user_as_content');
-    $this->assertNotFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin found.');
-    $this->assertNotFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin found.');
+    $extra_group->addRelationship($extra_account, 'user_relation');
+    $this->assertNotFalse($cache->get('group_relationship'), 'List for specific group, any entity, any plugin found.');
+    $this->assertNotFalse($cache->get('relationship_groups'), 'List for any group, specific entity, any plugin found.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
-    // Add another user as content to the group and verify cache entries.
-    $test_group->addRelationship($extra_account, 'user_as_content');
-    $this->assertFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin cleared.');
-    $this->assertNotFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin found.');
+    // Relate another user to the group and verify cache entries.
+    $test_group->addRelationship($extra_account, 'user_relation');
+    $this->assertFalse($cache->get('group_relationship'), 'List for specific group, any entity, any plugin cleared.');
+    $this->assertNotFalse($cache->get('relationship_groups'), 'List for any group, specific entity, any plugin found.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
 
-    // Add the user as content to another group and verify cache entries.
-    $extra_group->addRelationship($test_account, 'user_as_content');
-    $this->assertFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin cleared.');
+    // Relate the user to another group and verify cache entries.
+    $extra_group->addRelationship($test_account, 'user_relation');
+    $this->assertFalse($cache->get('relationship_groups'), 'List for any group, specific entity, any plugin cleared.');
     $this->assertNotFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin found.');
     $this->assertNotFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin found.');
@@ -202,8 +202,8 @@ class GroupRelationshipTest extends GroupKernelTestBase {
       $cache->set($cid, 'foo', CacheBackendInterface::CACHE_PERMANENT, $cache_tags);
     }
     $test_group->addMember($test_account);
-    $this->assertFalse($cache->get('group_content'), 'List for specific group, any entity, any plugin cleared.');
-    $this->assertFalse($cache->get('content_groups'), 'List for any group, specific entity, any plugin cleared.');
+    $this->assertFalse($cache->get('group_relationship'), 'List for specific group, any entity, any plugin cleared.');
+    $this->assertFalse($cache->get('relationship_groups'), 'List for any group, specific entity, any plugin cleared.');
     $this->assertFalse($cache->get('all_memberships'), 'List for any group, any entity, specific plugin cleared.');
     $this->assertFalse($cache->get('group_memberships'), 'List for specific group, any entity, specific plugin cleared.');
     $this->assertFalse($cache->get('user_memberships'), 'List for any group, specific entity, specific plugin cleared.');
@@ -216,25 +216,25 @@ class GroupRelationshipTest extends GroupKernelTestBase {
    * @depends testListCacheTagInvalidation
    */
   public function testGetListCacheTagsToInvalidateForConfig() {
-    // Create a group type and enable adding node types as content.
+    // Create a group type and enable relating node types.
     $group_type = $this->createGroupType();
 
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->createFromPlugin($group_type, 'node_type_as_content')->save();
+    $storage->createFromPlugin($group_type, 'node_type_relation')->save();
 
     $group = $this->createGroup(['type' => $group_type->id()]);
     $node_type = $this->createNodeType();
 
-    $group_relationship = $group->addRelationship($node_type, 'node_type_as_content');
+    $group_relationship = $group->addRelationship($node_type, 'node_type_relation');
     $expected = [
-      'group_content_list',
-      'group_content_list:' . $group_relationship->bundle(),
-      'group_content_list:group:' . $group->id(),
-      'group_content_list:entity:' . $node_type->id(),
-      'group_content_list:plugin:node_type_as_content',
-      'group_content_list:plugin:node_type_as_content:group:' . $group->id(),
-      'group_content_list:plugin:node_type_as_content:entity:' . $node_type->id(),
+      'group_relationship_list',
+      'group_relationship_list:' . $group_relationship->bundle(),
+      'group_relationship_list:group:' . $group->id(),
+      'group_relationship_list:entity:' . $node_type->id(),
+      'group_relationship_list:plugin:node_type_relation',
+      'group_relationship_list:plugin:node_type_relation:group:' . $group->id(),
+      'group_relationship_list:plugin:node_type_relation:entity:' . $node_type->id(),
     ];
     // We can call this method because we made it public.
     assert($group_relationship instanceof GroupRelationship);

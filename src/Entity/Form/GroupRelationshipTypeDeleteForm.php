@@ -61,7 +61,7 @@ class GroupRelationshipTypeDeleteForm extends EntityDeleteForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $entity_count = $this->entityTypeManager->getStorage('group_content')
+    $entity_count = $this->entityTypeManager->getStorage('group_relationship')
       ->getQuery()
       ->accessCheck(FALSE)
       ->condition('type', $this->entity->id())
@@ -90,7 +90,7 @@ class GroupRelationshipTypeDeleteForm extends EntityDeleteForm {
     $group_relation_type = $relationship_type->getPlugin()->getRelationType();
 
     $relationship_type->delete();
-    \Drupal::logger('group_content_type')->notice('Uninstalled %plugin from %group_type.', [
+    \Drupal::logger('group_relationship_type')->notice('Uninstalled %plugin from %group_type.', [
       '%plugin' => $group_relation_type->getLabel(),
       '%group_type' => $group_type->label(),
     ]);

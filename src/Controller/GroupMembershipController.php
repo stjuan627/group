@@ -67,7 +67,7 @@ class GroupMembershipController extends ControllerBase {
    *   A group join form.
    */
   public function join(GroupInterface $group) {
-    $storage = $this->entityTypeManager->getStorage('group_content');
+    $storage = $this->entityTypeManager->getStorage('group_relationship');
     assert($storage instanceof GroupRelationshipStorageInterface);
 
     // Pre-populate a group membership with the current user.

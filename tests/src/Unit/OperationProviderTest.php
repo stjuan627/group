@@ -60,7 +60,7 @@ namespace Drupal\Tests\group\Unit {
       $storage = $this->prophesize(GroupRelationshipTypeStorageInterface::class);
       $storage->getRelationshipTypeId(Argument::cetera())->willReturn('foobar');
       $storage->load('foobar')->willReturn($entity->reveal());
-      $entity_type_manager->getStorage('group_content_type')->willReturn($storage->reveal());
+      $entity_type_manager->getStorage('group_relationship_type')->willReturn($storage->reveal());
 
       $operation_provider = $this->createOperationProvider($plugin_id, $definition, $module_handler->reveal(), NULL, $entity_type_manager->reveal());
       $this->assertEquals($expected, array_keys($operation_provider->getOperations($group_type->reveal())));

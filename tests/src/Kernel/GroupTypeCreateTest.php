@@ -19,7 +19,7 @@ class GroupTypeCreateTest extends GroupKernelTestBase {
    * @covers ::postSave
    */
   public function testCreate() {
-    $relationship_type_storage = $this->entityTypeManager->getStorage('group_content_type');
+    $relationship_type_storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($relationship_type_storage instanceof GroupRelationshipTypeStorageInterface);
     $this->assertCount(0, $relationship_type_storage->loadByEntityTypeId('user'));
 

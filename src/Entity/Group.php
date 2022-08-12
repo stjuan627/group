@@ -113,7 +113,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    *   The relationship storage.
    */
   protected function relationshipStorage() {
-    return $this->entityTypeManager()->getStorage('group_content');
+    return $this->entityTypeManager()->getStorage('group_relationship');
   }
 
   /**

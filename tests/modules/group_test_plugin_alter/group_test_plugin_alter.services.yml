@@ -15,26 +15,26 @@ services:
     arguments: ['@group.relation_handler_decorator.permission_provider.foo.inner']
     shared: false
 
-  # Adds baz admin permission to the node_as_content plugin.
-  group.relation_handler_decorator.permission_provider.baz.node_as_content:
+  # Adds baz admin permission to the node_relation plugin.
+  group.relation_handler_decorator.permission_provider.baz.node_relation:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\BazAdminPermissionProvider'
-    decorates: 'group.relation_handler.permission_provider.node_as_content'
+    decorates: 'group.relation_handler.permission_provider.node_relation'
     decoration_priority: 300
-    arguments: ['@group.relation_handler_decorator.permission_provider.baz.node_as_content.inner']
+    arguments: ['@group.relation_handler_decorator.permission_provider.baz.node_relation.inner']
     shared: false
 
-  # Adds baz admin permission to the entity_as_content plugin.
-  group.relation_handler_decorator.permission_provider.baz.entity_as_content:
+  # Adds baz admin permission to the entity_relation plugin.
+  group.relation_handler_decorator.permission_provider.baz.entity_relation:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\BazAdminPermissionProvider'
-    decorates: 'group.relation_handler.permission_provider.entity_test_as_content'
+    decorates: 'group.relation_handler.permission_provider.entity_test_relation'
     decoration_priority: 200
-    arguments: ['@group.relation_handler_decorator.permission_provider.baz.entity_as_content.inner']
+    arguments: ['@group.relation_handler_decorator.permission_provider.baz.entity_relation.inner']
     shared: false
 
-  # Adds foo admin permission to the entity_as_content plugin.
-  group.relation_handler_decorator.permission_provider.foo.entity_as_content:
+  # Adds foo admin permission to the entity_relation plugin.
+  group.relation_handler_decorator.permission_provider.foo.entity_relation:
     class: 'Drupal\group_test_plugin_alter\Plugin\Group\RelationHandler\FooAdminPermissionProvider'
-    decorates: 'group.relation_handler.permission_provider.entity_test_as_content'
+    decorates: 'group.relation_handler.permission_provider.entity_test_relation'
     decoration_priority: 100
-    arguments: ['@group.relation_handler_decorator.permission_provider.foo.entity_as_content.inner']
+    arguments: ['@group.relation_handler_decorator.permission_provider.foo.entity_relation.inner']
     shared: false

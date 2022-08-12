@@ -91,7 +91,7 @@ class GroupRelationshipCardinalityValidator extends ConstraintValidator implemen
     // because it reflects what's actually stored in the DB, even if we're
     // dealing with a wrapped config entity.
     $entity_id = $group_relationship->get('entity_id')->target_id;
-    $data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
+    $data_table = $this->entityTypeManager->getDefinition('group_relationship')->getDataTable();
 
     // Enforce the group cardinality if it's not set to unlimited.
     if ($group_cardinality > 0) {

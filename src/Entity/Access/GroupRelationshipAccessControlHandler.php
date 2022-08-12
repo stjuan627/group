@@ -55,7 +55,7 @@ class GroupRelationshipAccessControlHandler extends EntityAccessControlHandler i
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
-    $relationship_type = $this->entityTypeManager->getStorage('group_content_type')->load($entity_bundle);
+    $relationship_type = $this->entityTypeManager->getStorage('group_relationship_type')->load($entity_bundle);
     assert($relationship_type instanceof GroupRelationshipTypeInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($relationship_type->getPluginId());
     return $access_control->relationshipCreateAccess($context['group'], $account, TRUE);

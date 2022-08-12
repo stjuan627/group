@@ -46,7 +46,7 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function joinExtraTables(SelectInterface $query) {
-    // Joins the group_content table to check for plugins that provide access.
+    // Joins the group_relationship table to check for plugins that provide access.
     $entity_type = $this->entityTypeManager->getDefinition($this->entityTypeId);
     $base_table = $entity_type->getBaseTable();
     $id_key = $entity_type->getKey('id');
@@ -83,7 +83,7 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function setUpContent(GroupTypeInterface $group_type) {
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($group_type, $this->pluginId));
   }

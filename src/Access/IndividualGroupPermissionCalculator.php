@@ -53,7 +53,7 @@ class IndividualGroupPermissionCalculator extends PermissionCalculatorBase {
 
     // The member permissions need to be recalculated whenever the user is added
     // to or removed from a group.
-    $calculated_permissions->addCacheTags(['group_content_list:plugin:group_membership:entity:' . $account->id()]);
+    $calculated_permissions->addCacheTags(['group_relationship_list:plugin:group_membership:entity:' . $account->id()]);
 
     foreach ($this->membershipLoader->loadByUser($account) as $group_membership) {
       // If the member's roles change, so do the permissions.

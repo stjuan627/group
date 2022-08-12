@@ -118,7 +118,7 @@ function group_theme() {
     'group' => [
       'render element' => 'elements',
     ],
-    'group_content' => [
+    'group_relationship' => [
       'render element' => 'elements',
     ],
   ];
@@ -147,20 +147,20 @@ function group_theme_suggestions_group(array $variables) {
 /**
  * Implements hook_theme_suggestions_HOOK().
  */
-function group_theme_suggestions_group_content(array $variables) {
+function group_theme_suggestions_group_relationship(array $variables) {
   $suggestions = [];
 
-  $group_relationship = $variables['elements']['#group_content'];
+  $group_relationship = $variables['elements']['#group_relationship'];
   assert($group_relationship instanceof GroupRelationshipInterface);
 
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
   $sanitized_bundle = strtr($group_relationship->bundle(), '-', '_');
 
-  $suggestions[] = 'group_content__' . $sanitized_view_mode;
-  $suggestions[] = 'group_content__' . $sanitized_bundle;
-  $suggestions[] = 'group_content__' . $sanitized_bundle . '__' . $sanitized_view_mode;
-  $suggestions[] = 'group_content__' . $group_relationship->id();
-  $suggestions[] = 'group_content__' . $group_relationship->id() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'group_relationship__' . $sanitized_view_mode;
+  $suggestions[] = 'group_relationship__' . $sanitized_bundle;
+  $suggestions[] = 'group_relationship__' . $sanitized_bundle . '__' . $sanitized_view_mode;
+  $suggestions[] = 'group_relationship__' . $group_relationship->id();
+  $suggestions[] = 'group_relationship__' . $group_relationship->id() . '__' . $sanitized_view_mode;
 
   return $suggestions;
 }
@@ -206,18 +206,18 @@ function template_preprocess_group(&$variables) {
 /**
  * Prepares variables for the group relationship template.
  *
- * Default template: group-content.html.twig
+ * Default template: group-relationship.html.twig
  *
  * @param array $variables
  *   - elements: An array of elements to display in view mode.
- *   - group_content: The group relationship object.
+ *   - group_relationship: The group relationship object.
  *   - view_mode: View mode; e.g., 'full', 'teaser', etc.
  */
-function template_preprocess_group_content(&$variables) {
-  $group_relationship = $variables['elements']['#group_content'];
+function template_preprocess_group_relationship(&$variables) {
+  $group_relationship = $variables['elements']['#group_relationship'];
   assert($group_relationship instanceof GroupRelationshipInterface);
 
-  $variables['group_content'] = $group_relationship;
+  $variables['group_relationship'] = $group_relationship;
   $variables['view_mode'] = $variables['elements']['#view_mode'];
   $variables['label'] = $group_relationship->label();
   $variables['url'] = $group_relationship->toUrl('canonical', ['language' => $group_relationship->language()]);
@@ -227,8 +227,8 @@ function template_preprocess_group_content(&$variables) {
 
   // See if we are rendering the group at its canonical route.
   $route_match = \Drupal::routeMatch();
-  if ($route_match->getRouteName() == 'entity.group_content.canonical') {
-    $page_group_relationship = $route_match->getParameter('group_content');
+  if ($route_match->getRouteName() == 'entity.group_relationship.canonical') {
+    $page_group_relationship = $route_match->getParameter('group_relationship');
   }
   $is_page = (!empty($page_group_relationship) ? $page_group_relationship->id() == $group_relationship->id() : FALSE);
   $variables['page'] = $variables['view_mode'] == 'full' && $is_page;
@@ -311,7 +311,7 @@ function group_query_entity_query_alter(SelectInterface $query) {
         $class_name = GroupQueryAlter::class;
         break;
 
-      case 'group_content':
+      case 'group_relationship':
         $class_name = GroupRelationshipQueryAlter::class;
         break;
 
@@ -385,7 +385,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
   // plugins, it might change access.
   $plugin_cache_tags = [];
   foreach ($plugin_ids as $plugin_id) {
-    $plugin_cache_tags[] = "group_content_list:plugin:$plugin_id";
+    $plugin_cache_tags[] = "group_relationship_list:plugin:$plugin_id";
   }
   $access = AccessResult::neutral()->addCacheTags($plugin_cache_tags);
 
@@ -401,7 +401,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
 
   // Reduce the plugin IDs to those that are actually in use.
   $data_table = \Drupal::entityTypeManager()
-    ->getDefinition('group_content')
+    ->getDefinition('group_relationship')
     ->getDataTable();
 
   $plugin_ids_used = \Drupal::database()
@@ -431,7 +431,7 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
  * Implements hook_entity_delete().
  */
 function group_entity_delete(EntityInterface $entity) {
-  $storage = \Drupal::entityTypeManager()->getStorage('group_content');
+  $storage = \Drupal::entityTypeManager()->getStorage('group_relationship');
   assert($storage instanceof GroupRelationshipStorageInterface);
 
   // See if any relationships exist for the entity and delete them as well.
@@ -471,7 +471,7 @@ function group_entity_field_access($operation, FieldDefinitionInterface $field_d
   }
 
   // We only care if it is attached to a relationship type entity.
-  if ($items->getEntity()->getEntityTypeId() != 'group_content') {
+  if ($items->getEntity()->getEntityTypeId() != 'group_relationship') {
     return AccessResult::neutral();
   }
 
@@ -637,13 +637,13 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       if ($wizard) {
         foreach ($submit as $key => $handler) {
           if ($handler == '::save') {
-            $form['actions'][$name]['#submit'][$key] = 'group_content_wizard_store';
+            $form['actions'][$name]['#submit'][$key] = 'group_relationship_wizard_store';
           }
         }
       }
       // Otherwise, we can simply add our submit handler and be done with it.
       else {
-        $form['actions'][$name]['#submit'][] = 'group_content_entity_submit';
+        $form['actions'][$name]['#submit'][] = 'group_relationship_entity_submit';
       }
     }
 
@@ -652,7 +652,7 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       $form['actions']['cancel'] = [
         '#type' => 'submit',
         '#value' => t('Cancel'),
-        '#submit' => ['group_content_wizard_cancel'],
+        '#submit' => ['group_relationship_wizard_cancel'],
         '#limit_validation_errors' => [],
       ];
     }
@@ -665,7 +665,7 @@ function group_form_alter(&$form, FormStateInterface $form_state, $form_id) {
  * @see group_form_alter()
  * @see \Drupal\group\Entity\Controller\GroupRelationshipController::createForm()
  */
-function group_content_wizard_store($form, FormStateInterface $form_state) {
+function group_relationship_wizard_store($form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
 
   // Store the unsaved entity in the temp store.
@@ -686,7 +686,7 @@ function group_content_wizard_store($form, FormStateInterface $form_state) {
  * @see group_form_alter()
  * @see \Drupal\group\Entity\Controller\GroupRelationshipController::createForm()
  */
-function group_content_wizard_cancel($form, FormStateInterface $form_state) {
+function group_relationship_wizard_cancel($form, FormStateInterface $form_state) {
   $store = \Drupal::service('tempstore.private')->get($form_state->get('group_wizard_id'));
   $store_id = $form_state->get('store_id');
   $store->delete("$store_id:entity");
@@ -705,7 +705,7 @@ function group_content_wizard_cancel($form, FormStateInterface $form_state) {
  * @see group_form_alter()
  * @see \Drupal\group\Entity\Controller\GroupRelationshipController::createForm()
  */
-function group_content_entity_submit($form, FormStateInterface $form_state) {
+function group_relationship_entity_submit($form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
   $group = $form_state->get('group');
   assert($group instanceof GroupInterface);

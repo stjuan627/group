@@ -20,7 +20,7 @@ class EntityQueryAlterTest extends EntityQueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $pluginId = 'entity_test_as_content';
+  protected $pluginId = 'entity_test_relation';
 
   /**
    * {@inheritdoc}
@@ -40,7 +40,7 @@ class EntityQueryAlterTest extends EntityQueryAlterTestBase {
     // Add two entities, one of which belongs to a group.
     $this->createTestEntity();
     $group = $this->createGroup(['type' => $group_type->id()]);
-    $group->addRelationship($this->createTestEntity(['type' => 'page']), 'entity_test_as_content');
+    $group->addRelationship($this->createTestEntity(['type' => 'page']), 'entity_test_relation');
     return $group;
   }
 

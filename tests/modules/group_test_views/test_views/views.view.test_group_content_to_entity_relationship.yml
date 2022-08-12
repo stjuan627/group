@@ -125,7 +125,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: group_content
+          entity_type: group_relationship
           entity_field: id
           plugin_id: field
         uid:

@@ -36,7 +36,7 @@ class GroupRelationshipCreateAnyAccessCheck implements AccessInterface {
    * Checks access for relationship creation routes.
    *
    * All routes using this access check should have a group parameter and have
-   * the _group_content_create_any_access requirement set to 'TRUE' or 'FALSE'.
+   * the _group_relationship_create_any_access requirement set to 'TRUE' or 'FALSE'.
    *
    * @param \Symfony\Component\Routing\Route $route
    *   The route to check against.
@@ -49,11 +49,11 @@ class GroupRelationshipCreateAnyAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access(Route $route, AccountInterface $account, GroupInterface $group) {
-    $needs_access = $route->getRequirement('_group_content_create_any_access') === 'TRUE';
+    $needs_access = $route->getRequirement('_group_relationship_create_any_access') === 'TRUE';
     $base_plugin_id = $route->getDefault('base_plugin_id');
 
-    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_content');
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_relationship');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
 
     // Find out which relationship types the user has access to create.
     foreach ($storage->loadByProperties(['group_type' => $group->bundle()]) as $relationship_type) {

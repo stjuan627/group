@@ -3,12 +3,12 @@ status: true
 dependencies:
   module:
     - group_test_plugin
-id: entity_test_as_content
-label: 'Test entity as content'
+id: node_relation
+label: 'Node relation (generic)'
 module: views
 description: ''
 tag: ''
-base_table: entity_test_with_owner
+base_table: node_field_data
 base_field: id
 core: 8.x
 display:
@@ -75,12 +75,12 @@ display:
           hide_empty: false
           default_field_elements: true
       fields:
-        name:
-          table: entity_test_with_owner
-          field: name
-          id: name
+        title:
+          table: node_field_data
+          field: title
+          id: title
           entity_type: null
-          entity_field: name
+          entity_field: title
           plugin_id: field
           relationship: none
           group_type: group
@@ -143,7 +143,7 @@ display:
       sorts:
         id:
           id: id
-          table: entity_test_with_owner
+          table: node_field_data
           field: id
           relationship: none
           group_type: group
@@ -152,7 +152,7 @@ display:
           exposed: false
           expose:
             label: ''
-          entity_type: entity_test_with_owner
+          entity_type: node
           entity_field: id
           plugin_id: standard
       header: {  }

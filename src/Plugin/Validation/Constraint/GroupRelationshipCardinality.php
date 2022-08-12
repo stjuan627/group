@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraint;
  * @Constraint(
  *   id = "GroupRelationshipCardinality",
  *   label = @Translation("Relation cardinality check", context = "Validation"),
- *   type = "entity:group_content"
+ *   type = "entity:group_relationship"
  * )
  */
 class GroupRelationshipCardinality extends Constraint {

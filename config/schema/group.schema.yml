@@ -82,7 +82,7 @@ group.role.*:
         type: 'string'
         label: 'Group permission'
 
-group_content_type:
+group_relationship_type:
   type: 'config_entity'
   label: 'Group relationship type'
   mapping:
@@ -107,10 +107,10 @@ group_content_type:
       sequence:
         type: 'group_relation.config.[%key]'
 
-# Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID.
-# Follows the pattern group.content_type.GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID.
-group.content_type.*:
-  type: 'group_content_type'
+# Follows the pattern group.relationship_type.GROUP_TYPE_ID-PLUGIN_ID.
+# Follows the pattern group.relationship_type.GROUP_TYPE_ID-PLUGIN_ID-DERIVATIVE_ID.
+group.relationship_type.*:
+  type: 'group_relationship_type'
   label: 'Group relationship type'
 
 entity_reference_selection.group_type:group_role:

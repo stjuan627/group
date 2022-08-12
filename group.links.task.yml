@@ -38,7 +38,7 @@ group.delete_form:
 group.content:
   title: 'All entities'
   base_route: 'entity.group.canonical'
-  route_name: 'entity.group_content.collection'
+  route_name: 'entity.group_relationship.collection'
   weight: 15
 
 group.version_history:
@@ -71,10 +71,10 @@ group_type.content_plugins:
   route_name: 'entity.group_type.content_plugins'
   weight: 25
 
-group_content_type.edit_form:
+group_relationship_type.edit_form:
   title: 'Configure'
-  base_route: 'entity.group_content_type.edit_form'
-  route_name: 'entity.group_content_type.edit_form'
+  base_route: 'entity.group_relationship_type.edit_form'
+  route_name: 'entity.group_relationship_type.edit_form'
   weight: 0
 
 group_role.edit_form:
@@ -95,20 +95,20 @@ group_role.permissions_form:
   base_route: 'entity.group_role.edit_form'
   weight: 10
 
-group_content.view:
+group_relationship.view:
   title: 'View'
-  base_route: 'entity.group_content.canonical'
-  route_name: 'entity.group_content.canonical'
+  base_route: 'entity.group_relationship.canonical'
+  route_name: 'entity.group_relationship.canonical'
   weight: 0
 
-group_content.edit:
+group_relationship.edit:
   title: 'Edit'
-  base_route: 'entity.group_content.canonical'
-  route_name: 'entity.group_content.edit_form'
+  base_route: 'entity.group_relationship.canonical'
+  route_name: 'entity.group_relationship.edit_form'
   weight: 5
 
-group_content.delete:
+group_relationship.delete:
   title: 'Remove'
-  base_route: 'entity.group_content.canonical'
-  route_name: 'entity.group_content.delete_form'
+  base_route: 'entity.group_relationship.canonical'
+  route_name: 'entity.group_relationship.delete_form'
   weight: 10

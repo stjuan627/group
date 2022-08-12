@@ -28,9 +28,9 @@ class ConfigWrapperAccessControlHandlerTest extends GroupKernelTestBase {
     $this->installEntitySchema('node');
 
     // Install the node type handling plugin on a group type.
-    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
-    $storage->save($storage->createFromPlugin($this->createGroupType(), 'node_type_as_content'));
+    $storage->save($storage->createFromPlugin($this->createGroupType(), 'node_type_relation'));
   }
 
   /**

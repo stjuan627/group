@@ -12,10 +12,8 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  *
  * @ingroup group
  *
- * @todo Rename to machine name to group_relationship_type.
- *
  * @ConfigEntityType(
- *   id = "group_content_type",
+ *   id = "group_relationship_type",
  *   label = @Translation("Group relationship type"),
  *   label_singular = @Translation("group relationship type"),
  *   label_plural = @Translation("group relationship types"),
@@ -33,8 +31,8 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  *     },
  *   },
  *   admin_permission = "administer group",
- *   config_prefix = "content_type",
- *   bundle_of = "group_content",
+ *   config_prefix = "relationship_type",
+ *   bundle_of = "group_relationship",
  *   static_cache = TRUE,
  *   entity_keys = {
  *     "id" = "id",
@@ -46,7 +44,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  *     "plugin_config",
  *   },
  *   links = {
- *     "edit-form" = "/admin/group/content/manage/{group_content_type}",
+ *     "edit-form" = "/admin/group/content/manage/{group_relationship_type}",
  *   }
  * )
  */
@@ -156,7 +154,7 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
    * {@inheritdoc}
    */
   public static function loadByPluginId($plugin_id) {
-    $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    $storage = \Drupal::entityTypeManager()->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
     return $storage->loadByPluginId($plugin_id);
   }
@@ -165,7 +163,7 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
    * {@inheritdoc}
    */
   public static function loadByEntityTypeId($entity_type_id) {
-    $storage = \Drupal::entityTypeManager()->getStorage('group_content_type');
+    $storage = \Drupal::entityTypeManager()->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
     return $storage->loadByEntityTypeId($entity_type_id);
   }

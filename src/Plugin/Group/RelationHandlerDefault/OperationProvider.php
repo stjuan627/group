@@ -57,31 +57,31 @@ class OperationProvider implements OperationProviderInterface {
 
     $ui_allowed = !$this->groupRelationType->isEnforced() && !$this->groupRelationType->isCodeOnly();
     if ($relationship_type_id = $this->getRelationshipTypeId($group_type)) {
-      $route_params = ['group_content_type' => $relationship_type_id];
+      $route_params = ['group_relationship_type' => $relationship_type_id];
       $operations['configure'] = [
         'title' => $this->t('Configure'),
-        'url' => new Url('entity.group_content_type.edit_form', $route_params),
+        'url' => new Url('entity.group_relationship_type.edit_form', $route_params),
       ];
 
       if ($ui_allowed) {
         $operations['uninstall'] = [
           'title' => $this->t('Uninstall'),
           'weight' => 99,
-          'url' => new Url('entity.group_content_type.delete_form', $route_params),
+          'url' => new Url('entity.group_relationship_type.delete_form', $route_params),
         ];
       }
 
       // This could be in its own decorator, but then it would live in a module
       // of its own purely for field_ui support. So let's keep it here.
       if ($this->moduleHandler->moduleExists('field_ui')) {
-        $relationship_type = $this->entityTypeManager()->getStorage('group_content_type')->load($relationship_type_id);
+        $relationship_type = $this->entityTypeManager()->getStorage('group_relationship_type')->load($relationship_type_id);
         $operations += field_ui_entity_operation($relationship_type);
       }
     }
     elseif ($ui_allowed) {
       $operations['install'] = [
         'title' => $this->t('Install'),
-        'url' => new Url('entity.group_content_type.add_form', [
+        'url' => new Url('entity.group_relationship_type.add_form', [
           'group_type' => $group_type->id(),
           'plugin_id' => $this->pluginId,
         ]),
@@ -116,7 +116,7 @@ class OperationProvider implements OperationProviderInterface {
       $route_params = ['group' => $group->id(), 'plugin_id' => $this->pluginId];
       $operations[implode('-', $key_parts)] = [
         'title' => $this->t('Add @type', ['@type' => $label]),
-        'url' => new Url('entity.group_content.create_form', $route_params),
+        'url' => new Url('entity.group_relationship.create_form', $route_params),
         'weight' => 30,
       ];
     }
