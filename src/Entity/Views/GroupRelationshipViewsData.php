@@ -65,7 +65,7 @@ class GroupRelationshipViewsData extends EntityViewsData {
       // Create a unique field name for this views field.
       $field_name = 'gc__' . $entity_type_id;
 
-      // We only add one 'group_content' relationship per entity type.
+      // We only add one 'group_relationship' relationship per entity type.
       if (isset($data[$entity_data_table][$field_name])) {
         continue;
       }
@@ -84,7 +84,7 @@ class GroupRelationshipViewsData extends EntityViewsData {
           'base' => $entity_data_table,
           'base field' => $entity_type->getKey('id'),
           'relationship field' => 'entity_id',
-          'id' => 'group_content_to_entity',
+          'id' => 'group_relationship_to_entity',
           'label' => $this->t('Group relationship @entity_type', $t_args),
           'target_entity_type' => $entity_type_id,
         ],

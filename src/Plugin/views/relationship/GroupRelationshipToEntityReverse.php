@@ -7,7 +7,7 @@ namespace Drupal\group\Plugin\views\relationship;
  *
  * @ingroup views_relationship_handlers
  *
- * @ViewsRelationship("group_content_to_entity_reverse")
+ * @ViewsRelationship("group_relationship_to_entity_reverse")
  */
 class GroupRelationshipToEntityReverse extends GroupRelationshipToEntityBase {
 

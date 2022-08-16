@@ -10,7 +10,7 @@ namespace Drupal\group\Plugin\views\relationship;
  *
  * @ingroup views_relationship_handlers
  *
- * @ViewsRelationship("group_content_to_entity")
+ * @ViewsRelationship("group_relationship_to_entity")
  */
 class GroupRelationshipToEntity extends GroupRelationshipToEntityBase {
 

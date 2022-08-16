@@ -652,9 +652,9 @@ display:
           group_type: group
           admin_label: 'Member account'
           required: true
-          group_content_plugins:
+          group_relation_plugins:
             group_membership: group_membership
-          plugin_id: group_content_to_entity
+          plugin_id: group_relationship_to_entity
           entity_type: group_relationship
       arguments:
         gid:

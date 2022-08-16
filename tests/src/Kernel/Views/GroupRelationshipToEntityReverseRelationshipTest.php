@@ -3,7 +3,7 @@
 namespace Drupal\Tests\group\Kernel\Views;
 
 /**
- * Tests the group_content_to_entity_reverse relationship handler.
+ * Tests the group_relationship_to_entity_reverse relationship handler.
  *
  * @see \Drupal\group\Plugin\views\relationship\GroupRelationshipToEntityReverse
  *
@@ -16,6 +16,6 @@ class GroupRelationshipToEntityReverseRelationshipTest extends GroupRelationship
    *
    * @var array
    */
-  public static $testViews = ['test_group_content_to_entity_reverse_relationship'];
+  public static $testViews = ['test_group_relationship_to_entity_reverse_relationship'];
 
 }

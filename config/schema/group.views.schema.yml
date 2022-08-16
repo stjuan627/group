@@ -26,21 +26,21 @@ views.argument_default.group_id_from_url:
 views_relationship_with_group_plugin_filter:
   type: 'views_relationship'
   mapping:
-    group_content_plugins:
+    group_relation_plugins:
       type: 'sequence'
       label: 'Group relation plugins'
       sequence:
         type: 'string'
         label: 'Group relation plugin ID'
 
-views.relationship.group_content_to_entity:
+views.relationship.group_relationship_to_entity:
   type: 'views_relationship_with_group_plugin_filter'
   label: 'Group relationship to entity reference'
 
-views.relationship.group_content_to_entity_reverse:
+views.relationship.group_relationship_to_entity_reverse:
   type: 'views_relationship_with_group_plugin_filter'
   label: 'Reverse group relationship to entity reference'
 
-views.relationship.group_to_group_content:
+views.relationship.group_to_group_relationship:
   type: 'views_relationship_with_group_plugin_filter'
   label: 'Group to group relationship'

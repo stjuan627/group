@@ -5,7 +5,7 @@ namespace Drupal\Tests\group\Kernel\Views;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 
 /**
- * Tests the group_to_group_content relationship handler.
+ * Tests the group_to_group_relationship relationship handler.
  *
  * @see \Drupal\group\Plugin\views\relationship\GroupToGroupRelationship
  *
@@ -23,7 +23,7 @@ class GroupToGroupRelationshipRelationshipTest extends GroupViewsKernelTestBase 
    *
    * @var array
    */
-  public static $testViews = ['test_group_to_group_content_relationship'];
+  public static $testViews = ['test_group_to_group_relationship_relationship'];
 
   /**
    * {@inheritdoc}

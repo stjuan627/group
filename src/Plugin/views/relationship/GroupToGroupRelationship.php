@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup views_relationship_handlers
  *
- * @ViewsRelationship("group_to_group_content")
+ * @ViewsRelationship("group_to_group_relationship")
  */
 class GroupToGroupRelationship extends RelationshipPluginBase {
 
@@ -64,7 +64,7 @@ class GroupToGroupRelationship extends RelationshipPluginBase {
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
-    $options['group_content_plugins']['default'] = [];
+    $options['group_relation_plugins']['default'] = [];
     return $options;
   }
 
@@ -74,13 +74,13 @@ class GroupToGroupRelationship extends RelationshipPluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
-    $form['group_content_plugins'] = [
+    $form['group_relation_plugins'] = [
       '#type' => 'checkboxes',
       '#title' => $this->t('Filter by plugin'),
       '#description' => $this->t('Refine the result by plugin. Leave empty to select all plugins, including those that could be added after this relationship was configured.'),
       '#options' => $this->getPluginOptions(),
       '#weight' => -2,
-      '#default_value' => $this->options['group_content_plugins'],
+      '#default_value' => $this->options['group_relation_plugins'],
     ];
   }
 
@@ -124,7 +124,7 @@ class GroupToGroupRelationship extends RelationshipPluginBase {
     }
 
     // Add the plugin IDs to the query if any were selected.
-    $plugin_ids = array_filter($this->options['group_content_plugins']);
+    $plugin_ids = array_filter($this->options['group_relation_plugins']);
     if (!empty($plugin_ids)) {
       $def['extra'][] = [
         'field' => 'plugin_id',
