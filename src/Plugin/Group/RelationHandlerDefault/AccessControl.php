@@ -55,10 +55,31 @@ class AccessControl implements AccessControlInterface {
   }
 
   /**
+   * Checks operation support across the entire decorator chain.
+   *
+   * Instead of checking whether this specific access control handler supports
+   * the operation, we check the entire decorator chain. This avoids a lot of
+   * copy-pasted code to manually support an operation in a decorator further
+   * down the chain.
+   *
+   * @param string $operation
+   *   The permission operation. Usually "create", "view", "update" or "delete".
+   * @param string $target
+   *   The target of the operation. Can be 'relationship' or 'entity'.
+   *
+   * @return bool
+   *   Whether the operation is supported.
+   */
+  protected function chainSupportsOperation($operation, $target) {
+    $access_control_chain = $this->groupRelationTypeManager()->getAccessControlHandler($this->pluginId);
+    return $access_control_chain->supportsOperation($operation, $target);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function relationshipAccess(GroupRelationshipInterface $group_relationship, $operation, AccountInterface $account, $return_as_object = FALSE) {
-    if (!$this->supportsOperation($operation, 'relationship')) {
+    if (!$this->chainSupportsOperation($operation, 'relationship')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
@@ -97,7 +118,7 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function relationshipCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    if (!$this->supportsOperation('create', 'relationship')) {
+    if (!$this->chainSupportsOperation('create', 'relationship')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
     $permission = $this->permissionProvider->getPermission('create', 'relationship');
@@ -124,7 +145,7 @@ class AccessControl implements AccessControlInterface {
     // operation yet, it's probably nicer to return neutral here. This way, any
     // module that exposes new operations will work as intended AND NOT HAVE
     // GROUP ACCESS CHECKS until Group specifically implements said operations.
-    if (!$this->supportsOperation($operation_to_check, 'entity')) {
+    if (!$this->chainSupportsOperation($operation_to_check, 'entity')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
@@ -195,7 +216,7 @@ class AccessControl implements AccessControlInterface {
    * {@inheritdoc}
    */
   public function entityCreateAccess(GroupInterface $group, AccountInterface $account, $return_as_object = FALSE) {
-    if (!$this->supportsOperation('create', 'entity')) {
+    if (!$this->chainSupportsOperation('create', 'entity')) {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
     $permission = $this->permissionProvider->getPermission('create', 'entity');

@@ -156,6 +156,10 @@ services:
     shared: false
 
   # Specific group relation handlers.
+  group.relation_handler.access_control.group_membership:
+    class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipAccessControl'
+    arguments: ['@group.relation_handler.access_control']
+    shared: false
   group.relation_handler.entity_reference.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipEntityReference'
     arguments: ['@group.relation_handler.entity_reference']
