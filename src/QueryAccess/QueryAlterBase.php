@@ -169,16 +169,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    *  The parent condition to add the subconditions to.
    */
   protected function addScopedConditions(array $allowed_ids, ConditionInterface $parent_condition) {
-    $parent_conditions = $parent_condition->conditions();
-
-    // If the parent conditions are an OR group, add directly to that.
-    if ($parent_conditions['#conjunction'] === 'OR') {
-      $scope_conditions = $parent_condition;
-    }
-    // Otherwise initialize an OR group to add our conditions to.
-    else {
-      $parent_condition->condition($scope_conditions = $this->query->orConditionGroup());
-    }
+    $scope_conditions = $this->ensureOrConjunction($parent_condition);
 
     // Add the group types where synchronized access is granted.
     foreach ([PermissionScopeInterface::OUTSIDER_ID, PermissionScopeInterface::INSIDER_ID] as $scope) {
@@ -191,6 +182,26 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
     if (!empty($allowed_ids[PermissionScopeInterface::INDIVIDUAL_ID])) {
       $this->addIndividualConditions($allowed_ids[PermissionScopeInterface::INDIVIDUAL_ID], $scope_conditions);
     }
+  }
+
+  /**
+   * Makes sure a ConditionInterface has the OR conjunction.
+   *
+   * @param \Drupal\Core\Database\Query\ConditionInterface $parent
+   *  The parent ConditionInterface to potentially add the OR group to.
+   *
+   * @return \Drupal\Core\Database\Query\ConditionInterface
+   *   An OR condition group attached to the parent in case the parent did not
+   *   already use said conjunction or the passed in parent if it did.
+   */
+  protected function ensureOrConjunction(ConditionInterface $parent) {
+    $conditions_array = $parent->conditions();
+    if ($conditions_array['#conjunction'] === 'OR') {
+      return $parent;
+    }
+
+    $parent->condition($or_group = $this->query->orConditionGroup());
+    return $or_group;
   }
 
   /**

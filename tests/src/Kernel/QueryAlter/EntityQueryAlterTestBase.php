@@ -24,6 +24,9 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function getPermission($operation, $scope, $unpublished = FALSE) {
+    if ($operation === 'unsupported') {
+      return FALSE;
+    }
     $status = $unpublished ? 'unpublished ' : '';
     return "$operation $scope $status$this->pluginId entity";
   }
@@ -107,10 +110,15 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions) {
+  protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider) {
     $conditions->condition($type_conditions = $conditions->andConditionGroup());
     $type_conditions->condition('gcfd.group_type', $allowed_ids, 'IN');
-    $type_conditions->isNull('gcfd_2.entity_id');
+    if ($outsider) {
+      $type_conditions->isNull('gcfd_2.entity_id');
+    }
+    else {
+      $type_conditions->isNotNull('gcfd_2.entity_id');
+    }
   }
 
   /**

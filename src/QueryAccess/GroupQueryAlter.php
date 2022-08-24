@@ -23,6 +23,15 @@ class GroupQueryAlter extends QueryAlterBase {
    * {@inheritdoc}
    */
   protected function doAlter($operation) {
+    // Do not restrict access on operations we do not support (yet). Same reason
+    // as in GroupAccessControlHandler:checkAccess().
+    if (!$permission = $this->getPermission($operation)) {
+      // For 'view' we also need to see if unpublished is supported.
+      if ($operation !== 'view' || !$this->getPermission('view', 'any', TRUE) && !$this->getPermission('view', 'own', TRUE)) {
+        return;
+      }
+    }
+
     // If any new group is added, it might change access.
     $this->cacheableMetadata->addCacheTags(['group_list']);
 
@@ -30,15 +39,12 @@ class GroupQueryAlter extends QueryAlterBase {
     $this->cacheableMetadata->addCacheContexts(['user.group_permissions']);
     $calculated_permissions = $this->permissionCalculator->calculateFullPermissions($this->currentUser);
 
-    $check_published = $operation === 'view';
-    $permission = $this->getPermissionName($operation);
-
     $allowed_ids = $allowed_any_by_status_ids = $allowed_own_by_status_ids = [];
     foreach ($calculated_permissions->getItems() as $item) {
       if ($item->isAdmin()) {
         $allowed_ids[$item->getScope()][] = $item->getIdentifier();
       }
-      elseif (!$check_published) {
+      elseif ($operation !== 'view') {
         if ($item->hasPermission($permission)) {
           $allowed_ids[$item->getScope()][] = $item->getIdentifier();
         }
@@ -47,26 +53,42 @@ class GroupQueryAlter extends QueryAlterBase {
         if ($item->hasPermission($permission)) {
           $allowed_any_by_status_ids[1][$item->getScope()][] = $item->getIdentifier();
         }
-        if ($item->hasPermission('view any unpublished group')) {
+        if (($view_any_unpub = $this->getPermission('view', 'any', TRUE)) && $item->hasPermission($view_any_unpub)) {
           $allowed_any_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
         }
-        elseif ($item->hasPermission('view own unpublished group')) {
+        elseif (($view_own_unpub = $this->getPermission('view', 'own', TRUE)) && $item->hasPermission($view_own_unpub)) {
           $allowed_own_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
         }
       }
     }
 
+    $has_regular_ids = !empty($allowed_ids);
+    $has_status_ids = !empty($allowed_any_by_status_ids) || !empty($allowed_own_by_status_ids);
+
     // If no group type or group gave access, we deny access altogether.
-    if (empty($allowed_ids) && empty($allowed_any_by_status_ids) && empty($allowed_own_by_status_ids)) {
+    if (!$has_regular_ids && !$has_status_ids) {
       $this->query->alwaysFalse();
       return;
     }
 
-    if (!empty($allowed_ids)) {
-      $this->addScopedConditions($allowed_ids, $this->query);
+    // If we only have regular IDs or status IDs, we can simply add those
+    // conditions in their dedicated section below. However, if we have both, we
+    // need to add both sections to an OR group to avoid two contradicting
+    // membership checks to cancel each other out, leading to no results.
+    $condition_attacher = $this->query;
+    if ($has_regular_ids && $has_status_ids) {
+      $condition_attacher = $this->ensureOrConjunction($this->query);
+
+      // We're going to need a data table anyhow, might as well initialize it
+      // here so all group type checks are added to the same table.
+      $this->ensureDataTable();
     }
 
-    if ($check_published) {
+    if ($has_regular_ids) {
+      $this->addScopedConditions($allowed_ids, $condition_attacher);
+    }
+
+    if ($has_status_ids) {
       foreach ([0, 1] as $status) {
         // Nothing gave access for this status so bail out entirely.
         if (empty($allowed_any_by_status_ids[$status]) && empty($allowed_own_by_status_ids[$status])) {
@@ -74,7 +96,7 @@ class GroupQueryAlter extends QueryAlterBase {
         }
 
         $data_table = $this->ensureDataTable();
-        $this->query->condition($status_conditions = $this->query->andConditionGroup());
+        $condition_attacher->condition($status_conditions = $this->query->andConditionGroup());
         $status_conditions->condition("$data_table.status", $status);
         $status_conditions->condition($status_sub_conditions = $this->query->orConditionGroup());
 
@@ -93,31 +115,37 @@ class GroupQueryAlter extends QueryAlterBase {
   }
 
   /**
-   * Retrieves the group permission name for the given operation.
+   * Gets the permission name for the given operation and scope.
    *
    * @param string $operation
-   *   The access operation. Usually one of "view", "update" or "delete".
+   *   The operation.
+   * @param string $scope
+   *   The operation scope ('any' or 'own'). Defaults to 'any'.
+   * @param bool $unpublished
+   *   Whether to check for the unpublished permission. Defaults to FALSE.
    *
    * @return string
-   *   The group permission name.
+   *   The permission name.
    */
-  protected function getPermissionName($operation) {
+  protected function getPermission($operation, $scope = 'any', $unpublished = FALSE) {
+    // @todo We're using this to define operation support, as do we use the same
+    //   logic in GroupAccessControlHandler. Ideally, centralize this somewhere.
     switch ($operation) {
-      // @todo Could use the below if permission were named 'update group'.
+      case 'view':
+        if ($unpublished) {
+          return "$operation $scope unpublished group";
+        }
+        return 'view group';
+
       case 'update':
-        $permission = 'edit group';
-        break;
+        return 'edit group';
 
       case 'delete':
-      case 'view':
-        $permission = "$operation group";
-        break;
+        return 'delete group';
 
       default:
-        $permission = 'view group';
+        return FALSE;
     }
-
-    return $permission;
   }
 
   /**

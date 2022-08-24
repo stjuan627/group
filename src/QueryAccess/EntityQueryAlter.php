@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Defines a class for altering entity queries.
  *
+ * @todo Revisit cacheability and see if we can optimize some more.
+ *
  * @internal
  */
 class EntityQueryAlter extends QueryAlterBase {
@@ -84,6 +86,21 @@ class EntityQueryAlter extends QueryAlterBase {
       ->fetchCol();
 
     if (empty($plugin_ids_in_use)) {
+      return;
+    }
+
+    // Check if any of the plugins actually support the operation. If not, we
+    // can simply bail out here to play nice with other modules that do support
+    // the provided operation.
+    $operation_is_supported = FALSE;
+    foreach ($plugin_ids_in_use as $plugin_id) {
+      if ($this->pluginManager->getAccessControlHandler($plugin_id)->supportsOperation($operation, 'entity')) {
+        $operation_is_supported = TRUE;
+        break;
+      }
+    }
+
+    if (!$operation_is_supported) {
       return;
     }
 
