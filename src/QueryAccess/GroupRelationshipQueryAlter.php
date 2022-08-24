@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Defines a class for altering group queries.
  *
+ * @todo Revisit cacheability and see if we can optimize some more.
+ *
  * @internal
  */
 class GroupRelationshipQueryAlter extends QueryAlterBase {
@@ -33,6 +35,24 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
    * {@inheritdoc}
    */
   protected function doAlter($operation) {
+    // @todo Move to plugin manager method and remove copy-paste.
+    $installed_ids = array_unique(array_merge(...array_values($this->pluginManager->getGroupTypePluginMap())));
+
+    // Check if any of the plugins actually support the operation. If not, we
+    // can simply bail out here to play nice with other modules that do support
+    // the provided operation.
+    $operation_is_supported = FALSE;
+    foreach ($installed_ids as $plugin_id) {
+      if ($this->pluginManager->getAccessControlHandler($plugin_id)->supportsOperation($operation, 'relationship')) {
+        $operation_is_supported = TRUE;
+        break;
+      }
+    }
+
+    if (!$operation_is_supported) {
+      return;
+    }
+
     // If any new relationship is added, it might change access.
     $this->cacheableMetadata->addCacheTags(['group_content_list']);
 
@@ -41,7 +61,7 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
     $calculated_permissions = $this->permissionCalculator->calculateFullPermissions($this->currentUser);
 
     $allowed_any_ids = $allowed_own_ids = [];
-    foreach (array_keys($this->pluginManager->getDefinitions()) as $plugin_id) {
+    foreach ($installed_ids as $plugin_id) {
       $handler = $this->pluginManager->getPermissionProvider($plugin_id);
       $admin_permission = $handler->getAdminPermission();
       $any_permission = $handler->getPermission($operation, 'relationship', 'any');
@@ -54,7 +74,7 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
         elseif ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
           $allowed_any_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
         }
-        elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+        elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
           $allowed_own_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
         }
       }
@@ -66,15 +86,24 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
       return;
     }
 
+    // If we only have any IDs or own IDs, we can simply add those conditions
+    // in their dedicated section below. However, if we have both, we need to
+    // add both sections to an OR group to avoid two contradicting access checks
+    // to cancel each other out, leading to no results.
+    $condition_attacher = $this->query;
+    if (!empty($allowed_any_ids) && !empty($allowed_own_ids)) {
+      $condition_attacher = $this->ensureOrConjunction($this->query);
+    }
+
     if (!empty($allowed_any_ids)) {
-      $this->addScopedConditions($allowed_any_ids, $this->query);
+      $this->addScopedConditions($allowed_any_ids, $condition_attacher);
     }
 
     if (!empty($allowed_own_ids)) {
       $this->cacheableMetadata->addCacheContexts(['user']);
       $data_table = $this->ensureDataTable();
 
-      $this->query->condition($owner_conditions = $this->query->andConditionGroup());
+      $condition_attacher->condition($owner_conditions = $this->query->andConditionGroup());
       $owner_conditions->condition("$data_table.uid", $this->currentUser->id());
       $this->addScopedConditions($allowed_own_ids, $owner_conditions);
     }

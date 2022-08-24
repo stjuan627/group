@@ -28,6 +28,11 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
   protected $isPublishable = TRUE;
 
   /**
+   * {@inheritdoc}
+   */
+  protected $relationshipsAffectAccess = FALSE;
+
+  /**
    * Whether the query has joined the data table.
    *
    * @var bool
@@ -40,23 +45,11 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
   public function queryAccessProvider() {
     $cases = parent::queryAccessProvider();
 
-    // There is no difference between no content and content.
-    foreach (['update', 'delete', 'view'] as $operation) {
-      unset($cases["no-content-$operation"]);
-    }
-
-    foreach (['synchronized', 'individual', 'combined'] as $scope) {
-      // View own is only supported for unpublished.
-      unset($cases["$scope-own-view"]);
-
-      // We do not care for update/delete own.
-      foreach (['update', 'delete'] as $operation) {
-        unset($cases["$scope-own-$operation"]);
-      }
-
-      // Admin cases need to be full group admins.
-      foreach (['update', 'delete', 'view'] as $operation) {
-        $cases["admin-$scope-$operation"]['is_admin'] = TRUE;
+    foreach (['outsider', 'insider', 'individual'] as $scope) {
+      // We do not care for view/update/delete any-own and own.
+      foreach (['view', 'update', 'delete'] as $operation) {
+        unset($cases["single-$scope-any-own-$operation"]);
+        unset($cases["single-$scope-own-$operation"]);
       }
     }
 
@@ -128,6 +121,9 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
 
       case 'delete':
         return 'delete group';
+
+      default:
+        return FALSE;
     }
   }
 
@@ -135,7 +131,7 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function getAdminPermission() {
-    return 'this does nothing';
+    return FALSE;
   }
 
   /**
@@ -181,11 +177,16 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions) {
+  protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider) {
     $type_table = $this->joinedFieldData ? 'groups_field_data' : 'groups';
     $conditions->condition($type_conditions = $conditions->andConditionGroup());
     $type_conditions->condition("$type_table.type", $allowed_ids, 'IN');
-    $type_conditions->isNull('gcfd.entity_id');
+    if ($outsider) {
+      $type_conditions->isNull('gcfd.entity_id');
+    }
+    else {
+      $type_conditions->isNotNull('gcfd.entity_id');
+    }
   }
 
   /**
