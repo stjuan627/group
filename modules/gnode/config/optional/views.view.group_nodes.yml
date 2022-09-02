@@ -435,7 +435,7 @@ display:
           plugin_id: field
         view_group_content:
           id: view_group_content
-          table: group_content
+          table: group_relationship
           field: view_group_content
           relationship: group_content
           group_type: group
@@ -488,7 +488,7 @@ display:
           absolute: false
         edit_group_content:
           id: edit_group_content
-          table: group_content
+          table: group_relationship
           field: edit_group_content
           relationship: group_content
           group_type: group
@@ -539,7 +539,7 @@ display:
           plugin_id: entity_link_edit
         delete_group_content:
           id: delete_group_content
-          table: group_content
+          table: group_relationship
           field: delete_group_content
           relationship: group_content
           group_type: group
