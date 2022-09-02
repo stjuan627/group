@@ -188,7 +188,7 @@ class GroupRelationshipController extends ControllerBase {
       $relation = $relationship_type->getPlugin();
 
       // Check the base plugin ID if a plugin filter was specified.
-      if ($base_plugin_id && $relation->getBaseId() === $base_plugin_id) {
+      if ($base_plugin_id && $relation->getBaseId() !== $base_plugin_id) {
         unset($relationship_types[$relationship_type_id]);
       }
       // Skip the bundle if we are listing bundles that allow you to create an
