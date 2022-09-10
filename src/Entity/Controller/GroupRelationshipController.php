@@ -121,12 +121,16 @@ class GroupRelationshipController extends ControllerBase {
     }
 
     // Filter out the bundles the user doesn't have access to.
-    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_relationship');
     foreach ($relationship_types as $relationship_type_id => $relationship_type) {
-      $access = $access_control_handler->createAccess($relationship_type_id, NULL, ['group' => $group], TRUE);
+      $access_control_handler = $this->groupRelationTypeManager->getAccessControlHandler($relationship_type->getPluginId());
+      $access = $create_mode
+        ? $access_control_handler->entityCreateAccess($group, $this->currentUser(), TRUE)
+        : $access_control_handler->relationshipCreateAccess($group, $this->currentUser(), TRUE);
+
       if (!$access->isAllowed()) {
         unset($relationship_types[$relationship_type_id]);
       }
+
       $this->renderer->addCacheableDependency($build, $access);
     }
 
