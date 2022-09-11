@@ -30,7 +30,7 @@ class GroupContentFormTest extends GroupBrowserTestBase {
   protected $group;
 
   /**
-   * A test group type.
+   * A test group content type.
    *
    * @var \Drupal\group\Entity\GroupContentTypeInterface
    */
