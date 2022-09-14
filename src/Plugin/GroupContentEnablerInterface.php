@@ -32,7 +32,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   /**
    * Returns the administrative label for the plugin.
    *
-   * @return string
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The plugin label.
    */
   public function getLabel();
@@ -40,7 +40,7 @@ interface GroupContentEnablerInterface extends PluginInspectionInterface, Deriva
   /**
    * Returns the administrative description for the plugin.
    *
-   * @return string
+   * @return string|\Drupal\Core\StringTranslation\TranslatableMarkup
    *   The plugin description.
    */
   public function getDescription();
