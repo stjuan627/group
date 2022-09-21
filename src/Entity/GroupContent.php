@@ -165,6 +165,12 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
+    // We check group content permissions based on owner id, for group
+    // membership we set owner id based on user entity.
+    if ($this->isGroupMembership()) {
+      $this->setOwner($this->getEntity());
+    }
+
     // Set the label so the DB also reflects it.
     $this->set('label', $this->label());
   }
@@ -175,9 +181,11 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
   public function postSave(EntityStorageInterface $storage, $update = TRUE) {
     parent::postSave($storage, $update);
 
+
+
     // For memberships, we generally need to rebuild the group role cache for
     // the member's user account in the target group.
-    $rebuild_group_role_cache = $this->getContentPlugin()->getPluginId() == 'group_membership';
+    $rebuild_group_role_cache = $this->isGroupMembership();
 
     if ($update === FALSE) {
       // We want to make sure that the entity we just added to the group behaves
@@ -376,6 +384,16 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
     }
 
     return [];
+  }
+
+  /**
+   * Is the current group content group membership.
+   *
+   * @return bool
+   *   Is group content group membership.
+   */
+  protected function isGroupMembership() {
+    return $this->getContentPlugin()->getPluginId() == 'group_membership';
   }
 
 }

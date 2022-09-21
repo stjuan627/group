@@ -32,6 +32,13 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
   /**
    * {@inheritdoc}
    */
+  public function getRelationViewPermission($scope = 'any') {
+    return "view $scope $this->pluginId content";
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getRelationCreatePermission() {
     // Create is handled by the admin permission.
     return FALSE;
@@ -50,7 +57,8 @@ class GroupMembershipPermissionProvider extends GroupContentPermissionProvider {
 
     // Update the labels of the default permissions.
     $permissions[$this->getAdminPermission()]['title'] = 'Administer group members';
-    $permissions[$this->getRelationViewPermission()]['title'] = 'View individual group members';
+    $permissions[$this->getRelationViewPermission()]['title'] = 'View any group membership';
+    $permissions[$this->getRelationViewPermission('own')]['title'] = 'View own group membership';
     $permissions[$this->getRelationUpdatePermission('own')]['title'] = 'Edit own membership';
     $permissions[$this->getRelationDeletePermission('own')]['title'] = 'Leave group';
 
