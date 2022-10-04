@@ -101,7 +101,9 @@ class GroupRoleListBuilder extends DraggableListBuilder {
     }
     else {
       $scope_label = $entity->getScope() === PermissionScopeInterface::OUTSIDER_ID ? $this->t('Outsider') : $this->t('Insider');
-      $global_role = $entity->getGlobalRole()->label();
+      if ($entity->getGlobalRole()) {
+        $global_role = $entity->getGlobalRole()->label();
+      }
     }
 
     $row['label'] = $entity->label();
