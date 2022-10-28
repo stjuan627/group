@@ -16,15 +16,13 @@ class RouteSubscriber extends RouteSubscriberBase {
   protected function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('entity.group_relationship.create_page')) {
       $copy = clone $route;
-      $copy->setPath('group/{group}/node/create');
-      $copy->setDefault('base_plugin_id', 'group_node');
+      $copy->setPath('group/{group}/content/create');
       $collection->add('entity.group_relationship.group_node_create_page', $copy);
     }
 
     if ($route = $collection->get('entity.group_relationship.add_page')) {
       $copy = clone $route;
-      $copy->setPath('group/{group}/node/add');
-      $copy->setDefault('base_plugin_id', 'group_node');
+      $copy->setPath('group/{group}/content/add');
       $collection->add('entity.group_relationship.group_node_add_page', $copy);
     }
   }
