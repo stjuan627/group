@@ -95,7 +95,7 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       throw new EntityMalformedException($violation->getMessage());
     }
 
-    parent::doPreSave($entity);
+    return parent::doPreSave($entity);
   }
 
   /**
