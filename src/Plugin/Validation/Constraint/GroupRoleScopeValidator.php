@@ -75,7 +75,7 @@ class GroupRoleScopeValidator extends ConstraintValidator implements ContainerIn
 
       if (!empty($existing_pairs)) {
         // If we found ourselves, we can ignore this.
-        if (!$group_role->isNew() && count($existing_pairs) === 1 && reset($existing_pairs) == $group_role->getOriginalId()) {
+        if (!$group_role->isNew() && count($existing_pairs) === 1 && reset($existing_pairs) == $group_role->id()) {
           return;
         }
 
