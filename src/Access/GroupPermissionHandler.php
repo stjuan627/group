@@ -140,8 +140,12 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     foreach ($plugins as $plugin) {
       $extras = [
         'provider' => $plugin->getProvider(),
-        'section' => $plugin->getLabel()->getUntranslatedString(),
-        'section_args' => $plugin->getLabel()->getArguments(),
+        'section' => $plugin->getLabel() instanceof TranslatableMarkup
+          ? $plugin->getLabel()->getUntranslatedString()
+          : $plugin->getLabel(),
+        'section_args' => $plugin->getLabel() instanceof TranslatableMarkup
+          ? $plugin->getLabel()->getArguments()
+          : [],
         'section_id' => $plugin->getPluginId(),
       ];
 
