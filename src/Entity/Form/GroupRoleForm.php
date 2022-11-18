@@ -22,7 +22,6 @@ class GroupRoleForm extends EntityForm {
 
     assert($this->entity instanceof GroupRoleInterface);
     $group_role = $this->entity;
-    $group_role_id = '';
 
     $form['label'] = [
       '#title' => $this->t('Name'),
@@ -33,28 +32,28 @@ class GroupRoleForm extends EntityForm {
       '#size' => 30,
     ];
 
-    // Since group role IDs are prefixed by the group type's ID followed by a
-    // period, we need to save some space for that.
-    $subtract = strlen($group_role->getGroupTypeId()) + 1;
-
-    // Since machine names with periods in it are technically not allowed, we
-    // strip the group type ID prefix when editing a group role.
-    if ($group_role->id()) {
-      [, $group_role_id] = explode('-', $group_role->id(), 2);
+    // UI-generated group roles have the group type prefixed to their ID.
+    if ($this->operation === 'add') {
+      // Since group role IDs are prefixed by the group type's ID followed by a
+      // period, we need to save some space for that.
+      $subtract = strlen($group_role->getGroupTypeId()) + 1;
+      $form['id'] = [
+        '#type' => 'machine_name',
+        '#description' => $this->t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
+        '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH - $subtract,
+        '#field_prefix' => $group_role->getGroupTypeId() . '-',
+        '#machine_name' => [
+          'exists' => [$this, 'exists'],
+          'source' => ['label'],
+        ],
+      ];
     }
-
-    $form['id'] = [
-      '#type' => 'machine_name',
-      '#default_value' => $group_role_id,
-      '#maxlength' => EntityTypeInterface::ID_MAX_LENGTH - $subtract,
-      '#machine_name' => [
-        'exists' => [$this, 'exists'],
-        'source' => ['label'],
-      ],
-      '#description' => $this->t('A unique machine-readable name for this group role. It must only contain lowercase letters, numbers, and underscores.'),
-      '#disabled' => !$group_role->isNew(),
-      '#field_prefix' => $group_role->getGroupTypeId() . '-',
-    ];
+    else {
+      $form['id'] = [
+        '#type' => 'value',
+        '#value' => $group_role->id(),
+      ];
+    }
 
     $form['weight'] = [
       '#type' => 'value',
@@ -146,9 +145,14 @@ class GroupRoleForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     assert($this->entity instanceof GroupRoleInterface);
+
     $group_role = $this->entity;
-    $group_role->set('id', $group_role->getGroupTypeId() . '-' . $group_role->id());
     $group_role->set('label', trim($group_role->label()));
+
+    // UI-generated group roles have the group type prefixed to their ID.
+    if ($this->operation === 'add') {
+      $group_role->set('id', $group_role->getGroupTypeId() . '-' . $group_role->id());
+    }
 
     // Make sure the global_role property is NULL rather than FALSE.
     if ($group_role->getScope() === PermissionScopeInterface::INDIVIDUAL_ID) {
