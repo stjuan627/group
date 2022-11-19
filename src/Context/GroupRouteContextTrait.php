@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Context;
 
+use Drupal\group\Entity\GroupContentInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -76,6 +77,25 @@ trait GroupRouteContextTrait {
     elseif ($route_match->getRouteName() == 'entity.group.add_form') {
       $group_type = $route_match->getParameter('group_type');
       return $this->getEntityTypeManager()->getStorage('group')->create(['type' => $group_type->id()]);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Retrieves the group content entity from the current route.
+   *
+   * This will try to load the group entity from the route if present.
+   *
+   * @return \Drupal\group\Entity\GroupContentInterface|null
+   *   A group entity if one could be found or created, NULL otherwise.
+   */
+  public function getGroupContentFromRoute() {
+    $route_match = $this->getCurrentRouteMatch();
+
+    // See if the route has a group content parameter and try to retrieve it.
+    if (($group_content = $route_match->getParameter('group_content')) && $group_content instanceof GroupContentInterface) {
+      return $group_content;
     }
 
     return NULL;
