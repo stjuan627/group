@@ -29,6 +29,13 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   protected $pluginManager;
 
   /**
+   * A list of plugins that can serve the configured entity type.
+   *
+   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface[]
+   */
+  protected $validPlugins;
+
+  /**
    * Constructs an GroupRelationshipToEntityBase object.
    *
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
@@ -91,13 +98,9 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     parent::buildOptionsForm($form, $form_state);
 
-    // Retrieve all of the plugins that can serve this entity type.
     $options = [];
-    foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
-      assert($group_relation_type instanceof GroupRelationTypeInterface);
-      if ($group_relation_type->getEntityTypeId() === $this->getTargetEntityType()) {
-        $options[$plugin_id] = $group_relation_type->getLabel();
-      }
+    foreach ($this->getValidPlugins() as $plugin_id => $group_relation_type) {
+      $options[$plugin_id] = $group_relation_type->getLabel();
     }
 
     $form['group_relation_plugins'] = [
@@ -136,12 +139,14 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
 
     // Add the plugin IDs to the query if any were selected.
     $plugin_ids = array_filter($this->options['group_relation_plugins']);
-    if (!empty($plugin_ids)) {
-      $def['extra'][] = [
-        $this->getJoinFieldType() => 'plugin_id',
-        'value' => $plugin_ids,
-      ];
-    }
+
+    // If none were selected, we still need to build a list of plugin IDs to
+    // make sure we do not show content using plugins that do not handle the
+    // entity type this views plugin was configured for.
+    $def['extra'][] = [
+      $this->getJoinFieldType() => 'plugin_id',
+      'value' => $plugin_ids ?: array_keys($this->getValidPlugins()),
+    ];
 
     // Use the standard join plugin unless instructed otherwise.
     $join_id = !empty($def['join_id']) ? $def['join_id'] : 'standard';
@@ -157,6 +162,24 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
       $access_tag = $table_data['table']['base']['access query tag'];
       $this->query->addTag($access_tag);
     }
+  }
+
+  /**
+   * Gets a list of plugins that can serve the entity type we're dealing with.
+   *
+   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface[]
+   *   The list of plugins, keyed by their plugin ID.
+   */
+  protected function getValidPlugins() {
+    if ($this->validPlugins === NULL) {
+      foreach ($this->pluginManager->getDefinitions() as $plugin_id => $group_relation_type) {
+        assert($group_relation_type instanceof GroupRelationTypeInterface);
+        if ($group_relation_type->getEntityTypeId() === $this->getTargetEntityType()) {
+          $this->validPlugins[$plugin_id] = $group_relation_type;
+        }
+      }
+    }
+    return $this->validPlugins;
   }
 
 }
