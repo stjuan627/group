@@ -62,6 +62,11 @@ services:
     arguments: ['@config.factory']
     tags:
       - { name: 'event_subscriber' }
+  group.anonymous_user_response_subscriber:
+    class: 'Drupal\group\EventSubscriber\AnonymousUserResponseSubscriber'
+    arguments: ['@current_user', '@group_permission.calculator']
+    tags:
+      - { name: 'event_subscriber' }
   group.latest_revision.route_subscriber:
     class: 'Drupal\group\Entity\Routing\GroupLatestRevisionRouteSubscriber'
     tags:
