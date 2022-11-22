@@ -4,6 +4,7 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Component\Discovery\YamlDiscovery;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
+use Drupal\group_test\GroupTestPermissions;
 
 /**
  * Tests the gathering and processing of group permissions.
@@ -16,7 +17,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  public static $modules = ['group_test', 'group_test_plugin', 'node'];
 
   /**
    * The group permission handler service.
@@ -51,8 +52,12 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
    */
   public function testGetPermissions() {
     $permissions = $this->permissionHandler->getPermissions();
-    $expected = count($this->getGeneralGroupPermissionNames());
-    $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml file.');
+
+    $permissions_from_yaml = $this->getGroupPermissionsFromYaml();
+    $group_module_permissions = $permissions_from_yaml['group'];
+    $group_test_callback_permissions = (new GroupTestPermissions)->buildPermissions();
+    $expected = count($group_module_permissions) + count($group_test_callback_permissions);
+    $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml files, including permission callbacks.');
 
     $permissions = $this->permissionHandler->getPermissions(TRUE);
     $expected += count($this->pluginManager->getPermissionProvider('group_membership')->buildPermissions());
@@ -62,7 +67,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:article')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:page')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_type_as_content')->buildPermissions());
-    $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml file and defined by plugins.');
+    $this->assertCount($expected, $permissions, 'Permission count matches what is in Yaml files and defined by plugins.');
   }
 
   /**
@@ -75,11 +80,15 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $group_type_b = $this->createGroupType();
     $group_type_c = $this->createGroupType();
 
-    $expected = count($this->getGeneralGroupPermissionNames());
+    $permissions_from_yaml = $this->getGroupPermissionsFromYaml();
+    $group_module_permissions = $permissions_from_yaml['group'];
+    $group_test_callback_permissions = (new GroupTestPermissions)->buildPermissions();
+    $expected = count($group_module_permissions) + count($group_test_callback_permissions);
+
     $expected += count($this->pluginManager->getPermissionProvider('group_membership')->buildPermissions());
-    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_a), 'Permission count matches what is in Yaml file and membership plugin.');
-    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_b), 'Permission count matches what is in Yaml file and membership plugin.');
-    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_c), 'Permission count matches what is in Yaml file and membership plugin.');
+    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_a), 'Permission count matches what is in Yaml files and membership plugin.');
+    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_b), 'Permission count matches what is in Yaml files and membership plugin.');
+    $this->assertCount($expected, $this->permissionHandler->getPermissionsByGroupType($group_type_c), 'Permission count matches what is in Yaml files and membership plugin.');
 
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
@@ -97,22 +106,14 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
   /**
    * Retrieves the general group permission names from Yaml.
    *
-   * Unlike the processing in the actual handler, this only grabs the group
-   * permissions from group.group.permissions.yml so that we can compare machine
-   * names and counts. Callbacks and other modules are not followed or fetched.
-   *
-   * @return string[]
-   *   A list of permission machine names.
+   * @return array
+   *   The contents of the permission Yaml files, keyed by module.
    */
-  protected function getGeneralGroupPermissionNames() {
-    $yaml_discovery = (new YamlDiscovery(
+  protected function getGroupPermissionsFromYaml() {
+    return (new YamlDiscovery(
       'group.permissions',
       $this->container->get('module_handler')->getModuleDirectories()
     ))->findAll();
-
-    return isset($yaml_discovery['group'])
-      ? array_keys($yaml_discovery['group'])
-      : [];
   }
 
 }
