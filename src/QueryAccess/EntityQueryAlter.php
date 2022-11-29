@@ -168,8 +168,20 @@ class EntityQueryAlter extends QueryAlterBase {
       }
     }
 
+    $has_regular_ids = !empty($allowed_any_ids);
+    $has_own_ids = !empty($allowed_own_ids);
+    $has_status_ids = FALSE;
+
+    $statuses_to_check = [];
+    foreach ([0, 1] as $status) {
+      if (!empty($allowed_any_by_status_ids[$status]) || !empty($allowed_own_by_status_ids[$status])) {
+        $has_status_ids = TRUE;
+        $statuses_to_check[] = $status;
+      }
+    }
+
     // If no group type or group gave access, we deny access altogether.
-    if (empty($allowed_any_ids) && empty($allowed_own_ids) && empty($allowed_any_by_status_ids) && empty($allowed_own_by_status_ids)) {
+    if (!$has_regular_ids && !$has_own_ids && !$has_status_ids) {
       $this->query->isNull("$this->joinAliasPlugins.entity_id");
       return;
     }
@@ -182,73 +194,38 @@ class EntityQueryAlter extends QueryAlterBase {
         ->isNull("$this->joinAliasPlugins.entity_id")
     );
 
-    if (!empty($allowed_any_ids)) {
+    // If we're going to need a data table anyhow, might as well initialize it
+    // early so all checks are added to the same table.
+    if ($has_own_ids || $has_status_ids) {
+      $data_table = $this->ensureDataTable();
+    }
+
+    if ($has_regular_ids) {
       $this->addScopedConditions($allowed_any_ids, $group_conditions);
     }
 
-    // In order to define query access for grouped entities and at the same time
-    // leave the ungrouped alone, we need allow access to all entities that:
-    // - Do not belong to a group.
-    // - Belong to a group and to which:
-    //   - The user has any access.
-    //   - The user has owner access and is the owner of.
-    //
-    // In case the entity supports publishing, the last condition is swapped out
-    // for the following two:
-    // - The entity is published and:
-    //   - The user has any access.
-    //   - The user has owner access and is the owner of.
-    // - The entity is unpublished and:
-    //   - The user has any access.
-    //   - The user has owner access and is the owner of.
-    //
-    // In any case, the first two conditions are always the same and have been
-    // added above already.
-    //
-    // From this point we need to either find the entities the user can access
-    // as the owner or the entities accessible as both the owner and non-owner
-    // when the entity supports publishing.
-    if (!$check_published) {
-      // Nothing gave owner access so bail out entirely.
-      if (empty($allowed_own_ids)) {
-        return;
-      }
+    if ($has_own_ids) {
       $this->cacheableMetadata->addCacheContexts(['user']);
-
-      $data_table = $this->ensureDataTable();
-      $group_conditions->condition(
-        $this->query->andConditionGroup()
-          ->condition("$data_table.$owner_key", $this->currentUser->id())
-          ->condition($owner_group_conditions = $this->query->orConditionGroup())
-      );
-      $this->addScopedConditions($allowed_own_ids, $owner_group_conditions);
+      $group_conditions->condition($owner_conditions = $this->query->andConditionGroup());
+      $owner_conditions->condition("$data_table.$owner_key", $this->currentUser->id());
+      $this->addScopedConditions($allowed_own_ids, $owner_conditions);
     }
-    else {
-      foreach ([0, 1] as $status) {
-        // Nothing gave access for this status so bail out entirely.
-        if (empty($allowed_any_by_status_ids[$status]) && empty($allowed_own_by_status_ids[$status])) {
-          continue;
-        }
 
-        $data_table = $this->ensureDataTable();
-        $group_conditions->condition(
-          $this->query->andConditionGroup()
-            ->condition("$data_table.$published_key", $status)
-            ->condition($status_group_conditions = $this->query->orConditionGroup())
-        );
+    if ($has_status_ids) {
+      foreach ($statuses_to_check as $status) {
+        $group_conditions->condition($status_conditions = $this->query->andConditionGroup());
+        $status_conditions->condition("$data_table.$published_key", $status);
+        $status_conditions->condition($status_sub_conditions = $this->query->orConditionGroup());
 
         if (!empty($allowed_any_by_status_ids[$status])) {
-          $this->addScopedConditions($allowed_any_by_status_ids[$status], $status_group_conditions);
+          $this->addScopedConditions($allowed_any_by_status_ids[$status], $status_sub_conditions);
         }
 
         if (!empty($allowed_own_by_status_ids[$status])) {
           $this->cacheableMetadata->addCacheContexts(['user']);
-          $status_group_conditions->condition(
-            $this->query->andConditionGroup()
-              ->condition("$data_table.$owner_key", $this->currentUser->id())
-              ->condition($status_owner_group_conditions = $this->query->orConditionGroup())
-          );
-          $this->addScopedConditions($allowed_own_by_status_ids[$status], $status_owner_group_conditions);
+          $status_sub_conditions->condition($status_owner_conditions = $this->query->andConditionGroup());
+          $status_owner_conditions->condition("$data_table.$owner_key", $this->currentUser->id());
+          $this->addScopedConditions($allowed_own_by_status_ids[$status], $status_owner_conditions);
         }
       }
     }

@@ -42,23 +42,6 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  public function queryAccessProvider() {
-    $cases = parent::queryAccessProvider();
-
-    foreach (['outsider', 'insider', 'individual'] as $scope) {
-      // We do not care for view/update/delete any-own and own.
-      foreach (['view', 'update', 'delete'] as $operation) {
-        unset($cases["single-$scope-any-own-$operation"]);
-        unset($cases["single-$scope-own-$operation"]);
-      }
-    }
-
-    return $cases;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function getAlterClass() {
     return GroupQueryAlter::class;
   }
@@ -75,11 +58,11 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
     $group_role = ['scope' => PermissionScopeInterface::OUTSIDER_ID, 'global_role' => RoleInterface::AUTHENTICATED_ID];
     $this->createGroupRole([
       'group_type' => $group_type_a->id(),
-      'permissions' => ['view any unpublished group'],
+      'permissions' => [$this->getPermission('view', 'any', TRUE)],
     ] + $group_role);
     $this->createGroupRole([
       'group_type' => $group_type_b->id(),
-      'permissions' => ['view own unpublished group'],
+      'permissions' => [$this->getPermission('view', 'own', TRUE)],
     ] + $group_role);
 
     $query = $this->createAlterableQuery('view');
@@ -109,6 +92,10 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function getPermission($operation, $scope, $unpublished = FALSE) {
+    if ($scope === 'own' && !$unpublished) {
+      return FALSE;
+    }
+
     switch ($operation) {
       case 'view':
         if ($unpublished) {

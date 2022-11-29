@@ -63,7 +63,15 @@ class GroupQueryAlter extends QueryAlterBase {
     }
 
     $has_regular_ids = !empty($allowed_ids);
-    $has_status_ids = !empty($allowed_any_by_status_ids) || !empty($allowed_own_by_status_ids);
+    $has_status_ids = FALSE;
+
+    $statuses_to_check = [];
+    foreach ([0, 1] as $status) {
+      if (!empty($allowed_any_by_status_ids[$status]) || !empty($allowed_own_by_status_ids[$status])) {
+        $has_status_ids = TRUE;
+        $statuses_to_check[] = $status;
+      }
+    }
 
     // If no group type or group gave access, we deny access altogether.
     if (!$has_regular_ids && !$has_status_ids) {
@@ -89,13 +97,14 @@ class GroupQueryAlter extends QueryAlterBase {
     }
 
     if ($has_status_ids) {
-      foreach ([0, 1] as $status) {
-        // Nothing gave access for this status so bail out entirely.
-        if (empty($allowed_any_by_status_ids[$status]) && empty($allowed_own_by_status_ids[$status])) {
-          continue;
-        }
+      $data_table = $this->ensureDataTable();
 
-        $data_table = $this->ensureDataTable();
+      // Make sure multiple status checks don't cancel each other out.
+      if (count($statuses_to_check) > 1) {
+        $condition_attacher = $this->ensureOrConjunction($condition_attacher);
+      }
+
+      foreach ($statuses_to_check as $status) {
         $condition_attacher->condition($status_conditions = $this->query->andConditionGroup());
         $status_conditions->condition("$data_table.status", $status);
         $status_conditions->condition($status_sub_conditions = $this->query->orConditionGroup());
