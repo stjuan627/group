@@ -52,12 +52,6 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
   public function queryAccessProvider() {
     $cases = parent::queryAccessProvider();
 
-    // Only view own is supported.
-    foreach (['outsider', 'insider', 'individual'] as $scope) {
-      unset($cases["single-$scope-any-own-view"]);
-      unset($cases["single-$scope-own-view"]);
-    }
-
     // The mixed admin cases would add ALL installed plugins when the role is
     // flagged as admin, so to narrow down the tests and only keep the ones with
     // the admin permission.
@@ -69,7 +63,10 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
       unset(
         $cases["mixed-outsider-insideradmin-any-" . $operation],
         $cases["mixed-outsider-individualadmin-any-" . $operation],
-        $cases["mixed-insider-individualadmin-any-" . $operation]
+        $cases["mixed-insider-individualadmin-any-" . $operation],
+        $cases["mixed-outsider-insideradmin-own-" . $operation],
+        $cases["mixed-outsider-individualadmin-own-" . $operation],
+        $cases["mixed-insider-individualadmin-own-" . $operation]
       );
     }
 
@@ -98,6 +95,9 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
       return FALSE;
     }
     if ($operation === 'view') {
+      if ($scope === 'own') {
+        return FALSE;
+      }
       return "$operation $this->pluginId relationship";
     }
     return "$operation $scope $this->pluginId relationship";

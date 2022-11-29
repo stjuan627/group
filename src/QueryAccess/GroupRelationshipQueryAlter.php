@@ -113,8 +113,8 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
    * {@inheritdoc}
    */
   protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $scope_conditions, $scope) {
-    $membership_alias = $this->ensureMembershipJoin();
     $data_table = $this->ensureDataTable();
+    $membership_alias = $this->ensureMembershipJoin();
 
     foreach ($allowed_ids as $plugin_id => $identifiers) {
       $sub_condition = $this->query->andConditionGroup();
