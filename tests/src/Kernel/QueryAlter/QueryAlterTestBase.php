@@ -17,7 +17,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The entity type ID to use in testing.

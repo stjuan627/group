@@ -16,7 +16,7 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'entity',
     'field',
     'flexible_permissions',
@@ -44,7 +44,7 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp($import_test_views = TRUE) {
+  protected function setUp($import_test_views = TRUE): void {
     parent::setUp($import_test_views);
 
     $this->installEntitySchema('user');

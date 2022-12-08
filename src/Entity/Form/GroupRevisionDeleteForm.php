@@ -138,6 +138,7 @@ class GroupRevisionDeleteForm extends ConfirmFormBase {
       ->getQuery()
       ->allRevisions()
       ->condition('id', $group->id())
+      ->accessCheck()
       ->count()
       ->execute();
   }

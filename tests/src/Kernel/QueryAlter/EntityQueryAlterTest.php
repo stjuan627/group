@@ -25,7 +25,7 @@ class EntityQueryAlterTest extends EntityQueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig('group_test_plugin');
     $this->installEntitySchema('entity_test_with_owner');

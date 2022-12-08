@@ -3,11 +3,11 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\user\RoleInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -55,7 +55,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->accessManager = $this->container->get('access_manager');
@@ -818,6 +818,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       ->condition('id', $group->id())
       ->condition('default_langcode', 1)
       ->count()
+      ->accessCheck()
       ->execute();
   }
 

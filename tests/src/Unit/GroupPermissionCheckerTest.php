@@ -11,6 +11,7 @@ use Drupal\group\Entity\GroupInterface;
 use Drupal\group\GroupMembershipLoaderInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the group permission checker service.
@@ -20,6 +21,7 @@ use Drupal\Tests\UnitTestCase;
  */
 class GroupPermissionCheckerTest extends UnitTestCase {
 
+  use ProphecyTrait;
   /**
    * The group permission calculator.
    *
@@ -44,7 +46,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->permissionCalculator = $this->prophesize(GroupPermissionCalculatorInterface::class);
     $this->membershipLoader = $this->prophesize(GroupMembershipLoaderInterface::class);
