@@ -657,7 +657,7 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
 
   /** @var \Drupal\group\Entity\GroupInterface $group */
   $group = $form_state->get('group');
-  $group->addContent($entity, $form_state->get('group_content_enabler'));
+  $group->addContent($entity, $form_state->get('group_content_enabler'), ['langcode' => $entity->language()->getId()]);
 
   // This submit handler is only called when creating new content within a group
   // without using the 2-step wizard. We can therefore safely assume the user
