@@ -13,6 +13,7 @@ use Drupal\group\GroupMembershipLoaderInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\UserInterface;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the user.is_group_member:%group_id cache context.
@@ -21,6 +22,8 @@ use Prophecy\Argument;
  * @group group
  */
 class IsGroupMemberCacheContextTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * The current user.
@@ -39,7 +42,7 @@ class IsGroupMemberCacheContextTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->currentUser = $this->prophesize(AccountProxyInterface::class)->reveal();
     $this->group = $this->prophesize(GroupInterface::class)->reveal();

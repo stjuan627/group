@@ -24,7 +24,7 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->permissionCalculator = $this->container->get('flexible_permissions.chain_calculator');
   }

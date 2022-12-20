@@ -16,7 +16,7 @@ class GroupToGroupRelationshipRelationshipTest extends GroupViewsKernelTestBase 
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * Views used by this test.
@@ -28,7 +28,7 @@ class GroupToGroupRelationshipRelationshipTest extends GroupViewsKernelTestBase 
   /**
    * {@inheritdoc}
    */
-  protected function setUp($import_test_views = TRUE) {
+  protected function setUp($import_test_views = TRUE): void {
     parent::setUp($import_test_views);
     $this->installEntitySchema('node');
 

@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldTypePluginManager;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\EntityReference;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,10 +18,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class EntityReferenceTest extends UnitTestCase {
 
+  use ProphecyTrait;
+
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $field_type_manager = $this->prophesize(FieldTypePluginManager::class);

@@ -13,7 +13,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['entity', 'flexible_permissions', 'group', 'options', 'variationcache'];
+  protected static $modules = ['entity', 'flexible_permissions', 'group', 'options', 'variationcache'];
 
   /**
    * The group relation type manager.
@@ -25,7 +25,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->pluginManager = $this->container->get('group_relation_type.manager');

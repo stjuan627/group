@@ -18,6 +18,7 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider;
   use Drupal\Tests\UnitTestCase;
   use Prophecy\Argument;
+  use Prophecy\PhpUnit\ProphecyTrait;
 
   /**
    * Tests the default group relation operation_provider handler.
@@ -26,6 +27,8 @@ namespace Drupal\Tests\group\Unit {
    * @group group
    */
   class OperationProviderTest extends UnitTestCase {
+
+    use ProphecyTrait;
 
     /**
      * Tests the retrieval of operations.

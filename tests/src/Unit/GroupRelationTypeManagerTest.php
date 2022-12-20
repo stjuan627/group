@@ -19,6 +19,7 @@ use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,6 +29,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @group group
  */
 class GroupRelationTypeManagerTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * The group relation type manager under test.
@@ -74,13 +77,12 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->cacheBackend = $this->prophesize(CacheBackendInterface::class);
 
     $this->moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
-    $this->moduleHandler->getImplementations('entity_type_build')->willReturn([]);
     $this->moduleHandler->alter('group_relation_type', Argument::type('array'))->willReturn(NULL);
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);

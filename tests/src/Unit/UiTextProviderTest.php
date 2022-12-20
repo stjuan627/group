@@ -13,6 +13,7 @@ use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\UiTextProvider;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the default group relation ui_text_provider handler.
@@ -22,6 +23,7 @@ use Drupal\Tests\UnitTestCase;
  */
 class UiTextProviderTest extends UnitTestCase {
 
+  use ProphecyTrait;
   use StringTranslationTrait;
 
   /**
@@ -55,7 +57,7 @@ class UiTextProviderTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->entityType = $this->prophesize(EntityTypeInterface::class);
