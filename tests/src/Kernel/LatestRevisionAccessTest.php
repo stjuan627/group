@@ -22,7 +22,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['workflows', 'content_moderation'];
+  protected static $modules = ['workflows', 'content_moderation'];
 
   /**
    * The access manager.
@@ -48,7 +48,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig(['content_moderation', 'workflows']);

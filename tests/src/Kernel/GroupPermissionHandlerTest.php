@@ -17,7 +17,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test', 'group_test_plugin', 'node'];
+  protected static $modules = ['group_test', 'group_test_plugin', 'node'];
 
   /**
    * The group permission handler service.
@@ -36,7 +36,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['user', 'group_test_plugin']);
     $this->installSchema('node', ['node_access']);

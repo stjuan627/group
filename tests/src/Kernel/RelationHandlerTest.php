@@ -20,12 +20,12 @@ class RelationHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'group_test_plugin_alter', 'node'];
+  protected static $modules = ['group_test_plugin', 'group_test_plugin_alter', 'node'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installConfig(['user', 'group_test_plugin']);
     $this->installSchema('node', ['node_access']);

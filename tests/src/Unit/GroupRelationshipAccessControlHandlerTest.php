@@ -17,6 +17,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -26,6 +27,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @group group
  */
 class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * The account to test with.
@@ -58,7 +61,7 @@ class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->account = $this->prophesize(AccountInterface::class);

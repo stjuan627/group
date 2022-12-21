@@ -36,12 +36,12 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node'];
+  protected static $modules = ['node'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('node');
   }

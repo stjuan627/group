@@ -18,7 +18,7 @@ class GroupRelationshipCardinalityTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The group type to use in testing.
@@ -44,7 +44,7 @@ class GroupRelationshipCardinalityTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installConfig(['user', 'group_test_plugin']);

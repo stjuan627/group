@@ -19,7 +19,7 @@ class ConfigWrapperTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The config wrapper storage.
@@ -31,7 +31,7 @@ class ConfigWrapperTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('node');
     $this->storage = $this->entityTypeManager->getStorage('group_config_wrapper');
