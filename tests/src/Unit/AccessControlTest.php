@@ -22,6 +22,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -32,10 +33,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AccessControlTest extends UnitTestCase {
 
+  use ProphecyTrait;
+
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $cache_context_manager = $this->prophesize(CacheContextsManager::class);

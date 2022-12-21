@@ -55,7 +55,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->accessManager = $this->container->get('access_manager');

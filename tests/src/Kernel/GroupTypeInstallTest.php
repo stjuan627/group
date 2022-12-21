@@ -15,12 +15,12 @@ class GroupTypeInstallTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_config'];
+  protected static $modules = ['group_test_config'];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     $this->installConfig('group_test_config');
   }

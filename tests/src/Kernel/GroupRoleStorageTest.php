@@ -30,7 +30,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->group = $this->createGroup(['type' => $this->createGroupType()->id()]);
     $this->account = $this->createUser();

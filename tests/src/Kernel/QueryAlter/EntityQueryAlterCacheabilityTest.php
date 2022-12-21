@@ -20,7 +20,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node'];
+  protected static $modules = ['node'];
 
   /**
    * The grouped entity storage to use in testing.
@@ -39,7 +39,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('node', ['node_access']);

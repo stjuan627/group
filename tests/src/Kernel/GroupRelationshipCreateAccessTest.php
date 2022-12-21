@@ -24,7 +24,7 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The access manager.
@@ -57,7 +57,7 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('node', ['node_access']);

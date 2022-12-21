@@ -12,7 +12,7 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group'];
+  protected static $modules = ['group'];
 
   /**
    * The entity type manager service.
@@ -36,7 +36,7 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->entityTypeManager = $this->container->get('entity_type.manager');
 

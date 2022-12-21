@@ -17,7 +17,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The entity type ID to use in testing.
@@ -836,7 +836,6 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
             $cases["mixed-insider-individualadmin-own-mixpub-" . $operation] = $cases["single-insider-own-mixpub-$operation"];
             $cases["mixed-insider-individualadmin-own-mixpub-" . $operation]['individual_is_admin'] = TRUE;
             $cases["mixed-insider-individualadmin-own-mixpub-" . $operation]['individual_simple_check'] = TRUE;
-
 
             if ($admin_permission) {
               // Add in regular permissions to prove they aren't checked.

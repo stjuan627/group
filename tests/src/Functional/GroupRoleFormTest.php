@@ -29,7 +29,7 @@ class GroupRoleFormTest extends GroupBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->groupRoleStorage = $this->entityTypeManager->getStorage('group_role');
