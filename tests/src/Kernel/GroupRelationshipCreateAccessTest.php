@@ -2,13 +2,13 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\PermissionScopeInterface;
 use Drupal\Tests\group\Traits\NodeTypeCreationTrait;
 use Drupal\user\RoleInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 

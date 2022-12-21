@@ -83,7 +83,6 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
     $this->cacheBackend = $this->prophesize(CacheBackendInterface::class);
 
     $this->moduleHandler = $this->prophesize(ModuleHandlerInterface::class);
-    $this->moduleHandler->getImplementations('entity_type_build')->willReturn([]);
     $this->moduleHandler->alter('group_relation_type', Argument::type('array'))->willReturn(NULL);
 
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::class);
