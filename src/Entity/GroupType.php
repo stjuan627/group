@@ -161,7 +161,7 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
       $query->condition('scope', PermissionScopeInterface::INDIVIDUAL_ID);
     }
 
-    return $query->execute();
+    return $query->accessCheck()->execute();
   }
 
   /**

@@ -108,7 +108,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
       $query->condition('group_roles', (array) $roles, 'IN');
     }
 
-    $ids = $query->execute();
+    $ids = $query->accessCheck()->execute();
     if ($ids && $group_relationships = $this->groupRelationshipStorage()->loadMultiple($ids)) {
       return $this->wrapGroupRelationshipEntities($group_relationships);
     }

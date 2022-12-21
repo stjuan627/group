@@ -818,6 +818,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       ->condition('id', $group->id())
       ->condition('default_langcode', 1)
       ->count()
+      ->accessCheck()
       ->execute();
   }
 
