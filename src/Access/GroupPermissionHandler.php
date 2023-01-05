@@ -6,6 +6,7 @@ use Drupal\Component\Discovery\YamlDiscovery;
 use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
