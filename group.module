@@ -8,6 +8,7 @@
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -290,38 +291,40 @@ function group_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_query_TAG_alter().
  */
-function group_query_entity_query_alter(SelectInterface $query) {
-  $entity_type_id = $query->getMetaData('entity_type');
-  if ($query->hasTag($entity_type_id . '_access')) {
-    $entity_type_manager = \Drupal::entityTypeManager();
-    $entity_type = $entity_type_manager->getDefinition($entity_type_id);
+function group_query_entity_query_alter(AlterableInterface $query) {
+  if ($query instanceof SelectInterface) {
+    $entity_type_id = $query->getMetaData('entity_type');
+    if ($query->hasTag($entity_type_id . '_access')) {
+      $entity_type_manager = \Drupal::entityTypeManager();
+      $entity_type = $entity_type_manager->getDefinition($entity_type_id);
 
-    // Add specific access checks based on the entity type. Please note that we
-    // first check for the group and relationship entity types because we have
-    // full control over those and can therefore optimize the query more. If the
-    // query is for a different entity type, we fall back to the default query
-    // alter.
-    //
-    // PLEASE KEEP IN MIND that this means that a plugin that allows you to nest
-    // groups will have no query access added for nested groups whatsoever. This
-    // is by design as those plugins should opt to use the permission calculator
-    // system, as it's way faster and automatically included in GroupQueryAlter.
-    switch ($entity_type_id) {
-      case 'group':
-        $class_name = GroupQueryAlter::class;
-        break;
+      // Add specific access checks based on the entity type. Please note that we
+      // first check for the group and relationship entity types because we have
+      // full control over those and can therefore optimize the query more. If the
+      // query is for a different entity type, we fall back to the default query
+      // alter.
+      //
+      // PLEASE KEEP IN MIND that this means that a plugin that allows you to nest
+      // groups will have no query access added for nested groups whatsoever. This
+      // is by design as those plugins should opt to use the permission calculator
+      // system, as it's way faster and automatically included in GroupQueryAlter.
+      switch ($entity_type_id) {
+        case 'group':
+          $class_name = GroupQueryAlter::class;
+          break;
 
-      case 'group_relationship':
-        $class_name = GroupRelationshipQueryAlter::class;
-        break;
+        case 'group_relationship':
+          $class_name = GroupRelationshipQueryAlter::class;
+          break;
 
-      default:
-        $class_name = EntityQueryAlter::class;
+        default:
+          $class_name = EntityQueryAlter::class;
+      }
+
+      \Drupal::service('class_resolver')
+        ->getInstanceFromDefinition($class_name)
+        ->alter($query, $entity_type);
     }
-
-    \Drupal::service('class_resolver')
-      ->getInstanceFromDefinition($class_name)
-      ->alter($query, $entity_type);
   }
 }
 
