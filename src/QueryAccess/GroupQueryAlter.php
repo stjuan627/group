@@ -234,11 +234,4 @@ class GroupQueryAlter extends QueryAlterBase {
     return 'id';
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function getMembershipJoinRightField() {
-    return 'gid';
-  }
-
 }

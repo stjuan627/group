@@ -976,12 +976,11 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   protected function joinMemberships(SelectInterface $query) {
     $table = $this->getMembershipJoinTable();
     $l_field = $this->getMembershipJoinLeftField();
-    $r_field = $this->getMembershipJoinRightField();
 
     $query->leftJoin(
       'group_relationship_field_data',
       'gcfd',
-      "$table.$l_field=%alias.$r_field AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
+      "$table.$l_field=%alias.gid AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
       [':account_id' => $this->getCurrentUser()->id()]
     );
   }
@@ -997,18 +996,12 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
   /**
    * Retrieves the name of the field to join the memberships against.
    *
-   * @return string
-   *   The field name.
-   */
-  abstract protected function getMembershipJoinLeftField();
-
-  /**
-   * Retrieves the name of the field to join the memberships with.
+   * This should represent the  group IDs to check for membership against.
    *
    * @return string
    *   The field name.
    */
-  abstract protected function getMembershipJoinRightField();
+  abstract protected function getMembershipJoinLeftField();
 
   /**
    * Sets up the content for testing.

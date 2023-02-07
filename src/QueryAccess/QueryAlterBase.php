@@ -295,18 +295,12 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   /**
    * Retrieves the name of the field to join the memberships against.
    *
-   * @return string
-   *   The field name.
-   */
-  abstract protected function getMembershipJoinLeftField();
-
-  /**
-   * Retrieves the name of the field to join the memberships with.
+   * This should represent the  group IDs to check for membership against.
    *
    * @return string
    *   The field name.
    */
-  abstract protected function getMembershipJoinRightField();
+  abstract protected function getMembershipJoinLeftField();
 
   /**
    * Ensures the query is joined with the memberships.
@@ -318,14 +312,13 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
     if ($this->joinAliasMemberships === FALSE) {
       $table = $this->getMembershipJoinTable();
       $l_field = $this->getMembershipJoinLeftField();
-      $r_field = $this->getMembershipJoinRightField();
 
       // Join the memberships of the current user.
       $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
       $this->joinAliasMemberships = $this->query->leftJoin(
         $group_relationship_data_table,
         'gcfd',
-        "$table.$l_field=%alias.$r_field AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
+        "$table.$l_field=%alias.gid AND %alias.plugin_id='group_membership' AND %alias.entity_id=:account_id",
         [':account_id' => $this->currentUser->id()]
       );
     }

@@ -269,11 +269,4 @@ class EntityQueryAlter extends QueryAlterBase {
     return 'gid';
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function getMembershipJoinRightField() {
-    return 'gid';
-  }
-
 }
