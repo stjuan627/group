@@ -13,9 +13,10 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  *
  * @ingroup group
  *
- * @todo Rename to machine name to group_relationship_type.
+ * @todo Rename machine name to group_relationship_type.
  *
  * @ConfigEntityType(
+ *   internal = TRUE,
  *   id = "group_content_type",
  *   label = @Translation("Group relationship type"),
  *   label_singular = @Translation("group relationship type"),

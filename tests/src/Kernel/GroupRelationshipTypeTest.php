@@ -72,4 +72,11 @@ class GroupRelationshipTypeTest extends GroupKernelTestBase {
     $this->assertEquals($expected, $group_relationship_type->label());
   }
 
+  /**
+   * Tests that the entity type is defined as internal.
+   */
+  public function testIsInternal() {
+    $this->assertTrue($this->entityTypeManager->getDefinition('group_content_type')->isInternal());
+  }
+
 }
