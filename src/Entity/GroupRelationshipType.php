@@ -4,6 +4,7 @@ namespace Drupal\group\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
@@ -50,6 +51,8 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  */
 class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelationshipTypeInterface {
 
+  use StringTranslationTrait;
+
   /**
    * The machine name of the relationship type.
    *
@@ -91,6 +94,16 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
    */
   public function id() {
     return $this->id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function label() {
+    return $this->t('INTERNAL USE ONLY -- @group_type -- @plugin', [
+      '@group_type' => $this->getGroupType()->label(),
+      '@plugin' => $this->getPlugin()->getPluginDefinition()->getLabel()
+    ]);
   }
 
   /**

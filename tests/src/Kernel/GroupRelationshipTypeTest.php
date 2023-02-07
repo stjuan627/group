@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\EntityTypeBundleInfo;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 
 /**
@@ -49,5 +50,25 @@ class GroupRelationshipTypeTest extends GroupKernelTestBase {
     // Assert that the cache was cleared and bundle declared.
     $this->assertSame(['node_type'], array_keys($bundle_info->getBundleInfo('group_config_wrapper')));
   }
+
+  /**
+   * Test that the relationship type label is generated from the plugin label.
+   *
+   * @covers ::label
+   */
+  public function testBundleLabel() {
+    // Create a group type and enable relating users.
+    $group_type = $this->createGroupType();
+
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
+    $group_relationship_type = $storage->load($storage->getRelationshipTypeId($group_type->id(), 'group_membership'));
+
+    $group_relation_type = $group_type->getPlugin('group_membership')->getRelationType();
+    $expected = new TranslatableMarkup('INTERNAL USE ONLY -- @group_type -- @plugin', [
+      '@group_type' => $group_type->label(),
+      '@plugin' => $group_relation_type->getLabel(),
+    ]);
+    $this->assertEquals($expected, $group_relationship_type->label());  }
 
 }
