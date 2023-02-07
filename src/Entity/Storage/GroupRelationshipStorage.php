@@ -41,6 +41,13 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
   protected $loadByEntityCache = [];
 
   /**
+   * Static cache for looking up relationship entities for group/entity pairs.
+   *
+   * @var array
+   */
+  protected $loadByEntityAndGroupCache = [];
+
+  /**
    * Static cache for looking up relationship entities for plugins.
    *
    * @var array
@@ -126,12 +133,11 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function loadByGroup(GroupInterface $group, $plugin_id = NULL) {
-    // An unsaved group cannot have any content.
-    $group_id = $group->id();
-    if ($group_id === NULL) {
+    if (!$this->loadByGroupSanityCheck($group, $plugin_id)) {
       return [];
     }
 
+    $group_id = $group->id();
     $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByGroupCache[$group_id][$cache_key])) {
       $query = $this->database
@@ -155,25 +161,32 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
   }
 
   /**
+   * Runs some sanity checks for loading by group.
+   *
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group entity to load the relationship entities for.
+   * @param string $plugin_id
+   *   (optional) A group relation type ID to filter on.
+   *
+   * @return bool
+   *   Whether the sanity checks succeeded or not.
+   */
+  protected function loadByGroupSanityCheck(GroupInterface $group, $plugin_id = NULL) {
+    // An unsaved group cannot have any relationships.
+    return $group->id() !== NULL;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function loadByEntity(EntityInterface $entity, $plugin_id = NULL) {
-    // An unsaved entity cannot have any relationships.
-    $entity_id = $entity->id();
-    if ($entity_id === NULL) {
+    if (!$this->loadByEntitySanityCheck($entity, $plugin_id)) {
       return [];
     }
 
     $entity_type_id = $entity->getEntityTypeId();
-    $cache_key = '---ALL---';
-    if (isset($plugin_id)) {
-      $cache_key = $plugin_id;
-
-      if ($entity_type_id !== $this->pluginManager->getDefinition($plugin_id)->getEntityTypeId()) {
-        throw new EntityStorageException(sprintf('Loading relationships for the given entity of type "%s" not supported by the provided plugin "%s".', $entity_type_id, $plugin_id));
-      }
-    }
-
+    $entity_id = $entity->id();
+    $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
       $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
 
@@ -200,6 +213,82 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
 
     if (!empty($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
       return $this->loadMultiple($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key]);
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Runs some sanity checks for loading by entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to load the relationship entities for.
+   * @param string $plugin_id
+   *   (optional) A group relation type ID to filter on.
+   *
+   * @return bool
+   *   Whether the sanity checks succeeded or not.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function loadByEntitySanityCheck(EntityInterface $entity, $plugin_id = NULL) {
+    // An unsaved entity cannot have any relationships.
+    if ($entity->id() === NULL) {
+      return FALSE;
+    }
+
+    $entity_type_id = $entity->getEntityTypeId();
+    if (isset($plugin_id) && $entity_type_id !== $this->pluginManager->getDefinition($plugin_id)->getEntityTypeId()) {
+      throw new EntityStorageException(sprintf('Loading relationships for the given entity of type "%s" not supported by the provided plugin "%s".', $entity_type_id, $plugin_id));
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadByEntityAndGroup(EntityInterface $entity,GroupInterface $group, $plugin_id = NULL) {
+    if (!$this->loadByGroupSanityCheck($group, $plugin_id)) {
+      return [];
+    }
+
+    if (!$this->loadByEntitySanityCheck($entity, $plugin_id)) {
+      return [];
+    }
+
+    $entity_type_id = $entity->getEntityTypeId();
+    $entity_id = $entity->id();
+    $group_id = $group->id();
+    $cache_key = $plugin_id ?: '---ALL---';
+    if (!isset($this->loadByEntityAndGroupCache[$entity_type_id][$entity_id][$group_id][$cache_key])) {
+      $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
+
+      $result = [];
+      if (!empty($plugin_ids)) {
+        // If the entity is config, we need to use the wrapper for it.
+        if ($entity instanceof ConfigEntityInterface) {
+          $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+          assert($storage instanceof ConfigWrapperStorageInterface);
+          $entity_id = $storage->wrapEntity($entity)->id();
+        }
+
+        $result = $this->database
+          ->select($this->dataTable, 'd')
+          ->fields('d', ['id'])
+          ->condition('gid', $group_id)
+          ->condition('entity_id', $entity_id)
+          ->condition('plugin_id', $plugin_ids, 'IN')
+          ->execute()
+          ->fetchCol();
+      }
+
+      $this->loadByEntityAndGroupCache[$entity_type_id][$entity_id][$group_id][$cache_key] = $result;
+    }
+
+    if (!empty($this->loadByEntityAndGroupCache[$entity_type_id][$entity_id][$group_id][$cache_key])) {
+      return $this->loadMultiple($this->loadByEntityAndGroupCache[$entity_type_id][$entity_id][$group_id][$cache_key]);
     }
     else {
       return [];
@@ -234,6 +323,7 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     parent::resetCache($ids);
     $this->loadByGroupCache = [];
     $this->loadByEntityCache = [];
+    $this->loadByEntityAndGroupCache = [];
     $this->loadByPluginCache = [];
   }
 

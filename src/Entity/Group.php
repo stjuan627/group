@@ -158,7 +158,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
    * {@inheritdoc}
    */
   public function getRelationshipsByEntity(EntityInterface $entity, $plugin_id = NULL) {
-    return $this->relationshipStorage()->loadByEntity($entity, $plugin_id);
+    return $this->relationshipStorage()->loadByEntityAndGroup($entity, $this, $plugin_id);
   }
 
   /**

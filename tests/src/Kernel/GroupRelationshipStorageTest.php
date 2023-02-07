@@ -203,6 +203,7 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
   public function testLoadByGroup() {
     $group = $this->createGroup(['type' => $this->groupType->id()]);
     $this->assertCount(1, $this->storage->loadByGroup($group), 'Managed to load the group creator membership by group.');
+    $this->assertCount(1, $this->storage->loadByGroup($group, 'group_membership'), 'Managed to load the group creator membership by group and plugin ID.');
   }
 
   /**
@@ -244,6 +245,7 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
     // Add the group as content so we can verify only the user is returned.
     $group_a->addRelationship($group_b, 'group_as_content');
     $this->assertCount(2, $this->storage->loadByEntity($account), 'Managed to load the group creator memberships by user.');
+    $this->assertCount(2, $this->storage->loadByEntity($account, 'group_membership'), 'Managed to load the group creator memberships by user and plugin ID.');
   }
 
   /**
@@ -262,6 +264,52 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
 
     $group_relationships = $this->storage->loadByEntity($node_type);
     $this->assertCount(1, $group_relationships, 'Managed to load the grouped node types by node type.');
+    $this->assertSame($wrapper->id(), reset($group_relationships)->get('entity_id')->target_id);
+
+    $group_relationships = $this->storage->loadByEntity($node_type, 'node_type_as_content');
+    $this->assertCount(1, $group_relationships, 'Managed to load the grouped node types by node type and plugin ID.');
+    $this->assertSame($wrapper->id(), reset($group_relationships)->get('entity_id')->target_id);
+  }
+
+  /**
+   * Tests the loading of group relationships for a content entity and group.
+   *
+   * @covers ::loadByEntityAndGroup
+   */
+  public function testLoadByContentEntityAndGroup() {
+    $group_a = $this->createGroup(['type' => $this->groupType->id()]);
+    $group_b = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
+    $account = $this->getCurrentUser();
+
+    // Both entities should have ID 2 to test
+    $this->assertSame($group_b->id(), $account->id());
+
+    // Add the group as content so we can verify only the user is returned.
+    $group_a->addRelationship($group_b, 'group_as_content');
+    $this->assertCount(1, $this->storage->loadByEntityAndGroup($account, $group_a), 'Managed to load the group creator membership by user and group.');
+    $this->assertCount(1, $this->storage->loadByEntityAndGroup($account, $group_a, 'group_membership'), 'Managed to load the group creator membership by user, group and plugin ID.');
+  }
+
+  /**
+   * Tests the loading of group relationships for a config entity and group.
+   *
+   * @covers ::loadByEntityAndGroup
+   */
+  public function testLoadByConfigEntityAndGroup() {
+    $group = $this->createGroup(['type' => $this->groupType->id()]);
+    $node_type = $this->createNodeType();
+    $group->addRelationship($node_type, 'node_type_as_content');
+
+    $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
+    assert($storage instanceof ConfigWrapperStorageInterface);
+    $wrapper = $storage->wrapEntity($node_type);
+
+    $group_relationships = $this->storage->loadByEntityAndGroup($node_type, $group);
+    $this->assertCount(1, $group_relationships, 'Managed to load the grouped node types by node type and group.');
+    $this->assertSame($wrapper->id(), reset($group_relationships)->get('entity_id')->target_id);
+
+    $group_relationships = $this->storage->loadByEntityAndGroup($node_type, $group, 'node_type_as_content');
+    $this->assertCount(1, $group_relationships, 'Managed to load the grouped node types by node type, group and plugin ID.');
     $this->assertSame($wrapper->id(), reset($group_relationships)->get('entity_id')->target_id);
   }
 
