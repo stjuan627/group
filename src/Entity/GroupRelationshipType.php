@@ -14,6 +14,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
  * @ingroup group
  *
  * @ConfigEntityType(
+ *   internal = TRUE,
  *   id = "group_relationship_type",
  *   label = @Translation("Group relationship type"),
  *   label_singular = @Translation("group relationship type"),
