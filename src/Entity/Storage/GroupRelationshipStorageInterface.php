@@ -37,7 +37,7 @@ interface GroupRelationshipStorageInterface extends ContentEntityStorageInterfac
    *   (optional) A group relation type ID to filter on.
    *
    * @return \Drupal\group\Entity\GroupRelationshipInterface[]
-   *   A list of GroupRelationship entities matching the criteria.
+   *   A list of GroupRelationship entities indexed by their IDs.
    */
   public function loadByGroup(GroupInterface $group, $plugin_id = NULL);
 
@@ -45,14 +45,29 @@ interface GroupRelationshipStorageInterface extends ContentEntityStorageInterfac
    * Retrieves all GroupRelationship entities that represent a given entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   An entity which may be within one or more groups.
+   *   The entity to load the relationship entities for.
    * @param string $plugin_id
    *   (optional) A group relation type ID to filter on.
    *
    * @return \Drupal\group\Entity\GroupRelationshipInterface[]
-   *   A list of GroupRelationship entities which refer to the given entity.
+   *   A list of GroupRelationship entities indexed by their IDs.
    */
   public function loadByEntity(EntityInterface $entity, $plugin_id = NULL);
+
+  /**
+   * Retrieves all group relationships that represent a given entity in a group.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to load the relationship entities for.
+   * @param \Drupal\group\Entity\GroupInterface $group
+   *   The group entity to load the relationship entities for.
+   * @param string $plugin_id
+   *   (optional) A group relation type ID to filter on.
+   *
+   * @return \Drupal\group\Entity\GroupRelationshipInterface[]
+   *   A list of GroupRelationship entities indexed by their IDs.
+   */
+  public function loadByEntityAndGroup(EntityInterface $entity, GroupInterface $group, $plugin_id = NULL);
 
   /**
    * Retrieves all GroupRelationship entities by their responsible plugin ID.
