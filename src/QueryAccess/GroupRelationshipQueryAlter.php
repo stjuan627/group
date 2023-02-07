@@ -148,21 +148,14 @@ class GroupRelationshipQueryAlter extends QueryAlterBase {
    * {@inheritdoc}
    */
   protected function getMembershipJoinTable() {
-    return $this->ensureBaseTable();
+    return $this->ensureDataTable();
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getMembershipJoinLeftField() {
-    return 'id';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getMembershipJoinRightField() {
-    return 'id';
+    return 'gid';
   }
 
 }

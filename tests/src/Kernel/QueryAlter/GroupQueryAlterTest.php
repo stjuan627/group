@@ -150,13 +150,6 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getMembershipJoinRightField() {
-    return 'gid';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function addNoAccessConditions(SelectInterface $query) {
     $query->alwaysFalse();
   }

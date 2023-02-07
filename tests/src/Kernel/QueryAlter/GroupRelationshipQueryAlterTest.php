@@ -124,21 +124,14 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function getMembershipJoinTable() {
-    return 'group_relationship';
+    return 'group_relationship_field_data';
   }
 
   /**
    * {@inheritdoc}
    */
   protected function getMembershipJoinLeftField() {
-    return 'id';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getMembershipJoinRightField() {
-    return 'id';
+    return 'gid';
   }
 
   /**
