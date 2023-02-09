@@ -331,10 +331,12 @@ function group_query_entity_query_alter(AlterableInterface $query) {
 /**
  * Implements hook_query_TAG_alter().
  */
-function group_query_views_entity_query_alter(SelectInterface $query) {
-  $entity_type_id = $query->getMetaData('entity_type');
-  $query->addTag($entity_type_id . '_access');
-  group_query_entity_query_alter($query);
+function group_query_views_entity_query_alter(AlterableInterface $query) {
+  if ($query instanceof SelectInterface) {
+    $entity_type_id = $query->getMetaData('entity_type');
+    $query->addTag($entity_type_id . '_access');
+    group_query_entity_query_alter($query);
+  }
 }
 
 /**
