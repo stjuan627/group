@@ -145,16 +145,18 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider) {
-    $sub_condition = $conditions->andConditionGroup();
-    $sub_condition->condition('group_relationship_field_data.group_type', $allowed_ids, 'IN');
-    $sub_condition->condition('group_relationship_field_data.plugin_id', $this->pluginId);
+    $storage = $this->entityTypeManager->getStorage('group_content_type');
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
+    $group_relationship_type_id = $storage->getRelationshipTypeId(reset($allowed_ids), $this->pluginId);
+
+    $conditions->condition($sub_condition = $conditions->andConditionGroup());
+    $sub_condition->condition('group_relationship_field_data.type', [$group_relationship_type_id], 'IN');
     if ($outsider) {
       $sub_condition->isNull('gcfd.entity_id');
     }
     else {
       $sub_condition->isNotNull('gcfd.entity_id');
     }
-    $conditions->condition($sub_condition);
   }
 
   /**
