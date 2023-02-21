@@ -22,6 +22,7 @@ use Drupal\user\UserInterface;
  *   label = @Translation("Group"),
  *   label_singular = @Translation("group"),
  *   label_plural = @Translation("groups"),
+ *   label_collection = @Translation("Groups"),
  *   label_count = @PluralTranslation(
  *     singular = "@count group",
  *     plural = "@count groups"
@@ -43,7 +44,6 @@ use Drupal\user\UserInterface;
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
  *   },
- *   admin_permission = "administer group",
  *   base_table = "groups",
  *   data_table = "groups_field_data",
  *   revision_table = "groups_revision",

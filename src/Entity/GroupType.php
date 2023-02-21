@@ -15,6 +15,7 @@ use Drupal\group\PermissionScopeInterface;
  *   label = @Translation("Group type"),
  *   label_singular = @Translation("group type"),
  *   label_plural = @Translation("group types"),
+ *   label_collection = @Translation("Group types"),
  *   label_count = @PluralTranslation(
  *     singular = "@count group type",
  *     plural = "@count group types"
@@ -27,7 +28,7 @@ use Drupal\group\PermissionScopeInterface;
  *       "delete" = "Drupal\group\Entity\Form\GroupTypeDeleteForm"
  *     },
  *     "route_provider" = {
- *       "html" = "Drupal\group\Entity\Routing\GroupTypeRouteProvider",
+ *       "html" = "Drupal\Core\Entity\Routing\DefaultHtmlRouteProvider",
  *     },
  *     "list_builder" = "Drupal\group\Entity\Controller\GroupTypeListBuilder",
  *   },
