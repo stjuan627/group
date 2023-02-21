@@ -36,6 +36,13 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
   protected $byEntityTypeCache = [];
 
   /**
+   * Statically caches relationship type IDs by group type and plugin ID.
+   *
+   * @var string[]
+   */
+  protected $idCache = [];
+
+  /**
    * Constructs a GroupRelationshipTypeStorage object.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -100,8 +107,7 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
     }
 
     // Otherwise load all relationship types being handled by gathered plugins.
-    $this->byEntityTypeCache[$entity_type_id] = $this->loadByPluginId($plugin_ids);
-    return $this->byEntityTypeCache[$entity_type_id];
+    return $this->byEntityTypeCache[$entity_type_id] = $this->loadByPluginId($plugin_ids);
   }
 
   /**
@@ -130,6 +136,9 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function getRelationshipTypeId($group_type_id, $plugin_id) {
+    if (isset($this->idCache[$group_type_id][$plugin_id])) {
+      return $this->idCache[$group_type_id][$plugin_id];
+    }
     $preferred_id = $group_type_id . '-' . str_replace(':', '-', $plugin_id);
 
     // Return a hashed ID if the readable ID would exceed the maximum length.
@@ -138,7 +147,7 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
       $preferred_id = substr($hashed_id, 0, EntityTypeInterface::BUNDLE_MAX_LENGTH);
     }
 
-    return $preferred_id;
+    return $this->idCache[$group_type_id][$plugin_id] = $preferred_id;
   }
 
   /**
@@ -147,6 +156,7 @@ class GroupRelationshipTypeStorage extends ConfigEntityStorage implements GroupR
   public function resetCache(array $ids = NULL) {
     parent::resetCache($ids);
     $this->byEntityTypeCache = [];
+    $this->idCache = [];
   }
 
 }
