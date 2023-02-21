@@ -16,6 +16,7 @@ use Drupal\user\RoleInterface;
  *   label = @Translation("Group role"),
  *   label_singular = @Translation("group role"),
  *   label_plural = @Translation("group roles"),
+ *   label_collection = @Translation("Group roles"),
  *   label_count = @PluralTranslation(
  *     singular = "@count group role",
  *     plural = "@count group roles"
