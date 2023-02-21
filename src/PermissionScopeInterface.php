@@ -22,4 +22,9 @@ interface PermissionScopeInterface {
    */
   const INDIVIDUAL_ID = 'individual';
 
+  /**
+   * Collection of scope IDs that are synchronized to a global role.
+   */
+  const SYNCHRONIZED_IDS = [self::OUTSIDER_ID, self::INSIDER_ID];
+
 }

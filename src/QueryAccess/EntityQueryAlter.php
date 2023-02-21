@@ -2,10 +2,8 @@
 
 namespace Drupal\group\QueryAccess;
 
-use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
-use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @internal
  */
-class EntityQueryAlter extends QueryAlterBase {
+class EntityQueryAlter extends PluginBasedQueryAlterBase {
 
   /**
    * The group relation type manager.
@@ -141,28 +139,28 @@ class EntityQueryAlter extends QueryAlterBase {
 
       foreach ($calculated_permissions->getItems() as $item) {
         if ($admin_permission !== FALSE && $item->hasPermission($admin_permission)) {
-          $allowed_any_ids[$item->getScope()][] = $item->getIdentifier();
+          $allowed_any_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
         }
         elseif(!$check_published) {
           if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
-            $allowed_any_ids[$item->getScope()][] = $item->getIdentifier();
+            $allowed_any_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
           elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
-            $allowed_own_ids[$item->getScope()][] = $item->getIdentifier();
+            $allowed_own_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
         }
         else {
           if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
-            $allowed_any_by_status_ids[1][$item->getScope()][] = $item->getIdentifier();
+            $allowed_any_by_status_ids[1][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
           elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
-            $allowed_own_by_status_ids[1][$item->getScope()][] = $item->getIdentifier();
+            $allowed_own_by_status_ids[1][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
           if ($any_unpublished_permission !== FALSE && $item->hasPermission($any_unpublished_permission)) {
-            $allowed_any_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
+            $allowed_any_by_status_ids[0][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
           elseif($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
-            $allowed_own_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
+            $allowed_own_by_status_ids[0][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
         }
       }
@@ -234,25 +232,8 @@ class EntityQueryAlter extends QueryAlterBase {
   /**
    * {@inheritdoc}
    */
-  protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $scope_conditions, $scope) {
-    $membership_alias = $this->ensureMembershipJoin();
-
-    $sub_condition = $this->query->andConditionGroup();
-    $sub_condition->condition("$this->joinAliasPlugins.group_type", array_unique($allowed_ids), 'IN');
-    if ($scope === PermissionScopeInterface::OUTSIDER_ID) {
-      $sub_condition->isNull("$membership_alias.entity_id");
-    }
-    else {
-      $sub_condition->isNotNull("$membership_alias.entity_id");
-    }
-    $scope_conditions->condition($sub_condition);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function addIndividualConditions(array $allowed_ids, ConditionInterface $scope_conditions) {
-    $scope_conditions->condition("$this->joinAliasPlugins.gid", array_unique($allowed_ids) , 'IN');
+  protected function getPluginDataTable() {
+    return $this->joinAliasPlugins;
   }
 
   /**

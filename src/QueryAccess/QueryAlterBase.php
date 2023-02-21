@@ -172,7 +172,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
     $scope_conditions = $this->ensureOrConjunction($parent_condition);
 
     // Add the group types where synchronized access is granted.
-    foreach ([PermissionScopeInterface::OUTSIDER_ID, PermissionScopeInterface::INSIDER_ID] as $scope) {
+    foreach (PermissionScopeInterface::SYNCHRONIZED_IDS as $scope) {
       if (!empty($allowed_ids[$scope])) {
         $this->addSynchronizedConditions($allowed_ids[$scope], $scope_conditions, $scope);
       }

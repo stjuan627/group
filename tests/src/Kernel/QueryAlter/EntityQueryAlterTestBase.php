@@ -104,13 +104,17 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider) {
-    $conditions->condition($type_conditions = $conditions->andConditionGroup());
-    $type_conditions->condition('gcfd.group_type', $allowed_ids, 'IN');
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
+    $group_relationship_type_id = $storage->getRelationshipTypeId(reset($allowed_ids), $this->pluginId);
+
+    $conditions->condition($sub_condition = $conditions->andConditionGroup());
+    $sub_condition->condition('gcfd.type', [$group_relationship_type_id], 'IN');
     if ($outsider) {
-      $type_conditions->isNull('gcfd_2.entity_id');
+      $sub_condition->isNull('gcfd_2.entity_id');
     }
     else {
-      $type_conditions->isNotNull('gcfd_2.entity_id');
+      $sub_condition->isNotNull('gcfd_2.entity_id');
     }
   }
 
@@ -118,7 +122,10 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function addIndividualConditions(array $allowed_ids, ConditionInterface $conditions) {
-    $conditions->condition('gcfd.gid', $allowed_ids, 'IN');
+    $sub_condition = $conditions->andConditionGroup();
+    $sub_condition->condition('gcfd.gid', $allowed_ids, 'IN');
+    $sub_condition->condition('gcfd.plugin_id', $this->pluginId);
+    $conditions->condition($sub_condition);
   }
 
 }
