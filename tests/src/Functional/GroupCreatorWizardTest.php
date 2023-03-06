@@ -10,6 +10,14 @@ namespace Drupal\Tests\group\Functional;
 class GroupCreatorWizardTest extends GroupBrowserTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+    $this->setUpAccount();
+  }
+
+  /**
    * Tests that a group creator gets a membership using the wizard.
    */
   public function testCreatorMembershipWizard() {

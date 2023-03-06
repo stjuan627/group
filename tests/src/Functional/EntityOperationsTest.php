@@ -15,6 +15,14 @@ use Drupal\user\RoleInterface;
 class EntityOperationsTest extends GroupBrowserTestBase {
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+    $this->setUpAccount();
+  }
+
+  /**
    * Checks for entity operations under given circumstances.
    *
    * @parem array $visible

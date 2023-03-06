@@ -34,8 +34,6 @@ class PageCacheTest extends GroupBrowserTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->drupalLogout();
-
     $this->groupType = $this->createGroupType(['creator_membership' => FALSE]);
     $this->group = $this->createGroup(['type' => $this->groupType->id()]);
 
