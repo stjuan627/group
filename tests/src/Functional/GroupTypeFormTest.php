@@ -37,6 +37,8 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
+    $this->setUpAccount();
+
     $this->entityFieldManager = $this->container->get('entity_field.manager');
     $this->commonValues = [
       'Name' => 'My first group type',
