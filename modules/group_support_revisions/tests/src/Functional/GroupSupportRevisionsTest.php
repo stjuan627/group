@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\group_revision_support\Functional;
+namespace Drupal\Tests\group_support_revisions\Functional;
 
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\PermissionScopeInterface;
@@ -11,9 +11,9 @@ use Drupal\user\RoleInterface;
 /**
  * Tests that revision operations (do not) show up on a grouped entity.
  *
- * @group group_revision_support
+ * @group group_support_revisions
  */
-class GroupRevisionSupportTest extends GroupBrowserTestBase {
+class GroupSupportRevisionsTest extends GroupBrowserTestBase {
 
   /**
    * {@inheritdoc}
@@ -92,7 +92,7 @@ class GroupRevisionSupportTest extends GroupBrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->linkByHrefExists($href, 0, 'Grouping the node without any special support still shows the "Revisions" tab.');
 
-    \Drupal::getContainer()->get('module_installer')->install(['group_revision_support'], TRUE);
+    \Drupal::getContainer()->get('module_installer')->install(['group_support_revisions'], TRUE);
 
     $this->drupalGet($path);
     $this->assertSession()->statusCodeEquals(200);
@@ -134,7 +134,7 @@ class GroupRevisionSupportTest extends GroupBrowserTestBase {
     $this->drupalGet($path);
     $this->assertSession()->statusCodeEquals(200);
 
-    \Drupal::getContainer()->get('module_installer')->install(['group_revision_support'], TRUE);
+    \Drupal::getContainer()->get('module_installer')->install(['group_support_revisions'], TRUE);
 
     $this->drupalGet($path);
     $this->assertSession()->statusCodeEquals(403);
@@ -191,7 +191,7 @@ class GroupRevisionSupportTest extends GroupBrowserTestBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->linkByHrefExists($href, 0, 'Grouping the node without any special support still shows the "' . $name . '" operation.');
 
-    \Drupal::getContainer()->get('module_installer')->install(['group_revision_support'], TRUE);
+    \Drupal::getContainer()->get('module_installer')->install(['group_support_revisions'], TRUE);
 
     $this->drupalGet($path);
     $this->assertSession()->statusCodeEquals(200);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\group_revision_support\Plugin\Group\RelationHandler;
+namespace Drupal\group_support_revisions\Plugin\Group\RelationHandler;
 
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
@@ -10,7 +10,7 @@ use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderTrait;
 /**
  * Alters all permission providers to add revision support.
  */
-class RevisionSupportPermissionProvider implements PermissionProviderInterface {
+class SupportRevisionsPermissionProvider implements PermissionProviderInterface {
 
   use PermissionProviderTrait {
     init as defaultInit;
@@ -24,7 +24,7 @@ class RevisionSupportPermissionProvider implements PermissionProviderInterface {
   protected bool $implementsRevisionableInterface;
 
   /**
-   * Constructs a new RevisionSupportPermissionProvider.
+   * Constructs a new SupportRevisionsPermissionProvider.
    *
    * @param \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface $parent
    *   The parent permission provider.

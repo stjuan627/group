@@ -1,4 +1,4 @@
-name: 'Group Revision Support'
+name: 'Group Support: Revisions'
 description: 'Enables revision access over grouped entities to be determined by the group'
 package: 'Group'
 type: 'module'
