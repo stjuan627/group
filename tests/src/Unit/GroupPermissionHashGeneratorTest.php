@@ -14,7 +14,6 @@ use Drupal\flexible_permissions\RefinableCalculatedPermissions;
 use Drupal\group\Access\GroupPermissionCalculatorInterface;
 use Drupal\group\Access\GroupPermissionsHashGenerator;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the group permission hash generator service.
@@ -23,8 +22,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
  * @group group
  */
 class GroupPermissionHashGeneratorTest extends UnitTestCase {
-
-  use ProphecyTrait;
 
   /**
    * The group permissions hash generator service.

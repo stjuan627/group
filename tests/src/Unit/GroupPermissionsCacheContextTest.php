@@ -7,7 +7,6 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\group\Access\GroupPermissionsHashGeneratorInterface;
 use Drupal\group\Cache\Context\GroupPermissionsCacheContext;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the user.group_permissions cache context.
@@ -16,8 +15,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
  * @group group
  */
 class GroupPermissionsCacheContextTest extends UnitTestCase {
-
-  use ProphecyTrait;
 
   /**
    * The current user.
