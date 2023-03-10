@@ -22,7 +22,6 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -32,8 +31,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @group group
  */
 class AccessControlTest extends UnitTestCase {
-
-  use ProphecyTrait;
 
   /**
    * {@inheritdoc}

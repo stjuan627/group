@@ -19,7 +19,6 @@ use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 use Drupal\Tests\UnitTestCase;
 use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -29,8 +28,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @group group
  */
 class GroupRelationTypeManagerTest extends UnitTestCase {
-
-  use ProphecyTrait;
 
   /**
    * The group relation type manager under test.

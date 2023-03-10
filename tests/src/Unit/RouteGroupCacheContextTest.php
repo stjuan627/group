@@ -10,7 +10,6 @@ use Drupal\group\Cache\Context\RouteGroupCacheContext;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\Tests\UnitTestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Tests the route.group cache context.
@@ -19,8 +18,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
  * @group group
  */
 class RouteGroupCacheContextTest extends UnitTestCase {
-
-  use ProphecyTrait;
 
   /**
    * The current route match object.
