@@ -42,6 +42,13 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
    * @covers ::loadByUserAndGroup
    */
   public function testLoadByUserAndGroup() {
+    // Add a dummy group type with role to make sure we do not return said role.
+    $this->createGroupRole([
+      'group_type' => $this->createGroupType()->id(),
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
+    ]);
+
     $outsider_role = $this->createGroupRole([
       'group_type' => $this->group->bundle(),
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
