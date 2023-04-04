@@ -11,6 +11,8 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityMalformedException;
+use Drupal\Core\Entity\Exception\UndefinedLinkTemplateException;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -727,10 +729,26 @@ function group_relationship_entity_submit($form, FormStateInterface $form_state)
   // wants to see the entity itself and not the relationship. This only applies
   // if there was no "destination" query argument.
   if ($entity->access('view')) {
-    $form_state->setRedirectUrl($entity->toUrl());
+    try {
+      $form_state->setRedirectUrl($entity->toUrl());
+    }
+    catch (EntityMalformedException $e) {
+      return;
+    }
+    catch (UndefinedLinkTemplateException $e) {
+      return;
+    }
   }
   elseif ($group->access('view')) {
-    $form_state->setRedirectUrl($group->toUrl());
+    try {
+      $form_state->setRedirectUrl($group->toUrl());
+    }
+    catch (EntityMalformedException $e) {
+      return;
+    }
+    catch (UndefinedLinkTemplateException $e) {
+      return;
+    }
   }
   else {
     $form_state->setRedirect('<front>');
