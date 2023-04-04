@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity\Access;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
@@ -55,6 +56,9 @@ class GroupRelationshipAccessControlHandler extends EntityAccessControlHandler i
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
+    if (empty($context['group'])) {
+      return AccessResult::neutral('No group value set in context.');
+    }
     $relationship_type = $this->entityTypeManager->getStorage('group_relationship_type')->load($entity_bundle);
     assert($relationship_type instanceof GroupRelationshipTypeInterface);
     $access_control = $this->groupRelationTypeManager->getAccessControlHandler($relationship_type->getPluginId());
