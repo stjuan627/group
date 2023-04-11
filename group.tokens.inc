@@ -133,7 +133,6 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
   $replacements = [];
   $url_options = ['absolute' => TRUE];
   $token_service = \Drupal::token();
-  $plugin_manager = \Drupal::service('plugin.manager.group_content_enabler');
 
   if (isset($options['langcode'])) {
     $url_options['language'] = \Drupal::languageManager()->getLanguage($options['langcode']);
