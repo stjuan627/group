@@ -44,11 +44,11 @@ class GroupRelationshipCreateEntityAccessCheck implements AccessInterface {
     $plugin_manager = \Drupal::service('group_relation_type.manager');
     assert($plugin_manager instanceof GroupRelationTypeManagerInterface);
     $access_handler = $plugin_manager->getAccessControlHandler($plugin_id);
-    $access = $access_handler->entityCreateAccess($group, $account);
+    $access = $access_handler->entityCreateAccess($group, $account, TRUE);
 
     // Only allow access if the user can create relationship target entities
     // using the provided plugin or if he doesn't need access to do so.
-    return AccessResult::allowedIf($access xor !$needs_access);
+    return AccessResult::allowedIf($access->isAllowed() xor !$needs_access)->inheritCacheability($access);
   }
 
 }
