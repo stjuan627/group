@@ -65,11 +65,11 @@ class GroupRelationshipCreateAccessCheck implements AccessInterface {
 
     // Determine whether the user can create relationships using the plugin.
     $relationship_type_id = $storage->getRelationshipTypeId($group->bundle(), $plugin_id);
-    $access = $access_control_handler->createAccess($relationship_type_id, $account, ['group' => $group]);
+    $access = $access_control_handler->createAccess($relationship_type_id, $account, ['group' => $group], TRUE);
 
     // Only allow access if the user can create relationships using the
     // provided plugin or if he doesn't need access to do so.
-    return AccessResult::allowedIf($access xor !$needs_access);
+    return AccessResult::allowedIf($access->isAllowed() xor !$needs_access)->inheritCacheability($access);
   }
 
 }
