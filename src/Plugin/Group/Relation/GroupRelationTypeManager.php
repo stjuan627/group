@@ -286,6 +286,14 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * {@inheritdoc}
    */
+  public function getAllInstalledIds() {
+    $map = $this->getGroupTypePluginMap();
+    return array_unique(array_merge(...array_values($map)));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPluginIdsByEntityTypeId($entity_type_id) {
     $plugin_ids = [];
     foreach ($this->getDefinitions() as $plugin_id => $group_relation_type) {

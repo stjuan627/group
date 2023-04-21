@@ -33,8 +33,7 @@ class GroupRelationshipQueryAlter extends PluginBasedQueryAlterBase {
    * {@inheritdoc}
    */
   protected function doAlter($operation) {
-    // @todo Move to plugin manager method and remove copy-paste.
-    $installed_ids = array_unique(array_merge(...array_values($this->pluginManager->getGroupTypePluginMap())));
+    $installed_ids = $this->pluginManager->getAllInstalledIds();
 
     // Check if any of the plugins actually support the operation. If not, we
     // can simply bail out here to play nice with other modules that do support

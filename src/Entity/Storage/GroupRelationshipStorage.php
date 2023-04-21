@@ -133,6 +133,10 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function loadByGroup(GroupInterface $group, $plugin_id = NULL) {
+    if (!$this->loadByPluginSanityCheck($plugin_id)) {
+      return [];
+    }
+
     if (!$this->loadByGroupSanityCheck($group, $plugin_id)) {
       return [];
     }
@@ -180,6 +184,10 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function loadByEntity(EntityInterface $entity, $plugin_id = NULL) {
+    if (!$this->loadByPluginSanityCheck($plugin_id)) {
+      return [];
+    }
+
     if (!$this->loadByEntitySanityCheck($entity, $plugin_id)) {
       return [];
     }
@@ -188,7 +196,9 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     $entity_id = $entity->id();
     $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id][$cache_key])) {
-      $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
+      $plugin_ids = $plugin_id
+        ? [$plugin_id]
+        : array_intersect($this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id), $this->pluginManager->getAllInstalledIds());
 
       $result = [];
       if (!empty($plugin_ids)) {
@@ -250,6 +260,10 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function loadByEntityAndGroup(EntityInterface $entity,GroupInterface $group, $plugin_id = NULL) {
+    if (!$this->loadByPluginSanityCheck($plugin_id)) {
+      return [];
+    }
+
     if (!$this->loadByGroupSanityCheck($group, $plugin_id)) {
       return [];
     }
@@ -263,7 +277,9 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     $group_id = $group->id();
     $cache_key = $plugin_id ?: '---ALL---';
     if (!isset($this->loadByEntityAndGroupCache[$entity_type_id][$entity_id][$group_id][$cache_key])) {
-      $plugin_ids = $plugin_id ? [$plugin_id] : $this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id);
+      $plugin_ids = $plugin_id
+        ? [$plugin_id]
+        : array_intersect($this->pluginManager->getPluginIdsByEntityTypeId($entity_type_id), $this->pluginManager->getAllInstalledIds());
 
       $result = [];
       if (!empty($plugin_ids)) {
@@ -299,6 +315,10 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
    * {@inheritdoc}
    */
   public function loadByPluginId($plugin_id) {
+    if (!$this->loadByPluginSanityCheck($plugin_id)) {
+      return [];
+    }
+
     if (!isset($this->loadByPluginCache[$plugin_id])) {
       $query = $this->database
         ->select($this->dataTable, 'd')
@@ -314,6 +334,22 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     else {
       return [];
     }
+  }
+
+  /**
+   * Runs some sanity checks for loading by plugin ID.
+   *
+   * @param string $plugin_id
+   *   (optional) A group relation type ID to filter on.
+   *
+   * @return bool
+   *   Whether the sanity checks succeeded or not.
+   */
+  protected function loadByPluginSanityCheck($plugin_id = NULL) {
+    if ($plugin_id && !in_array($plugin_id, $this->pluginManager->getAllInstalledIds(), TRUE)) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
   /**
