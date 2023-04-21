@@ -150,7 +150,7 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
   public function getUiTextProvider($plugin_id);
 
   /**
-   * Returns a plugin collection of all installed group relations.
+   * Returns a collection of all installed group relations for a group type.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type to retrieve installed plugins for.
@@ -161,7 +161,7 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
   public function getInstalled(GroupTypeInterface $group_type);
 
   /**
-   * Returns the plugin ID of all group relations in use.
+   * Returns the plugin ID of all group relations in use by a group type.
    *
    * @param \Drupal\group\Entity\GroupTypeInterface $group_type
    *   The group type to retrieve plugin IDs for.
@@ -170,6 +170,14 @@ interface GroupRelationTypeManagerInterface extends PluginManagerInterface, Cach
    *   A list of all installed group relation type IDs for the given group type.
    */
   public function getInstalledIds(GroupTypeInterface $group_type);
+
+  /**
+   * Returns the plugin ID of all group relations in use.
+   *
+   * @return string[]
+   *   A list of all installed group relation type IDs.
+   */
+  public function getAllInstalledIds();
 
   /**
    * Returns the ID of all plugins that deal with a given entity type.
