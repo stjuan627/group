@@ -56,6 +56,11 @@ services:
     arguments: ['@current_user', '@entity_type.manager', '@group.membership_loader']
     tags:
       - { name: 'cache.context'}
+  cache_context.route.group_content:
+    class: 'Drupal\group\Cache\Context\RouteGroupContentCacheContext'
+    arguments: [ '@current_route_match', '@entity_type.manager' ]
+    tags:
+      - { name: 'cache.context' }
 
   group.admin_path.route_subscriber:
     class: 'Drupal\group\Routing\GroupAdminRouteSubscriber'
