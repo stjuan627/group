@@ -202,6 +202,17 @@ class GroupRelationshipController extends ControllerBase {
       }
     }
 
+    // Sort relationships based on the displayed label.
+    uasort(
+      $relationship_types,
+      function ($a, $b) {
+        return strcasecmp(
+          $a->getPlugin()->getRelationType()->getLabel()->render(),
+          $b->getPlugin()->getRelationType()->getLabel()->render()
+        );
+      },
+    );
+
     return $relationship_types;
   }
 
