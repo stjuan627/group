@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -104,12 +105,12 @@ class GroupListBuilder extends EntityListBuilder {
       ],
       'type' => [
         'data' => $this->t('Type'),
-        'specifier' =>'type',
+        'specifier' => 'type',
         'field' => 'type',
       ],
       'status' => [
         'data' => $this->t('Status'),
-        'specifier' =>'status',
+        'specifier' => 'status',
         'field' => 'status',
       ],
       'uid' => [
@@ -138,7 +139,8 @@ class GroupListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function render() {
-    $build = parent::render();
+    $build['form'] = \Drupal::formBuilder()->getForm('\Drupal\group\Form\GroupListFilterForm');
+    $build += parent::render();
     $build['table']['#empty'] = $this->t('There are no groups yet.');
     return $build;
   }
@@ -148,10 +150,23 @@ class GroupListBuilder extends EntityListBuilder {
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery();
+    $request = \Drupal::request();
 
     // Add a simple table sort by header, see ::buildHeader().
     $header = $this->buildHeader();
     $query->tableSort($header);
+
+    // Add name filter.
+    $name = $request->get('name') ?? 0;
+    if ($name) {
+      $query->condition('label', Database::getConnection()->escapeLike($name) . "%", 'LIKE');
+    }
+
+    // Add type filter.
+    $type = $request->get('type') ?? 0;
+    if ($type) {
+      $query->condition('type', $type);
+    }
 
     // Only add the pager if a limit is specified.
     if ($this->limit) {
