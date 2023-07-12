@@ -26,6 +26,13 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
+  public function getFormId() {
+    return str_replace('-', '_', parent::getFormId());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getQuestion() {
     return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
   }

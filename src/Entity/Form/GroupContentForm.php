@@ -31,6 +31,13 @@ class GroupContentForm extends ContentEntityForm {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return str_replace(':', '-', parent::getFormId());
+  }
+
+  /**
    * Returns the plugin responsible for this piece of group content.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
