@@ -2,7 +2,6 @@
 
 namespace Drupal\group\Entity\Form;
 
-use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -11,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @ingroup group
  */
-class GroupContentForm extends ContentEntityForm {
+class GroupContentForm extends GroupContentBaseForm {
 
   /**
    * The private store factory.
@@ -28,25 +27,6 @@ class GroupContentForm extends ContentEntityForm {
     $form = parent::create($container);
     $form->privateTempStoreFactory = $container->get('tempstore.private');
     return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getFormId() {
-    return str_replace(':', '-', parent::getFormId());
-  }
-
-  /**
-   * Returns the plugin responsible for this piece of group content.
-   *
-   * @return \Drupal\group\Plugin\GroupContentEnablerInterface
-   *   The responsible group content enabler plugin.
-   */
-  protected function getContentPlugin() {
-    /** @var \Drupal\group\Entity\GroupContent $group_content */
-    $group_content = $this->getEntity();
-    return $group_content->getContentPlugin();
   }
 
   /**
