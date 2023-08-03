@@ -72,21 +72,24 @@ class EntityOperationsTest extends GroupBrowserTestBase {
     $scenarios['withoutAccess'] = [
       [],
       [
-        'group/1/edit' => 'Edit',
+        'group/1/edit?destination=' => 'Edit',
         'group/1/members' => 'Members',
-        'group/1/delete' => 'Delete',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
     ];
 
     $scenarios['withAccess'] = [
       [
-        'group/1/edit' => 'Edit',
-        'group/1/delete' => 'Delete',
+        'group/1/edit?destination=' => 'Edit',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
       [
         'group/1/members' => 'Members',
+        // Destination parameter is not applied for Members and Revisions pages.
+        'group/1/members?destination=' => 'Members',
+        'group/1/revisions?destination=' => 'Revisions',
       ],
       [
         'view group',
@@ -99,12 +102,16 @@ class EntityOperationsTest extends GroupBrowserTestBase {
 
     $scenarios['withAccessAndViews'] = [
       [
-        'group/1/edit' => 'Edit',
+        'group/1/edit?destination=' => 'Edit',
         'group/1/members' => 'Members',
-        'group/1/delete' => 'Delete',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
-      [],
+      [
+        // Destination parameter is not applied for Members and Revisions pages.
+        'group/1/members?destination=' => 'Members',
+        'group/1/revisions?destination=' => 'Revisions',
+      ],
       [
         'view group',
         'edit group',
@@ -114,6 +121,7 @@ class EntityOperationsTest extends GroupBrowserTestBase {
       ],
       ['views'],
     ];
+
 
     return $scenarios;
   }
