@@ -124,7 +124,6 @@ class EntityOperationsTest extends GroupBrowserTestBase {
       ['views'],
     ];
 
-
     return $scenarios;
   }
 
