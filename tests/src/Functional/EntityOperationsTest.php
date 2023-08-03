@@ -87,9 +87,10 @@ class EntityOperationsTest extends GroupBrowserTestBase {
       ],
       [
         'group/1/members' => 'Members',
-        // Destination parameter is not applied for Members and Revisions pages.
-        'group/1/members?destination=' => 'Members',
-        'group/1/revisions?destination=' => 'Revisions',
+        // Assert no links are present for Members and Revisions with
+        // destination parameter.
+        'group/1/members?destination=' => 'Do not assert label',
+        'group/1/revisions?destination=' => 'Do not assert label',
       ],
       [
         'view group',
@@ -108,9 +109,10 @@ class EntityOperationsTest extends GroupBrowserTestBase {
         'group/1/revisions' => 'Revisions',
       ],
       [
-        // Destination parameter is not applied for Members and Revisions pages.
-        'group/1/members?destination=' => 'Members',
-        'group/1/revisions?destination=' => 'Revisions',
+        // Assert no links are present for Members and Revisions with
+        // destination parameter.
+        'group/1/members?destination=' => 'Do not assert label',
+        'group/1/revisions?destination=' => 'Do not assert label',
       ],
       [
         'view group',
