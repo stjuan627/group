@@ -24,7 +24,7 @@ class GroupRelationshipCardinality extends Constraint {
    *
    * @var string
    */
-  public $groupMessage = '@field: %content has reached the maximum amount of groups it can be added to';
+  public $groupMessage = '@field: %content has reached the maximum amount of groups of type %group_type it can be added to';
 
   /**
    * The message to show when an entity has reached the entity cardinality.
