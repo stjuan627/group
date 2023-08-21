@@ -99,6 +99,7 @@ class GroupRelationshipCardinalityValidator extends ConstraintValidator implemen
       // the current group towards the limit.
       $group_count = $this->database->select($data_table, 'gc')
         ->fields('gc', ['gid'])
+        ->condition('group_type', $group_relationship->getGroupTypeId())
         ->condition('plugin_id', $group_relationship->getPluginId())
         ->condition('entity_id', $entity_id)
         ->condition('gid', $group->id(), '!=')
@@ -112,6 +113,7 @@ class GroupRelationshipCardinalityValidator extends ConstraintValidator implemen
         $this->context->buildViolation($constraint->groupMessage)
           ->setParameter('@field', $field_name)
           ->setParameter('%content', $entity->label())
+          ->setParameter('%group_type', $group_relationship->getGroupType()->label())
           // We manually flag the entity reference field as the source of the
           // violation so form API will add a visual indicator of where the
           // validation failed.
