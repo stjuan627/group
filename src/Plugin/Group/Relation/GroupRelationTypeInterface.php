@@ -95,6 +95,14 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
   public function getEntityBundle();
 
   /**
+   * Returns the shared bundle class.
+   *
+   * @return string|false
+   *   The shared bundle class or FALSE if none was defined.
+   */
+  public function getSharedBundleClass();
+
+  /**
    * Returns whether this plugin deals with a config entity type.
    *
    * @return bool

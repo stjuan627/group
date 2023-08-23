@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -77,6 +78,32 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
       $entity->set('group_type', $entity->getRelationshipType()->getGroupTypeId());
     }
     parent::restore($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityClass(?string $bundle = NULL): string {
+    $entity_class = parent::getEntityClass($bundle);
+
+    if ($bundle) {
+      $plugin_id = $this->entityTypeManager
+        ->getStorage('group_relationship_type')
+        ->load($bundle)
+        ->getPluginId();
+
+      $group_relation_type = $this->pluginManager->getDefinition($plugin_id);
+      assert($group_relation_type instanceof GroupRelationTypeInterface);
+
+      if ($shared_bundle_class = $group_relation_type->getSharedBundleClass()) {
+        // No specific bundle class, so it's safe to return the shared one.
+        if ($entity_class === parent::getEntityClass()) {
+          return $shared_bundle_class;
+        }
+      }
+    }
+
+    return $entity_class;
   }
 
   /**
