@@ -64,6 +64,7 @@ class GroupPermissionHandlerTest extends GroupKernelTestBase {
     $expected += count($this->pluginManager->getPermissionProvider('entity_test_as_content')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('group_as_content')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('user_as_content')->buildPermissions());
+    $expected += count($this->pluginManager->getPermissionProvider('user_as_content_shared_bundle_class')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:article')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_as_content:page')->buildPermissions());
     $expected += count($this->pluginManager->getPermissionProvider('node_type_as_content')->buildPermissions());
