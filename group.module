@@ -761,3 +761,20 @@ function group_view_presave(EntityInterface $view) {
     $view->set('display', $displays);
   }
 }
+
+/**
+ * Keep all the group_content entities label synced with the target entity.
+ *
+ * We need this hook in order to update the group_content entities label to the
+ * new target entity label (in case that it changed).
+ */
+function group_entity_update(EntityInterface $entity) {
+  $group_content_items = GroupContent::loadByEntity($entity);
+  foreach ($group_content_items as $group_content_item) {
+    // If the computed label is not equals to the stored one, update it.
+    if ($group_content_item->label() != $group_content_item->label->value) {
+      // Label is already updated on pre-save.
+      $group_content_item->save();
+    }
+  }
+}

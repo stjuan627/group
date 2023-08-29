@@ -164,9 +164,15 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
-
     // Set the label so the DB also reflects it.
     $this->set('label', $this->label());
+    // If the group content is translatable, update the label for all langauges.
+    if ($this->isTranslatable()) {
+      foreach ($this->getTranslationLanguages(FALSE) as $langauge) {
+        $translation = $this->getTranslation($langauge->getId());
+        $translation->set('label', $translation->label());
+      }
+    }
   }
 
   /**
