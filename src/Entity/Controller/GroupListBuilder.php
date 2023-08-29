@@ -168,6 +168,13 @@ class GroupListBuilder extends EntityListBuilder {
     assert($entity instanceof GroupInterface);
     $operations = parent::getDefaultOperations($entity);
 
+    // Add the current path or destination as a redirect only to the default
+    // operation links.
+    $destination = $this->redirectDestination->getAsArray();
+    foreach ($operations as $key => $operation) {
+      $operations[$key]['query'] = $destination;
+    }
+
     if ($this->moduleHandler->moduleExists('views') && $entity->hasPermission('administer members', $this->currentUser)) {
       if ($this->router->getRouteCollection()->get('view.group_members.page_1') !== NULL) {
         $operations['members'] = [
@@ -184,12 +191,6 @@ class GroupListBuilder extends EntityListBuilder {
         'weight' => 20,
         'url' => $entity->toUrl('version-history'),
       ];
-    }
-
-    // Add the current path or destination as a redirect to the operation links.
-    $destination = $this->redirectDestination->getAsArray();
-    foreach ($operations as $key => $operation) {
-      $operations[$key]['query'] = $destination;
     }
 
     return $operations;

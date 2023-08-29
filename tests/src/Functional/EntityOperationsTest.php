@@ -72,21 +72,25 @@ class EntityOperationsTest extends GroupBrowserTestBase {
     $scenarios['withoutAccess'] = [
       [],
       [
-        'group/1/edit' => 'Edit',
+        'group/1/edit?destination=' => 'Edit',
         'group/1/members' => 'Members',
-        'group/1/delete' => 'Delete',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
     ];
 
     $scenarios['withAccess'] = [
       [
-        'group/1/edit' => 'Edit',
-        'group/1/delete' => 'Delete',
+        'group/1/edit?destination=' => 'Edit',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
       [
         'group/1/members' => 'Members',
+        // Assert no links are present for Members and Revisions with
+        // destination parameter.
+        'group/1/members?destination=' => 'Do not assert label',
+        'group/1/revisions?destination=' => 'Do not assert label',
       ],
       [
         'view group',
@@ -99,12 +103,17 @@ class EntityOperationsTest extends GroupBrowserTestBase {
 
     $scenarios['withAccessAndViews'] = [
       [
-        'group/1/edit' => 'Edit',
+        'group/1/edit?destination=' => 'Edit',
         'group/1/members' => 'Members',
-        'group/1/delete' => 'Delete',
+        'group/1/delete?destination=' => 'Delete',
         'group/1/revisions' => 'Revisions',
       ],
-      [],
+      [
+        // Assert no links are present for Members and Revisions with
+        // destination parameter.
+        'group/1/members?destination=' => 'Do not assert label',
+        'group/1/revisions?destination=' => 'Do not assert label',
+      ],
       [
         'view group',
         'edit group',
