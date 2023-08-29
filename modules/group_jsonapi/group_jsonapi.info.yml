@@ -1,0 +1,8 @@
+name: 'Group JSON:API'
+description: 'Integration of Group with JSON:API'
+package: 'Group'
+type: 'module'
+core_version_requirement: ^8.8 || ^9
+dependencies:
+  - 'drupal:jsonapi'
+  - 'group:group'
