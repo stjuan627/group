@@ -73,7 +73,7 @@ class GroupLatestRevisionCheck implements AccessInterface {
     $group = $route_match->getParameter('group');
 
     // This tab should not show up unless there's a reason to show it.
-    if (!$this->moderationInfo->hasPendingRevision($group)) {
+    if (!is_null($this->moderationInfo) && !$this->moderationInfo->hasPendingRevision($group)) {
       return AccessResult::forbidden('No pending revision for this group.')->addCacheableDependency($group);
     }
 
