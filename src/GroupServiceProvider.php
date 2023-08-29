@@ -22,6 +22,19 @@ class GroupServiceProvider extends ServiceProviderBase {
       $definition->setPublic(TRUE);
       $container->addDefinitions(['variation_cache_factory' => $definition]);
     }
+
+    // We need to override these access services to be able to explicitly
+    // set allowed access for the entity translation routes.
+    // Just implementing the access_check tag in the services file won't work.
+    // See https://drupal.org/project/drupal/issues/2991698.
+    if ($container->hasDefinition('content_translation.overview_access')) {
+      $definition = $container->getDefinition('content_translation.overview_access');
+      $definition->setClass('\Drupal\group\Access\GroupTranslationOverviewAccessCheck');
+    }
+    if ($container->hasDefinition('content_translation.manage_access')) {
+      $definition = $container->getDefinition('content_translation.manage_access');
+      $definition->setClass('\Drupal\group\Access\GroupTranslationManageAccessCheck');
+    }
   }
 
 }

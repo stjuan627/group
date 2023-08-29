@@ -43,6 +43,7 @@ use Drupal\user\UserInterface;
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupAccessControlHandler",
  *     "query_access" = "Drupal\group\Entity\Access\GroupQueryAccessHandler",
+ *     "translation"= "Drupal\group\Entity\GroupTranslationHandler",
  *   },
  *   admin_permission = "administer group",
  *   base_table = "groups",
