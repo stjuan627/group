@@ -39,7 +39,7 @@ class ChainGroupPermissionCalculatorTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->permissionCalculator = $this->container->get('group_permission.chain_calculator');
     $this->roleSynchronizer = $this->container->get('group_role.synchronizer');

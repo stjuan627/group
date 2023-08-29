@@ -25,7 +25,7 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $entity_type = $this->entityTypeManager->getDefinition('group');
     $this->handler = GroupQueryAccessHandler::createInstance($this->container, $entity_type);

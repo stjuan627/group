@@ -18,7 +18,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin'];
+  protected static $modules = ['group_test_plugin'];
 
   /**
    * The query access handler.
@@ -44,7 +44,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create uid: 1 here so that it's skipped in test cases.

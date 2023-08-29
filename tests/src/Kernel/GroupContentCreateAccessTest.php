@@ -4,7 +4,7 @@ namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -18,7 +18,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['group_test_plugin', 'node'];
+  protected static $modules = ['group_test_plugin', 'node'];
 
   /**
    * The access manager.
@@ -51,7 +51,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->installSchema('node', ['node_access']);

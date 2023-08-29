@@ -39,7 +39,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $cache_context_manager = $this->prophesize(CacheContextsManager::class);

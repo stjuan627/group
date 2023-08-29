@@ -44,7 +44,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->storage = $this->entityTypeManager->getStorage('group_role');
 

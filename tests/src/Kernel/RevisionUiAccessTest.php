@@ -5,7 +5,7 @@ namespace Drupal\Tests\group\Kernel;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -47,7 +47,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->accessManager = $this->container->get('access_manager');
@@ -789,6 +789,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   protected function countDefaultLanguageRevisions(GroupInterface $group) {
     return (int) $this->entityTypeManager->getStorage('group')
       ->getQuery()
+      ->accessCheck()
       ->allRevisions()
       ->condition('id', $group->id())
       ->condition('default_langcode', 1)
