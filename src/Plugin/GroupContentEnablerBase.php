@@ -486,6 +486,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       'group_cardinality' => 0,
       'entity_cardinality' => 0,
       'use_creation_wizard' => 0,
+      'allow_add_multiple' => FALSE,
     ];
   }
 
@@ -518,6 +519,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
       '#default_value' => $this->configuration['entity_cardinality'],
       '#min' => 0,
       '#required' => TRUE,
+    ];
+
+    $form['allow_add_multiple'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Allow to add multiple content at once'),
+      '#default_value' => $this->configuration['allow_add_multiple'],
     ];
 
     if ($this->definesEntityAccess()) {

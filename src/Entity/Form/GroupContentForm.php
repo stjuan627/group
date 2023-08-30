@@ -5,6 +5,7 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Field\WidgetBase;
 
 /**
  * Form controller for the group content edit forms.
@@ -21,13 +22,35 @@ class GroupContentForm extends ContentEntityForm {
   protected $privateTempStoreFactory;
 
   /**
+   * The uuid service.
+   *
+   * @var \Drupal\Component\Uuid\Pecl
+   */
+  protected $uuid;
+
+  /**
+   * Multiple content added to the group if applicable.
+   *
+   * @var \Drupal\group\Entity\GroupContentInterface[]
+   */
+  protected $entities = [];
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     /** @var static $form */
     $form = parent::create($container);
     $form->privateTempStoreFactory = $container->get('tempstore.private');
+    $form->uuid = $container->get('uuid');
     return $form;
+  }
+
+  /**
+   * Getter method for other handlers to get the added group content entities.
+   */
+  public function getEntities() {
+    return $this->entities;
   }
 
   /**
@@ -53,8 +76,58 @@ class GroupContentForm extends ContentEntityForm {
     if ($this->operation !== 'add' || $form_state->get('group_wizard')) {
       $form['entity_id']['#access'] = FALSE;
     }
+    else {
+      $content_plugin = $this->getContentPlugin();
+      $configuration = $content_plugin->getConfiguration();
+      if (array_key_exists('allow_add_multiple', $configuration) && $configuration['allow_add_multiple']) {
+        // Modify the entity_id widget to allow adding multiple items if allowed.
+        // @todo: Add more possible selection widgets here.
+        $definition = $this->entityTypeManager->getDefinition($content_plugin->getEntityTypeId());
+        $form['entity_id'] = [
+          '#type' => 'entity_autocomplete',
+          '#title' => $this->t('Select @label_plural', [
+            '@label_plural' => $definition->getPluralLabel(),
+          ]),
+          '#target_type' => $content_plugin->getEntityTypeId(),
+          '#tags' => TRUE,
+          '#selection_settings' => $content_plugin->getEntityReferenceSettings(),
+          // Dirty hack to make field validation work.
+          // @todo Find a cleaner way, one option would be maintaining
+          // full path for the element: $form['entity_id']['widget'][0] instead.
+          0 => ['target_id' => []],
+        ];
+        $form_state->set('add_multiple', TRUE);
+      }
+    }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Account for adding multiple entities as group content.
+    if ($form_state->get('add_multiple')) {
+      $field_state = WidgetBase::getWidgetState($form['#parents'], 'entity_id', $form_state);
+      $field_state['array_parents'] = array_merge($form['#parents'], ['entity_id']);
+      WidgetBase::setWidgetState($form['#parents'], 'entity_id', $form_state, $field_state);
+
+      $entity_id_value = &$form_state->getValue('entity_id');
+      $values = $entity_id_value;
+      // Validate each entity variant separately.
+      foreach ($values as $item) {
+        $entity_id_value = [$item];
+        $entity = parent::validateForm($form, $form_state);
+      }
+      // Revert entity_id value to original state.
+      $entity_id_value = $values;
+      // Return the last validated entity.
+      return $entity;
+    }
+    else {
+      return parent::validateForm($form, $form_state);
+    }
   }
 
   /**
@@ -104,8 +177,46 @@ class GroupContentForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    if ($form_state->get('add_multiple')) {
+      $entity_id_value = &$form_state->getValue('entity_id');
+      $values = $entity_id_value;
+      // Call the parent method for each reference separately and update
+      // uuid value. Store each created entity.
+      foreach ($values as $item) {
+        $entity_id_value = [$item];
+        parent::submitForm($form, $form_state);
+        $this->entity->set('uuid', [
+          ['value' => $this->uuid->generate()],
+        ]);
+        $this->entities[] = $this->entity;
+      }
+      // Revert entity_id value to original state.
+      $entity_id_value = $values;
+    }
+    else {
+      parent::submitForm($form, $form_state);
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state) {
-    $return = parent::save($form, $form_state);
+    // Multiple add case.
+    if ($form_state->get('add_multiple')) {
+      $added_count = 0;
+      foreach ($this->entities as $entity) {
+        $return = $entity->save();
+        $added_count++;
+      }
+    }
+
+    // Default logic.
+    else {
+      $return = parent::save($form, $form_state);
+      $added_count = 1;
+    }
 
     /** @var \Drupal\group\Entity\GroupContentInterface $group_content */
     $group_content = $this->getEntity();
@@ -114,10 +225,10 @@ class GroupContentForm extends ContentEntityForm {
     // can view in the following order: The relationship entity (group content),
     // they target entity itself, the group and finally the front page. This
     // only applies if there was no destination GET parameter set in the URL.
-    if ($group_content->access('view')) {
+    if ($added_count === 1 && $group_content->access('view')) {
       $form_state->setRedirectUrl($group_content->toUrl());
     }
-    elseif ($group_content->getEntity()->access('view')) {
+    elseif ($added_count === 1 && $group_content->getEntity()->access('view')) {
       $form_state->setRedirectUrl($group_content->getEntity()->toUrl());
     }
     elseif ($group_content->getGroup()->access('view')) {
