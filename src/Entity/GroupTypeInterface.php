@@ -117,6 +117,24 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
   public function creatorMustCompleteMembership();
 
   /**
+   * Returns whether the group roles should match with Drupal roles.
+   *
+   * @return bool
+   *   Whether the group creator role must be set from drupal roles.
+   */
+  public function creatorRoleMembership(): bool;
+
+  /**
+   * Returns group roles for creators based on their site-wide roles.
+   *
+   * @return array
+   *   An associate array where primary keys are site-wide role names and values
+   *   are group roles that should be assigned to users with a given site-wide
+   *   role.
+   */
+  public function creatorRoleMembershipRoles(): array;
+
+  /**
    * Gets the IDs of the group roles a group creator should receive.
    *
    * @return string
@@ -157,5 +175,15 @@ interface GroupTypeInterface extends ConfigEntityInterface, EntityDescriptionInt
    *   The installed content enabler plugin for the group type.
    */
   public function getContentPlugin($plugin_id);
+
+  /**
+   * Returns group roles that should be assigned to the current user.
+   *
+   * This is defined based on the user's current roles.
+   *
+   * @return array
+   *   An array of group roles.
+   */
+  public function getRoleMembershipRoles(): array;
 
 }

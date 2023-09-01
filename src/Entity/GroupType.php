@@ -54,6 +54,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
  *     "creator_membership",
  *     "creator_wizard",
  *     "creator_roles",
+ *     "creator_role_membership",
+ *     "creator_role_membership_roles",
  *   }
  * )
  */
@@ -107,6 +109,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    * @var string[]
    */
   protected $creator_roles = [];
+
+  /**
+   * Match group roles with Drupal roles.
+   *
+   * @var bool
+   */
+  protected $creator_role_membership = FALSE;
+
+  /**
+   * The Group roles that a group creator should receive according its Drupal roles.
+   *
+   * @var string[]
+   */
+  protected $creator_role_membership_roles = [];
 
   /**
    * {@inheritdoc}
@@ -249,6 +265,20 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
   /**
    * {@inheritdoc}
    */
+  public function creatorRoleMembership(): bool {
+    return $this->creator_role_membership;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function creatorRoleMembershipRoles(): array {
+    return $this->creator_role_membership_roles;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(EntityStorageInterface $storage) {
     // Throw an exception if the group type ID is longer than the limit.
     if (strlen($this->id()) > GroupTypeInterface::ID_MAX_LENGTH) {
@@ -334,6 +364,24 @@ class GroupType extends ConfigEntityBundleBase implements GroupTypeInterface {
    */
   public function getContentPlugin($plugin_id) {
     return $this->getInstalledContentPlugins()->get($plugin_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRoleMembershipRoles(): array {
+    $current_user = \Drupal::currentUser();
+    if ($current_user->isAnonymous()) {
+      return [];
+    }
+    $tmp = [];
+    $user_roles = $current_user->getRoles();
+    foreach ($this->creatorRoleMembershipRoles() as $sitewide_role => $group_roles) {
+      if (!empty($group_roles) && in_array($sitewide_role, $user_roles, TRUE)) {
+        $tmp[] = $group_roles;
+      }
+    }
+    return array_unique(array_merge(...$tmp));
   }
 
 }

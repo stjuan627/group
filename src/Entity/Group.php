@@ -368,7 +368,11 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     //   incomplete group memberships.
     $group_type = $this->getGroupType();
     if ($update === FALSE && $group_type->creatorGetsMembership()) {
-      $values = ['group_roles' => $group_type->getCreatorRoleIds()];
+      $roles = $group_type->getCreatorRoleIds();
+      if ($group_type->creatorRoleMembership()) {
+        $roles = array_values($group_type->getRoleMembershipRoles());
+      }
+      $values = ['group_roles' => $roles];
       $this->addMember($this->getOwner(), $values);
     }
   }

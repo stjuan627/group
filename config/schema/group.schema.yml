@@ -36,6 +36,18 @@ group.type.*:
       sequence:
         type: 'string'
         label: 'Group role ID'
+    creator_role_membership:
+      type: 'boolean'
+      label: 'Assign group roles based on site-wide roles.'
+    creator_role_membership_roles:
+      type: 'sequence'
+      label: "Group creator's group roles based on the user's site-wide roles"
+      sequence:
+        type: 'sequence'
+        label: 'Group roles associated to a site-wide role'
+        sequence:
+          type: 'string'
+          label: 'Group role ID'
 
 group_content_enabler.config.group_cardinality:
   type: 'integer'
