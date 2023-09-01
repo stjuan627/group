@@ -164,6 +164,46 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
   /**
    * {@inheritdoc}
    */
+  public function getEntityViewAllRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "view $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityViewRevisionPermission(){
+    if ($this->definesEntityPermissions) {
+      return "view $this->pluginId revision";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityRevertRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "revert $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityDeleteRevisionsPermission(){
+    if ($this->definesEntityPermissions) {
+      return "delete $this->pluginId revisions";
+    }
+    return FALSE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPermission($operation, $target, $scope = 'any') {
     assert(in_array($target, ['relation', 'entity'], TRUE), '$target must be either "relation" or "entity"');
     assert(in_array($scope, ['any', 'own'], TRUE), '$target must be either "relation" or "entity"');
@@ -192,6 +232,14 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
           return $this->getEntityDeletePermission($scope);
         case 'create':
           return $this->getEntityCreatePermission();
+        case 'view all revisions':
+          return $this->getEntityViewAllRevisionsPermission();
+        case 'view revision':
+          return $this->getEntityViewRevisionPermission();
+        case 'delete revision':
+          return $this->getEntityDeleteRevisionsPermission();
+        case 'revert revision':
+          return $this->getEntityRevertRevisionsPermission();
       }
     }
 
@@ -251,6 +299,12 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
     if ($name = $this->getEntityViewUnpublishedPermission('own')) {
       $permissions[$name] = $this->buildPermission("$prefix View own unpublished %entity_type entities");
     }
+    if ($name = $this->getEntityViewAllRevisionsPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix View all versions of %entity_type entities");
+    }
+    if ($name = $this->getEntityViewRevisionPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix View any version of %entity_type entities");
+    }
     if ($name = $this->getEntityUpdatePermission()) {
       $permissions[$name] = $this->buildPermission("$prefix Edit any %entity_type entities");
     }
@@ -262,6 +316,9 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
     }
     if ($name = $this->getEntityDeletePermission('own')) {
       $permissions[$name] = $this->buildPermission("$prefix Delete own %entity_type entities");
+    }
+    if ($name = $this->getEntityDeleteRevisionsPermission()) {
+      $permissions[$name] = $this->buildPermission("$prefix Delete any version of %entity_type entities");
     }
 
     if ($name = $this->getEntityCreatePermission()) {
