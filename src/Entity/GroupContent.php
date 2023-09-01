@@ -345,6 +345,9 @@ class GroupContent extends ContentEntityBase implements GroupContentInterface {
    * {@inheritdoc}
    */
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+    if (\Drupal::isConfigSyncing()) {
+      return [];
+    }
     // Borrowed this logic from the Comment module.
     // Warning! May change in the future: https://www.drupal.org/node/2346347
     if ($group_content_type = GroupContentType::load($bundle)) {
