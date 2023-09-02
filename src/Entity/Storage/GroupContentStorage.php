@@ -93,7 +93,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
     }
 
     $entity_type_id = $entity->getEntityTypeId();
-    if (!isset($this->loadByEntityCache[$entity_type_id][$entity_id])) {
+    if (!isset($this->loadByEntityCache[$entity_type_id])) {
       /** @var \Drupal\group\Entity\Storage\GroupContentTypeStorageInterface $storage */
       $storage = $this->entityTypeManager->getStorage('group_content_type');
       $group_content_types = $storage->loadByEntityTypeId($entity_type_id);
@@ -102,17 +102,20 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
       if (!empty($group_content_types)) {
         // Use an optimized plain query to avoid the overhead of entity and SQL
         // query builders.
-        $query = "SELECT id from {{$this->dataTable}} WHERE entity_id = :entity_id AND type IN (:types[])";
-        $this->loadByEntityCache[$entity_type_id][$entity_id] = $this->database
+        $query = "SELECT entity_id, id from {{$this->dataTable}} WHERE type IN (:types[])";
+        $result = $this->database
           ->query($query, [
-            ':entity_id' => $entity_id,
             ':types[]' => array_keys($group_content_types),
           ])
-          ->fetchCol();
+          ->fetchAll();
+
+        foreach ($result as $row) {
+          $this->loadByEntityCache[$entity_type_id][$row->entity_id][] = $row->id;
+        }
       }
       // If no responsible group content types were found, we return nothing.
       else {
-        $this->loadByEntityCache[$entity_type_id][$entity_id] = [];
+        $this->loadByEntityCache[$entity_type_id] = [];
       }
     }
 
