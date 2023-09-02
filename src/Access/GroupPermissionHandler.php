@@ -6,6 +6,7 @@ use Drupal\Component\Discovery\YamlDiscovery;
 use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
@@ -140,8 +141,12 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
     foreach ($plugins as $plugin) {
       $extras = [
         'provider' => $plugin->getProvider(),
-        'section' => $plugin->getLabel()->getUntranslatedString(),
-        'section_args' => $plugin->getLabel()->getArguments(),
+        'section' => $plugin->getLabel() instanceof TranslatableMarkup
+          ? $plugin->getLabel()->getUntranslatedString()
+          : $plugin->getLabel(),
+        'section_args' => $plugin->getLabel() instanceof TranslatableMarkup
+          ? $plugin->getLabel()->getArguments()
+          : [],
         'section_id' => $plugin->getPluginId(),
       ];
 
