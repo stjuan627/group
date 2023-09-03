@@ -219,8 +219,39 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function isPrivate() {
+    return $this->is_private->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function hasPermission($permission, AccountInterface $account) {
-    return $this->groupPermissionChecker()->hasPermissionInGroup($permission, $account, $this);
+    if ($this->groupPermissionChecker()->hasPermissionInGroup($permission, $account, $this)) {
+      if ($this->isPrivate() && !$account->hasPermission('bypass group access')) {
+        $group_roles = $this->groupRoleStorage()
+          ->loadByUserAndGroup($account, $this);
+
+        $account_is_member = in_array(
+          $this->type->entity->getMemberRoleId(),
+          array_keys($group_roles)
+        );
+
+        if (!$account_is_member) {
+          return FALSE;
+        }
+        else {
+          return TRUE;
+        }
+      }
+      else {
+        return TRUE;
+      }
+    }
+    else {
+      return FALSE;
+    }
+
   }
 
   /**
@@ -291,6 +322,18 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setRevisionable(TRUE);
+
+    $fields['is_private'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Private group'))
+      ->setDescription(t('Private groups deny access to group outsiders for all actions on the group or group content.'))
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+        'weight' => 120,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
     if (\Drupal::moduleHandler()->moduleExists('path')) {
       $fields['path'] = BaseFieldDefinition::create('path')

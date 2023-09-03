@@ -155,3 +155,23 @@ function group_post_update_make_group_revisionable(&$sandbox) {
 
   return new TranslatableMarkup('Groups have been converted to be revisionable.');
 }
+
+/**
+ * Install new is_private group field.
+ */
+function group_post_update_add_is_private_field(&$sandbox) {
+  $field_storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Private group'))
+    ->setDescription(t('Private groups deny access to group outsiders for all actions on the group or group content.'))
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+      'weight' => 120,
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('is_private', 'group', 'group', $field_storage_definition);
+}
