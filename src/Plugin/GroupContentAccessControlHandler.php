@@ -59,8 +59,26 @@ class GroupContentAccessControlHandler extends GroupContentHandlerBase implement
 
     // Add in the admin permission and filter out the unsupported permissions.
     $permissions = [$this->permissionProvider->getAdminPermission()];
-    $permissions[] = $this->permissionProvider->getPermission($operation, 'relation', 'any');
+    $any_permissions = $this->permissionProvider->getPermission($operation, 'relation', 'any');
     $own_permission = $this->permissionProvider->getPermission($operation, 'relation', 'own');
+
+    // If the target entity or group content is unpublished, try to rely
+    // on unpublished permissions where available. If not available, fallback
+    // to standard ones.
+    // A user can view group content node only if the entity and
+    // relation is published or if that user has permission to view unpublished
+    // group content entities.
+    $entity = $group_content->getEntity();
+    if ($entity instanceof EntityPublishedInterface && (!$group_content->get('status')->value || !$entity->isPublished())) {
+      $any_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'any');
+      $permissions[] = $any_unpublished ?: $any_permissions;
+      $own_unpublished = $this->permissionProvider->getPermission("$operation unpublished", 'entity', 'own');
+      $own_permission = $own_unpublished ?: $own_permission;
+    }
+    else {
+      $permissions[] = $any_permissions;
+    }
+
     if ($is_owner) {
       $permissions[] = $own_permission;
     }

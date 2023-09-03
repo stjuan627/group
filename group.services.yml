@@ -146,6 +146,10 @@ services:
     tags:
       - { name: plugin_manager_cache_clear }
 
+  group.group_content_fields_installer:
+    class: 'Drupal\group\GroupContentFieldsInstaller'
+    arguments: ['@entity_type.manager', '@config.installer']
+
   # Recently, core introduced a new static cache that does not serialize its
   # data, unlike the cache.static service. This entity.memory_cache service has
   # two major drawbacks: First of all, it is named confusingly as it can work

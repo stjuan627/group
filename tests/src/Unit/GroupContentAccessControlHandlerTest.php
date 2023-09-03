@@ -117,6 +117,10 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
     $group_content->getCachetags()->willReturn(['group_content:foo']);
     $group_content->getCacheMaxAge()->willReturn(9999);
 
+    $entity = $this->prophesize(ContentEntityInterface::class);
+    $entity = $entity->reveal();
+    $group_content->getEntity()->willReturn($entity);
+
     if ($definition['admin_permission']) {
       $group->hasPermission($definition['admin_permission'], $account)->willReturn($has_admin_permission);
     }
