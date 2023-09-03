@@ -420,7 +420,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Members cannot update grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
   }
-  
+
   /**
    * Tests the deleting of any grouped entities for members.
    */
@@ -563,6 +563,21 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_1, 'delete'), 'Members cannot delete grouped test entities.');
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'delete'), 'Members cannot delete grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'delete'), 'The ungrouped test entity can be deleted.');
+  }
+
+  /**
+   * Tests unknown access operations.
+   */
+  public function testUnknownAccessOperations() {
+    $entity_1 = $this->createTestEntity();
+
+    $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
+    $group->addContent($entity_1, 'entity_test_as_content');
+
+    // The user does have the global administer permission and is allowed
+    // access for any operation.
+    $access = $this->accessControlHandler->access($entity_1, 'unknown', NULL, TRUE);
+    $this->assertTrue($access->isAllowed(), 'Access for unknown operation is neutral, not forbidden');
   }
 
   /**
