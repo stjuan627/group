@@ -160,6 +160,14 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   /**
    * {@inheritdoc}
    */
+  public function removeContent(ContentEntityInterface $entity, $plugin_id) {
+    $storage = $this->groupContentStorage();
+    $storage->delete($storage->loadByGroup($this, $plugin_id, ['entity_id' => $entity->id()]));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getContent($plugin_id = NULL, $filters = []) {
     return $this->groupContentStorage()->loadByGroup($this, $plugin_id, $filters);
   }

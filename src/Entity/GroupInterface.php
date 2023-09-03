@@ -45,6 +45,17 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    */
   public function addContent(ContentEntityInterface $entity, $plugin_id, $values = []);
 
+
+  /**
+   * Removes a content entity as a group content entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The content entity to add to the group.
+   * @param string $plugin_id
+   *   The ID of the content enabler plugin to remove the entity with.
+   */
+  public function removeContent(ContentEntityInterface $entity, $plugin_id);
+
   /**
    * Retrieves all GroupContent entities for the group.
    *
