@@ -1,5 +1,5 @@
 name: 'Group'
-description: 'Allows you to group users, content and other entities'
+description: 'Allows you to group users, content and other entities.'
 package: 'Group'
 type: 'module'
 core_version_requirement: ^9.5 || ^10

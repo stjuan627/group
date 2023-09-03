@@ -1,5 +1,5 @@
 name: 'Group Node'
-description: 'Enables Group functionality for the Node module'
+description: 'Enables Group functionality for the Node module.'
 package: 'Group'
 type: 'module'
 core_version_requirement: ^9.5 || ^10
