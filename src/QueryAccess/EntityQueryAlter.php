@@ -400,11 +400,14 @@ class EntityQueryAlter implements ContainerInjectionInterface {
       $this->cacheableMetadata->addCacheContexts(['user']);
 
       $data_table = $this->ensureDataTable($base_table, $query, $entity_type);
-      $group_conditions->condition(
-        $query->andConditionGroup()
-          ->condition("$data_table.$owner_key", $this->currentUser->id())
-          ->condition($owner_group_conditions = $query->orConditionGroup())
-      );
+
+      if($owner_key) {
+        $group_conditions->condition(
+          $query->andConditionGroup()
+            ->condition("$data_table.$owner_key", $this->currentUser->id())
+            ->condition($owner_group_conditions = $query->orConditionGroup())
+        );
+      }
 
       // Add the allowed owner group types to the query (if any).
       if (!empty($allowed_own_ids[CGPII::SCOPE_GROUP_TYPE])) {
@@ -470,11 +473,13 @@ class EntityQueryAlter implements ContainerInjectionInterface {
         }
         $this->cacheableMetadata->addCacheContexts(['user']);
 
-        $status_group_conditions->condition(
-          $query->andConditionGroup()
-            ->condition("$data_table.$owner_key", $this->currentUser->id())
-            ->condition($status_owner_group_conditions = $query->orConditionGroup())
-        );
+        if($owner_key) {
+          $status_group_conditions->condition(
+            $query->andConditionGroup()
+              ->condition("$data_table.$owner_key", $this->currentUser->id())
+              ->condition($status_owner_group_conditions = $query->orConditionGroup())
+          );
+        }
 
         // Add the allowed owner group types to the query (if any).
         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP_TYPE][$status])) {
