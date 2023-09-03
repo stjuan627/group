@@ -67,7 +67,7 @@ class GroupContentStorage extends SqlContentEntityStorage implements GroupConten
   public function loadByGroup(GroupInterface $group, $plugin_id = NULL, $filters = []) {
     // An unsaved group cannot have any content.
     if ($group->id() === NULL) {
-      throw new EntityStorageException("Cannot load GroupContent entities for an unsaved group.");
+      return [];
     }
 
     $properties = ['gid' => $group->id()] + $filters;
