@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\group\Functional;
 
+use Drupal\group\PermissionScopeInterface;
+
 /**
  * Tests the group creator wizard.
  *
@@ -22,6 +24,12 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    */
   public function testCreatorMembershipWizard() {
     $group_type = $this->createGroupType();
+    $group_role = $this->createGroupRole([
+      'group_type' => $group_type->id(),
+      'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
+    ]);
+    $group_type->set('creator_roles', [$group_role->id()]);
+    $group_type->save();
     $group_type_id = $group_type->id();
 
     $role = $this->drupalCreateRole(["create $group_type_id group"]);
@@ -51,16 +59,24 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
     $this->assertCount(1, $all_groups);
     $group = reset($all_groups);
 
-    // Check for the membership.
+    // Check for the membership
     $group_relationship_storage = $this->entityTypeManager->getStorage('group_relationship');
     $creator_relationships = $group_relationship_storage->loadByEntity($this->groupCreator, 'group_membership');
 
-    // Check the count equals one.
+    // Check the count equals one
     $this->assertCount(1, $creator_relationships, 'There is just one membership');
 
     // Check the belonging group of that membership
     $creator_relationship = reset($creator_relationships);
     $this->assertEquals($creator_relationship->getGroupId(), $group->id(), 'Membership belongs to the group');
+
+    // Check that the roles assigned to the created member are the same as what we configured in the group defaults
+    $membership = $group->getMember($this->groupCreator);
+    $ids = [];
+    foreach ($membership->getGroupRelationship()->group_roles as $group_role_ref) {
+      $ids[] = $group_role_ref->target_id;
+    }
+    $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Wizard set the correct creator roles');
   }
 
   /**
