@@ -101,8 +101,8 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    */
   protected function createGroupTypeAndRole($creator_wizard = TRUE, $creator_membership = TRUE) {
     $group_type = $this->createGroupType([
-      'creator_membership' => FALSE,
-      'creator_wizard' => FALSE,
+      'creator_membership' => $creator_membership,
+      'creator_wizard' => $creator_wizard,
     ]);
     $group_type_id = $group_type->id();
 
