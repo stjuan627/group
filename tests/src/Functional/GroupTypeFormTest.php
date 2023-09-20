@@ -101,7 +101,10 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
    * Tests granting the group creator a membership.
    */
   public function testCreatorMembership() {
-    $edit = ['The group creator automatically becomes a member' => 1] + $this->commonValues;
+    $edit = [
+      'The group creator automatically becomes a member' => 1,
+      'Group creator must complete their membership' => 0,
+    ] + $this->commonValues;
     $this->submitForm($edit, $this->setUpAddFormAndGetSubmitButton());
 
     $group = $this->createGroup(['type' => $this->groupTypeId]);
