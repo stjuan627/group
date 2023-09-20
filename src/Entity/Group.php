@@ -359,7 +359,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     //   groups should not get this functionality because it may create
     //   incomplete group memberships.
     $group_type = $this->getGroupType();
-    if ($update === FALSE && $group_type->creatorGetsMembership() && !$this->getMember($this->getOwner())) {
+    if ($update === FALSE && $group_type->creatorGetsMembership() && !$group_type->creatorMustCompleteMembership()) {
       $values = ['group_roles' => $group_type->getCreatorRoleIds()];
       $this->addMember($this->getOwner(), $values);
     }

@@ -196,7 +196,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
     $definition = $this->entityTypeManager->getDefinition($this->entityTypeId);
     $data_table = $definition->getDataTable() ?: $definition->getBaseTable();
-    $group_type = $this->createGroupType();
+    $group_type = $this->createGroupType(['creator_wizard']);
 
     if ($individual_permissions || $individual_is_admin) {
       $group_role = $this->createGroupRole([
