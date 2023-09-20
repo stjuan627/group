@@ -25,7 +25,10 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    * Tests that a group creator gets a membership using the wizard.
    */
   public function testCreatorMembershipWizard() {
-    $group_type = $this->createGroupTypeAndRole();
+    $group_type = $this->createGroupTypeAndRole(TRUE, TRUE);
+
+    $this->drupalGet("/group/add/{$group_type->id()}");
+    $this->assertSession()->statusCodeEquals(200);
 
     $group_role = $this->createGroupRole([
       'group_type' => $group_type->id(),
@@ -45,37 +48,61 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
     $this->assertSession()->buttonExists($submit_button);
     $this->assertSession()->buttonExists('Back');
 
-    // Submit the membership form
     $this->submitForm([], $submit_button);
     $this->assertSession()->statusCodeEquals(200);
 
-    // Get the group
+    // Get the group.
     $all_groups = $this->entityTypeManager->getStorage('group')->loadMultiple();
     $this->assertCount(1, $all_groups);
     $group = reset($all_groups);
 
-    // Check there is just one membership
-    $membership_ids = $this->loadGroupMembership($group, $this->groupCreator);
-    $this->assertCount(1, $membership_ids, 'Wizard set just one membership');
+    // Check there is just one membership.
+    $membership_ids = $this->loadGroupMembershipIds($group, $this->groupCreator);
+    $this->assertCount(1, $membership_ids, 'Wizard set just one membership.');
 
-    // Check that the roles assigned to the created member are the same as what we configured in the group defaults
-    $membership = $group->getMember($this->groupCreator);
+    // Check that the roles assigned to the created member are the same as what
+    // we configured in the group defaults.
     $ids = [];
-    foreach ($membership->getGroupRelationship()->group_roles as $group_role_ref) {
+    foreach ($group->getMember($this->groupCreator)->getGroupRelationship()->group_roles as $group_role_ref) {
       $ids[] = $group_role_ref->target_id;
     }
-    $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Wizard set the correct creator roles');
+    $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Wizard set the correct creator roles.');
   }
 
   /**
    * Tests that a group creator gets a membership without using the wizard.
    */
   public function testCreatorMembershipNoWizard() {
-    $group_type = $this->createGroupTypeAndRole(FALSE);
+    $group_type = $this->createGroupTypeAndRole(TRUE, FALSE);
+
+    $this->drupalGet("/group/add/{$group_type->id()}");
+    $this->assertSession()->statusCodeEquals(200);
 
     $submit_button = 'Create ' . $group_type->label() . ' and become a member';
     $this->assertSession()->buttonExists($submit_button);
     $this->assertSession()->buttonNotExists('Cancel');
+
+    $edit = ['Title' => $this->randomString()];
+    $this->submitForm($edit, $submit_button);
+
+    // Get the group.
+    $all_groups = $this->entityTypeManager->getStorage('group')->loadMultiple();
+    $this->assertCount(1, $all_groups);
+    $group = reset($all_groups);
+
+    // @todo We do not want this behavior in Group 4.0.0, we only want the
+    //   wizard to create a membership and assign roles.
+    // Check there is just one membership.
+    $membership_ids = $this->loadGroupMembershipIds($group, $this->groupCreator);
+    $this->assertCount(1, $membership_ids, 'Wizard set just one membership.');
+
+    // Check that the roles assigned to the created member are the same as what
+    // we configured in the group defaults.
+    $ids = [];
+    foreach ($group->getMember($this->groupCreator)->getGroupRelationship()->group_roles as $group_role_ref) {
+      $ids[] = $group_role_ref->target_id;
+    }
+    $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Group::postCreate() correctly set the creator roles.');
   }
 
   /**
@@ -84,50 +111,63 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
   public function testNoWizard() {
     $group_type = $this->createGroupTypeAndRole(FALSE, FALSE);
 
-    $this->assertSession()->buttonExists('Create ' . $group_type->label());
+    $this->drupalGet("/group/add/{$group_type->id()}");
+    $this->assertSession()->statusCodeEquals(200);
+
+    $submit_button = 'Create ' . $group_type->label();
+    $this->assertSession()->buttonExists($submit_button);
     $this->assertSession()->buttonNotExists('Cancel');
+
+    $edit = ['Title' => $this->randomString()];
+    $this->submitForm($edit, $submit_button);
+
+    // Get the group.
+    $all_groups = $this->entityTypeManager->getStorage('group')->loadMultiple();
+    $this->assertCount(1, $all_groups);
+    $group = reset($all_groups);
+
+    // Check there is no membership.
+    $membership_ids = $this->loadGroupMembershipIds($group, $this->groupCreator);
+    $this->assertCount(0, $membership_ids, 'Group creation did not result in a membership.');
+    $this->assertFalse($group->getMember($this->groupCreator), 'No membership found for group creator.');
   }
 
   /**
-   * Create group type and role with creation rights.
+   * Creates group type and role with creation rights.
    *
-   * @param bool $creator_wizard
-   *   The group creator must immediately complete their membership.
    * @param bool $creator_membership
    *   The group creator automatically receives a membership.
+   * @param bool $creator_wizard
+   *   The group creator must immediately complete their membership.
    *
    * @return \Drupal\group\Entity\GroupType
    *   Group type.
    */
-  protected function createGroupTypeAndRole($creator_wizard = TRUE, $creator_membership = TRUE) {
+  protected function createGroupTypeAndRole($creator_membership, $creator_wizard) {
     $group_type = $this->createGroupType([
       'creator_membership' => $creator_membership,
       'creator_wizard' => $creator_wizard,
     ]);
-    $group_type_id = $group_type->id();
 
-    $role = $this->drupalCreateRole(["create $group_type_id group"]);
+    $role = $this->drupalCreateRole(["create {$group_type->id()} group"]);
     $this->groupCreator->addRole($role);
     $this->groupCreator->save();
-
-    $this->drupalGet("/group/add/$group_type_id");
-    $this->assertSession()->statusCodeEquals(200);
 
     return $group_type;
   }
 
   /**
-   * Membership array of a user in a group.
+   * Loads all membership IDs for a user in a group.
    *
    * @param GroupInterface $group
-   *   The group used to get the memberships.
+   *   The group used to get the membership IDs.
    * @param AccountInterface $account
-   *   The user account used to get the memberships.
+   *   The user account used to get the membership IDs.
    *
-   * @return array|int
-   *   The memberships ids array.
+   * @return int[]
+   *   The memberships IDs.
    */
-  protected function loadGroupMembership(GroupInterface $group, AccountInterface $account) {
+  protected function loadGroupMembershipIds(GroupInterface $group, AccountInterface $account) {
     $storage = $this->entityTypeManager->getStorage('group_relationship');
 
     return $storage->getQuery()
