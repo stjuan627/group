@@ -32,7 +32,7 @@ information, see
 
 ## Configuration
 
-Note: By default, the admin user (user id #1) does not have any special
+Note: By default, the admin user (user id `#1`) does not have any special
 permissions, as opposed to many other Drupal modules. So the admin user needs
 to be granted the group admin role. For more, see 
 [Full guide to Group version 2 and 3 - #03 Roles and permissions](https://www.youtube.com/watch?v=xo2z8NuKEH4).
