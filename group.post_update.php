@@ -5,6 +5,8 @@
  * Post update functions for Group.
  */
 
+use Drupal\Core\Field\Entity\BaseFieldOverride;
+
 /**
  * Updates stale references to Drupal\group\Entity\Context in field overrides.
  */
