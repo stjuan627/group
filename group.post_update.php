@@ -14,7 +14,7 @@ function group_post_update_modify_base_field_author_override() {
   $uid_fields = \Drupal::entityTypeManager()
     ->getStorage('base_field_override')
     ->getQuery()
-    ->condition('entity_type', 'group')
+    ->condition('entity_type', 'group_content')
     ->condition('field_name', 'uid')
     ->condition('default_value_callback', 'GroupContent', 'CONTAINS')
     ->execute();
