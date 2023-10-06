@@ -26,7 +26,7 @@ This module requires no modules outside of Drupal core.
 ## Installation
 
 Install as you would normally install a contributed Drupal module. For further
-information, see 
+information, see
 [Installing Drupal Modules](https://www.drupal.org/docs/extending-drupal/installing-drupal-modules).
 
 
@@ -34,7 +34,7 @@ information, see
 
 Note: By default, the admin user (user id `#1`) does not have any special
 permissions, as opposed to many other Drupal modules. So the admin user needs
-to be granted the group admin role. For more, see 
+to be granted the group admin role. For more, see
 [Full guide to Group version 2 and 3 - #03 Roles and permissions](https://www.youtube.com/watch?v=xo2z8NuKEH4).
 
 ### Creating a new group type
@@ -86,7 +86,7 @@ the 'Members' link from 'Administration > Groups > [Group Name]'.
 
 ## Maintainers
 
-- Kristiaan Van den Eynde (kristiaanvandeneynde) - https://www.drupal.org/u/kristiaanvandeneynde
-- Derek Wright (dww) - https://www.drupal.org/u/dww
+- Kristiaan Van den Eynde - [kristiaanvandeneynde](https://www.drupal.org/u/kristiaanvandeneynde)
+- Derek Wright - [dww](https://www.drupal.org/u/dww)
 
 This project has been sponsored by Deeson.
