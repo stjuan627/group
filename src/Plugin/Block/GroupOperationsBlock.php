@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "group_operations",
  *   admin_label = @Translation("Group operations"),
  *   context_definitions = {
- *     "group" = @ContextDefinition("entity:group", required = FALSE)
+ *     "group" = @ContextDefinition("entity:group")
  *   }
  * )
  */
@@ -85,7 +85,10 @@ class GroupOperationsBlock extends BlockBase implements ContainerFactoryPluginIn
     $cacheable_metadata = new CacheableMetadata();
     $cacheable_metadata->setCacheContexts(['user.group_permissions']);
 
-    if (($group = $this->getContextValue('group')) && $group->id()) {
+    // The Group context is required, but the value could have no ID yet. We
+    // need to make sure we do not try to build links with a new Group entity.
+    $group = $this->getContextValue('group');
+    if ($group->id()) {
       assert($group instanceof GroupInterface);
       $links = [];
 
