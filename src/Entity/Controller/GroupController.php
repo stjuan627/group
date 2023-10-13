@@ -120,6 +120,7 @@ class GroupController extends ControllerBase {
       $values = [
         'type' => $relationship_type_storage->getRelationshipTypeId($group_type->id(), 'group_membership'),
         'entity_id' => $this->currentUser()->id(),
+        'group_roles' => $group_type->getCreatorRoleIds(),
       ];
       $entity = $this->entityTypeManager()->getStorage('group_content')->create($values);
     }

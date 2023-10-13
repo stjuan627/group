@@ -125,6 +125,7 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
     $group_type = $storage->create($values + [
       'id' => $this->randomMachineName(),
       'label' => $this->randomString(),
+      'creator_wizard' => FALSE,
     ]);
     $storage->save($group_type);
     return $group_type;
