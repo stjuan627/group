@@ -71,7 +71,7 @@ class GroupRoleScopeValidator extends ConstraintValidator implements ContainerIn
         ->condition('group_type', $group_role->getGroupTypeId())
         ->condition('scope', $scope)
         ->condition('global_role', $global_role)
-        ->accessCheck()
+        ->accessCheck(FALSE)
         ->execute();
 
       if (!empty($existing_pairs)) {

@@ -122,7 +122,7 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
           ->condition('scope', $membership ? PermissionScopeInterface::INSIDER_ID : PermissionScopeInterface::OUTSIDER_ID)
           ->condition('global_role', $roles, 'IN')
           ->condition('group_type', $group->bundle());
-        $ids = array_merge($ids, $query->accessCheck()->execute());
+        $ids = array_merge($ids, $query->accessCheck(FALSE)->execute());
       }
 
       $this->userGroupRoleIds[$uid][$gid][$key] = $ids;
