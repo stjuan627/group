@@ -110,7 +110,8 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       $ids = [];
 
       // Get the IDs from the 'group_roles' field, without loading the roles.
-      if ($membership = $this->groupMembershipLoader->load($group, $account)) {
+      $membership = $this->groupMembershipLoader->load($group, $account);
+      if ($membership) {
         foreach ($membership->getGroupRelationship()->group_roles as $group_role_ref) {
           $ids[] = $group_role_ref->target_id;
         }
