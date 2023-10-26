@@ -2,9 +2,11 @@
 
 namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\group\EntityTypeBundleInfoTrait;
 use Drupal\group\Plugin\Group\RelationHandler\UiTextProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\UiTextProviderTrait;
 
@@ -15,6 +17,8 @@ class UiTextProvider implements UiTextProviderInterface {
 
   use UiTextProviderTrait;
 
+  use EntityTypeBundleInfoTrait;
+
   /**
    * Constructs a new UiTextProvider.
    *
@@ -22,10 +26,15 @@ class UiTextProvider implements UiTextProviderInterface {
    *   The entity type manager.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface|null $entity_type_bundle_info
+   *   The entity type bundle info service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation, EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL) {
     $this->entityTypeManager = $entity_type_manager;
     $this->stringTranslation = $string_translation;
+    if ($entity_type_bundle_info !== NULL) {
+      $this->setEntityTypeBundleInfo($entity_type_bundle_info);
+    }
   }
 
   /**
@@ -49,8 +58,8 @@ class UiTextProvider implements UiTextProviderInterface {
     $t_args = ['%entity_type' => $this->entityType->getSingularLabel()];
 
     if ($bundle = $this->groupRelationType->getEntityBundle()) {
-      $storage = $this->entityTypeManager()->getStorage($this->entityType->getBundleEntityType());
-      $t_args['%bundle'] = $storage->load($bundle)->label();
+      $bundles = $this->getEntityTypeBundleInfo()->getBundleInfo($this->entityType->id());
+      $t_args['%bundle'] = $bundles[$bundle]['label'];
       return $create_mode
         ? $this->t('Add new %entity_type of type %bundle to the group.', $t_args)
         : $this->t('Add existing %entity_type of type %bundle to the group.', $t_args);

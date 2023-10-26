@@ -2,13 +2,14 @@
 
 namespace Drupal\Tests\group\Unit {
 
+  use Drupal\Core\Entity\EntityTypeBundleInfo;
   use Drupal\Core\Entity\EntityTypeInterface;
   use Drupal\Core\Entity\EntityTypeManagerInterface;
   use Drupal\Core\Extension\ModuleHandlerInterface;
   use Drupal\Core\Session\AccountProxyInterface;
   use Drupal\Core\StringTranslation\TranslationInterface;
-  use Drupal\group\Entity\GroupRelationshipTypeInterface;
   use Drupal\group\Entity\GroupInterface;
+  use Drupal\group\Entity\GroupRelationshipTypeInterface;
   use Drupal\group\Entity\GroupTypeInterface;
   use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationType;
@@ -253,7 +254,8 @@ namespace Drupal\Tests\group\Unit {
         $current_user,
         $entity_type_manager,
         $relation_type_manager,
-        $this->prophesize(TranslationInterface::class)->reveal()
+        $this->prophesize(TranslationInterface::class)->reveal(),
+        $this->prophesize(EntityTypeBundleInfo::class)->reveal()
       );
       $operation_provider->init($plugin_id, $definition);
       return $operation_provider;
