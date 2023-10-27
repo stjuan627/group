@@ -734,10 +734,10 @@ function group_relationship_entity_submit($form, FormStateInterface $form_state)
   // wants to see the entity itself and not the relationship. This only applies
   // if there was no "destination" query argument.
   if ($entity->access('view')) {
-    $form_state->setRedirectUrl($entity->toUrl());
+    $form_state->setRedirectUrl($group_relationship->getGroup()->toUrl());
   }
   elseif ($group->access('view')) {
-    $form_state->setRedirectUrl($group->toUrl());
+    $form_state->setRedirectUrl($group_relationship->getGroup()->toUrl());
   }
   else {
     $form_state->setRedirect('<front>');

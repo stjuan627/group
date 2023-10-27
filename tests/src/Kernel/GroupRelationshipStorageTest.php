@@ -323,4 +323,53 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
     $this->assertCount(1, $this->storage->loadByPluginId('group_membership'), 'Managed to load the group creator membership by plugin ID.');
   }
 
+  /**
+   * Tests that shared bundle classes work.
+   *
+   * @covers ::getEntityClass
+   */
+  public function testSharedBundleClass() {
+    $group_type_none = $this->createGroupType();
+    $group_type_shared = $this->createGroupType();
+    $group_type_specific = $this->createGroupType();
+    $account = $this->createUser();
+
+    // Enable the test plugins on the test group types.
+    $storage = $this->entityTypeManager->getStorage('group_relationship_type');
+    assert($storage instanceof GroupRelationshipTypeStorageInterface);
+    $storage->createFromPlugin($group_type_none, 'user_relation')->save();
+    $storage->createFromPlugin($group_type_shared, 'user_relation_shared_bundle_class')->save();
+    $storage->createFromPlugin($group_type_specific, 'user_relation_shared_bundle_class')->save();
+
+    // Verify that the group types use the expected entity class.
+    $group_relationship_none = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_none->id()]), 'user_relation');
+    $group_relationship_shared = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_shared->id()]), 'user_relation_shared_bundle_class');
+    $group_relationship_specific = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_specific->id()]), 'user_relation_shared_bundle_class');
+    $this->assertInstanceOf('\Drupal\group\Entity\GroupRelationship', $group_relationship_none, 'Regular entity class detected when no specific or shared bundle class was present.');
+    $this->assertInstanceOf('\Drupal\group_test_plugin\Entity\GroupedUser', $group_relationship_shared, 'Shared bundle class detected when no specific bundle class was present.');
+    $this->assertInstanceOf('\Drupal\group_test_plugin\Entity\GroupedUser', $group_relationship_specific, 'Shared bundle class detected when no specific bundle class was present.');
+
+    // Enable a specific bundle class.
+    $GLOBALS['specific_bundle_id'] = $storage->getRelationshipTypeId($group_type_specific->id(), 'user_relation_shared_bundle_class');
+    $this->entityTypeManager->clearCachedDefinitions();
+    \Drupal::service('entity_type.bundle.info')->clearCachedBundles();
+
+    // Verify again, checking that the specific bundle class takes precedence.
+    $group_relationship_none = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_none->id()]), 'user_relation');
+    $group_relationship_shared = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_shared->id()]), 'user_relation_shared_bundle_class');
+    $group_relationship_specific = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_specific->id()]), 'user_relation_shared_bundle_class');
+    $this->assertInstanceOf('\Drupal\group\Entity\GroupRelationship', $group_relationship_none, 'Regular entity class detected when no specific or shared bundle class was present.');
+    $this->assertInstanceOf('\Drupal\group_test_plugin\Entity\GroupedUser', $group_relationship_shared, 'Shared bundle class detected when no specific bundle class was present.');
+    $this->assertInstanceOf('\Drupal\group_test_plugin\Entity\GroupedUserSpecific', $group_relationship_specific, 'Specific bundle class detected when specific bundle class was present.');
+
+    // Enable specific bundle class for the plugin without shared bundle class.
+    $GLOBALS['specific_bundle_id'] = $storage->getRelationshipTypeId($group_type_none->id(), 'user_relation');
+    $this->entityTypeManager->clearCachedDefinitions();
+    \Drupal::service('entity_type.bundle.info')->clearCachedBundles();
+
+    // Verify again, checking that the specific bundle class works.
+    $group_relationship_none = $this->storage->createForEntityInGroup($account, $this->createGroup(['type' => $group_type_none->id()]), 'user_relation');
+    $this->assertInstanceOf('\Drupal\group_test_plugin\Entity\GroupedUserSpecific', $group_relationship_none, 'Specific bundle class detected when no shared bundle class was present.');
+  }
+
 }

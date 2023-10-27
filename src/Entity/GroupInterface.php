@@ -30,6 +30,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * Returns the group type entity the group uses.
    *
    * @return \Drupal\group\Entity\GroupTypeInterface
+   *   The group type entity.
    */
   public function getGroupType();
 
@@ -121,7 +122,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   The user to load the membership for.
    *
    * @return \Drupal\group\GroupMembership|false
-   *   The loaded GroupMembership or FALSE if none was found.
+   *   The loaded group membership or FALSE if none was found.
    */
   public function getMember(AccountInterface $account);
 
@@ -133,7 +134,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    *   names to filter on. Results only need to match on one role (IN query).
    *
    * @return \Drupal\group\GroupMembership[]
-   *   A list of GroupMembership objects representing the memberships.
+   *   A list of group memberships.
    */
   public function getMembers($roles = NULL);
 
