@@ -48,7 +48,7 @@ function gnode_entity_operation(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  *
  * Add the group ID and plugin ID to the MediaLibraryState when the media
  * library is being used on the create group content form, so it can be used to
