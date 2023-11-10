@@ -7,10 +7,14 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
 use Drupal\Core\Url;
+use Drupal\group\Entity\Group;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\media_library\MediaLibraryState;
 
 /**
  * Implements hook_ENTITY_TYPE_insert().
@@ -41,4 +45,78 @@ function gnode_entity_operation(EntityInterface $entity) {
   }
 
   return $operations;
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ *
+ * Add the group ID and plugin ID to the MediaLibraryState when the media
+ * library is being used on the create group content form, so it can be used to
+ * determine permissions in gnode_node_create_access().
+ *
+ * @see gnode_node_create_access()
+ * @see \Drupal\media_library\Plugin\Field\FieldWidget\MediaLibraryWidget::formElement()
+ */
+function gnode_field_widget_single_element_media_library_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $route_match = Drupal::routeMatch();
+
+  if ($route_match->getRouteName() === 'entity.group_content.create_form') {
+    /** @var \Drupal\media_library\MediaLibraryState $state */
+    $state = $element['open_button']['#media_library_state'];
+    $openerParameters = $state->getOpenerParameters();
+    $openerParameters['group_id'] = $route_match->getParameters()
+      ->get('group')
+      ->id();
+    $openerParameters['plugin_id'] = $route_match->getParameters()
+      ->get('plugin_id');
+    $new_state = MediaLibraryState::create($state->getOpenerId(), $state->getAllowedTypeIds(), $state->getSelectedTypeId(), $state->getAvailableSlots(), $openerParameters);
+    $element['open_button']['#media_library_state'] = $new_state;
+  }
+}
+
+/**
+ * Implements hook_entity_create_access().
+ *
+ * If node create access is being checked from the media library, use the
+ * group
+ * ID and plugin ID to determine if the account has access to create
+ * content in
+ * the group.
+ *
+ * @see Drupal\media_library\MediaLibraryFieldWidgetOpener()
+ */
+function gnode_node_create_access(AccountInterface $account, array $context, $entity_bundle) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  // Default access is neutral.
+  $access = AccessResult::neutral();
+
+  switch ($route_name) {
+    case 'media_library.ui':
+    case 'view.media_library.widget':
+    case 'view.media_library.widget_table':
+      /** @var \Drupal\media_library\MediaLibraryState $state */
+      $state = MediaLibraryState::fromRequest(\Drupal::request());
+      $openerParameters = $state->getOpenerParameters();
+
+      // If the group ID and plugin ID exist within the opener parameters, we know
+      // the media library is being used on the create group content form.
+      if (isset($openerParameters['group_id']) && isset($openerParameters['plugin_id'])) {
+        $group = Group::load($openerParameters['group_id']);
+        $plugin_id = $openerParameters['plugin_id'];
+        // Determine whether the user can create group content entities using
+        // access check manager.
+        $access = \Drupal::accessManager()->checkNamedRoute(
+          'entity.group_content.create_form',
+          [
+            'group' => $group->id(),
+            'plugin_id' => $plugin_id,
+          ],
+          $account,
+          TRUE
+        );
+      }
+      break;
+  }
+
+  return $access;
 }
