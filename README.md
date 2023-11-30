@@ -39,7 +39,7 @@ to be granted the group admin role. For more, see
 
 ### Creating a new group type
 
-Add a Group Type at 'Administration > Groups' (`admin/group/types`) for
+Add a Group Type at 'Administration > Groups' (`/admin/group/types`) for
 example: 'School'.
 
 
@@ -76,10 +76,10 @@ the 'Members' link from 'Administration > Groups > [Group Name]'.
   used. For instance, to enable 'Article' as a Group Content Type for the
   'School' Group Type, go to the group listing at 'Administration > Groups >
   Group Types > Type > Set Available Content'
-  (`admin/group/types/manage/school/content`) and click 'Install' next to
+  (`/admin/group/types/manage/school/content`) and click 'Install' next to
   'Group node (Article)'.
-- Go to your Group's main page and click either 'Nodes' (`group/1/nodes`)
-  or 'All Entities' (`group/1/content`). Click either 'Create node' to create
+- Go to your Group's main page and click either 'Nodes' (`/group/1/nodes`)
+  or 'All Entities' (`/group/1/content`). Click either 'Create node' to create
   a node directly in this group, or click 'Relate node' to make an existing
   node part of this group.
 
