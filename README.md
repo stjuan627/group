@@ -9,6 +9,11 @@ using Entity References to track the relationships between groups users, terms,
 and other entity types, the Group module creates groups as entities, making them
 fully fieldable, extensible, and exportable.
 
+For a full description of the module, visit the
+[project page](https://www.drupal.org/project/group).
+
+Submit bug reports and feature suggestions, or track changes in the
+[issue queue](https://www.drupal.org/project/issues/group).
 
 ## Table of contents
 
