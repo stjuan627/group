@@ -531,7 +531,9 @@ display:
       access:
         type: group_permission
         options:
-          group_permission: 'administer members'
+          group_permission:
+            'administer members': 'administer members'
+          operator: AND
       cache:
         type: tag
         options: {  }
