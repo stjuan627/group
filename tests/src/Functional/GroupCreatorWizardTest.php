@@ -168,7 +168,7 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    *   The memberships IDs.
    */
   protected function loadGroupMembershipIds(GroupInterface $group, AccountInterface $account) {
-    $storage = $this->entityTypeManager->getStorage('group_relationship');
+    $storage = $this->entityTypeManager->getStorage('group_content');
 
     return $storage->getQuery()
       ->accessCheck(FALSE)
