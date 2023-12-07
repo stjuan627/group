@@ -38,7 +38,7 @@ class GroupRevisionDeleteForm extends ConfirmFormBase {
   /**
    * Constructs a new GroupRevisionDeleteForm.
    *
-   * @param \Drupal\Core\Entity\ContentEntityStorageInterface
+   * @param \Drupal\Core\Entity\ContentEntityStorageInterface $group_storage
    *   The group storage.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.

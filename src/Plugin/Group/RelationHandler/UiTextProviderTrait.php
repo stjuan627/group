@@ -17,6 +17,13 @@ trait UiTextProviderTrait {
   use StringTranslationTrait;
 
   /**
+   * The parent UI text provider handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\UiTextProviderInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * The entity type the plugin handler is for.
    *
    * @var \Drupal\Core\Entity\EntityTypeInterface

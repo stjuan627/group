@@ -89,7 +89,10 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
     });
     $this->assertFalse($render_context->isEmpty(), 'Cacheability was bubbled');
     $this->assertCount(1, $render_context);
-    $this->assertEqualsCanonicalizing(['group_relationship_list:plugin:node_relation:article', 'group_relationship_list:plugin:node_relation:page'], $render_context[0]->getCacheTags());
+    $this->assertEqualsCanonicalizing([
+      'group_relationship_list:plugin:node_relation:article',
+      'group_relationship_list:plugin:node_relation:page',
+    ], $render_context[0]->getCacheTags());
   }
 
   /**

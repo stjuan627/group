@@ -6,8 +6,6 @@ use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
-use Drupal\group\Entity\GroupInterface;
 
 /**
  * Defines a common interface for all group relations.

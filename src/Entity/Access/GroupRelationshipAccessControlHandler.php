@@ -2,10 +2,10 @@
 
 namespace Drupal\group\Entity\Access;
 
-use Drupal\Core\Entity\EntityHandlerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
+use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;

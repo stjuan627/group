@@ -135,22 +135,30 @@ class GroupPermissionsHashGeneratorTest extends GroupKernelTestBase {
    *   A list of testSynchronized method arguments.
    */
   public function synchronizedProvider() {
-    $cases['insider-regular'] = ['role_config' => [
-      'scope' => PermissionScopeInterface::INSIDER_ID,
-      'permissions' => ['edit group'],
-    ]];
-    $cases['insider-admin'] = ['role_config' => [
-      'scope' => PermissionScopeInterface::INSIDER_ID,
-      'admin' => TRUE
-    ]];
-    $cases['outsider-regular'] = ['role_config' => [
-      'scope' => PermissionScopeInterface::OUTSIDER_ID,
-      'permissions' => ['edit group'],
-    ]];
-    $cases['outsider-admin'] = ['role_config' => [
-      'scope' => PermissionScopeInterface::OUTSIDER_ID,
-      'admin' => TRUE
-    ]];
+    $cases['insider-regular'] = [
+      'role_config' => [
+        'scope' => PermissionScopeInterface::INSIDER_ID,
+        'permissions' => ['edit group'],
+      ],
+    ];
+    $cases['insider-admin'] = [
+      'role_config' => [
+        'scope' => PermissionScopeInterface::INSIDER_ID,
+        'admin' => TRUE,
+      ],
+    ];
+    $cases['outsider-regular'] = [
+      'role_config' => [
+        'scope' => PermissionScopeInterface::OUTSIDER_ID,
+        'permissions' => ['edit group'],
+      ],
+    ];
+    $cases['outsider-admin'] = [
+      'role_config' => [
+        'scope' => PermissionScopeInterface::OUTSIDER_ID,
+        'admin' => TRUE,
+      ],
+    ];
     return $cases;
   }
 

@@ -47,9 +47,9 @@ class GroupRelationshipStorageSchema extends SqlContentEntityStorageSchema {
           // choose performance over edge cases.
           $schema['fields'][$field_name]['length'] = 64;
 
-        // Deliberate break missing above because plugin_id also needs this.
         case 'gid':
         case 'entity_id':
+          // Deliberate break missing above because plugin_id also needs this.
           // Improves the performance of the indexes defined above.
           $schema['fields'][$field_name]['not null'] = TRUE;
           break;

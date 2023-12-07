@@ -128,6 +128,9 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
     return $this->createGroup(['type' => $group_type->id()]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function joinTargetEntityDataTable(SelectInterface $query) {
     parent::joinTargetEntityDataTable($query);
     $this->joinedFieldData = TRUE;

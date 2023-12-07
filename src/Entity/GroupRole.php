@@ -316,6 +316,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     if ($role = $this->getGlobalRole()) {
       $this->addDependency('config', $role->getConfigDependencyName());
     }
+    return $this;
   }
 
   /**
@@ -360,7 +361,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
 
     if (!isset($this->weight) && ($group_roles = $storage->loadMultiple())) {
       // Set a role weight to make this new role last.
-      $max = array_reduce($group_roles, function($max, $group_role) {
+      $max = array_reduce($group_roles, function ($max, $group_role) {
         return $max > $group_role->weight ? $max : $group_role->weight;
       });
 

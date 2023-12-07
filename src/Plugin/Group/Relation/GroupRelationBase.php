@@ -3,11 +3,10 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\PluginException;
-use Drupal\group\Entity\GroupType;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\group\Entity\GroupType;
 
 /**
  * Provides a base class for GroupRelation plugins.
@@ -174,7 +173,7 @@ abstract class GroupRelationBase extends PluginBase implements GroupRelationInte
    *
    * Only override this function if you need to do something specific to the
    * submitted data before it is saved as configuration on the plugin. The data
-   * gets saved on the plugin in \Drupal\group\Entity\Form\GroupRelationshipTypeForm.
+   * gets saved on the plugin in the group relationship type form.
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
   }

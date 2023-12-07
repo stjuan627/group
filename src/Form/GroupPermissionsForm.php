@@ -198,7 +198,7 @@ abstract class GroupPermissionsForm extends FormBase {
             'id' => 'module-' . $provider,
           ],
           '#markup' => $this->moduleHandler->getName($provider),
-        ]
+        ],
       ];
 
       foreach ($sections as $section_id => $permissions) {
@@ -211,12 +211,12 @@ abstract class GroupPermissionsForm extends FormBase {
               'id' => 'section-' . $section_id,
             ],
             '#markup' => reset($permissions)['section'],
-          ]
+          ],
         ];
 
         // Then list all of the permissions for that provider and section.
         foreach ($permissions as $perm => $perm_item) {
-          // Create a row for the permission, starting with the description cell.
+          // Create a row for the permission, starting with the description.
           $form['permissions'][$perm]['description'] = [
             '#type' => 'inline_template',
             '#template' => '<span class="title">{{ title }}</span>{% if description or warning %}<div class="description">{% if warning %}<em class="permission-warning">{{ warning }}</em><br />{% endif %}{{ description }}</div>{% endif %}',
@@ -274,8 +274,8 @@ abstract class GroupPermissionsForm extends FormBase {
                 '#attributes' => [
                   'class' => [
                     'rid-' . $role_name,
-                    'js-rid-' . $role_name
-                  ]
+                    'js-rid-' . $role_name,
+                  ],
                 ],
                 '#parents' => [$role_name, $perm],
               ];
@@ -300,7 +300,7 @@ abstract class GroupPermissionsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
       assert($group_role instanceof GroupRoleInterface);
       if ($group_role->isAdmin()) {
