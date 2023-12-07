@@ -36,7 +36,8 @@ class GroupRelationshipCreateAnyAccessCheck implements AccessInterface {
    * Checks access for relationship creation routes.
    *
    * All routes using this access check should have a group parameter and have
-   * the _group_relationship_create_any_access requirement set to 'TRUE' or 'FALSE'.
+   * the _group_relationship_create_any_access requirement set to 'TRUE' or
+   * 'FALSE'.
    *
    * @param \Symfony\Component\Routing\Route $route
    *   The route to check against.

@@ -284,13 +284,13 @@ class AccessControlTest extends UnitTestCase {
                     if ($own_permission) {
                       $result->addCacheContexts(['user']);
 
-                    // Tags and max-age as defined in ::testRelationAccess().
-                    $result->addCacheTags(['group_relationship:foo']);
-                    $result->mergeCacheMaxAge(9999);
-                  }
-                  return $result;
-                };
-              }
+                      // Tags and max-age as defined in ::testRelationAccess().
+                      $result->addCacheTags(['group_relationship:foo']);
+                      $result->mergeCacheMaxAge(9999);
+                    }
+                    return $result;
+                  };
+                }
 
                 $case['has_own_permission'] = $has_own_permission;
                 $case['any_permission'] = $any_permission;

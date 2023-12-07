@@ -165,11 +165,6 @@ parameters:
 			path: src/Entity/GroupRole.php
 
 		-
-			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getPluginId\\(\\)\\.$#"
-			count: 1
-			path: src/Entity/Storage/GroupRelationshipStorage.php
-
-		-
 			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getGroup\\(\\)\\.$#"
 			count: 1
 			path: src/Form/GroupLeaveForm.php
@@ -181,11 +176,6 @@ parameters:
 
 		-
 			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:isPublished\\(\\)\\.$#"
-			count: 1
-			path: src/Plugin/Group/RelationHandlerDefault/AccessControl.php
-
-		-
-			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:\\:loadByEntity\\(\\)\\.$#"
 			count: 1
 			path: src/Plugin/Group/RelationHandlerDefault/AccessControl.php
 
