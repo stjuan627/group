@@ -38,14 +38,14 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $description;
 
   /**
-   * (optional) The label for the entity reference field.
+   * The label for the entity reference field.
    *
    * @var \Drupal\Core\Annotation\Translation
    */
   protected $reference_label;
 
   /**
-   * (optional) The description for the entity reference field.
+   * The description for the entity reference field.
    *
    * @var \Drupal\Core\Annotation\Translation
    */
@@ -59,7 +59,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $entity_type_id;
 
   /**
-   * (optional) The bundle of the entity type the plugin supports.
+   * The bundle of the entity type the plugin supports.
    *
    * Do not specify if your plugin manages all bundles.
    *
@@ -68,7 +68,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $entity_bundle = FALSE;
 
   /**
-   * (optional) The bundle class for all relationships using this plugin.
+   * The bundle class for all relationships using this plugin.
    *
    * If you make sure that your shared class puts all of its functionality in a
    * trait and has its own interface, then it should be easy for others to still
@@ -84,7 +84,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $shared_bundle_class = FALSE;
 
   /**
-   * (optional) Whether the supported entity type is config.
+   * Whether the supported entity type is config.
    *
    * This will be determined by the plugin manager, no need to set it.
    *
@@ -93,7 +93,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $config_entity_type = FALSE;
 
   /**
-   * (optional) Whether the plugin defines entity access.
+   * Whether the plugin defines entity access.
    *
    * This controls whether you can create entities within the group (TRUE) or
    * only add existing ones (FALSE), or if you can update or delete entities
@@ -105,14 +105,14 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $entity_access = FALSE;
 
   /**
-   * (optional) Whether this plugin is always on.
+   * Whether this plugin is always on.
    *
    * @var bool
    */
   protected $enforced = FALSE;
 
   /**
-   * (optional) Whether this plugin can only be (un)installed through code.
+   * Whether this plugin can only be (un)installed through code.
    *
    * This is useful for plugins that should not be enabled by choice, but rather
    * when certain conditions are met throughout the site. When that happens, you
@@ -124,7 +124,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $code_only = FALSE;
 
   /**
-   * (optional) The key to use in automatically generated paths.
+   * The key to use in automatically generated paths.
    *
    * This is exposed through tokens so modules like Pathauto may use it. Only
    * use this if your plugin has something meaningful to show on the actual
@@ -135,7 +135,7 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $pretty_path_key = 'content';
 
   /**
-   * (optional) The admin permission for this plugin.
+   * The admin permission for this plugin.
    *
    * @var string|false
    */
@@ -158,10 +158,10 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    */
   public function get($property) {
     if (property_exists($this, $property)) {
-      $value = isset($this->{$property}) ? $this->{$property} : NULL;
+      $value = $this->{$property} ?? NULL;
     }
     else {
-      $value = isset($this->additional[$property]) ? $this->additional[$property] : NULL;
+      $value = $this->additional[$property] ?? NULL;
     }
     return $value;
   }

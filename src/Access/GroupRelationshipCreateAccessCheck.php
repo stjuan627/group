@@ -2,11 +2,11 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Symfony\Component\Routing\Route;
 
@@ -68,7 +68,7 @@ class GroupRelationshipCreateAccessCheck implements AccessInterface {
     $access = $access_control_handler->createAccess($relationship_type_id, $account, ['group' => $group], TRUE);
 
     // Only allow access if the user can create relationships using the
-    // provided plugin or if he doesn't need access to do so.
+    // provided plugin or if they don't need access to do so.
     return AccessResult::allowedIf($access->isAllowed() xor !$needs_access)->inheritCacheability($access);
   }
 

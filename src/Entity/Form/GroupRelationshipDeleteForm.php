@@ -34,6 +34,7 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
+  // phpcs:ignore
   public function getCancelURL() {
     $group_relationship = $this->getEntity();
     assert($group_relationship instanceof GroupRelationshipInterface);

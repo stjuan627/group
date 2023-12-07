@@ -9,9 +9,9 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\Access\GroupRelationshipAccessControlHandler;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;
-use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
@@ -30,28 +30,28 @@ class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
   /**
    * The account to test with.
    *
-   * @var \Drupal\Core\Session\AccountInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Session\AccountInterface>
    */
   protected $account;
 
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Entity\EntityTypeManagerInterface>
    */
   protected $entityTypeManager;
 
   /**
    * The group relation type manager.
    *
-   * @var \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface>
    */
   protected $groupRelationTypeManager;
 
   /**
    * The access control handler.
    *
-   * @var \Drupal\group\Entity\Access\GroupRelationshipAccessControlHandler|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\group\Entity\Access\GroupRelationshipAccessControlHandler>
    */
   protected $accessControlHandler;
 
@@ -96,6 +96,7 @@ class GroupRelationshipAccessControlHandlerTest extends UnitTestCase {
     $group_relationship->id()->willReturn(1337);
     $group_relationship->uuid()->willReturn('baz');
     $group_relationship->language()->willReturn($language->reveal());
+    $group_relationship->isDefaultRevision()->willReturn(TRUE);
     $group_relationship->getRevisionId()->willReturn(9001);
     $group_relationship->getEntityTypeId()->willReturn('group_content');
     $group_relationship->getPluginId()->willReturn('bar');

@@ -54,7 +54,7 @@ class GroupForm extends ContentEntityForm {
         $actions['submit']['#value'] = $this->t('Create @group_type and complete your membership', $replace);
 
         // Add a cancel button to clear the private temp store. This exits the
-        // wizard without saving,
+        // wizard without saving.
         $actions['cancel'] = [
           '#type' => 'submit',
           '#value' => $this->t('Cancel'),

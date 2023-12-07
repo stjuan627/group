@@ -29,7 +29,7 @@ class GroupId extends NumericArgument {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param ContentEntityStorageInterface $group_storage
+   * @param \Drupal\Core\Entity\ContentEntityStorageInterface $group_storage
    *   The group entity storage handler.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, ContentEntityStorageInterface $group_storage) {

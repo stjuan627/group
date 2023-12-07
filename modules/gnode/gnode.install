@@ -7,6 +7,7 @@
 
 use Drupal\Core\Config\ExtensionInstallStorage;
 use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Config\StorageInterface;
 
 /**
  * Update the group nodes view to use the argument provided title.
@@ -68,7 +69,10 @@ function gnode_update_8003() {
       // Get the storage for optional extension configuration.
       $optional_storage = new ExtensionInstallStorage(
         \Drupal::service('config.storage'),
-        InstallStorage::CONFIG_OPTIONAL_DIRECTORY
+        InstallStorage::CONFIG_OPTIONAL_DIRECTORY,
+        StorageInterface::DEFAULT_COLLECTION,
+        FALSE,
+        \Drupal::installProfile()
       );
 
       // Read the data from the YAML file and save it to the view.

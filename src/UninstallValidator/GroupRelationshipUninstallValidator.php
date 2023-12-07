@@ -10,6 +10,9 @@ use Drupal\group\Entity\GroupRelationshipType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 
+/**
+ * Validates if the Group module can be uninstalled.
+ */
 class GroupRelationshipUninstallValidator implements ModuleUninstallValidatorInterface {
 
   use StringTranslationTrait;

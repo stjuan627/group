@@ -35,11 +35,10 @@ class EntityQueryAlterTest extends EntityQueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function setUpContent(GroupTypeInterface $group_type) {
-    parent::setUpContent($group_type);
+    $group = parent::setUpContent($group_type);
 
     // Add two entities, one of which belongs to a group.
     $this->createTestEntity();
-    $group = $this->createGroup(['type' => $group_type->id()]);
     $group->addRelationship($this->createTestEntity(['type' => 'page']), 'entity_test_as_content');
     return $group;
   }

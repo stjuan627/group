@@ -19,6 +19,7 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('_group_operation_route', TRUE);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -31,6 +32,7 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
       $route->setDefault('_title_callback', '\Drupal\group\Entity\Controller\GroupController::addFormTitle');
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -41,6 +43,7 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('_group_operation_route', TRUE);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -51,6 +54,7 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('_group_operation_route', TRUE);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -73,6 +77,7 @@ class GroupRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
 }

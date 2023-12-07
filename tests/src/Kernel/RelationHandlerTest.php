@@ -43,15 +43,15 @@ class RelationHandlerTest extends GroupKernelTestBase {
     assert($relation_manager instanceof GroupRelationTypeManagerInterface);
 
     $message = "All plugins have foobar appended, proving decorating defaults works and respects priority";
-    $expected = 'administer user_as_content' . 'foobar';
+    $expected = 'administer user_as_contentfoobar';
     $this->assertSame($expected, $relation_manager->getPermissionProvider('user_as_content')->getAdminPermission(), $message);
 
     $message = "Node plugin also has baz appended, proving decoration_priority works separately for the default and specific service";
-    $expected = 'administer node_as_content:page' . 'foobar' . 'baz';
+    $expected = 'administer node_as_content:pagefoobarbaz';
     $this->assertSame($expected, $relation_manager->getPermissionProvider('node_as_content:page')->getAdminPermission(), $message);
 
     $message = "Test entity plugin also has bazfoo appended, proving decoration_priority is respected within specific alters";
-    $expected = 'administer entity_test_as_content' . 'foobar' . 'bazfoo';
+    $expected = 'administer entity_test_as_contentfoobarbazfoo';
     $this->assertSame($expected, $relation_manager->getPermissionProvider('entity_test_as_content')->getAdminPermission(), $message);
   }
 

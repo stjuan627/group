@@ -82,6 +82,7 @@ abstract class EntityQueryAlterTestBase extends QueryAlterTestBase {
     $storage = $this->entityTypeManager->getStorage('group_content_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
     $storage->save($storage->createFromPlugin($group_type, $this->pluginId));
+    return $this->createGroup(['type' => $group_type->id()]);
   }
 
   /**

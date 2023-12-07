@@ -7,8 +7,8 @@ namespace Drupal\Tests\group\Unit {
   use Drupal\Core\Extension\ModuleHandlerInterface;
   use Drupal\Core\Session\AccountProxyInterface;
   use Drupal\Core\StringTranslation\TranslationInterface;
-  use Drupal\group\Entity\GroupRelationshipTypeInterface;
   use Drupal\group\Entity\GroupInterface;
+  use Drupal\group\Entity\GroupRelationshipTypeInterface;
   use Drupal\group\Entity\GroupTypeInterface;
   use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
   use Drupal\group\Plugin\Group\Relation\GroupRelationType;

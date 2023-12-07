@@ -280,7 +280,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function getInstalledIds(GroupTypeInterface $group_type) {
     $map = $this->getGroupTypePluginMap();
-    return isset($map[$group_type->id()]) ? $map[$group_type->id()] : [];
+    return $map[$group_type->id()] ?? [];
   }
 
   /**
@@ -354,7 +354,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function getRelationshipTypeIds($plugin_id) {
     $map = $this->getPluginGroupRelationshipTypeMap();
-    return isset($map[$plugin_id]) ? $map[$plugin_id] : [];
+    return $map[$plugin_id] ?? [];
   }
 
   /**

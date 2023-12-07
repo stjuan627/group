@@ -1,0 +1,269 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Session\\\\AccountInterface\\:\\:\\$original\\.$#"
+			count: 1
+			path: group.module
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Annotation\\\\Translation\\:\\:getArguments\\(\\)\\.$#"
+			count: 1
+			path: src/Access/GroupPermissionHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Annotation\\\\Translation\\:\\:getUntranslatedString\\(\\)\\.$#"
+			count: 1
+			path: src/Access/GroupPermissionHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addCacheTags\\(\\)\\.$#"
+			count: 1
+			path: src/Access/IndividualGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 2
+			path: src/Access/IndividualGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addItem\\(\\)\\.$#"
+			count: 1
+			path: src/Access/IndividualGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addCacheTags\\(\\)\\.$#"
+			count: 1
+			path: src/Access/SynchronizedGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 1
+			path: src/Access/SynchronizedGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\flexible_permissions\\\\CalculatedPermissionsInterface\\:\\:addItem\\(\\)\\.$#"
+			count: 1
+			path: src/Access/SynchronizedGroupPermissionCalculator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Access\\\\AccessResultInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Access/GroupAccessControlHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Access\\\\AccessResultInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Access/GroupRelationshipTypeAccessControlHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Access\\\\AccessResultInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Access/GroupRoleAccessControlHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Access\\\\AccessResultInterface\\:\\:addCacheableDependency\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Access/GroupTypeAccessControlHandler.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface\\:\\:setSetting\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/ConfigWrapper.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Routing\\\\RedirectDestinationInterface\\:\\:getDefinition\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Controller/GroupRelationshipListBuilder.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\ContentEntityInterface\\|Drupal\\\\Core\\\\Entity\\\\RevisionLogInterface\\:\\:getGroupType\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Form/GroupForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getGroup\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Form/GroupRelationshipForm.php
+
+		-
+			message: """
+				#^Call to deprecated method deleteRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
+				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
+				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:deleteRevision instead\\.$#
+			"""
+			count: 1
+			path: src/Entity/Form/GroupRevisionDeleteForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:setChangedTime\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Form/GroupRevisionRevertForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:setRevisionCreationTime\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Form/GroupRevisionRevertForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:setRevisionUserId\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Form/GroupRevisionRevertForm.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Entity\\\\ContentEntityInterface\\:\\:\\$revision_log_message\\.$#"
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getRelationships\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface\\:\\:setDisplayOptions\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface\\:\\:setLabel\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\TypedData\\\\DataDefinitionInterface\\:\\:setClass\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Group.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Entity\\\\ContentEntityInterface\\:\\:\\$group_roles\\.$#"
+			count: 1
+			path: src/Entity/GroupRelationship.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getConfigEntity\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/GroupRelationship.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getConfigEntityId\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/GroupRelationship.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Field\\\\FieldDefinitionInterface\\:\\:setLabel\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/GroupRelationship.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationInterface\\:\\:getPluginDefinition\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/GroupRelationshipType.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:\\$weight\\.$#"
+			count: 1
+			path: src/Entity/GroupRole.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getPluginId\\(\\)\\.$#"
+			count: 1
+			path: src/Entity/Storage/GroupRelationshipStorage.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getGroup\\(\\)\\.$#"
+			count: 1
+			path: src/Form/GroupLeaveForm.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:getOwnerId\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Group/RelationHandlerDefault/AccessControl.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityInterface\\:\\:isPublished\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Group/RelationHandlerDefault/AccessControl.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:\\:loadByEntity\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/Group/RelationHandlerDefault/AccessControl.php
+
+		-
+			message: "#^Variable \\$group_relationship in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/GroupRelationshipCardinalityValidator.php
+
+		-
+			message: "#^Variable \\$group_role in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: src/Plugin/Validation/Constraint/GroupRoleScopeValidator.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\views\\\\Plugin\\\\views\\\\query\\\\QueryPluginBase\\:\\:addRelationship\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/views/relationship/GroupRelationshipToEntityBase.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\views\\\\Plugin\\\\views\\\\query\\\\QueryPluginBase\\:\\:addTag\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/views/relationship/GroupRelationshipToEntityBase.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\views\\\\Plugin\\\\views\\\\query\\\\QueryPluginBase\\:\\:addRelationship\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/views/relationship/GroupToGroupRelationship.php
+
+		-
+			message: "#^Call to an undefined method Drupal\\\\views\\\\Plugin\\\\views\\\\query\\\\QueryPluginBase\\:\\:addTag\\(\\)\\.$#"
+			count: 1
+			path: src/Plugin/views/relationship/GroupToGroupRelationship.php
+
+		-
+			message: "#^Variable \\$any_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$data_table might not be defined\\.$#"
+			count: 3
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$own_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Tests\\\\group\\\\Kernel\\\\QueryAlter\\\\QueryAlterTangibleTest\\:\\:\\$accessControlHandler\\.$#"
+			count: 1
+			path: tests/src/Kernel/QueryAlter/QueryAlterTangibleTest.php
+
+		-
+			message: "#^Access to an undefined property Drupal\\\\Tests\\\\group\\\\Kernel\\\\QueryAlter\\\\QueryAlterTangibleTest\\:\\:\\$storage\\.$#"
+			count: 3
+			path: tests/src/Kernel/QueryAlter/QueryAlterTangibleTest.php
+
+		-
+			message: "#^Variable \\$owner_conditions might not be defined\\.$#"
+			count: 3
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		-
+			message: "#^Variable \\$unpub_permissions might not be defined\\.$#"
+			count: 8
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		-
+			message: """
+				#^Call to deprecated method loadRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
+				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
+				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:loadRevision instead\\.$#
+			"""
+			count: 1
+			path: tests/src/Kernel/RevisionUiAccessTest.php
+
+		-
+			message: "#^Plugin definitions cannot be altered\\.$#"
+			count: 1
+			path: tests/src/Unit/GroupRelationTypeManagerTest.php

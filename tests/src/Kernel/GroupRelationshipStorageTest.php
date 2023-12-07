@@ -116,7 +116,7 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
   }
 
   /**
-   * Tests the creation of a GroupRelationship entity using an incorrect plugin ID.
+   * Tests the creation of a GroupRelationship entity using incorrect plugin ID.
    *
    * @covers ::createForEntityInGroup
    */
@@ -239,7 +239,7 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
     $group_b = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
     $account = $this->getCurrentUser();
 
-    // Both entities should have ID 2 to test
+    // Both entities should have ID 2 to test.
     $this->assertSame($group_b->id(), $account->id());
 
     // Add the group as content so we can verify only the user is returned.
@@ -281,7 +281,7 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
     $group_b = $this->createGroup(['type' => $this->createGroupType(['id' => 'default'])->id()]);
     $account = $this->getCurrentUser();
 
-    // Both entities should have ID 2 to test
+    // Both entities should have ID 2 to test.
     $this->assertSame($group_b->id(), $account->id());
 
     // Add the group as content so we can verify only the user is returned.

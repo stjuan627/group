@@ -175,14 +175,14 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
       $checks_owner = $checks_owner || ${$key . '_owner_check'};
       $checks_status = $checks_status
-        || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-        || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+      || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
+      || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
 
       if ($key !== 'individual') {
         $checks_member = $checks_member
-          || ${$key . '_simple_check'} || ${$key . '_owner_check'}
-          || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-          || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+        || ${$key . '_simple_check'} || ${$key . '_owner_check'}
+        || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
+        || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
       }
     }
 
@@ -538,7 +538,10 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
             if ($pub_permission && $unpub_permission) {
               $cases["single-$copy_key-own-mixpub-$operation"] = $status_base;
-              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_permissions"] = [$pub_permission, $unpub_permission];
+              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_permissions"] = [
+                $pub_permission,
+                $unpub_permission,
+              ];
               $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
               $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
             }
@@ -925,7 +928,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * Makes sure a ConditionInterface has the OR conjunction.
    *
    * @param \Drupal\Core\Database\Query\ConditionInterface $parent
-   *  The parent ConditionInterface to potentially add the OR group to.
+   *   The parent ConditionInterface to potentially add the OR group to.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface
    *   An OR condition group attached to the parent in case the parent did not
@@ -1018,7 +1021,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * Adds a no access conditions to the query.
    *
    * @param \Drupal\Core\Database\Query\SelectInterface $query
-   *  The query to add the access check to.
+   *   The query to add the access check to.
    */
   abstract protected function addNoAccessConditions(SelectInterface $query);
 
@@ -1029,7 +1032,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * of the query conditions.
    *
    * @param \Drupal\Core\Database\Query\SelectInterface $query
-   *  The query to add the condition group to.
+   *   The query to add the condition group to.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface
    *   The query or wrapper condition group.
@@ -1044,9 +1047,9 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param array $allowed_ids
    *   The IDs to grant access to.
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    * @param bool $outsider
-   *  Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
+   *   Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
    */
   abstract protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider);
 
@@ -1056,7 +1059,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param array $allowed_ids
    *   The IDs to grant access to.
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    */
   abstract protected function addIndividualConditions(array $allowed_ids, ConditionInterface $conditions);
 

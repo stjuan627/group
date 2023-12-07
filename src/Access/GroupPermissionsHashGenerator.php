@@ -49,7 +49,7 @@ class GroupPermissionsHashGenerator implements GroupPermissionsHashGeneratorInte
   /**
    * The database connection.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Database\Connection
    */
   protected $database;
 

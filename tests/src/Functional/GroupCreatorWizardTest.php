@@ -159,9 +159,9 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
   /**
    * Loads all membership IDs for a user in a group.
    *
-   * @param GroupInterface $group
+   * @param \Drupal\group\Entity\GroupInterface $group
    *   The group used to get the membership IDs.
-   * @param AccountInterface $account
+   * @param \Drupal\Core\Session\AccountInterface $account
    *   The user account used to get the membership IDs.
    *
    * @return int[]

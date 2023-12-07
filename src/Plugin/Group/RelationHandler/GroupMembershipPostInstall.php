@@ -45,7 +45,7 @@ class GroupMembershipPostInstall implements PostInstallInterface {
    *
    * @param \Drupal\group\Entity\GroupRelationshipTypeInterface $relationship_type
    *   The GroupRelationshipType created by installing the plugin.
-   * @param $is_syncing
+   * @param bool $is_syncing
    *   Whether config is syncing.
    */
   public function installGroupRolesField(GroupRelationshipTypeInterface $relationship_type, $is_syncing) {

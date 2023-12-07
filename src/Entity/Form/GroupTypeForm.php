@@ -386,6 +386,7 @@ class GroupTypeForm extends BundleEntityFormBase {
     }
 
     $form_state->setRedirectUrl($group_type->toUrl('collection'));
+    return $status;
   }
 
 }

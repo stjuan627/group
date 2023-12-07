@@ -105,7 +105,7 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
   public function label() {
     return $this->t('INTERNAL USE ONLY -- @group_type -- @plugin', [
       '@group_type' => $this->getGroupType()->label(),
-      '@plugin' => $this->getPlugin()->getPluginDefinition()->getLabel()
+      '@plugin' => $this->getPlugin()->getPluginDefinition()->getLabel(),
     ]);
   }
 
@@ -193,9 +193,9 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
     if (!$update) {
       $plugin_manager = $this->getGroupRelationTypeManager();
 
-      // When a new GroupRelationshipType is saved, we clear the views data cache to
-      // make sure that all of the views data which relies on relationship
-      // types is up to date.
+      // When a new GroupRelationshipType is saved, we clear the views data
+      // cache to make sure that all of the views data which relies on
+      // relationship types is up-to-date.
       if (\Drupal::moduleHandler()->moduleExists('views')) {
         \Drupal::service('views.views_data')->clear();
       }
@@ -222,9 +222,9 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
    * {@inheritdoc}
    */
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
-    // When a GroupRelationshipType is deleted, we clear the views data cache to make
-    // sure that all of the views data which relies on relationship types is up
-    // to date.
+    // When a GroupRelationshipType is deleted, we clear the views data cache to
+    // make sure that all of the views data which relies on relationship types
+    // is up-to-date.
     if (\Drupal::moduleHandler()->moduleExists('views')) {
       \Drupal::service('views.views_data')->clear();
     }
@@ -246,6 +246,8 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
 
     // Add the dependencies of the responsible group relation.
     $this->addDependencies($this->getPlugin()->calculateDependencies());
+
+    return $this;
   }
 
 }

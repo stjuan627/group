@@ -23,6 +23,13 @@ trait OperationProviderTrait {
   use StringTranslationTrait;
 
   /**
+   * The parent operation provider handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\OperationProviderInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * The entity type the plugin handler is for.
    *
    * @var \Drupal\Core\Entity\EntityTypeInterface

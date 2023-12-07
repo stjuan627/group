@@ -180,7 +180,7 @@ class GroupQueryAlter extends QueryAlterBase {
    */
   protected function addIndividualConditions(array $allowed_ids, ConditionInterface $scope_conditions) {
     $base_table = $this->ensureBaseTable();
-    $scope_conditions->condition("$base_table.id", array_unique($allowed_ids) , 'IN');
+    $scope_conditions->condition("$base_table.id", array_unique($allowed_ids), 'IN');
   }
 
   /**

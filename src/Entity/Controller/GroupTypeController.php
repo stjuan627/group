@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -164,10 +164,10 @@ class GroupTypeController extends ControllerBase {
         ],
       ],
       'provider' => [
-        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider())
+        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider()),
       ],
       'entity_type_id' => [
-        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel()
+        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel(),
       ],
       'status' => ['#markup' => $status],
       'install_type' => ['#markup' => $install_type],
