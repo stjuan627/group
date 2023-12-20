@@ -238,7 +238,7 @@ class GroupTypeForm extends BundleEntityFormBase {
         $add_role_url = Url::fromRoute('entity.group_role.add_form', ['group_type' => $type->id()]);
         $t_args = ['@url' => $add_role_url->toString()];
         $description = $this->t('You do not have any custom group roles yet, <a href="@url">create one here</a>.', $t_args);
-        $form['creator_roles']['#description'] .= "<br /><em>$description</em>";
+        $form['access_settings']['creator_roles']['#description'] .= "<br /><em>$description</em>";
       }
     }
 
