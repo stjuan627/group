@@ -58,9 +58,6 @@ class GroupRelationshipCardinalityValidator extends ConstraintValidator implemen
   public function validate($group_relationship, Constraint $constraint) {
     assert($group_relationship instanceof GroupRelationshipInterface);
     assert($constraint instanceof GroupRelationshipCardinality);
-    if (!isset($group_relationship)) {
-      return;
-    }
 
     // Only run our checks if a group was referenced.
     if (!$group = $group_relationship->getGroup()) {

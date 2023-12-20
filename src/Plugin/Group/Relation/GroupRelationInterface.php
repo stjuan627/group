@@ -5,6 +5,7 @@ namespace Drupal\group\Plugin\Group\Relation;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
+use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
@@ -15,7 +16,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationBase
  * @see plugin_api
  */
-interface GroupRelationInterface extends DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
+interface GroupRelationInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ConfigurableInterface, DependentPluginInterface, PluginFormInterface {
 
   /**
    * Gets the ID of the type of the relation.

@@ -4,6 +4,7 @@ namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
@@ -12,6 +13,7 @@ use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides access control for group relations.
@@ -135,8 +137,12 @@ class AccessControl implements AccessControlInterface {
 
     // Figure out which operation to check.
     $operation_to_check = $operation;
-    if ($check_published && !$entity->isPublished()) {
-      $operation_to_check = "$operation unpublished";
+    if ($check_published) {
+      assert($entity instanceof EntityPublishedInterface);
+
+      if (!$entity->isPublished()) {
+        $operation_to_check = "$operation unpublished";
+      }
     }
 
     // The Group module's ideology is that if you want to do something to a
@@ -161,6 +167,7 @@ class AccessControl implements AccessControlInterface {
     // Check if the account is the owner and an owner permission is supported.
     $is_owner = FALSE;
     if ($this->implementsOwnerInterface) {
+      assert($entity instanceof EntityOwnerInterface);
       $is_owner = $entity->getOwnerId() === $account->id();
     }
 
