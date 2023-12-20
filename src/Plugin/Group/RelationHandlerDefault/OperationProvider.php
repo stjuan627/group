@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Plugin\Group\RelationHandlerDefault;
 
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -9,6 +10,7 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\EntityTypeBundleInfoTrait;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\OperationProviderTrait;
@@ -19,6 +21,8 @@ use Drupal\group\Plugin\Group\RelationHandler\OperationProviderTrait;
 class OperationProvider implements OperationProviderInterface {
 
   use OperationProviderTrait;
+
+  use EntityTypeBundleInfoTrait;
 
   /**
    * The module handler.
@@ -40,13 +44,18 @@ class OperationProvider implements OperationProviderInterface {
    *   The group relation type manager.
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   The string translation service.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface|null $entity_type_bundle_info
+   *   The entity type bundle info service.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager, TranslationInterface $string_translation) {
+  public function __construct(ModuleHandlerInterface $module_handler, AccountProxyInterface $current_user, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $groupRelationTypeManager, TranslationInterface $string_translation, ?EntityTypeBundleInfoInterface $entity_type_bundle_info = NULL) {
     $this->moduleHandler = $module_handler;
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entity_type_manager;
     $this->groupRelationTypeManager = $groupRelationTypeManager;
     $this->stringTranslation = $string_translation;
+    if ($entity_type_bundle_info !== NULL) {
+      $this->setEntityTypeBundleInfo($entity_type_bundle_info);
+    }
   }
 
   /**
@@ -104,18 +113,20 @@ class OperationProvider implements OperationProviderInterface {
         $key_parts[] = $bundle_id;
       }
 
-      $bundle_entity_type = $this->entityType->getBundleEntityType();
-      if ($bundle_id && $bundle_entity_type) {
-        $bundle = $this->entityTypeManager()->getStorage($bundle_entity_type)->load($bundle_id);
-        $label = $bundle->label();
+      $bundles = $this->getEntityTypeBundleInfo()->getBundleInfo($this->entityType->id());
+      if ($bundle_id && !empty($bundles)) {
+        $label = $this->t('Add @entity_type of type @bundle', [
+          '@entity_type' => $this->entityType->getSingularLabel(),
+          '@bundle' => $bundles[$bundle_id]['label'],
+        ]);
       }
       else {
-        $label = $this->entityType->getSingularLabel();
+        $label = $this->t('Add @entity_type', ['@entity_type' => $this->entityType->getSingularLabel()]);
       }
 
       $route_params = ['group' => $group->id(), 'plugin_id' => $this->pluginId];
       $operations[implode('-', $key_parts)] = [
-        'title' => $this->t('Add @type', ['@type' => $label]),
+        'title' => $label,
         'url' => new Url('entity.group_relationship.create_form', $route_params),
         'weight' => 30,
       ];

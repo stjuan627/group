@@ -3,7 +3,7 @@
 namespace Drupal\Tests\group\Unit;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -53,6 +53,13 @@ class UiTextProviderTest extends UnitTestCase {
   protected $groupRelationType;
 
   /**
+   * The entity type bundle info service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface|\Prophecy\Prophecy\ProphecyInterface
+   */
+  protected $entityTypeBundleInfo;
+
+  /**
    * {@inheritdoc}
    */
   public function setUp(): void {
@@ -70,7 +77,8 @@ class UiTextProviderTest extends UnitTestCase {
     ]);
 
     $this->stringTranslation = $this->prophesize(TranslationInterface::class)->reveal();
-    $this->uiTextProvider = new UiTextProvider($this->entityTypeManager->reveal(), $this->stringTranslation);
+    $this->entityTypeBundleInfo = $this->prophesize(EntityTypeBundleInfoInterface::class);
+    $this->uiTextProvider = new UiTextProvider($this->entityTypeManager->reveal(), $this->stringTranslation, $this->entityTypeBundleInfo->reveal());
     $this->uiTextProvider->init('some_plugin', $this->groupRelationType);
   }
 
@@ -120,19 +128,23 @@ class UiTextProviderTest extends UnitTestCase {
     $params['%entity_type'] = new TranslatableMarkup('Some singular label');
 
     if ($bundle) {
+      $entity_type_id = 'some_bundle_entity_type';
+      $bundle_id = 'some_bundle_id';
       $bundle_label = new TranslatableMarkup('Some bundle');
 
-      $this->entityType->getBundleEntityType()->willReturn('some_bundle_entity_type');
-      $this->groupRelationType->set('entity_bundle', 'some_bundle_id');
+      $this->entityType->getBundleEntityType()->willReturn($entity_type_id);
+      $this->groupRelationType->set('entity_bundle', $bundle_id);
 
-      $bundle_entity = $this->prophesize(EntityInterface::class);
-      $bundle_entity->label()->willReturn($bundle_label);
+      $bundle_data = [
+        $bundle_id => [
+          'label' => $bundle_label,
+        ],
+      ];
+
       $params['%bundle'] = $bundle_label;
 
-      $storage = $this->prophesize(EntityStorageInterface::class);
-      $storage->load('some_bundle_id')->willReturn($bundle_entity->reveal());
-
-      $this->entityTypeManager->getStorage('some_bundle_entity_type')->willReturn($storage->reveal());
+      $this->entityType->id()->willReturn($entity_type_id);
+      $this->entityTypeBundleInfo->getBundleInfo($entity_type_id)->willReturn($bundle_data);
     }
 
     $this->assertEquals($this->t($description, $params), $this->uiTextProvider->getAddPageDescription($create_mode));
