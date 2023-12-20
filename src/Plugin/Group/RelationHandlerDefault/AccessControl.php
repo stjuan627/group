@@ -10,6 +10,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
@@ -155,9 +156,9 @@ class AccessControl implements AccessControlInterface {
       return $return_as_object ? AccessResult::neutral() : FALSE;
     }
 
-    $group_relationships = $this->entityTypeManager()
-      ->getStorage('group_content')
-      ->loadByEntity($entity, $this->pluginId);
+    $group_relationship_storage = $this->entityTypeManager()->getStorage('group_content');
+    assert($group_relationship_storage instanceof GroupRelationshipStorageInterface);
+    $group_relationships = $group_relationship_storage->loadByEntity($entity, $this->pluginId);
 
     // If this plugin is not being used by the entity, we have nothing to say.
     if (empty($group_relationships)) {
