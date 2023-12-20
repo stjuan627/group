@@ -26,28 +26,28 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   /**
    * The administrative label for the plugin.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $label;
 
   /**
    * The administrative description for the plugin.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $description;
 
   /**
    * The label for the entity reference field.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $reference_label;
 
   /**
    * The description for the entity reference field.
    *
-   * @var \Drupal\Core\Annotation\Translation
+   * @var \Drupal\Core\StringTranslation\TranslatableMarkup
    */
   protected $reference_description;
 

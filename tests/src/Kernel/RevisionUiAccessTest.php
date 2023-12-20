@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
@@ -14,10 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Tests the revision UI access for groups.
  *
- * There used to be a time where it mattered how many revisions there were for
- * an entity. Those days have passed, but it doesn't hurt to leave the test
- * cases in for extra hardening. This is why you'll notice some test cases
- * being specific about there being one revision.
+ * There used to be a time when it mattered how many revisions there were for an
+ * entity. Those days have passed, but it doesn't hurt to leave the test cases
+ * in for extra hardening. This is why you'll notice some test cases being
+ * specific about there being one revision.
  *
  * @covers \Drupal\group\Entity\Access\GroupRevisionCheck
  * @group group
@@ -832,9 +833,10 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    *   The reloaded entity revision.
    */
   protected function reloadRevision(ContentEntityInterface $entity) {
-    $controller = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
-    $controller->resetCache([$entity->id()]);
-    return $controller->loadRevision($entity->getRevisionId());
+    $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
+    assert($storage instanceof ContentEntityStorageInterface);
+    $storage->resetCache([$entity->id()]);
+    return $storage->loadRevision($entity->getRevisionId());
   }
 
 }

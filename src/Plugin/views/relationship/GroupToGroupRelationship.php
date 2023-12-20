@@ -5,6 +5,7 @@ namespace Drupal\group\Plugin\views\relationship;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -143,6 +144,7 @@ class GroupToGroupRelationship extends RelationshipPluginBase {
     $join = $this->joinManager->createInstance($join_id, $def);
 
     // Add the join using a more verbose alias.
+    assert($this->query instanceof Sql);
     $alias = $def['table'] . '_' . $this->table;
     $this->alias = $this->query->addRelationship($alias, $join, $this->definition['base'], $this->relationship);
 

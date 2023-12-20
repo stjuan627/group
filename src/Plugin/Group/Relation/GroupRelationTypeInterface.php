@@ -43,7 +43,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
   /**
    * Returns the administrative label for the plugin.
    *
-   * @return \Drupal\Core\Annotation\Translation
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The plugin label.
    */
   public function getLabel();
@@ -51,7 +51,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
   /**
    * Returns the administrative description for the plugin.
    *
-   * @return \Drupal\Core\Annotation\Translation
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
    *   The plugin description.
    */
   public function getDescription();
@@ -62,7 +62,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
    * This allows you to specify the label for the entity reference field
    * pointing to the entity that is to be added as a relationship.
    *
-   * @return \Drupal\Core\Annotation\Translation|null
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup|null
    *   The label for the entity reference field or NULL if none was set.
    */
   public function getEntityReferenceLabel();
@@ -73,7 +73,7 @@ interface GroupRelationTypeInterface extends PluginDefinitionInterface, Derivabl
    * This allows you to specify the description for the entity reference field
    * pointing to the entity that is to be added as a relationship.
    *
-   * @return \Drupal\Core\Annotation\Translation|null
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup|null
    *   The description for the entity reference field or NULL if none was set.
    */
   public function getEntityReferenceDescription();

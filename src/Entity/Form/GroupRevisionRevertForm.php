@@ -14,6 +14,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupRevisionRevertForm extends RevisionRevertForm {
 
   /**
+   * The entity revision.
+   *
+   * @var \Drupal\group\Entity\GroupInterface
+   */
+  protected $revision;
+
+  /**
    * The time service.
    *
    * @var \Drupal\Component\Datetime\TimeInterface

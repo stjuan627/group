@@ -3,7 +3,6 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -15,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Manages group relation type type plugin definitions.
+ * Manages group relation type plugin definitions.
  *
  * Each entity type definition array is set in the entity type's annotation and
  * altered by hook_group_relation_type_alter().
@@ -86,7 +85,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   protected $pluginGroupRelationshipTypeMapCacheKey;
 
   /**
-   * An static cache of plugin IDs per group type ID.
+   * A static cache of plugin IDs per group type ID.
    *
    * @var array[]
    */
@@ -400,7 +399,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   The relationship type ID map to store in cache.
    */
   protected function setCachedPluginGroupRelationshipTypeMap(array $map) {
-    $this->cacheSet($this->pluginGroupRelationshipTypeMapCacheKey, $map, Cache::PERMANENT);
+    $this->cacheSet($this->pluginGroupRelationshipTypeMapCacheKey, $map);
     $this->pluginGroupRelationshipTypeMap = $map;
   }
 
@@ -447,7 +446,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   The group type plugin map to store in cache.
    */
   protected function setCachedGroupTypePluginMap(array $map) {
-    $this->cacheSet($this->groupTypePluginMapCacheKey, $map, Cache::PERMANENT);
+    $this->cacheSet($this->groupTypePluginMapCacheKey, $map);
     $this->groupTypePluginMap = $map;
   }
 
