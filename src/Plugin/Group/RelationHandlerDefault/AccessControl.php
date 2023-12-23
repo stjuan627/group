@@ -179,9 +179,11 @@ class AccessControl implements AccessControlInterface {
     $result = AccessResult::neutral();
     if (!empty($permissions)) {
       foreach ($group_relationships as $group_relationship) {
-        $result = GroupAccessResult::allowedIfHasGroupPermissions($group_relationship->getGroup(), $account, $permissions, 'OR');
-        if ($result->isAllowed()) {
-          break;
+        if ($group = $group_relationship->getGroup()) {
+          $result = GroupAccessResult::allowedIfHasGroupPermissions($group, $account, $permissions, 'OR');
+          if ($result->isAllowed()) {
+            break;
+          }
         }
       }
     }
