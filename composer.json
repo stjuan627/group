@@ -20,5 +20,12 @@
     "drupal/core": "^9.5 || ^10",
     "drupal/entity": "^1.2",
     "drupal/flexible_permissions": "^1.0"
+  },
+  "extra": {
+    "phpstan": {
+      "includes": [
+        "entity_mapping.neon"
+      ]
+    }
   }
 }
