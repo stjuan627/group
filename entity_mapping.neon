@@ -1,0 +1,20 @@
+parameters:
+  drupal:
+    entityMapping:
+      group:
+        class: Drupal\group\Entity\GroupInterface
+        storage: Drupal\group\Entity\Storage\GroupStorage
+      group_config_wrapper:
+        class: Drupal\group\Entity\ConfigWrapperInterface
+        storage: Drupal\group\Entity\Storage\ConfigWrapperStorageInterface
+      group_relationship:
+        class: Drupal\group\Entity\GroupRelationshipInterface
+        storage: Drupal\group\Entity\Storage\GroupRelationshipStorageInterface
+      group_relationship_type:
+        class: Drupal\group\Entity\GroupRelationshipTypeInterface
+        storage: Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface
+      group_role:
+        class: Drupal\group\Entity\GroupRoleInterface
+        storage: Drupal\group\Entity\Storage\GroupRoleStorageInterface
+      group_type:
+        class: Drupal\group\Entity\GroupTypeInterface
