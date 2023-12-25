@@ -150,7 +150,7 @@ class GroupRelationshipListBuilder extends EntityListBuilder {
     }
 
     // Add an operation to view the actual entity.
-    if ($entity->getEntity()->access('view') && $entity->getEntity()->hasLinkTemplate('canonical')) {
+    if ($entity->getEntity() && $entity->getEntity()->access('view') && $entity->getEntity()->hasLinkTemplate('canonical')) {
       $operations['view'] = [
         'title' => $this->t('View entity'),
         'weight' => 101,

@@ -32,7 +32,9 @@ class UiTextProvider implements UiTextProviderInterface {
    * {@inheritdoc}
    */
   public function getRelationshipLabel(GroupRelationshipInterface $group_relationship) {
-    return $group_relationship->getEntity()->label();
+    return $group_relationship->getEntity() ?
+      $group_relationship->getEntity()->label():
+      '<missing entity>';
   }
 
   /**
