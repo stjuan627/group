@@ -131,8 +131,7 @@ services:
 
   group_relation_type.manager:
     class: 'Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager'
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
-    parent: container.trait
+    arguments: ['@service_container', '@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     tags:
       - { name: plugin_manager_cache_clear }
 

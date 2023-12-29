@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Plugin\Group\Relation;
 
+use Drupal\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
@@ -10,8 +11,6 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Manages group relation type plugin definitions.
@@ -24,9 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
  * @see \Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface
  * @see hook_group_relation_type_alter()
  */
-class GroupRelationTypeManager extends DefaultPluginManager implements GroupRelationTypeManagerInterface, ContainerAwareInterface {
-
-  use ContainerAwareTrait;
+class GroupRelationTypeManager extends DefaultPluginManager implements GroupRelationTypeManagerInterface {
 
   /**
    * Contains instantiated handlers keyed by handler type and plugin ID.
@@ -34,6 +31,13 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    * @var array
    */
   protected $handlers = [];
+
+  /**
+   * The service container.
+   *
+   * @var \Drupal\Component\DependencyInjection\ContainerInterface
+   */
+  protected $container;
 
   /**
    * The entity type manager.
@@ -101,6 +105,8 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * Constructs a GroupRelationTypeManager object.
    *
+   * @param \Drupal\Component\DependencyInjection\ContainerInterface $container
+   *   The service container.
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
    *   keyed by the corresponding namespace to look for plugin implementations.
@@ -111,10 +117,11 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ContainerInterface $container, \Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelationType');
     $this->alterInfo('group_relation_type');
     $this->setCacheBackend($cache_backend, 'group_relations');
+    $this->container = $container;
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupRelationshipTypeMapCacheKey = $this->cacheKey . '_GCT_map';
     $this->groupTypePluginMapCacheKey = $this->cacheKey . '_GT_map';
