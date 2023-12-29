@@ -2,7 +2,6 @@
 
 namespace Drupal\group\Plugin\Group\Relation;
 
-use Drupal\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
@@ -11,6 +10,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Manages group relation type plugin definitions.
@@ -35,7 +35,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * The service container.
    *
-   * @var \Drupal\Component\DependencyInjection\ContainerInterface
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
   protected $container;
 
@@ -105,7 +105,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * Constructs a GroupRelationTypeManager object.
    *
-   * @param \Drupal\Component\DependencyInjection\ContainerInterface $container
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    *   The service container.
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
