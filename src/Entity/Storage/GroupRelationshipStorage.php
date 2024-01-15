@@ -88,23 +88,29 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     $entity_class = parent::getEntityClass($bundle);
 
     if ($bundle) {
-      $group_relationship_type = $this->entityTypeManager->getStorage('group_relationship_type')->load($bundle);
-      assert($group_relationship_type instanceof GroupRelationshipTypeInterface);
-      $plugin_id = $group_relationship_type->getPluginId();
+        $group_relationship_type = $this->entityTypeManager->getStorage('group_relationship_type')->load($bundle);
 
-      $group_relation_type = $this->pluginManager->getDefinition($plugin_id);
-      assert($group_relation_type instanceof GroupRelationTypeInterface);
+        if ($group_relationship_type instanceof GroupRelationshipTypeInterface) {
+            $plugin_id = $group_relationship_type->getPluginId();
+            assert($plugin_id !== null, 'Plugin ID should not be null.');
 
-      if ($shared_bundle_class = $group_relation_type->getSharedBundleClass()) {
-        // No specific bundle class, so it's safe to return the shared one.
-        if ($entity_class === parent::getEntityClass()) {
-          return $shared_bundle_class;
+            $group_relation_type = $this->pluginManager->getDefinition($plugin_id);
+            assert($group_relation_type instanceof GroupRelationTypeInterface);
+
+            if ($shared_bundle_class = $group_relation_type->getSharedBundleClass()) {
+                // No specific bundle class, so it's safe to return the shared one.
+                if ($entity_class === parent::getEntityClass()) {
+                    return $shared_bundle_class;
+                }
+            }
+        } else {
+            throw new \RuntimeException("Unable to load group_relationship_type entity with bundle '$bundle'");
         }
-      }
     }
 
     return $entity_class;
-  }
+}
+
 
   /**
    * {@inheritdoc}
