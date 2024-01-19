@@ -145,9 +145,13 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    *   The entity type.
    */
   public function alter(SelectInterface $query, EntityTypeInterface $entity_type) {
+    if ($query->hasTag('group_altered')) {
+      return;
+    }
     $this->query = $query;
     $this->entityType = $entity_type;
     $this->doAlter($query->getMetaData('op') ?: 'view');
+    $query->addTag('group_altered');
     $this->applyCacheability();
   }
 
@@ -314,7 +318,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
       $l_field = $this->getMembershipJoinLeftField();
 
       // Join the memberships of the current user.
-      $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_content')->getDataTable();
+      $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_relationship')->getDataTable();
       $this->joinAliasMemberships = $this->query->leftJoin(
         $group_relationship_data_table,
         'gcfd',
