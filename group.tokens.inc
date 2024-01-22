@@ -10,6 +10,8 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\TranslatableInterface;
 
 /**
  * Implements hook_token_info().
@@ -75,6 +77,56 @@ function group_token_info() {
     'name' => t('Author'),
     'type' => 'user',
   ];
+  
+    $types['content'] = [
+    'name' => t('Content'),
+    'description' => t('Tokens related to Content.'),
+    'needs-data' => 'content',
+  ];
+  
+  $tokens['content']['id'] = [
+    'name' => t('Content ID'),
+    'description' => t('The unique ID of the Content.'),
+  ];
+
+  $tokens['content']['uuid'] = [
+    'name' => t('Group UUID'),
+    'description' => t('The universally unique ID of the Content.'),
+  ];
+
+  $tokens['content']['type'] = [
+    'name' => t('Content type'),
+    'description' => t('The machine name of the Content type.'),
+  ];
+
+  $tokens['content']['type-name'] = [
+    'name' => t('Content type name'),
+    'description' => t('The human-readable name of the Content type.'),
+  ];
+
+  $tokens['content']['title'] = [
+    'name' => t('Title'),
+  ];
+
+  $tokens['content']['langcode'] = [
+    'name' => t('Language code'),
+    'description' => t('The language code of the language the Content is in.'),
+  ];
+
+  $tokens['content']['url'] = [
+    'name' => t('URL'),
+    'description' => t('The URL of the Content.'),
+  ];
+
+  $tokens['content']['edit-url'] = [
+    'name' => t('Edit URL'),
+    'description' => t("The URL of the group's edit page."),
+  ];
+
+  $tokens['content']['author'] = [
+    'name' => t('Author'),
+    'type' => 'user',
+  ];
 
   $types['group_relationship'] = [
     'name' => t('Group relationship'),
@@ -116,6 +168,11 @@ function group_token_info() {
   $tokens['group_relationship']['group'] = [
     'name' => t('Group'),
     'type' => 'group',
+  ];
+
+  $tokens['group_relationship']['content'] = [
+    'name' => t('Content'),
+    'type' => 'content',
   ];
 
   $tokens['group_relationship']['pretty-path-key'] = [
@@ -214,6 +271,64 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
       $replacements += $token_service->generate('date', $changed_tokens, ['date' => $group->getChangedTime()], $options, $bubbleable_metadata);
     }
   }
+  elseif ($type == 'content' && !empty($data[$type])) {
+    $content = $data['content'];
+    assert($content instanceof EntityInterface);
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'id':
+          $replacements[$original] = $content->id();
+          break;
+
+        case 'uuid':
+          $replacements[$original] = $content->uuid();
+          break;
+
+        case 'type':
+          $replacements[$original] = $content->bundle();
+          break;
+
+        case 'type-name':
+          $type_name = null;
+          if ($bundle_type_id = $entity->getEntityType()->getBundleEntityType()) {  		
+	    $entity_type = $entity->getEntityTypeId();
+            $entity_bundle = $entity->bundle();
+            $bundle_info = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type);
+            $type_name = $bundle_info[$entity_bundle]['label'];
+	  } else 
+	  {
+	    $type_name = $content->getEntityType()->getLabel();
+	  }
+          $replacements[$original] = $type_name;
+          break;
+
+        case 'title':
+          $replacements[$original] = $content->label();
+          break;
+
+        case 'langcode':
+          $replacements[$original] = $content->language()->getId();
+          break;
+
+        case 'edit-url':
+          $replacements[$original] = $content->toUrl('edit-form', $url_options)->toString();
+          break;
+
+        // Default values for the chained tokens handled below.
+        case 'author':
+          $account = $content->getOwner();
+          $bubbleable_metadata->addCacheableDependency($account);
+          $replacements[$original] = $account->label();
+          break;
+        case 'url':
+          $url = $content->toUrl('canonical', $url_options);
+          $bubbleable_metadata->addCacheableDependency($url);
+          $replacements[$original] = $url->toString();
+          break;
+      }
+    }
+   }
   elseif ($type == 'group_relationship' && !empty($data[$type])) {
     $group_relationship = $data['group_relationship'];
     assert($group_relationship instanceof GroupRelationshipInterface);
@@ -243,8 +358,24 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
         // Default values for the chained tokens handled below.
         case 'group':
           $group = $group_relationship->getGroup();
+          if ($group instanceof TranslatableInterface &&
+              $group->language()->getId() !== $langcode &&
+              $group->hasTranslation($langcode)) {
+            $group = $group->getTranslation($langcode);
+          }
           $bubbleable_metadata->addCacheableDependency($group);
           $replacements[$original] = $group->label();
+          break;
+                  
+        case 'content':
+          $content = $group_relationship->getEntity();
+          if ($content instanceof TranslatableInterface &&
+              $content->language()->getId() !== $langcode &&
+              $content->hasTranslation($langcode)) {
+            $content = $content->getTranslation($langcode);
+          }
+          $bubbleable_metadata->addCacheableDependency($content);
+          $replacements[$original] = $content->label();
           break;
 
         case 'created':
@@ -262,7 +393,23 @@ function group_tokens($type, $tokens, array $data, array $options, BubbleableMet
 
       // Actual chaining of tokens handled below.
       if ($group_tokens = $token_service->findWithPrefix($tokens, 'group')) {
-        $replacements += $token_service->generate('group', $group_tokens, ['group' => $group_relationship->getGroup()], $options, $bubbleable_metadata);
+        $group = $group_relationship->getGroup();
+        if ($group instanceof TranslatableInterface &&
+            $group->language()->getId() !== $langcode &&
+            $group->hasTranslation($langcode)) {
+          $group = $group->getTranslation($langcode);
+        }
+        $replacements += $token_service->generate('group', $group_tokens, ['group' => $group], $options, $bubbleable_metadata);
+      }
+      
+      if ($content_tokens = $token_service->findWithPrefix($tokens, 'content')) {
+        $content = $group_relationship->getEntity();
+        if ($content instanceof TranslatableInterface &&
+            $content->language()->getId() !== $langcode &&
+            $content->hasTranslation($langcode)) {
+          $content = $content->getTranslation($langcode);
+        }
+        $replacements += $token_service->generate('content', $content_tokens, ['content' => $content], $options, $bubbleable_metadata);
       }
 
       if ($created_tokens = $token_service->findWithPrefix($tokens, 'created')) {

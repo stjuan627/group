@@ -68,6 +68,22 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
   protected $entity_bundle = FALSE;
 
   /**
+   * (optional) The bundle class for all relationships using this plugin.
+   *
+   * If you make sure that your shared class puts all of its functionality in a
+   * trait and has its own interface, then it should be easy for others to still
+   * create a regular bundle class and get your functionality by simply using
+   * your trait and interface.
+   *
+   * Shared bundle classes should use \Drupal\group\Entity\SharedBundleClassBase
+   * as their base class so that some common Drupal core pitfalls are taken care
+   * of for them.
+   *
+   * @var string|false
+   */
+  protected $shared_bundle_class = FALSE;
+
+  /**
    * (optional) Whether the supported entity type is config.
    *
    * This will be determined by the plugin manager, no need to set it.
@@ -218,6 +234,13 @@ class GroupRelationType extends PluginDefinition implements GroupRelationTypeInt
    */
   public function getEntityBundle() {
     return $this->entity_bundle;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSharedBundleClass() {
+    return $this->shared_bundle_class;
   }
 
   /**

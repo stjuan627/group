@@ -101,7 +101,10 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
    * Tests granting the group creator a membership.
    */
   public function testCreatorMembership() {
-    $edit = ['The group creator automatically becomes a member' => 1] + $this->commonValues;
+    $edit = [
+      'The group creator automatically becomes a member' => 1,
+      'Group creator must complete their membership' => 0,
+    ] + $this->commonValues;
     $this->submitForm($edit, $this->setUpAddFormAndGetSubmitButton());
 
     $group = $this->createGroup(['type' => $this->groupTypeId]);
@@ -166,6 +169,7 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
   public function testNoAssignAdminRole() {
     $edit = [
       'The group creator automatically becomes a member' => 1,
+      'Group creator must complete their membership' => 0,
       'Automatically configure an administrative role' => 1,
       'Automatically assign this administrative role to group creators' => 0,
     ] + $this->commonValues;
@@ -189,6 +193,7 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
   public function testAssignAdminRole() {
     $edit = [
       'The group creator automatically becomes a member' => 1,
+      'Group creator must complete their membership' => 0,
       'Automatically configure an administrative role' => 1,
       'Automatically assign this administrative role to group creators' => 1,
     ] + $this->commonValues;

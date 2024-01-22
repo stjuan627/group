@@ -244,9 +244,7 @@ class PermissionProvider implements PermissionProviderInterface {
   protected function getEntityViewUnpublishedPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
       if ($this->implementsPublishedInterface) {
-        // @todo Implement view own unpublished permission and add it here by
-        // checking for $this->implementsOwnerInterface.
-        if ($scope === 'any') {
+        if ($this->implementsOwnerInterface || $scope === 'any') {
           return "view $scope unpublished $this->pluginId entity";
         }
       }
