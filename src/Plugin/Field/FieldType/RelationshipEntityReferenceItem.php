@@ -15,7 +15,7 @@ use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
  *   id = "group_relationship_target",
  *   label = @Translation("Group relationship target"),
  *   description = @Translation("A reference to either a content or wrapped config entity."),
- *   category = @Translation("Reference"),
+ *   category = "reference",
  *   default_widget = "entity_reference_autocomplete",
  *   default_formatter = "entity_reference_label",
  *   list_class = "\Drupal\Core\Field\EntityReferenceFieldItemList",
