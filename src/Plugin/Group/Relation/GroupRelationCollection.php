@@ -12,15 +12,6 @@ class GroupRelationCollection extends DefaultLazyPluginCollection {
   /**
    * {@inheritdoc}
    *
-   * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
-   */
-  public function &get($instance_id) {
-    return parent::get($instance_id);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
    * Sorts plugins by provider.
    */
   public function sortHelper($aID, $bID) {

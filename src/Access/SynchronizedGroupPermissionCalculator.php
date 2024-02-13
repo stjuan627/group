@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\flexible_permissions\CalculatedPermissionsItem;
 use Drupal\flexible_permissions\PermissionCalculatorBase;
+use Drupal\flexible_permissions\RefinableCalculatedPermissions;
 use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\group\PermissionScopeInterface;
 
@@ -36,6 +37,7 @@ class SynchronizedGroupPermissionCalculator extends PermissionCalculatorBase {
    */
   public function calculatePermissions(AccountInterface $account, $scope) {
     $calculated_permissions = parent::calculatePermissions($account, $scope);
+    assert($calculated_permissions instanceof RefinableCalculatedPermissions);
 
     if ($scope !== PermissionScopeInterface::OUTSIDER_ID && $scope !== PermissionScopeInterface::INSIDER_ID) {
       return $calculated_permissions;

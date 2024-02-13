@@ -4,6 +4,7 @@ namespace Drupal\group\Entity\Access;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -117,6 +118,7 @@ class GroupAccessControlHandler extends EntityAccessControlHandler implements En
         $access = $access->andIf($this->access($entity, $entity_operation, $account, TRUE));
       }
 
+      assert($access instanceof RefinableCacheableDependencyInterface);
       return $access->addCacheableDependency($cacheability);
     }
 

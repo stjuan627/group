@@ -10,10 +10,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Modifies the local action to add a destination.
- * 
+ *
  * Will either append the already present destination parameter or use the
  * current route's path as the destination parameter.
- * 
+ *
  * @todo Follow up on https://www.drupal.org/node/2762131.
  */
 class WithDestination extends LocalActionDefault {

@@ -18,6 +18,7 @@ class GroupRoleRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('parameters', ['group_type' => ['type' => 'entity:group_type']]);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -30,6 +31,7 @@ class GroupRoleRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('parameters', ['group_type' => ['type' => 'entity:group_type']]);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -42,6 +44,7 @@ class GroupRoleRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('parameters', ['group_type' => ['type' => 'entity:group_type']]);
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -52,6 +55,7 @@ class GroupRoleRouteProvider extends DefaultHtmlRouteProvider {
       $route->setOption('parameters', ['group_type' => ['type' => 'entity:group_type']]);
       return $route;
     }
+    return NULL;
   }
 
 }

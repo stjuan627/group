@@ -7,7 +7,7 @@ use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
 use Drupal\user\RoleInterface;
 
 /**
- * tests the page cache in conjunction with Group-specific features.
+ * Tests the page cache in conjunction with Group-specific features.
  *
  * @group group
  */

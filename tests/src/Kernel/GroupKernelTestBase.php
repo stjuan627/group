@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
@@ -83,6 +82,7 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
     $group_type = $storage->create($values + [
       'id' => $this->randomMachineName(),
       'label' => $this->randomString(),
+      'creator_wizard' => FALSE,
     ]);
     $storage->save($group_type);
     return $group_type;

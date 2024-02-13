@@ -98,7 +98,7 @@ class RelationshipSubjectSelection extends DefaultSelection {
         $this->configSwapped = TRUE;
       }
     }
-    elseif(!$swap_out) {
+    elseif (!$swap_out) {
       $this->setConfiguration($this->configOriginal);
       $this->configSwapped = FALSE;
     }

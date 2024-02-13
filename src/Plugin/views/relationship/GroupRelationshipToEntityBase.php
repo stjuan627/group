@@ -5,6 +5,7 @@ namespace Drupal\group\Plugin\views\relationship;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
+use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -38,6 +39,12 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   /**
    * Constructs an GroupRelationshipToEntityBase object.
    *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
@@ -65,13 +72,13 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   /**
    * Retrieves the entity type ID this plugin targets.
    *
-   * Do not return 'group_relationship', but the actual entity type ID you're trying
-   * to link up to the group_relationship entity type.
+   * Do not return 'group_relationship', but the actual entity type ID you're
+   * trying to link up to the group_relationship entity type.
    *
    * @return string
    *   The target entity type ID.
    */
-  protected abstract function getTargetEntityType();
+  abstract protected function getTargetEntityType();
 
   /**
    * Retrieves type of join field to use.
@@ -81,7 +88,7 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
    * @return string
    *   The type of join field to use.
    */
-  protected abstract function getJoinFieldType();
+  abstract protected function getJoinFieldType();
 
   /**
    * {@inheritdoc}
@@ -153,6 +160,7 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
     $join = $this->joinManager->createInstance($join_id, $def);
 
     // Add the join using a more verbose alias.
+    assert($this->query instanceof Sql);
     $alias = $def['table'] . '_' . $this->table;
     $this->alias = $this->query->addRelationship($alias, $join, $this->definition['base'], $this->relationship);
 

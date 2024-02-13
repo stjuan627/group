@@ -170,8 +170,8 @@ interface GroupRoleInterface extends ConfigEntityInterface {
    *
    * This function may be used to grant and revoke multiple permissions at once.
    * For example, when a form exposes checkboxes to configure permissions for a
-   * role, the form submit handler may directly pass the submitted values for the
-   * checkboxes form element to this function.
+   * role, the form submit handler may directly pass the submitted values for
+   * the checkboxes form element to this function.
    *
    * @param array $permissions
    *   (optional) An associative array, where the key holds the permission name

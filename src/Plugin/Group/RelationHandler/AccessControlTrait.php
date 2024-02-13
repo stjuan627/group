@@ -7,8 +7,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\user\EntityOwnerInterface;
 
@@ -24,6 +24,13 @@ trait AccessControlTrait {
   use RelationHandlerTrait {
     init as traitInit;
   }
+
+  /**
+   * The parent access control handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface|null
+   */
+  protected $parent = NULL;
 
   /**
    * The entity type the plugin handler is for.

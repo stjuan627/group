@@ -1,0 +1,52 @@
+parameters:
+	ignoreErrors:
+		# These errors are a bug in phpstan, see https://github.com/phpstan/phpstan/issues/6830.
+		-
+			message: "#^Variable \\$any_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$data_table might not be defined\\.$#"
+			count: 3
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$own_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$owner_conditions might not be defined\\.$#"
+			count: 3
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		-
+			message: "#^Variable \\$unpub_permissions might not be defined\\.$#"
+			count: 8
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		# This is a bug in mglaman/phpstan-drupal where the parent constructor is ignored.
+		-
+			message: "#^Plugin definitions cannot be altered\\.$#"
+			count: 1
+			path: tests/src/Unit/GroupRelationTypeManagerTest.php
+
+		# This will go away with Drupal 11.0.0.
+		-
+			message: """
+				#^Call to deprecated method deleteRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
+				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
+				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:deleteRevision instead\\.$#
+			"""
+			count: 1
+			path: src/Entity/Form/GroupRevisionDeleteForm.php
+
+		-
+			message: """
+				#^Call to deprecated method loadRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
+				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
+				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:loadRevision instead\\.$#
+			"""
+			count: 1
+			path: tests/src/Kernel/RevisionUiAccessTest.php

@@ -30,14 +30,11 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
    * {@inheritdoc}
    */
   public function getPermission($operation, $target, $scope = 'any') {
-    // The view permissions support all scopes here.
+    // The view permission supports all scopes here.
     if ($target === 'entity') {
       switch ($operation) {
         case 'view':
           return $this->getEntityViewPermission($scope);
-
-        case 'view unpublished':
-          return $this->getEntityViewUnpublishedPermission($scope);
       }
     }
     return $this->parent->getPermission($operation, $target, $scope);
@@ -57,25 +54,6 @@ class FullEntityPermissionProvider implements PermissionProviderInterface {
     if ($this->definesEntityPermissions) {
       if ($this->implementsOwnerInterface || $scope === 'any') {
         return "view $scope $this->pluginId entity";
-      }
-    }
-    return FALSE;
-  }
-
-  /**
-   * Gets the name of the view unpublished permission for the entity.
-   *
-   * @param string $scope
-   *   (optional) Whether the 'any' or 'own' permission name should be returned.
-   *   Defaults to 'any'.
-   *
-   * @return string|false
-   *   The permission name or FALSE if it does not apply.
-   */
-  protected function getEntityViewUnpublishedPermission($scope = 'any') {
-    if ($this->definesEntityPermissions) {
-      if ($this->implementsOwnerInterface || $scope === 'any') {
-        return "view $scope unpublished $this->pluginId entity";
       }
     }
     return FALSE;

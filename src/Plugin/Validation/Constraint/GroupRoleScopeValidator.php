@@ -48,9 +48,6 @@ class GroupRoleScopeValidator extends ConstraintValidator implements ContainerIn
   public function validate($group_role, Constraint $constraint) {
     assert($group_role instanceof GroupRoleInterface);
     assert($constraint instanceof GroupRoleScope);
-    if (!isset($group_role)) {
-      return;
-    }
 
     $scope = $group_role->getScope();
     if ($scope !== PermissionScopeInterface::INDIVIDUAL_ID) {
@@ -71,7 +68,7 @@ class GroupRoleScopeValidator extends ConstraintValidator implements ContainerIn
         ->condition('group_type', $group_role->getGroupTypeId())
         ->condition('scope', $scope)
         ->condition('global_role', $global_role)
-        ->accessCheck()
+        ->accessCheck(FALSE)
         ->execute();
 
       if (!empty($existing_pairs)) {

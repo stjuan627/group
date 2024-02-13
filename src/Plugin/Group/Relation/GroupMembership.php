@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   label = @Translation("Group membership"),
  *   description = @Translation("Adds users to groups as members."),
  *   entity_type_id = "user",
+ *   shared_bundle_class = "Drupal\group\Entity\GroupMembership",
  *   pretty_path_key = "member",
  *   reference_label = @Translation("User"),
  *   reference_description = @Translation("The user you want to make a member"),

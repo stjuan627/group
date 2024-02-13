@@ -4,7 +4,6 @@ namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form for group type deletion.
@@ -30,7 +29,7 @@ class GroupTypeDeleteForm extends EntityDeleteForm {
 
       $form['#title'] = $this->getQuestion();
       $form['description'] = [
-        '#markup' => '<p>' . $this->formatPlural($num_groups, $single, $multiple, $replace) . '</p>'
+        '#markup' => '<p>' . $this->formatPlural($num_groups, $single, $multiple, $replace) . '</p>',
       ];
 
       return $form;

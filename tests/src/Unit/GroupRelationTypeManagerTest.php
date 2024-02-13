@@ -39,35 +39,35 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
   /**
    * The service container.
    *
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Symfony\Component\DependencyInjection\ContainerInterface>
    */
   protected $container;
 
   /**
    * The plugin discovery.
    *
-   * @var \Drupal\Component\Plugin\Discovery\DiscoveryInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Component\Plugin\Discovery\DiscoveryInterface>
    */
   protected $discovery;
 
   /**
    * The cache backend.
    *
-   * @var \Drupal\Core\Cache\CacheBackendInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Cache\CacheBackendInterface>
    */
   protected $cacheBackend;
 
   /**
    * The module handler.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Extension\ModuleHandlerInterface>
    */
   protected $moduleHandler;
 
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Entity\EntityTypeManagerInterface>
    */
   protected $entityTypeManager;
 
@@ -102,6 +102,8 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    *
    * @param array $definitions
    *   (optional) An array of group relation type definitions.
+   * @param array $handlers
+   *   (optional) An array of group relation type handlers.
    */
   protected function setUpPluginDefinitions($definitions = [], $handlers = []) {
     $this->discovery->getDefinition(Argument::cetera())
@@ -148,22 +150,22 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    * @covers ::processDefinition
    */
   public function testPluginForGroupException() {
-    $this->setUpPluginDefinitions(
-      ['some_plugin' => (new GroupRelationType([
+    $this->setUpPluginDefinitions([
+      'some_plugin' => (new GroupRelationType([
         'id' => 'some_plugin',
         'entity_type_id' => 'group',
-      ]))->setClass(GroupRelationTypeInterface::class)]
-    );
+      ]))->setClass(GroupRelationTypeInterface::class),
+    ]);
     $this->groupRelationTypeManager->getDefinitions();
     $this->groupRelationTypeManager->clearCachedDefinitions();
 
-    $this->setUpPluginDefinitions(
-      ['some_plugin' => (new GroupRelationType([
+    $this->setUpPluginDefinitions([
+      'some_plugin' => (new GroupRelationType([
         'id' => 'some_plugin',
         'entity_access' => TRUE,
         'entity_type_id' => 'group',
-      ]))->setClass(GroupRelationTypeInterface::class)]
-    );
+      ]))->setClass(GroupRelationTypeInterface::class),
+    ]);
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "some_plugin" plugin defines entity access over group entities. This should be dealt with by altering the group permissions of the current user.');
     $this->groupRelationTypeManager->getDefinitions();
@@ -175,12 +177,12 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    * @covers ::processDefinition
    */
   public function testPluginForGroupRelationshipException() {
-    $this->setUpPluginDefinitions(
-      ['some_plugin' => (new GroupRelationType([
+    $this->setUpPluginDefinitions([
+      'some_plugin' => (new GroupRelationType([
         'id' => 'some_plugin',
         'entity_type_id' => 'group_relationship',
-      ]))->setClass(GroupRelationTypeInterface::class)]
-    );
+      ]))->setClass(GroupRelationTypeInterface::class),
+    ]);
 
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "some_plugin" plugin tries to group group_relationship entities, which is simply not possible.');
@@ -193,12 +195,12 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
    * @covers ::processDefinition
    */
   public function testPluginForConfigWrapperException() {
-    $this->setUpPluginDefinitions(
-      ['some_plugin' => (new GroupRelationType([
+    $this->setUpPluginDefinitions([
+      'some_plugin' => (new GroupRelationType([
         'id' => 'some_plugin',
         'entity_type_id' => 'group_config_wrapper',
-      ]))->setClass(GroupRelationTypeInterface::class)]
-    );
+      ]))->setClass(GroupRelationTypeInterface::class),
+    ]);
 
     $this->expectException(InvalidPluginDefinitionException::class);
     $this->expectExceptionMessage('The "some_plugin" plugin tries to group group_config_wrapper entities, which is simply not possible.');
@@ -405,6 +407,9 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
 
 }
 
+/**
+ * Group relation type manager to use in testing, allows setting discovery.
+ */
 class TestGroupRelationTypeManager extends GroupRelationTypeManager {
 
   /**
@@ -419,10 +424,18 @@ class TestGroupRelationTypeManager extends GroupRelationTypeManager {
 
 }
 
+/**
+ * Empty relation handler to use in testing.
+ */
 class TestGroupRelationHandler implements RelationHandlerInterface {
+
   use RelationHandlerTrait;
+
 }
 
+/**
+ * Relation handler without interface to use in testing.
+ */
 class TestGroupRelationHandlerWithoutInterface {
 
 }

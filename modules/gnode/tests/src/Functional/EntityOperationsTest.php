@@ -32,7 +32,7 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
       ['group/1/nodes' => 'Nodes'],
       [
         'view group',
-        'access group_node overview'
+        'access group_node overview',
       ],
     ];
 
@@ -41,7 +41,7 @@ class EntityOperationsTest extends GroupEntityOperationsTest {
       [],
       [
         'view group',
-        'access group_node overview'
+        'access group_node overview',
       ],
       ['views'],
     ];

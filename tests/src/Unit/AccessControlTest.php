@@ -9,16 +9,16 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl;
-use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 use Prophecy\Argument;
@@ -260,7 +260,7 @@ class AccessControlTest extends UnitTestCase {
                 $case['definition'] = clone $scenario['definition'];
 
                 // Default is neutral result if no permissions are defined.
-                $case['expected'] = function() {
+                $case['expected'] = function () {
                   return AccessResult::neutral();
                 };
 
@@ -271,7 +271,7 @@ class AccessControlTest extends UnitTestCase {
                   $has_own = $is_owner && $own_permission && $has_own_permission;
 
                   $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission);
-                  $case['expected'] = function() use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
+                  $case['expected'] = function () use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
                     $result = AccessResult::allowedIf($has_admin || $has_any || $has_own);
 
                     // Only add the permissions context if they were checked.
@@ -284,13 +284,13 @@ class AccessControlTest extends UnitTestCase {
                     if ($own_permission) {
                       $result->addCacheContexts(['user']);
 
-                    // Tags and max-age as defined in ::testRelationAccess().
-                    $result->addCacheTags(['group_relationship:foo']);
-                    $result->mergeCacheMaxAge(9999);
-                  }
-                  return $result;
-                };
-              }
+                      // Tags and max-age as defined in ::testRelationAccess().
+                      $result->addCacheTags(['group_relationship:foo']);
+                      $result->mergeCacheMaxAge(9999);
+                    }
+                    return $result;
+                  };
+                }
 
                 $case['has_own_permission'] = $has_own_permission;
                 $case['any_permission'] = $any_permission;
@@ -380,7 +380,7 @@ class AccessControlTest extends UnitTestCase {
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
-          $case['expected'] = function() {
+          $case['expected'] = function () {
             return AccessResult::neutral();
           };
 
@@ -389,7 +389,7 @@ class AccessControlTest extends UnitTestCase {
             $has_regular = $permission && $case['has_permission'];
 
             $permissions_were_checked = $case['definition']->getAdminPermission() || $permission;
-            $case['expected'] = function() use ($has_admin, $has_regular, $permissions_were_checked) {
+            $case['expected'] = function () use ($has_admin, $has_regular, $permissions_were_checked) {
               $result = AccessResult::allowedIf($has_admin || $has_regular);
               if ($permissions_were_checked) {
                 $result->addCacheContexts(['user.group_permissions']);
@@ -581,7 +581,7 @@ class AccessControlTest extends UnitTestCase {
                           }
 
                           if (!$is_supported) {
-                            $case['expected'] = function() {
+                            $case['expected'] = function () {
                               return AccessResult::neutral();
                             };
                           }
@@ -592,7 +592,7 @@ class AccessControlTest extends UnitTestCase {
                             $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission && $is_ownable);
 
                             // Default varies on whether the entity is grouped.
-                            $case['expected'] = function() use ($is_grouped, $own_permission, $check_published, $permissions_were_checked) {
+                            $case['expected'] = function () use ($is_grouped, $own_permission, $check_published, $permissions_were_checked) {
                               $result = AccessResult::forbiddenIf($is_grouped);
                               if ($is_grouped) {
                                 if ($permissions_were_checked) {
@@ -627,7 +627,7 @@ class AccessControlTest extends UnitTestCase {
                                 $own_access = FALSE;
                               }
 
-                              $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published, $permissions_were_checked) {
+                              $case['expected'] = function () use ($admin_access, $any_access, $own_access, $own_permission, $check_published, $permissions_were_checked) {
                                 $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
 
                                 if (!$result->isAllowed()) {
@@ -748,7 +748,7 @@ class AccessControlTest extends UnitTestCase {
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
-          $case['expected'] = function() {
+          $case['expected'] = function () {
             return AccessResult::neutral();
           };
 
@@ -757,7 +757,7 @@ class AccessControlTest extends UnitTestCase {
             $has_regular = $permission && $case['has_permission'];
 
             $permissions_were_checked = $case['definition']->getAdminPermission() || $permission;
-            $case['expected'] = function() use ($has_admin, $has_regular, $permissions_were_checked) {
+            $case['expected'] = function () use ($has_admin, $has_regular, $permissions_were_checked) {
               $result = AccessResult::allowedIf($has_admin || $has_regular);
               if ($permissions_were_checked) {
                 $result->addCacheContexts(['user.group_permissions']);
@@ -855,6 +855,7 @@ class AccessControlTest extends UnitTestCase {
 
 }
 
+// phpcs:disable
 class TestAccessControlWithFullOperationSupport implements AccessControlInterface {
 
   use AccessControlTrait;
@@ -870,3 +871,4 @@ class TestAccessControlWithFullOperationSupport implements AccessControlInterfac
   }
 
 }
+// phpcs:enable

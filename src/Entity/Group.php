@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\DataDefinition;
 use Drupal\user\EntityOwnerTrait;
 use Drupal\user\StatusItem;
 use Drupal\user\UserInterface;
@@ -222,7 +223,10 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
 
     // @todo Remove the usage of StatusItem in
     //   https://www.drupal.org/project/drupal/issues/2936864.
-    $fields['status']->getItemDefinition()->setClass(StatusItem::class);
+    assert($fields['status'] instanceof BaseFieldDefinition);
+    $data_definition = $fields['status']->getItemDefinition();
+    assert($data_definition instanceof DataDefinition);
+    $data_definition->setClass(StatusItem::class);
     $fields['status']
       ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',
@@ -251,6 +255,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
       ->setDisplayConfigurable('form', TRUE)
       ->setRevisionable(TRUE);
 
+    assert($fields['uid'] instanceof BaseFieldDefinition);
     $fields['uid']
       ->setLabel(t('Group creator'))
       ->setDescription(t('The username of the group creator.'))
@@ -334,11 +339,13 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     // @todo Keep an eye on this from time to time and see if we can remove it.
     //   See: https://www.drupal.org/project/drupal/issues/2869056.
     if (!$this->isNewRevision() && isset($this->original) && empty($record->revision_log_message)) {
+      assert($this->original instanceof GroupInterface);
+
       // If we are updating an existing group without adding a new revision, we
       // need to make sure $entity->revision_log is reset whenever it is empty.
       // Therefore, this code allows us to avoid clobbering an existing log
       // entry with an empty one.
-      $record->revision_log_message = $this->original->revision_log_message->value;
+      $record->revision_log_message = $this->original->getRevisionLogMessage();
     }
 
     if ($this->isNewRevision() && empty($record->revision_created)) {
@@ -353,12 +360,13 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
     parent::postSave($storage, $update);
 
     // If a new group is created and the group type is configured to grant group
-    // creators a membership by default, add the creator as a member.
+    // creators a membership by default, add the creator as a member unless it
+    // is being created using the wizard.
     // @todo Deprecate in 8.x-2.x in favor of a form-only approach. API-created
     //   groups should not get this functionality because it may create
     //   incomplete group memberships.
     $group_type = $this->getGroupType();
-    if ($update === FALSE && $group_type->creatorGetsMembership()) {
+    if ($update === FALSE && $group_type->creatorGetsMembership() && !$group_type->creatorMustCompleteMembership()) {
       $values = ['group_roles' => $group_type->getCreatorRoleIds()];
       $this->addMember($this->getOwner(), $values);
     }
@@ -370,6 +378,7 @@ class Group extends EditorialContentEntityBase implements GroupInterface {
   public static function preDelete(EntityStorageInterface $storage, array $entities) {
     // Remove all relationships from these groups as well.
     foreach ($entities as $group) {
+      assert($group instanceof GroupInterface);
       foreach ($group->getRelationships() as $relationship) {
         $relationship->delete();
       }

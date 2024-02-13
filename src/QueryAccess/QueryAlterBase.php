@@ -166,7 +166,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    *   A set of scope identifiers where access is granted for each scope. Keys
    *   are scope names and values are determined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $parent_condition
-   *  The parent condition to add the subconditions to.
+   *   The parent condition to add the subconditions to.
    */
   protected function addScopedConditions(array $allowed_ids, ConditionInterface $parent_condition) {
     $scope_conditions = $this->ensureOrConjunction($parent_condition);
@@ -188,7 +188,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * Makes sure a ConditionInterface has the OR conjunction.
    *
    * @param \Drupal\Core\Database\Query\ConditionInterface $parent
-   *  The parent ConditionInterface to potentially add the OR group to.
+   *   The parent ConditionInterface to potentially add the OR group to.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface
    *   An OR condition group attached to the parent in case the parent did not
@@ -210,7 +210,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * @param array $allowed_ids
    *   The IDs to grant access to, as ddefined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    * @param string $scope
    *   The name of the synchronized scope, either 'outsider' or 'insider'.
    */
@@ -222,7 +222,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * @param array $allowed_ids
    *   The IDs to grant access to, as ddefined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    */
   abstract protected function addIndividualConditions(array $allowed_ids, ConditionInterface $scope_conditions);
 
