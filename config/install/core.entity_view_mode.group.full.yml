@@ -1,0 +1,10 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - group
+id: group.full
+label: 'Full content'
+description: ''
+targetEntityType: group
+cache: true
