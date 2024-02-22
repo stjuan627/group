@@ -28,7 +28,12 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+    $message = 'Are you sure you want to remove %name from %group?';
+    $replace = [
+      '%name' => $this->getEntity()->label(),
+      '%group' => $this->getEntity()->getGroup()->label(),
+    ];
+    return $this->t($message, $replace);
   }
 
   /**
