@@ -194,6 +194,13 @@ class AccessControl implements AccessControlInterface {
       }
     }
 
+    // If we did not allow access, we need to explicitly forbid access to avoid
+    // other modules from granting access where Group promised the entity would
+    // be inaccessible.
+    if (!$result->isAllowed()) {
+      $result = AccessResult::forbidden()->addCacheableDependency($result);
+    }
+
     // If there was an owner permission to check, the result needs to vary per
     // user. We also need to add the entity as a dependency because if its owner
     // changes, someone might suddenly gain or lose access.

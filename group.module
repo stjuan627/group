@@ -431,7 +431,9 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
   // Loop over the plugin handlers and add their access check to the result.
   foreach ($plugin_ids_used as $plugin_id) {
     $handler = $plugin_manager->getAccessControlHandler($plugin_id);
-    $access = $access->orIf($handler->entityAccess($entity, $operation, $account, TRUE));
+    $handlerAccess = $handler->entityAccess($entity, $operation, $account, TRUE);
+    // Transform access from NotForbidden to Allowed so to OR it.
+    $access = $access->orIf(AccessResult::AllowedIf(!$handlerAccess->isForbidden()));
   }
 
   // If we did not allow access, we need to explicitly forbid access to avoid
