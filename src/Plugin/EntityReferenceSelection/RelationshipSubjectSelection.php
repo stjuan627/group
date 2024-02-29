@@ -12,7 +12,8 @@ use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
  *   label = @Translation("Group relationship target selection"),
  *   entity_types = {"group_config_wrapper"},
  *   group = "group_config_wrapper",
- *   weight = 0
+ *   weight = 0,
+ *   base_plugin_label = @Translation("Group: Group relationship target selection")
  * )
  */
 class RelationshipSubjectSelection extends DefaultSelection {
