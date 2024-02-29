@@ -16,7 +16,8 @@ use Drupal\group\PermissionScopeInterface;
  *   label = @Translation("Group type role selection"),
  *   entity_types = {"group_role"},
  *   group = "group_type",
- *   weight = 0
+ *   weight = 0,
+ *   base_plugin_label = @Translation("Group: Group relationship target selection")
  * )
  */
 class GroupTypeRoleSelection extends DefaultSelection {
