@@ -2,17 +2,16 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Symfony\Component\Routing\Route;
 
 /**
- * Determines access to routes based on whether a relationship belongs to the
- * group that was also specified in the route.
+ * Determines access to routes based on whether a relationship belongs to group.
  */
 class GroupOwnsContentAccessCheck implements AccessInterface {
 

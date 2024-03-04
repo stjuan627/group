@@ -3,8 +3,8 @@
 namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
-use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**

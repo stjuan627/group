@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

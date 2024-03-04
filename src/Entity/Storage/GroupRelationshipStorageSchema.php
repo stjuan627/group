@@ -19,10 +19,18 @@ class GroupRelationshipStorageSchema extends SqlContentEntityStorageSchema {
 
     if ($data_table = $this->storage->getDataTable()) {
       $schema[$data_table]['indexes'] += [
-        $this->getEntityIndexName($entity_type, 'load_by_group') => ['gid', 'plugin_id', 'entity_id'],
-        $this->getEntityIndexName($entity_type, 'load_by_entity') => ['entity_id', 'plugin_id'],
-        $this->getEntityIndexName($entity_type, 'load_by_plugin') => ['plugin_id'],
-        $this->getEntityIndexName($entity_type, 'sync_scope_checks') => ['group_type', 'plugin_id'],
+        $this->getEntityIndexName($entity_type, 'load_by_group') => [
+          'gid', 'plugin_id', 'entity_id'
+        ],
+        $this->getEntityIndexName($entity_type, 'load_by_entity') => [
+          'entity_id', 'plugin_id'
+        ],
+        $this->getEntityIndexName($entity_type, 'load_by_plugin') => [
+          'plugin_id'
+        ],
+        $this->getEntityIndexName($entity_type, 'sync_scope_checks') => [
+          'group_type', 'plugin_id'
+        ],
       ];
     }
 
@@ -47,7 +55,7 @@ class GroupRelationshipStorageSchema extends SqlContentEntityStorageSchema {
           // choose performance over edge cases.
           $schema['fields'][$field_name]['length'] = 64;
 
-        // Deliberate break missing above because plugin_id also needs this.
+          // Deliberate break missing above because plugin_id also needs this.
         case 'gid':
         case 'entity_id':
           // Improves the performance of the indexes defined above.

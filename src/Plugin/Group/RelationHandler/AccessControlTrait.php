@@ -7,8 +7,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\user\EntityOwnerInterface;
 
@@ -139,7 +139,9 @@ trait AccessControlTrait {
     $result = AccessResult::neutral();
 
     // Add in the admin permission and filter out the unsupported permissions.
-    $permissions = [$permission, $this->permissionProvider->getAdminPermission()];
+    $permissions = [
+      $permission, $this->permissionProvider->getAdminPermission()
+    ];
     $permissions = array_filter($permissions);
 
     // If we still have permissions left, check for access.

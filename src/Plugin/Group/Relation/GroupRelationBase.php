@@ -3,11 +3,11 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\PluginException;
-use Drupal\group\Entity\GroupType;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginBase;
+use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\group\Entity\GroupType;
 
 /**
  * Provides a base class for GroupRelation plugins.

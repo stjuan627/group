@@ -17,14 +17,14 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 use Drupal\group\QueryAccess\EntityQueryAlter;
-use Drupal\group\QueryAccess\GroupRelationshipQueryAlter;
 use Drupal\group\QueryAccess\GroupQueryAlter;
+use Drupal\group\QueryAccess\GroupRelationshipQueryAlter;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\ViewExecutable;
@@ -169,7 +169,7 @@ function group_theme_suggestions_group_relationship(array $variables) {
 /**
  * Prepares variables for the group template.
  *
- * Default template: group.html.twig
+ * Default template: group.html.twig.
  *
  * @param array $variables
  *   - elements: An array of elements to display in view mode.
@@ -214,7 +214,7 @@ function template_preprocess_group(&$variables) {
 /**
  * Prepares variables for the group relationship template.
  *
- * Default template: group-relationship.html.twig
+ * Default template: group-relationship.html.twig.
  *
  * @param array $variables
  *   - elements: An array of elements to display in view mode.
@@ -269,8 +269,11 @@ function group_modules_installed($modules) {
  * Implements hook_form_FORM_ID_alter().
  *
  * @param array $form
+ *   The form array being altered.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
  * @param string $form_id
+ *   The unique string identifying the form to be altered.
  */
 function group_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (isset($form['visibility']['group_type'])) {
@@ -540,7 +543,12 @@ function group_user_cancel($edit, $account, $method) {
 
     // Run this as a batch if there are more than 10 groups.
     if (count($gids) > 10) {
-      batch_set(['operations' => [['_group_mass_reassign_to_super_user', [$gids]]]]);
+      batch_set([
+      'operations' => [[
+        '_group_mass_reassign_to_super_user', [$gids]
+      ]
+]
+]);
     }
     // Run it immediately if not.
     else {

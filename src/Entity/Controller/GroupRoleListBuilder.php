@@ -2,14 +2,14 @@
 
 namespace Drupal\group\Entity\Controller;
 
-use Drupal\group\Entity\GroupRoleInterface;
-use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\Core\Url;
 use Drupal\Core\Config\Entity\DraggableListBuilder;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\group\Entity\GroupRoleInterface;
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\PermissionScopeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,7 +23,7 @@ class GroupRoleListBuilder extends DraggableListBuilder {
   /**
    * The group type to check for roles.
    *
-   * @var GroupTypeInterface $groupType
+   * @var \Drupal\group\Entity\GroupTypeInterface
    */
   protected $groupType;
 

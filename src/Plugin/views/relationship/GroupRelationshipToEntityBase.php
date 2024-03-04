@@ -36,8 +36,14 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
   protected $validPlugins;
 
   /**
-   * Constructs an GroupRelationshipToEntityBase object.
+   * Constructs a GroupRelationshipToEntityBase object.
    *
+   * @param array $configuration
+   *   An array of configuration settings.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param mixed $plugin_definition
+   *   The plugin definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
@@ -71,7 +77,7 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
    * @return string
    *   The target entity type ID.
    */
-  protected abstract function getTargetEntityType();
+  abstract protected function getTargetEntityType();
 
   /**
    * Retrieves type of join field to use.
@@ -81,7 +87,7 @@ abstract class GroupRelationshipToEntityBase extends RelationshipPluginBase {
    * @return string
    *   The type of join field to use.
    */
-  protected abstract function getJoinFieldType();
+  abstract protected function getJoinFieldType();
 
   /**
    * {@inheritdoc}

@@ -18,7 +18,7 @@ use Drupal\group\Entity\GroupInterface;
  *
  * @param array $operations
  *   A list of links to be set in an 'operations' element.
- * @param GroupInterface $group
+ * @param \Drupal\group\Entity\GroupInterface $group
  *   The group to alter the operations for.
  *
  * @see \Drupal\group\Plugin\Block\GroupOperationsBlock

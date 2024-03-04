@@ -2,10 +2,10 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface defining a Group relationship entity.
@@ -58,7 +58,7 @@ interface GroupRelationshipInterface extends ContentEntityInterface, EntityOwner
    * Returns the entity that was added as a relationship.
    *
    * @return \Drupal\Core\Entity\EntityInterface
-   *  The entity that was added as a relationship.
+   *   The entity that was added as a relationship.
    */
   public function getEntity();
 

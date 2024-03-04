@@ -7,8 +7,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\BubbleableMetadata;
 
 /**
- * Generates text using placeholders for dummy content to check relationship
- * token replacement.
+ * Generates placeholder-filled text for testing relationship token replacement.
  *
  * @group group
  */
@@ -17,7 +16,7 @@ class GroupRelationshipTokenReplaceTest extends GroupTokenReplaceKernelTestBase 
   /**
    * Tests the tokens replacement for relationship.
    */
-  function testGroupRelationshipTokenReplacement() {
+  public function testGroupRelationshipTokenReplacement() {
     $url_options = [
       'absolute' => TRUE,
       'language' => $this->interfaceLanguage,

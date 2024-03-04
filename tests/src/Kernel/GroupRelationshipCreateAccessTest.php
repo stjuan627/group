@@ -170,7 +170,9 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
     $cases['add-page-access-multi'] = [
       'entity.group_relationship.add_page',
       [],
-      ['create entity_test_relation relationship', 'create node_relation:page relationship'],
+      ['create entity_test_relation relationship',
+        'create node_relation:page relationship'
+],
       FALSE,
       TRUE,
       TRUE,

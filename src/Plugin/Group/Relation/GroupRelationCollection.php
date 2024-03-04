@@ -13,6 +13,7 @@ class GroupRelationCollection extends DefaultLazyPluginCollection {
    * {@inheritdoc}
    *
    * @return \Drupal\group\Plugin\Group\Relation\GroupRelationInterface
+   *   The GroupRelationInterface instance for the specified instance ID.
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

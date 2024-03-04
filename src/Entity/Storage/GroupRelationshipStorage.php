@@ -286,7 +286,7 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
   /**
    * {@inheritdoc}
    */
-  public function loadByEntityAndGroup(EntityInterface $entity,GroupInterface $group, $plugin_id = NULL) {
+  public function loadByEntityAndGroup(EntityInterface $entity, GroupInterface $group, $plugin_id = NULL) {
     if (!$this->loadByPluginSanityCheck($plugin_id)) {
       return [];
     }

@@ -21,6 +21,9 @@ abstract class GroupTokenReplaceKernelTestBase extends GroupKernelTestBase {
    */
   protected $tokenService;
 
+  /**
+   * Sets up the test environment before each test method is executed.
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->interfaceLanguage = \Drupal::languageManager()->getCurrentLanguage();

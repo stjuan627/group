@@ -21,7 +21,7 @@ class GroupPermissions {
    */
   public function groupTypePermissions() {
     $perms = [];
-    
+
     // Generate group permissions for all group types.
     foreach (GroupType::loadMultiple() as $type) {
       $perms += $this->buildPermissions($type);

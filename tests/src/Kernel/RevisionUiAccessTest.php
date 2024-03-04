@@ -216,7 +216,10 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'permissions' => $member_permissions,
     ]);
 
-    $group = $this->createGroup(['type' => $this->groupType->id(), 'status' => $revision_published]);
+    $group = $this->createGroup([
+      'type' => $this->groupType->id(),
+    'status' => $revision_published
+    ]);
     $group->addMember($member);
     $group->addMember($admin, ['group_roles' => [$this->adminRole->id()]]);
 

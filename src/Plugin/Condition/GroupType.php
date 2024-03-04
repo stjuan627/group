@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     "group" = @ContextDefinition("entity:group", label = @Translation("Group"))
  *   }
  * )
- *
  */
 class GroupType extends ConditionPluginBase implements ContainerFactoryPluginInterface {
 
@@ -102,7 +101,10 @@ class GroupType extends ConditionPluginBase implements ContainerFactoryPluginInt
     if (count($group_types) > 1) {
       $last = array_pop($group_types);
       $group_types = implode(', ', $group_types);
-      return $this->t('The group type is @group_types or @last', ['@group_types' => $group_types, '@last' => $last]);
+      return $this->t(
+        'The group type is @group_types or @last',
+        ['@group_types' => $group_types, '@last' => $last]
+      );
     }
 
     // If just one was selected, return a simpler string.

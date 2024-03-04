@@ -5,10 +5,13 @@ namespace Drupal\group_test_plugin\Plugin\Group\Relation;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 
+/**
+ * Provides a deriver for node relation plugins.
+ */
 class NodeRelationDeriver extends DeriverBase {
 
   /**
-   * {@inheritdoc}.
+   * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     assert($base_plugin_definition instanceof GroupRelationTypeInterface);

@@ -55,7 +55,10 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
     $this->createRole([], RoleInterface::AUTHENTICATED_ID);
     $group_type_a = $this->createGroupType();
     $group_type_b = $this->createGroupType();
-    $group_role = ['scope' => PermissionScopeInterface::OUTSIDER_ID, 'global_role' => RoleInterface::AUTHENTICATED_ID];
+    $group_role = [
+      'scope' => PermissionScopeInterface::OUTSIDER_ID,
+      'global_role' => RoleInterface::AUTHENTICATED_ID
+    ];
     $this->createGroupRole([
       'group_type' => $group_type_a->id(),
       'permissions' => [$this->getPermission('view', 'any', TRUE)],
@@ -128,6 +131,9 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
     return $this->createGroup(['type' => $group_type->id()]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function joinTargetEntityDataTable(SelectInterface $query) {
     parent::joinTargetEntityDataTable($query);
     $this->joinedFieldData = TRUE;

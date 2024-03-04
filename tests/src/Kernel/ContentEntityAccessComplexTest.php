@@ -82,8 +82,14 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->createNodeType(['type' => 'page']);
     $this->createNodeType(['type' => 'article']);
 
-    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
-    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType([
+      'id' => 'foo',
+      'creator_membership' => FALSE
+    ]);
+    $this->groupTypeB = $this->createGroupType([
+      'id' => 'bar',
+      'creator_membership' => FALSE
+    ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);
@@ -603,7 +609,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
   public function testMemberViewOwnUnpublishedAccess() {
     $account = $this->createUser([], $this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
-    $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
+    $node_2 = $this->createNode([
+      'type' => 'page',
+      'status' => 0,
+      'uid' => $account->id()
+    ]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     // Sanity check: Verify that we don't touch published nodes.
@@ -658,7 +668,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
   public function testNonMemberViewOwnUnpublishedAccess() {
     $account = $this->createUser([], $this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
-    $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
+    $node_2 = $this->createNode([
+      'type' => 'page',
+      'status' => 0,
+      'uid' => $account->id()
+    ]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
     // Sanity check: Verify that we don't touch published nodes.
@@ -795,7 +809,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
-    $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
+    $node_4 = $this->createNode([
+      'type' => 'page',
+      'uid' => $account->id(),
+      'status' => 0
+    ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
     $role_config = [
@@ -847,7 +865,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
-    $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
+    $node_4 = $this->createNode([
+      'type' => 'page',
+      'uid' => $account->id(),
+      'status' => 0
+    ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
     $role_config = [
@@ -979,7 +1001,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
-    $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
+    $node_4 = $this->createNode([
+      'type' => 'page',
+      'uid' => $account->id(),
+      'status' => 0
+    ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
     $role_config = [
@@ -1031,7 +1057,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
-    $node_4 = $this->createNode(['type' => 'page', 'uid' => $account->id(), 'status' => 0]);
+    $node_4 = $this->createNode([
+      'type' => 'page',
+      'uid' => $account->id(),
+      'status' => 0
+    ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
     $role_config = [

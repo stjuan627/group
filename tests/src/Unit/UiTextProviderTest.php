@@ -25,7 +25,7 @@ class UiTextProviderTest extends UnitTestCase {
   use StringTranslationTrait;
 
   /**
-   * The UI text provider to run tests on,
+   * The UI text provider to run tests on.
    *
    * @var \Drupal\group\Plugin\Group\RelationHandlerDefault\UiTextProvider
    */
@@ -108,7 +108,7 @@ class UiTextProviderTest extends UnitTestCase {
    *
    * @param string $description
    *   The expected description, with placeholders still.
-   * @param bool$create_mode
+   * @param bool $create_mode
    *   Whether the description is for an add or create page.
    * @param bool $bundle
    *   (optional) Whether the relation type supports bundles. Defaults to FALSE.

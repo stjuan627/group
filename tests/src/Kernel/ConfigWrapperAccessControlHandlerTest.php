@@ -45,7 +45,10 @@ class ConfigWrapperAccessControlHandlerTest extends GroupKernelTestBase {
   public function testOperationAccess($operation) {
     $access_control_handler = $this->entityTypeManager->getAccessControlHandler('group_config_wrapper');
     $storage = $this->entityTypeManager->getStorage('group_config_wrapper');
-    $wrapper = $storage->create(['bundle' => 'node_type', 'entity_id' => $this->createNodeType()->id()]);
+    $wrapper = $storage->create([
+      'bundle' => 'node_type',
+      'entity_id' => $this->createNodeType()->id()
+    ]);
     $this->assertFalse($access_control_handler->access($wrapper, $operation));
   }
 

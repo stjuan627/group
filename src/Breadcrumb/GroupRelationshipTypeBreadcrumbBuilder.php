@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Breadcrumb;
 
-use Drupal\group\Entity\GroupRelationshipTypeInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\group\Entity\GroupRelationshipTypeInterface;
 
 /**
  * Provides a custom breadcrumb builder for relationship type paths.
@@ -16,7 +16,7 @@ class GroupRelationshipTypeBreadcrumbBuilder implements BreadcrumbBuilderInterfa
   use StringTranslationTrait;
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
     // Only apply to paths containing a relationship type.
@@ -26,7 +26,7 @@ class GroupRelationshipTypeBreadcrumbBuilder implements BreadcrumbBuilderInterfa
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function build(RouteMatchInterface $route_match) {
     $relationship_type = $route_match->getParameter('group_relationship_type');

@@ -2,8 +2,8 @@
 
 namespace Drupal\group\Form;
 
-use Drupal\group\Entity\Form\GroupRelationshipForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\group\Entity\Form\GroupRelationshipForm;
 
 /**
  * Provides a form for joining a group.

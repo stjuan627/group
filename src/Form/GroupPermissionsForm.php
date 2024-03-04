@@ -300,7 +300,7 @@ abstract class GroupPermissionsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
       assert($group_role instanceof GroupRoleInterface);
       if ($group_role->isAdmin()) {

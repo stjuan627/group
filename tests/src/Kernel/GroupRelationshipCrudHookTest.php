@@ -24,7 +24,10 @@ class GroupRelationshipCrudHookTest extends GroupKernelTestBase {
    */
   public function testGroupedEntityDeletion() {
     $account = $this->createUser();
-    $group = $this->createGroup(['type' => $this->createGroupType()->id(), 'uid' => $account->id()]);
+    $group = $this->createGroup([
+      'type' => $this->createGroupType()->id(),
+    'uid' => $account->id()
+    ]);
 
     $count = count($group->getRelationships());
     $account->delete();
