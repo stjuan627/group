@@ -35,7 +35,7 @@ class GroupAccessControlHandlerTest extends GroupKernelTestBase {
     $this->installConfig(['user']);
     $this->groupType = $this->createGroupType([
       'id' => 'foo',
-      'creator_membership' =>
+      'creator_membership' => FALSE,
     ]);
     $this->group = $this->createGroup(['type' => 'foo']);
   }

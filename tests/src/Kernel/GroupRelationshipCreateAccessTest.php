@@ -171,8 +171,8 @@ class GroupRelationshipCreateAccessTest extends GroupKernelTestBase {
       'entity.group_relationship.add_page',
       [],
       ['create entity_test_relation relationship',
-        'create node_relation:page relationship'
-],
+        'create node_relation:page relationship',
+      ],
       FALSE,
       TRUE,
       TRUE,

@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\BubbleableMetadata;
 

@@ -19,14 +19,14 @@ class NodeRelationDeriver extends DeriverBase {
 
     $this->derivatives['page'] = clone $base_plugin_definition;
     $this->derivatives['page']->set('entity_bundle', 'page');
-    $this->derivatives['page']->set('label', t('Page relations (generic)'));
-    $this->derivatives['page']->set('description', t('Relates pages to groups.'));
+    $this->derivatives['page']->set('label', $this->t('Page relations (generic)'));
+    $this->derivatives['page']->set('description', $this->t('Relates pages to groups.'));
     $this->derivatives['page']->set('admin_permission', 'administer node_relation:page');
 
     $this->derivatives['article'] = clone $base_plugin_definition;
     $this->derivatives['article']->set('entity_bundle', 'article');
-    $this->derivatives['article']->set('label', t('Article relations (generic)'));
-    $this->derivatives['article']->set('description', t('Relates articles to groups.'));
+    $this->derivatives['article']->set('label', $this->t('Article relations (generic)'));
+    $this->derivatives['article']->set('description', $this->t('Relates articles to groups.'));
     $this->derivatives['article']->set('admin_permission', 'administer node_relation:article');
 
     return $this->derivatives;

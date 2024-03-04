@@ -22,7 +22,7 @@ class ConfigWrapperStorageSchema extends SqlContentEntityStorageSchema {
       // also creating an index behind the scenes for faster lookups.
       $schema[$base_table]['unique keys'] += [
         $this->getEntityIndexName($entity_type, 'load_by_config') => [
-          'bundle', 'entity_id'
+          'bundle', 'entity_id',
         ],
       ];
     }

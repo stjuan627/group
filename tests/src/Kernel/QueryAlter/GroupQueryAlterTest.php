@@ -57,7 +57,7 @@ class GroupQueryAlterTest extends QueryAlterTestBase {
     $group_type_b = $this->createGroupType();
     $group_role = [
       'scope' => PermissionScopeInterface::OUTSIDER_ID,
-      'global_role' => RoleInterface::AUTHENTICATED_ID
+      'global_role' => RoleInterface::AUTHENTICATED_ID,
     ];
     $this->createGroupRole([
       'group_type' => $group_type_a->id(),

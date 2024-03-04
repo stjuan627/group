@@ -5,7 +5,6 @@ namespace Drupal\group\Entity\Storage;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\User\RoleInterface;
 
 /**
  * Defines an interface for group role entity storage classes.

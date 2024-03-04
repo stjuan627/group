@@ -84,11 +84,11 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
 
     $this->groupTypeA = $this->createGroupType([
       'id' => 'foo',
-      'creator_membership' => FALSE
+      'creator_membership' => FALSE,
     ]);
     $this->groupTypeB = $this->createGroupType([
       'id' => 'bar',
-      'creator_membership' => FALSE
+      'creator_membership' => FALSE,
     ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');
@@ -612,7 +612,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode([
       'type' => 'page',
       'status' => 0,
-      'uid' => $account->id()
+      'uid' => $account->id(),
     ]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
@@ -671,7 +671,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_2 = $this->createNode([
       'type' => 'page',
       'status' => 0,
-      'uid' => $account->id()
+      'uid' => $account->id(),
     ]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
 
@@ -812,7 +812,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode([
       'type' => 'page',
       'uid' => $account->id(),
-      'status' => 0
+      'status' => 0,
     ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
@@ -868,7 +868,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode([
       'type' => 'page',
       'uid' => $account->id(),
-      'status' => 0
+      'status' => 0,
     ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
@@ -1004,7 +1004,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode([
       'type' => 'page',
       'uid' => $account->id(),
-      'status' => 0
+      'status' => 0,
     ]);
     $node_5 = $this->createNode(['type' => 'page']);
 
@@ -1060,7 +1060,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $node_4 = $this->createNode([
       'type' => 'page',
       'uid' => $account->id(),
-      'status' => 0
+      'status' => 0,
     ]);
     $node_5 = $this->createNode(['type' => 'page']);
 

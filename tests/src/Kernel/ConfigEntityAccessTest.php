@@ -75,11 +75,11 @@ class ConfigEntityAccessTest extends GroupKernelTestBase {
 
     $this->groupTypeA = $this->createGroupType([
       'id' => 'foo',
-    'creator_membership' => FALSE
+      'creator_membership' => FALSE,
     ]);
     $this->groupTypeB = $this->createGroupType([
       'id' => 'bar',
-    'creator_membership' => FALSE
+      'creator_membership' => FALSE,
     ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');

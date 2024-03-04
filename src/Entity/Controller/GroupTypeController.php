@@ -164,10 +164,10 @@ class GroupTypeController extends ControllerBase {
         ],
       ],
       'provider' => [
-        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider())
+        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider()),
       ],
       'entity_type_id' => [
-        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel()
+        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel(),
       ],
       'status' => ['#markup' => $status],
       'install_type' => ['#markup' => $install_type],

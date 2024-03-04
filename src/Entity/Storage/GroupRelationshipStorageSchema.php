@@ -20,16 +20,16 @@ class GroupRelationshipStorageSchema extends SqlContentEntityStorageSchema {
     if ($data_table = $this->storage->getDataTable()) {
       $schema[$data_table]['indexes'] += [
         $this->getEntityIndexName($entity_type, 'load_by_group') => [
-          'gid', 'plugin_id', 'entity_id'
+          'gid', 'plugin_id', 'entity_id',
         ],
         $this->getEntityIndexName($entity_type, 'load_by_entity') => [
-          'entity_id', 'plugin_id'
+          'entity_id', 'plugin_id',
         ],
         $this->getEntityIndexName($entity_type, 'load_by_plugin') => [
-          'plugin_id'
+          'plugin_id',
         ],
         $this->getEntityIndexName($entity_type, 'sync_scope_checks') => [
-          'group_type', 'plugin_id'
+          'group_type', 'plugin_id',
         ],
       ];
     }

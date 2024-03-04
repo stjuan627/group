@@ -503,7 +503,7 @@ class AccessControlTest extends UnitTestCase {
 
       $storage->loadByEntity($entity, $plugin_id)->willReturn([
         1 => $group_relationship,
-      2 => $group_relationship_2
+        2 => $group_relationship_2,
       ]);
 
       $is_supported = $permission || ($own_permission && $is_ownable) || $check_chain;

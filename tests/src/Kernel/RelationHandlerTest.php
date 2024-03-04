@@ -21,7 +21,7 @@ class RelationHandlerTest extends GroupKernelTestBase {
    * {@inheritdoc}
    */
   protected static $modules = [
-    'group_test_plugin', 'group_test_plugin_alter', 'node'
+    'group_test_plugin', 'group_test_plugin_alter', 'node',
   ];
 
   /**

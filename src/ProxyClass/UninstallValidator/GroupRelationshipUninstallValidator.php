@@ -78,4 +78,3 @@ class GroupRelationshipUninstallValidator implements ModuleUninstallValidatorInt
   }
 
 }
-

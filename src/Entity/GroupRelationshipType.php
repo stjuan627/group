@@ -103,7 +103,7 @@ class GroupRelationshipType extends ConfigEntityBundleBase implements GroupRelat
   public function label() {
     return $this->t('INTERNAL USE ONLY -- @group_type -- @plugin', [
       '@group_type' => $this->getGroupType()->label(),
-      '@plugin' => $this->getPlugin()->getPluginDefinition()->getLabel()
+      '@plugin' => $this->getPlugin()->getPluginDefinition()->getLabel(),
     ]);
   }
 

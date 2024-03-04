@@ -91,7 +91,7 @@ class EntityQueryAlterCacheabilityTest extends GroupKernelTestBase {
     $this->assertCount(1, $render_context);
     $this->assertEqualsCanonicalizing([
       'group_relationship_list:plugin:node_relation:article'
-      'group_relationship_list:plugin:node_relation:page'
+      'group_relationship_list:plugin:node_relation:page',
     ],
     $render_context[0]->getCacheTags()
     );

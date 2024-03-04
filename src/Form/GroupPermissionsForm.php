@@ -198,7 +198,7 @@ abstract class GroupPermissionsForm extends FormBase {
             'id' => 'module-' . $provider,
           ],
           '#markup' => $this->moduleHandler->getName($provider),
-        ]
+        ],
       ];
 
       foreach ($sections as $section_id => $permissions) {
@@ -211,7 +211,7 @@ abstract class GroupPermissionsForm extends FormBase {
               'id' => 'section-' . $section_id,
             ],
             '#markup' => reset($permissions)['section'],
-          ]
+          ],
         ];
 
         // Then list all of the permissions for that provider and section.
@@ -274,8 +274,8 @@ abstract class GroupPermissionsForm extends FormBase {
                 '#attributes' => [
                   'class' => [
                     'rid-' . $role_name,
-                    'js-rid-' . $role_name
-                  ]
+                    'js-rid-' . $role_name,
+                  ],
                 ],
                 '#parents' => [$role_name, $perm],
               ];

@@ -5,7 +5,6 @@
  * Hooks specific to the Group module.
  */
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**

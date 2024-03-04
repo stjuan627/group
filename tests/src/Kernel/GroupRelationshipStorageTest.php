@@ -116,7 +116,9 @@ class GroupRelationshipStorageTest extends GroupKernelTestBase {
   }
 
   /**
-   * Tests the creation of a GroupRelationship entity using an incorrect plugin ID.
+   * Tests the creation of a GroupRelationship.
+   *
+   * Entity using an incorrect plugin ID.
    *
    * @covers ::createForEntityInGroup
    */

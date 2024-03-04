@@ -23,8 +23,8 @@ class GroupNodeDeriver extends DeriverBase {
 
       $this->derivatives[$name] = clone $base_plugin_definition;
       $this->derivatives[$name]->set('entity_bundle', $name);
-      $this->derivatives[$name]->set('label', t('Group node (@type)', ['@type' => $label]));
-      $this->derivatives[$name]->set('description', t('Adds %type content to groups both publicly and privately.', ['%type' => $label]));
+      $this->derivatives[$name]->set('label', $this->t('Group node (@type)', ['@type' => $label]));
+      $this->derivatives[$name]->set('description', $this->t('Adds %type content to groups both publicly and privately.', ['%type' => $label]));
     }
 
     return $this->derivatives;

@@ -140,7 +140,7 @@ trait AccessControlTrait {
 
     // Add in the admin permission and filter out the unsupported permissions.
     $permissions = [
-      $permission, $this->permissionProvider->getAdminPermission()
+      $permission, $this->permissionProvider->getAdminPermission(),
     ];
     $permissions = array_filter($permissions);
 

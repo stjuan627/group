@@ -26,7 +26,7 @@ class GroupRelationshipCrudHookTest extends GroupKernelTestBase {
     $account = $this->createUser();
     $group = $this->createGroup([
       'type' => $this->createGroupType()->id(),
-    'uid' => $account->id()
+      'uid' => $account->id(),
     ]);
 
     $count = count($group->getRelationships());

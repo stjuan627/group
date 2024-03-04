@@ -539,7 +539,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
             if ($pub_permission && $unpub_permission) {
               $cases["single-$copy_key-own-mixpub-$operation"] = $status_base;
               $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_permissions"] = [
-                $pub_permission, $unpub_permission
+                $pub_permission, $unpub_permission,
               ];
               $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
               $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
@@ -816,7 +816,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
           if ($own_pub_permission && $own_unpub_permission) {
             $own_mixpub_permissions = [
-              $own_pub_permission, $own_unpub_permission
+              $own_pub_permission, $own_unpub_permission,
             ];
             $cases["mixed-outsider-insider-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
             $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_permissions'] = $own_mixpub_permissions;
