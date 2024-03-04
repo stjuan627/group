@@ -2,14 +2,17 @@
 
 namespace Drupal\gnode\Plugin\Group\Relation;
 
+use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\node\Entity\NodeType;
-use Drupal\Component\Plugin\Derivative\DeriverBase;
 
+/**
+ * Provides a deriver for Group content entity node plugins.
+ */
 class GroupNodeDeriver extends DeriverBase {
 
   /**
-   * {@inheritdoc}.
+   * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     assert($base_plugin_definition instanceof GroupRelationTypeInterface);
@@ -20,8 +23,8 @@ class GroupNodeDeriver extends DeriverBase {
 
       $this->derivatives[$name] = clone $base_plugin_definition;
       $this->derivatives[$name]->set('entity_bundle', $name);
-      $this->derivatives[$name]->set('label', t('Group node (@type)', ['@type' => $label]));
-      $this->derivatives[$name]->set('description', t('Adds %type content to groups both publicly and privately.', ['%type' => $label]));
+      $this->derivatives[$name]->set('label', $this->t('Group node (@type)', ['@type' => $label]));
+      $this->derivatives[$name]->set('description', $this->t('Adds %type content to groups both publicly and privately.', ['%type' => $label]));
     }
 
     return $this->derivatives;

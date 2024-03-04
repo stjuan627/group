@@ -51,6 +51,7 @@ class ConfigEntityAccessTest extends GroupKernelTestBase {
 
   /**
    * The permissions required to deal with ungrouped node types.
+   *
    * @var array
    */
   protected $nodeTypePermissions = [
@@ -72,8 +73,14 @@ class ConfigEntityAccessTest extends GroupKernelTestBase {
     $this->storage = $this->entityTypeManager->getStorage('node_type');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('node_type');
 
-    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
-    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType([
+      'id' => 'foo',
+      'creator_membership' => FALSE,
+    ]);
+    $this->groupTypeB = $this->createGroupType([
+      'id' => 'bar',
+      'creator_membership' => FALSE,
+    ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);

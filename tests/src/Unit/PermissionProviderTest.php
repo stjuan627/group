@@ -318,8 +318,7 @@ class PermissionProviderTest extends UnitTestCase {
         $case['scope'] = $scope;
         $case['expected'] = FALSE;
         if ($case['definition']->definesEntityAccess() && $case['implements_published']) {
-          // View own unpublished entity is not implemented yet.
-          if ($scope === 'any') {
+          if ($case['implements_owner'] || $scope === 'any') {
             $case['expected'] = "view $scope unpublished {$scenario['plugin_id']} entity";
           }
         }

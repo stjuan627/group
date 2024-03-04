@@ -51,8 +51,14 @@ class QueryAlterTangibleTest extends GroupKernelTestBase {
     $this->createNodeType(['type' => 'page']);
     $this->createNodeType(['type' => 'article']);
 
-    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
-    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType([
+      'id' => 'foo',
+      'creator_membership' => FALSE,
+    ]);
+    $this->groupTypeB = $this->createGroupType([
+      'id' => 'bar',
+      'creator_membership' => FALSE,
+    ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);

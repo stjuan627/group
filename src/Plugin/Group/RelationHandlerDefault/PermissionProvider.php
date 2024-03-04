@@ -45,10 +45,13 @@ class PermissionProvider implements PermissionProviderInterface {
       switch ($operation) {
         case 'view':
           return $this->getRelationshipViewPermission($scope);
+
         case 'update':
           return $this->getRelationshipUpdatePermission($scope);
+
         case 'delete':
           return $this->getRelationshipDeletePermission($scope);
+
         case 'create':
           return $this->getRelationshipCreatePermission();
       }
@@ -57,12 +60,16 @@ class PermissionProvider implements PermissionProviderInterface {
       switch ($operation) {
         case 'view':
           return $this->getEntityViewPermission($scope);
+
         case 'view unpublished':
           return $this->getEntityViewUnpublishedPermission($scope);
+
         case 'update':
           return $this->getEntityUpdatePermission($scope);
+
         case 'delete':
           return $this->getEntityDeletePermission($scope);
+
         case 'create':
           return $this->getEntityCreatePermission();
       }
@@ -244,9 +251,7 @@ class PermissionProvider implements PermissionProviderInterface {
   protected function getEntityViewUnpublishedPermission($scope = 'any') {
     if ($this->definesEntityPermissions) {
       if ($this->implementsPublishedInterface) {
-        // @todo Implement view own unpublished permission and add it here by
-        // checking for $this->implementsOwnerInterface.
-        if ($scope === 'any') {
+        if ($this->implementsOwnerInterface || $scope === 'any') {
           return "view $scope unpublished $this->pluginId entity";
         }
       }

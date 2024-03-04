@@ -8,7 +8,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationType as GroupRelationTypeDef
 /**
  * Defines a GroupRelationType annotation object.
  *
- * Plugin Namespace: Plugin\Group\Relation
+ * Plugin Namespace: Plugin\Group\Relation.
  *
  * For a working example, see
  * \Drupal\group\Plugin\Group\Relation\GroupMembership

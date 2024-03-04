@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
@@ -13,7 +12,9 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['entity', 'flexible_permissions', 'group', 'options', 'variationcache'];
+  protected static $modules = [
+    'entity', 'flexible_permissions', 'group', 'options', 'variationcache',
+  ];
 
   /**
    * The group relation type manager.

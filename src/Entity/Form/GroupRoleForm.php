@@ -179,6 +179,7 @@ class GroupRoleForm extends EntityForm {
    * Checks whether a group role ID exists already.
    *
    * @param string $id
+   *   The ID to check for existence.
    *
    * @return bool
    *   Whether the ID is taken.
@@ -186,7 +187,7 @@ class GroupRoleForm extends EntityForm {
   public function exists($id) {
     assert($this->entity instanceof GroupRoleInterface);
     $group_role = $this->entity;
-    return (boolean) $this->entityTypeManager->getStorage('group_role')->load($group_role->getGroupTypeId() . '-' .$id);
+    return (boolean) $this->entityTypeManager->getStorage('group_role')->load($group_role->getGroupTypeId() . '-' . $id);
   }
 
   /**

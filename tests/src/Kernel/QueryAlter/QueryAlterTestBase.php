@@ -176,13 +176,13 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
       $checks_owner = $checks_owner || ${$key . '_owner_check'};
       $checks_status = $checks_status
         || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-        || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+      || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
 
       if ($key !== 'individual') {
         $checks_member = $checks_member
           || ${$key . '_simple_check'} || ${$key . '_owner_check'}
-          || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-          || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+        || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
+        || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
       }
     }
 
@@ -491,14 +491,14 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
         if (!$operation_supports_status) {
           $cases["single-$copy_key-any-$operation"] = $scope_base;
-          $cases["single-$copy_key-any-$operation"]["${copy_key}_permissions"] = $single_permissions;
-          $cases["single-$copy_key-any-$operation"]["${copy_key}_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-$operation"]["{$copy_key}_permissions"] = $single_permissions;
+          $cases["single-$copy_key-any-$operation"]["{$copy_key}_simple_check"] = TRUE;
 
           if ($this->isOwnable) {
             if ($own_permission = $this->getPermission($operation, 'own')) {
               $cases["single-$copy_key-own-$operation"] = $scope_base;
-              $cases["single-$copy_key-own-$operation"]["${copy_key}_permissions"] = [$own_permission];
-              $cases["single-$copy_key-own-$operation"]["${copy_key}_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-$operation"]["{$copy_key}_permissions"] = [$own_permission];
+              $cases["single-$copy_key-own-$operation"]["{$copy_key}_owner_check"] = TRUE;
               $cases["single-$copy_key-own-$operation"]['joins_data_table'] = TRUE;
             }
           }
@@ -508,17 +508,17 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
           $status_base['joins_data_table'] = TRUE;
 
           $cases["single-$copy_key-any-published-$operation"] = $status_base;
-          $cases["single-$copy_key-any-published-$operation"]["${copy_key}_permissions"] = $single_permissions;
-          $cases["single-$copy_key-any-published-$operation"]["${copy_key}_pub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-published-$operation"]["{$copy_key}_permissions"] = $single_permissions;
+          $cases["single-$copy_key-any-published-$operation"]["{$copy_key}_pub_simple_check"] = TRUE;
 
           $cases["single-$copy_key-any-unpublished-$operation"] = $status_base;
-          $cases["single-$copy_key-any-unpublished-$operation"]["${copy_key}_permissions"] = $unpub_permissions;
-          $cases["single-$copy_key-any-unpublished-$operation"]["${copy_key}_unpub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_permissions"] = $unpub_permissions;
+          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_unpub_simple_check"] = TRUE;
 
           $cases["single-$copy_key-any-mixpub-$operation"] = $status_base;
-          $cases["single-$copy_key-any-mixpub-$operation"]["${copy_key}_permissions"] = array_merge($single_permissions, $unpub_permissions);
-          $cases["single-$copy_key-any-mixpub-$operation"]["${copy_key}_pub_simple_check"] = TRUE;
-          $cases["single-$copy_key-any-mixpub-$operation"]["${copy_key}_unpub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_permissions"] = array_merge($single_permissions, $unpub_permissions);
+          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_pub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_unpub_simple_check"] = TRUE;
 
           if ($this->isOwnable) {
             $pub_permission = $this->getPermission($operation, 'own');
@@ -526,21 +526,23 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
             if ($pub_permission) {
               $cases["single-$copy_key-own-published-$operation"] = $status_base;
-              $cases["single-$copy_key-own-published-$operation"]["${copy_key}_permissions"] = [$pub_permission];
-              $cases["single-$copy_key-own-published-$operation"]["${copy_key}_pub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-published-$operation"]["{$copy_key}_permissions"] = [$pub_permission];
+              $cases["single-$copy_key-own-published-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
             }
 
             if ($unpub_permission) {
               $cases["single-$copy_key-own-unpublished-$operation"] = $status_base;
-              $cases["single-$copy_key-own-unpublished-$operation"]["${copy_key}_permissions"] = [$unpub_permission];
-              $cases["single-$copy_key-own-unpublished-$operation"]["${copy_key}_unpub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_permissions"] = [$unpub_permission];
+              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
             }
 
             if ($pub_permission && $unpub_permission) {
               $cases["single-$copy_key-own-mixpub-$operation"] = $status_base;
-              $cases["single-$copy_key-own-mixpub-$operation"]["${copy_key}_permissions"] = [$pub_permission, $unpub_permission];
-              $cases["single-$copy_key-own-mixpub-$operation"]["${copy_key}_pub_owner_check"] = TRUE;
-              $cases["single-$copy_key-own-mixpub-$operation"]["${copy_key}_unpub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_permissions"] = [
+                $pub_permission, $unpub_permission,
+              ];
+              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
             }
           }
         }
@@ -549,15 +551,15 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         // admin access does not need to check for status nor ownership.
         $cases["single-admin-$copy_key-$operation"] = $scope_base;
         $cases["single-admin-$copy_key-$operation"]['joins_data_table'] = FALSE;
-        $cases["single-admin-$copy_key-$operation"]["${copy_key}_is_admin"] = TRUE;
-        $cases["single-admin-$copy_key-$operation"]["${copy_key}_simple_check"] = TRUE;
+        $cases["single-admin-$copy_key-$operation"]["{$copy_key}_is_admin"] = TRUE;
+        $cases["single-admin-$copy_key-$operation"]["{$copy_key}_simple_check"] = TRUE;
 
         // Admin permission access for outsider, insider and individual. Behaves
         // the same as the admin flag, but only when permission is supported.
         if ($admin_permission) {
           $cases["single-adminpermission-$copy_key-$operation"] = $cases["single-admin-$copy_key-$operation"];
-          $cases["single-adminpermission-$copy_key-$operation"]["${copy_key}_is_admin"] = FALSE;
-          $cases["single-adminpermission-$copy_key-$operation"]["${copy_key}_permissions"] = array_merge([$admin_permission], $single_permissions);
+          $cases["single-adminpermission-$copy_key-$operation"]["{$copy_key}_is_admin"] = FALSE;
+          $cases["single-adminpermission-$copy_key-$operation"]["{$copy_key}_permissions"] = array_merge([$admin_permission], $single_permissions);
         }
       }
 
@@ -813,7 +815,9 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
           }
 
           if ($own_pub_permission && $own_unpub_permission) {
-            $own_mixpub_permissions = [$own_pub_permission, $own_unpub_permission];
+            $own_mixpub_permissions = [
+              $own_pub_permission, $own_unpub_permission,
+            ];
             $cases["mixed-outsider-insider-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
             $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_permissions'] = $own_mixpub_permissions;
             $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_pub_owner_check'] = TRUE;
@@ -925,7 +929,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * Makes sure a ConditionInterface has the OR conjunction.
    *
    * @param \Drupal\Core\Database\Query\ConditionInterface $parent
-   *  The parent ConditionInterface to potentially add the OR group to.
+   *   The parent ConditionInterface to potentially add the OR group to.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface
    *   An OR condition group attached to the parent in case the parent did not
@@ -1018,7 +1022,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * Adds a no access conditions to the query.
    *
    * @param \Drupal\Core\Database\Query\SelectInterface $query
-   *  The query to add the access check to.
+   *   The query to add the access check to.
    */
   abstract protected function addNoAccessConditions(SelectInterface $query);
 
@@ -1029,7 +1033,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * of the query conditions.
    *
    * @param \Drupal\Core\Database\Query\SelectInterface $query
-   *  The query to add the condition group to.
+   *   The query to add the condition group to.
    *
    * @return \Drupal\Core\Database\Query\ConditionInterface
    *   The query or wrapper condition group.
@@ -1044,9 +1048,9 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param array $allowed_ids
    *   The IDs to grant access to.
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    * @param bool $outsider
-   *  Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
+   *   Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
    */
   abstract protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider);
 
@@ -1056,7 +1060,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param array $allowed_ids
    *   The IDs to grant access to.
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
-   *  The condition group to add the access checks to.
+   *   The condition group to add the access checks to.
    */
   abstract protected function addIndividualConditions(array $allowed_ids, ConditionInterface $conditions);
 

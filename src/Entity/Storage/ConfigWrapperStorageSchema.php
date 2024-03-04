@@ -21,7 +21,9 @@ class ConfigWrapperStorageSchema extends SqlContentEntityStorageSchema {
       // We only ever want one wrapper per config entity. This enforces it while
       // also creating an index behind the scenes for faster lookups.
       $schema[$base_table]['unique keys'] += [
-        $this->getEntityIndexName($entity_type, 'load_by_config') => ['bundle', 'entity_id'],
+        $this->getEntityIndexName($entity_type, 'load_by_config') => [
+          'bundle', 'entity_id',
+        ],
       ];
     }
 

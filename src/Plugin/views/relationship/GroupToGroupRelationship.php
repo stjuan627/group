@@ -35,6 +35,12 @@ class GroupToGroupRelationship extends RelationshipPluginBase {
   /**
    * Constructs a GroupToGroupRelationship object.
    *
+   * @param array $configuration
+   *   An array of configuration settings.
+   * @param string $plugin_id
+   *   The plugin ID.
+   * @param mixed $plugin_definition
+   *   The plugin definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager

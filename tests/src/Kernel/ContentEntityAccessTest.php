@@ -60,8 +60,14 @@ class ContentEntityAccessTest extends GroupKernelTestBase {
     $this->storage = $this->entityTypeManager->getStorage('entity_test_with_owner');
     $this->accessControlHandler = $this->entityTypeManager->getAccessControlHandler('entity_test_with_owner');
 
-    $this->groupTypeA = $this->createGroupType(['id' => 'foo', 'creator_membership' => FALSE]);
-    $this->groupTypeB = $this->createGroupType(['id' => 'bar', 'creator_membership' => FALSE]);
+    $this->groupTypeA = $this->createGroupType([
+      'id' => 'foo',
+      'creator_membership' => FALSE,
+    ]);
+    $this->groupTypeB = $this->createGroupType([
+      'id' => 'bar',
+      'creator_membership' => FALSE,
+    ]);
 
     $storage = $this->entityTypeManager->getStorage('group_relationship_type');
     assert($storage instanceof GroupRelationshipTypeStorageInterface);

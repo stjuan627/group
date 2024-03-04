@@ -325,7 +325,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     parent::postLoad($storage, $entities);
     // Sort the queried roles by their weight.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
-    uasort($entities, 'static::sort');
+    uasort($entities, static::class . '::sort');
   }
 
   /**
@@ -360,7 +360,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
 
     if (!isset($this->weight) && ($group_roles = $storage->loadMultiple())) {
       // Set a role weight to make this new role last.
-      $max = array_reduce($group_roles, function($max, $group_role) {
+      $max = array_reduce($group_roles, function ($max, $group_role) {
         return $max > $group_role->weight ? $max : $group_role->weight;
       });
 
