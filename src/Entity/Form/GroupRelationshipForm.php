@@ -110,7 +110,19 @@ class GroupRelationshipForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
+    $insert = $this->entity->isNew();
     $return = parent::save($form, $form_state);
+
+    $context = [
+      '@type' => $this->entity->bundle(),
+      '%title' => $this->entity->label(),
+    ];
+    if ($insert) {
+      $this->logger('group_relationship')->info('@type: added %title.', $context);
+    }
+    else {
+      $this->logger('group_relationship')->info('@type: updated %title.', $context);
+    }
 
     // The below redirect ensures the user will be redirected to something they
     // can view in the following order: The relationship, the target entity
