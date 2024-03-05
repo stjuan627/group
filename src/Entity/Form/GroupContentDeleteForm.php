@@ -27,7 +27,10 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+    /** @var \Drupal\group\Entity\GroupContent $group_content */
+    $group_content = $this->getEntity();
+    $group = $group_content->getGroup();
+    return $this->t('Are you sure you want to remove %name from %group?', ['%name' => $this->entity->label(), '%group' => $group->label()]);
   }
 
   /**
@@ -48,7 +51,7 @@ class GroupContentDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return $this->t('Delete');
+    return $this->t('Remove');
   }
 
   /**
