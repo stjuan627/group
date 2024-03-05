@@ -22,6 +22,43 @@ trait GroupMembershipTrait {
   /**
    * {@inheritdoc}
    */
+  public function addRole(string $role_id): void {
+    // Do nothing if the role is already present.
+    foreach ($this->group_roles as $group_role_ref) {
+      if ($group_role_ref->target_id === $role_id) {
+        return;
+      }
+    }
+
+    // @todo Add the below two checks to a preSave() hook.
+    $storage = \Drupal::entityTypeManager()->getStorage('group_role');
+    if (!$group_role = $storage->load($role_id)) {
+      throw new \InvalidArgumentException(sprintf('Could not add role with ID %s, role does not exist.', $role_id));
+    }
+    assert($group_role instanceof GroupRoleInterface);
+    if ($group_role->getGroupTypeId() !== $this->getGroupTypeId()) {
+      throw new \InvalidArgumentException(sprintf('Could not add role with ID %s, role belongs to a different group type.', $role_id));
+    }
+
+    $this->group_roles[] = $role_id;
+    $this->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function removeRole(string $role_id): void {
+    foreach ($this->group_roles as $key => $group_role_ref) {
+      if ($group_role_ref->target_id === $role_id) {
+        $this->group_roles->removeItem($key);
+      }
+    }
+    $this->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function hasPermission($permission) {
     return $this->getGroup()->hasPermission($permission, $this->getEntity());
   }

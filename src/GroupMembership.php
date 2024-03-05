@@ -96,6 +96,30 @@ class GroupMembership implements CacheableDependencyInterface {
   }
 
   /**
+   * Adds a group role to the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to add.
+   */
+  public function addRole(string $role_id): void {
+    if ($this->groupRelationship instanceof GroupMembershipInterface) {
+      $this->groupRelationship->addRole($role_id);
+    }
+  }
+
+  /**
+   * Removes a group role from the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to remove.
+   */
+  public function removeRole(string $role_id): void {
+    if ($this->groupRelationship instanceof GroupMembershipInterface) {
+      $this->groupRelationship->removeRole($role_id);
+    }
+  }
+
+  /**
    * Checks whether the member has a permission.
    *
    * @param string $permission

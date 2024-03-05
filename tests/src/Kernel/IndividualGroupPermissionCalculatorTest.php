@@ -71,12 +71,8 @@ class IndividualGroupPermissionCalculatorTest extends GroupKernelTestBase {
     $this->assertSame(-1, $calculated_permissions->getCacheMaxAge(), 'Permissions have the right max cache age.');
     $this->assertEqualsCanonicalizing($cache_tags, $calculated_permissions->getCacheTags(), 'Permissions have the right cache tags.');
 
-    // @todo This displays a desperate need for addRole() and removeRole().
-    $group->addMember($account);
+    $group->addMember($account, ['group_roles' => [$group_role->id()]]);
     $member = $group->getMember($account);
-    $group_relationship = $member->getGroupRelationship();
-    $group_relationship->group_roles[] = $group_role->id();
-    $group_relationship->save();
 
     $permissions[$scope][$group->id()][] = 'view group';
     $permissions[$scope][$group->id()][] = 'leave group';
