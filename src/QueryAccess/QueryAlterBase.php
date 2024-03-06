@@ -208,7 +208,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * Adds conditions for a synchronized scope.
    *
    * @param array $allowed_ids
-   *   The IDs to grant access to, as ddefined by the implementing class.
+   *   The IDs to grant access to, as defined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
    *   The condition group to add the access checks to.
    * @param string $scope
@@ -220,7 +220,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * Adds conditions for the individual scope.
    *
    * @param array $allowed_ids
-   *   The IDs to grant access to, as ddefined by the implementing class.
+   *   The IDs to grant access to, as defined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
    *   The condition group to add the access checks to.
    */
@@ -327,7 +327,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   }
 
   /**
-   * Applies the cacheablity metadata to the current request.
+   * Applies the cacheability metadata to the current request.
    */
   protected function applyCacheability() {
     $request = $this->requestStack->getCurrentRequest();
