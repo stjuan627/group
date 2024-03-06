@@ -1049,7 +1049,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
    *   The condition group to add the access checks to.
    * @param bool $outsider
-   *   Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
+   *   Whether the synchronized scope is outsider (TRUE) or insider (FALSE).
    */
   abstract protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider);
 
