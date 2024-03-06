@@ -1,0 +1,18 @@
+{
+  "dictionaries": [
+    "dictionary",
+    "drupal",
+    "companies",
+    "fonts",
+    "html",
+    "php",
+    "softwareTerms",
+    "group"
+  ],
+  "dictionaryDefinitions": [
+    { "name": "group", "path": "./dictionary.txt"}
+  ],
+  "ignorePaths": [
+    "README.md"
+  ]
+}
