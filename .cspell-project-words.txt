@@ -17,5 +17,7 @@ subconditions
 # Test cases.
 +foobar
 foobar+
-+foobar+
+pagefoobarbaz
+relationfoobar
+relationfoobarbazfoo
 bazfoo
