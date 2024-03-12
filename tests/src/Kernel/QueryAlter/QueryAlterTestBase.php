@@ -288,7 +288,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         elseif ($operation_supports_status) {
           $statuses_to_check = [];
 
-          foreach (['unpub', 'pub'] as $status => $pub_key) {
+          foreach (['unpublished', 'published'] as $status => $pub_key) {
             foreach (['individual', 'outsider', 'insider'] as $key) {
               if (${$key . '_' . $pub_key . '_simple_check'} || ${$key . '_' . $pub_key . '_owner_check'}) {
                 $statuses_to_check[] = $status;
