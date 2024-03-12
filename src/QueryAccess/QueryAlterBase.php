@@ -112,7 +112,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
     $this->currentUser = $current_user;
     if ($this->currentUser instanceof RequestStack) {
       $this->currentUser = func_get_arg(4);
-      @trigger_error('Calling ' . __CLASS__ . '::_construct() with the $request_stack argument is deprecated in group:3.3.0 and is removed from group:4.0.0. See https://www.drupal.org/node/7654321', E_USER_DEPRECATED);
+      @trigger_error('Calling ' . __CLASS__ . '::_construct() with the $request_stack argument is deprecated in group:3.3.0 and is removed from group:4.0.0. See https://www.drupal.org/node/3427339', E_USER_DEPRECATED);
     }
     $this->cacheableMetadata = new CacheableMetadata();
   }
