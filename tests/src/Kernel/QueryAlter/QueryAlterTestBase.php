@@ -303,7 +303,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
           $status_key = $definition->getKey('published');
           foreach ($statuses_to_check as $status) {
-            $variable_key = $status ? 'pub' : 'unpub';
+            $variable_key = $status ? 'published' : 'unpublished';
 
             $scope_conditions->condition($status_group = $control->andConditionGroup());
             $status_group->condition("$data_table.$status_key", $status);

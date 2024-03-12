@@ -15,8 +15,7 @@ phpcs
 subconditions
 
 # Test cases.
-+foobar
-foobar+
+user_relationfoobar
 pagefoobarbaz
 relationfoobar
 relationfoobarbazfoo
