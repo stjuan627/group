@@ -22,7 +22,7 @@ parameters:
 			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
 
 		-
-			message: "#^Variable \\$unpub_permissions might not be defined\\.$#"
+			message: "#^Variable \\$unpublished_permissions might not be defined\\.$#"
 			count: 8
 			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
 
