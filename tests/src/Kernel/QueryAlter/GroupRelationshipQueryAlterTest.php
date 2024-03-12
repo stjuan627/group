@@ -61,12 +61,12 @@ class GroupRelationshipQueryAlterTest extends QueryAlterTestBase {
       }
 
       unset(
-        $cases["mixed-outsider-insideradmin-any-" . $operation],
-        $cases["mixed-outsider-individualadmin-any-" . $operation],
-        $cases["mixed-insider-individualadmin-any-" . $operation],
-        $cases["mixed-outsider-insideradmin-own-" . $operation],
-        $cases["mixed-outsider-individualadmin-own-" . $operation],
-        $cases["mixed-insider-individualadmin-own-" . $operation]
+        $cases["mixed-outsider-insider_admin-any-" . $operation],
+        $cases["mixed-outsider-individual_admin-any-" . $operation],
+        $cases["mixed-insider-individual_admin-any-" . $operation],
+        $cases["mixed-outsider-insider_admin-own-" . $operation],
+        $cases["mixed-outsider-individual_admin-own-" . $operation],
+        $cases["mixed-insider-individual_admin-own-" . $operation]
       );
     }
 

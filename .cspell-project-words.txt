@@ -1,75 +1,49 @@
-vals
+# Group-specific terminology.
 gnode
 variationcache
+grfd
+gcfd
+gids
+
+# Drupal-specific terminology.
+# bartik
+# langcode
+# dropbutton
+# addtogroup
+# Dropbutton
+# Revisioning
+# preprocess
+# unpublish
+# tempstore
+# Bubbleable
+# Revisionable
+# typehint
+# Refinable
+Renderable
+# defgroup
+# Fieldable
+# Pathauto
+# placeholdered
+# callables
+# proxied
+# Formattable
+# Unpublishing
+# Resaved
+# prophesize
+# prophesized
+# endcode
+
+# From phpcs.xml, remove when added to ignore list.
 ddev
 lando
-unpub
-grfd
-adminstrator
-subconditions
-myrole
-variationcache
-insideradmin
-individualadmin
-insideradmin
-mixpub
-adminpermission
-insideradminpermission
-individualadminpermission
-relationfoobar
-pagefoobarbaz
-bazfoo
-relationfoobarbazfoo
-noadmin
-anyperm
-noanyperm
-ownperm
-noownperm
-noownable
-hasown
-nohasown
-isowner
-noisowner
-nochain
-noperm
-nogrouped
-ispub
-noispub
-opview
-noopview
-hasadmin
-nohasadmin
-hasperm
-nohasperm
-langcode
-bartik
-dropbutton
-addtogroup
-Dropbutton
-Revisioning
-preprocess
-unpublish
-gids
-tempstore
-defgroup
-Bubbleable
-Revisionable
 ruleset
-typehint
-Refinable
-Renderable
 phpcs
-Fieldable
-Pathauto
-placeholdered
-callables
-proxied
-gcfd
-Formattable
-Unpublishing
-Resaved
-prophesize
-Cachetags
-nopub
-endcode
-prophesized
+
+# General list of terms.
+subconditions
+
+# Test cases.
++foobar
+foobar+
++foobar+
+bazfoo
