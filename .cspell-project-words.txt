@@ -1,5 +1,3 @@
-Eynde
-jangregor
 vals
 gnode
 variationcache
@@ -73,7 +71,5 @@ Resaved
 prophesize
 Cachetags
 nopub
-Kristiaan
-mglaman
 endcode
 prophesized
