@@ -10,7 +10,7 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  * Provides a group relation type for node types.
  */
 #[GroupRelationType(
-  id: 'node_type_membership',
+  id: 'node_type_relation',
   entity_type_id: 'node_type',
   label: new TranslatableMarkup('Node type relation (generic)'),
   description: new TranslatableMarkup('Relates node types to groups.'),
