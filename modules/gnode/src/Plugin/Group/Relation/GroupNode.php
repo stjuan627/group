@@ -12,13 +12,13 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  */
 #[GroupRelationType(
   id: 'group_node',
-  deriver: 'Drupal\gnode\Plugin\Group\Relation\GroupNodeDeriver',
+  entity_type_id: 'node',
   label: new TranslatableMarkup('Group node'),
   description: new TranslatableMarkup('Adds nodes to groups both publicly and privately.'),
   reference_label: new TranslatableMarkup('Title'),
   reference_description: new TranslatableMarkup('The title of the node to add to the group'),
-  entity_type_id: 'node',
-  entity_access: TRUE
+  entity_access: TRUE,
+  deriver: 'Drupal\gnode\Plugin\Group\Relation\GroupNodeDeriver'
 )]
 class GroupNode extends GroupRelationBase {
 

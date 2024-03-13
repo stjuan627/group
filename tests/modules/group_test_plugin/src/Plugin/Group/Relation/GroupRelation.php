@@ -11,11 +11,11 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  */
 #[GroupRelationType(
   id: 'group_relation',
+  entity_type_id: 'group',
   label: new TranslatableMarkup('Subgroup'),
   description: new TranslatableMarkup('Relates groups to groups as subgroups.'),
   reference_label: new TranslatableMarkup('Group name'),
   reference_description: new TranslatableMarkup('The name of the group you want to relate to the group'),
-  entity_type_id: 'group',
   entity_bundle: 'default',
   pretty_path_key: 'subgroup'
 )]

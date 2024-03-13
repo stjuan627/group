@@ -11,15 +11,15 @@ use Drupal\group\Plugin\Attribute\GroupRelationType;
  */
 #[GroupRelationType(
   id: 'group_membership',
+  entity_type_id: 'user',
   label: new TranslatableMarkup('Group membership'),
   description: new TranslatableMarkup('Adds users to groups as members.'),
   reference_label: new TranslatableMarkup('User'),
   reference_description: new TranslatableMarkup('The user you want to make a member'),
-  entity_type_id: 'user',
   shared_bundle_class: 'Drupal\group\Entity\GroupMembership',
-  enforced: TRUE,
+  admin_permission: 'administer members',
   pretty_path_key: 'member',
-  admin_permission: 'administer members'
+  enforced: TRUE
 )]
 class GroupMembership extends GroupRelationBase {
 

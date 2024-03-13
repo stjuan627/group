@@ -11,9 +11,9 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  */
 #[GroupRelationType(
   id: 'node_type_membership',
+  entity_type_id: 'node_type',
   label: new TranslatableMarkup('Node type relation (generic)'),
   description: new TranslatableMarkup('Relates node types to groups.'),
-  entity_type_id: 'node_type',
   entity_access: TRUE,
   admin_permission: 'administer node_type_relation'
 )]

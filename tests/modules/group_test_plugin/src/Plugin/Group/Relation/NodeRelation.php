@@ -11,11 +11,11 @@ use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
  */
 #[GroupRelationType(
   id: 'node_relation',
-  deriver: 'Drupal\group_test_plugin\Plugin\Group\Relation\NodeRelationDeriver',
+  entity_type_id: 'node',
   label: new TranslatableMarkup('Node relation (generic)'),
   description: new TranslatableMarkup('Adds nodes to groups.'),
-  entity_type_id: 'node',
-  entity_access: TRUE
+  entity_access: TRUE,
+  deriver: 'Drupal\group_test_plugin\Plugin\Group\Relation\NodeRelationDeriver'
 )]
 class NodeRelation extends GroupRelationBase {
 }

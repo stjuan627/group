@@ -22,19 +22,19 @@ class GroupRelationType extends Plugin {
 
   public function __construct(
     public readonly string $id,
-    public readonly ?string $deriver = NULL,
+    public readonly string $entity_type_id,
     public readonly TranslatableMarkup $label,
     public readonly TranslatableMarkup $description,
     public readonly ?TranslatableMarkup $reference_label = NULL,
     public readonly ?TranslatableMarkup $reference_description = NULL,
-    public readonly string $entity_type_id,
     public readonly string|false $entity_bundle = FALSE,
     public readonly string|false $shared_bundle_class = FALSE,
     public readonly bool $entity_access = FALSE,
+    public readonly string|false $admin_permission = FALSE,
+    public readonly string $pretty_path_key = 'content',
     public readonly bool $enforced = FALSE,
     public readonly bool $code_only = FALSE,
-    public readonly ?string $pretty_path_key = 'content',
-    public readonly string|false $admin_permission = FALSE,
+    public readonly ?string $deriver = NULL,
     public readonly array $additional = [],
   ) {}
 
@@ -42,10 +42,12 @@ class GroupRelationType extends Plugin {
    * {@inheritdoc}
    */
   public function get(): array|object {
-    $values = array_filter(get_object_vars($this) + [
-        'class' => $this->getClass(),
-        'provider' => $this->getProvider(),
-      ], function ($value, $key) {
+    $to_filter = get_object_vars($this) + [
+      'class' => $this->getClass(),
+      'provider' => $this->getProvider(),
+    ];
+
+    $values = array_filter($to_filter, function ($value, $key) {
       return !($value === NULL && ($key === 'deriver' || $key === 'provider'));
     }, ARRAY_FILTER_USE_BOTH);
 
