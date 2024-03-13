@@ -5,12 +5,6 @@ grfd
 gcfd
 gids
 
-# From phpcs.xml, remove when added to ignore list.
-ddev
-lando
-ruleset
-phpcs
-
 # General list of terms.
 subconditions
 
