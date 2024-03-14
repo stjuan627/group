@@ -9,7 +9,6 @@ gids
 subconditions
 
 # Test cases.
-user_relationfoobar
 pagefoobarbaz
 relationfoobar
 relationfoobarbazfoo
