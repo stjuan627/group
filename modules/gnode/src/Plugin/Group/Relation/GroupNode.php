@@ -3,22 +3,23 @@
 namespace Drupal\gnode\Plugin\Group\Relation;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\group\Plugin\Attribute\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationBase;
 
 /**
  * Provides a group relation type for nodes.
- *
- * @GroupRelationType(
- *   id = "group_node",
- *   label = @Translation("Group node"),
- *   description = @Translation("Adds nodes to groups both publicly and privately."),
- *   entity_type_id = "node",
- *   entity_access = TRUE,
- *   reference_label = @Translation("Title"),
- *   reference_description = @Translation("The title of the node to add to the group"),
- *   deriver = "Drupal\gnode\Plugin\Group\Relation\GroupNodeDeriver",
- * )
  */
+#[GroupRelationType(
+  id: 'group_node',
+  entity_type_id: 'node',
+  label: new TranslatableMarkup('Group node'),
+  description: new TranslatableMarkup('Adds nodes to groups both publicly and privately.'),
+  reference_label: new TranslatableMarkup('Title'),
+  reference_description: new TranslatableMarkup('The title of the node to add to the group'),
+  entity_access: TRUE,
+  deriver: 'Drupal\gnode\Plugin\Group\Relation\GroupNodeDeriver'
+)]
 class GroupNode extends GroupRelationBase {
 
   /**
