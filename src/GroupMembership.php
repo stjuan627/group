@@ -12,7 +12,7 @@ use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
  *
  * @deprecated in group:3.2.0 and is removed from group:4.0.0. Use the static
  *   methods on \Drupal\group\Entity\GroupMembership instead.
- * @see https://www.drupal.org/project/group/issues/3383363
+ * @see https://www.drupal.org/node/3383363
  */
 class GroupMembership implements CacheableDependencyInterface {
 
