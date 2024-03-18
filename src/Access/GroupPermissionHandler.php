@@ -4,6 +4,7 @@ namespace Drupal\group\Access;
 
 use Drupal\Component\Discovery\YamlDiscovery;
 use Drupal\Core\Controller\ControllerResolverInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
@@ -80,6 +81,13 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   protected $pluginManager;
 
   /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $extensionListModule;
+
+  /**
    * Constructs a new PermissionHandler.
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
@@ -90,12 +98,19 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
    *   The controller resolver.
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
    *   The group relation type manager.
+   * @param \Drupal\Core\Extension\ModuleExtensionList|null $extension_list_module
+   *   The module extension list.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationTypeManagerInterface $plugin_manager) {
+  public function __construct(ModuleHandlerInterface $module_handler, TranslationInterface $string_translation, ControllerResolverInterface $controller_resolver, GroupRelationTypeManagerInterface $plugin_manager, ModuleExtensionList $extension_list_module = NULL) {
+    if ($extension_list_module === NULL) {
+      @trigger_error('Calling ' . __METHOD__ . ' without the $extension_list_module argument is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
+      $extension_list_module = \Drupal::service('extension.list.module');
+    }
     $this->moduleHandler = $module_handler;
     $this->stringTranslation = $string_translation;
     $this->controllerResolver = $controller_resolver;
     $this->pluginManager = $plugin_manager;
+    $this->extensionListModule = $extension_list_module;
   }
 
   /**
@@ -292,7 +307,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   protected function getModuleNames() {
     $modules = [];
     foreach (array_keys($this->moduleHandler->getModuleList()) as $module) {
-      $modules[$module] = $this->moduleHandler->getName($module);
+      $modules[$module] = $this->extensionListModule->getName($module);
     }
     asort($modules);
     return $modules;
