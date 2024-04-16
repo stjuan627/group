@@ -1,5 +1,9 @@
 <?php
 
+use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
+use Drupal\Core\TypedData\DataDefinition;
+use Drupal\field\FieldStorageConfigInterface;
+
 /**
  * @file
  * Install, update and uninstall functions for the group module.
@@ -10,4 +14,33 @@
  */
 function group_update_last_removed() {
   return 9210;
+}
+
+/**
+ * Updates database and fields from Group 2 to Group 3.
+ */
+function group_update_10300(&$sandbox) {
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+
+  foreach ($last_installed_schema_repository->getLastInstalledDefinitions() as $entity_type) {
+    $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions($entity_type->id());
+    foreach ($field_storage_definitions as $fsd) {
+      if ($fsd->getType() !== 'entity_reference') {
+        continue;
+      }
+      if ($fsd->getSetting('target_type') !== 'group_content') {
+        continue;
+      }
+      if (!$fsd instanceof FieldStorageConfigInterface && !$fsd instanceof DataDefinition) {
+        throw new \Exception('Found an entity_reference field storage definition we could not alter the settings for.');
+      }
+      $fsd->setSetting('target_type', 'group_relationship');
+      $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
+
+      if ($fsd instanceof DataDefinition) {
+        // @todo Throw a warning saying a base or bundle field has changed and needs updating in code.
+      }
+    }
+  }
 }
