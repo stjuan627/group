@@ -51,6 +51,7 @@ class ConfigEntityAccessTest extends GroupKernelTestBase {
 
   /**
    * The permissions required to deal with ungrouped node types.
+   *
    * @var array
    */
   protected $nodeTypePermissions = [

@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Form;
 
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -23,9 +24,9 @@ abstract class GroupPermissionsForm extends FormBase {
   protected $groupPermissionHandler;
 
   /**
-   * The module handler.
+   * The module extension list.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Drupal\Core\Extension\ModuleExtensionList
    */
   protected $moduleHandler;
 
@@ -34,10 +35,14 @@ abstract class GroupPermissionsForm extends FormBase {
    *
    * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
    *   The group permission handler.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
+   * @param \Drupal\Core\Extension\ModuleExtensionList|\Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module extension list.
    */
-  public function __construct(GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface $module_handler) {
+  public function __construct(GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface|ModuleExtensionList $module_handler) {
+    if ($module_handler instanceof ModuleHandlerInterface) {
+      @trigger_error('Calling ' . __METHOD__ . '() with a $module_handler argument as \Drupal\Core\Extension\ModuleHandlerInterface instead of \Drupal\Core\Extension\ModuleExtensionList is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
+      $module_handler = \Drupal::service('extension.list.module');
+    }
     $this->groupPermissionHandler = $permission_handler;
     $this->moduleHandler = $module_handler;
   }
@@ -48,7 +53,7 @@ abstract class GroupPermissionsForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('group.permissions'),
-      $container->get('module_handler')
+      $container->get('extension.list.module')
     );
   }
 
@@ -198,7 +203,7 @@ abstract class GroupPermissionsForm extends FormBase {
             'id' => 'module-' . $provider,
           ],
           '#markup' => $this->moduleHandler->getName($provider),
-        ]
+        ],
       ];
 
       foreach ($sections as $section_id => $permissions) {
@@ -211,12 +216,12 @@ abstract class GroupPermissionsForm extends FormBase {
               'id' => 'section-' . $section_id,
             ],
             '#markup' => reset($permissions)['section'],
-          ]
+          ],
         ];
 
         // Then list all of the permissions for that provider and section.
         foreach ($permissions as $perm => $perm_item) {
-          // Create a row for the permission, starting with the description cell.
+          // Create a row for the permission, starting with the description.
           $form['permissions'][$perm]['description'] = [
             '#type' => 'inline_template',
             '#template' => '<span class="title">{{ title }}</span>{% if description or warning %}<div class="description">{% if warning %}<em class="permission-warning">{{ warning }}</em><br />{% endif %}{{ description }}</div>{% endif %}',
@@ -274,8 +279,8 @@ abstract class GroupPermissionsForm extends FormBase {
                 '#attributes' => [
                   'class' => [
                     'rid-' . $role_name,
-                    'js-rid-' . $role_name
-                  ]
+                    'js-rid-' . $role_name,
+                  ],
                 ],
                 '#parents' => [$role_name, $perm],
               ];
@@ -300,7 +305,7 @@ abstract class GroupPermissionsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
       assert($group_role instanceof GroupRoleInterface);
       if ($group_role->isAdmin()) {

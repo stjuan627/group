@@ -4,7 +4,6 @@ namespace Drupal\gnode\Plugin\Group\RelationHandler;
 
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderTrait;
-use Drupal\group\Plugin\Group\RelationHandler\RelationHandlerTrait;
 
 /**
  * Provides group permissions for the group_node relation plugin.

@@ -20,6 +20,13 @@ trait PermissionProviderTrait {
   }
 
   /**
+   * The parent permission provider handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * The entity type the plugin handler is for.
    *
    * @var \Drupal\Core\Entity\EntityTypeInterface

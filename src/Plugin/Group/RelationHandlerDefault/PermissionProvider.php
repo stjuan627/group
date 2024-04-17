@@ -45,10 +45,13 @@ class PermissionProvider implements PermissionProviderInterface {
       switch ($operation) {
         case 'view':
           return $this->getRelationshipViewPermission($scope);
+
         case 'update':
           return $this->getRelationshipUpdatePermission($scope);
+
         case 'delete':
           return $this->getRelationshipDeletePermission($scope);
+
         case 'create':
           return $this->getRelationshipCreatePermission();
       }
@@ -57,12 +60,16 @@ class PermissionProvider implements PermissionProviderInterface {
       switch ($operation) {
         case 'view':
           return $this->getEntityViewPermission($scope);
+
         case 'view unpublished':
           return $this->getEntityViewUnpublishedPermission($scope);
+
         case 'update':
           return $this->getEntityUpdatePermission($scope);
+
         case 'delete':
           return $this->getEntityDeletePermission($scope);
+
         case 'create':
           return $this->getEntityCreatePermission();
       }

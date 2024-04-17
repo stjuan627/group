@@ -52,12 +52,11 @@ class EntityQueryAlterComplexTest extends EntityQueryAlterTestBase {
    * {@inheritdoc}
    */
   protected function setUpContent(GroupTypeInterface $group_type) {
-    parent::setUpContent($group_type);
+    $group = parent::setUpContent($group_type);
 
     // Add two nodes, one of which belongs to a group.
     $this->createNodeType(['id' => 'page']);
     $this->createNode(['type' => 'page']);
-    $group = $this->createGroup(['type' => $group_type->id()]);
     $group->addRelationship($this->createNode(['type' => 'page']), $this->pluginId);
     return $group;
   }

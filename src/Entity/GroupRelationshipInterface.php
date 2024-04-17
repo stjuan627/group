@@ -2,10 +2,10 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface defining a Group relationship entity.
@@ -58,7 +58,7 @@ interface GroupRelationshipInterface extends ContentEntityInterface, EntityOwner
    * Returns the entity that was added as a relationship.
    *
    * @return \Drupal\Core\Entity\EntityInterface
-   *  The entity that was added as a relationship.
+   *   The entity that was added as a relationship.
    */
   public function getEntity();
 
@@ -107,5 +107,13 @@ interface GroupRelationshipInterface extends ContentEntityInterface, EntityOwner
    *   An array of relationship entities which reference the given entity.
    */
   public static function loadByEntity(EntityInterface $entity);
+
+  /**
+   * Gets the group relationship creation timestamp.
+   *
+   * @return int
+   *   Creation timestamp of the group relationship.
+   */
+  public function getCreatedTime();
 
 }

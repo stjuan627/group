@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationshipInterface;
+use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -87,10 +88,9 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
     $entity_class = parent::getEntityClass($bundle);
 
     if ($bundle) {
-      $plugin_id = $this->entityTypeManager
-        ->getStorage('group_relationship_type')
-        ->load($bundle)
-        ->getPluginId();
+      $group_relationship_type = $this->entityTypeManager->getStorage('group_relationship_type')->load($bundle);
+      assert($group_relationship_type instanceof GroupRelationshipTypeInterface);
+      $plugin_id = $group_relationship_type->getPluginId();
 
       $group_relation_type = $this->pluginManager->getDefinition($plugin_id);
       assert($group_relation_type instanceof GroupRelationTypeInterface);
@@ -286,7 +286,7 @@ class GroupRelationshipStorage extends SqlContentEntityStorage implements GroupR
   /**
    * {@inheritdoc}
    */
-  public function loadByEntityAndGroup(EntityInterface $entity,GroupInterface $group, $plugin_id = NULL) {
+  public function loadByEntityAndGroup(EntityInterface $entity, GroupInterface $group, $plugin_id = NULL) {
     if (!$this->loadByPluginSanityCheck($plugin_id)) {
       return [];
     }

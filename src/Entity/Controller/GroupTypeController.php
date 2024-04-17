@@ -2,12 +2,13 @@
 
 namespace Drupal\group\Entity\Controller;
 
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -30,9 +31,9 @@ class GroupTypeController extends ControllerBase {
   protected $pluginManager;
 
   /**
-   * The module manager.
+   * The module extension list.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Drupal\Core\Extension\ModuleExtensionList
    */
   protected $moduleHandler;
 
@@ -46,14 +47,18 @@ class GroupTypeController extends ControllerBase {
   /**
    * Constructs a new GroupTypeController.
    *
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
+   * @param \Drupal\Core\Extension\ModuleExtensionList|\Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module extension list.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface $plugin_manager
    *   The group relation type manager.
    */
-  public function __construct(ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $plugin_manager) {
+  public function __construct(ModuleHandlerInterface|ModuleExtensionList $module_handler, EntityTypeManagerInterface $entity_type_manager, GroupRelationTypeManagerInterface $plugin_manager) {
+    if ($module_handler instanceof ModuleHandlerInterface) {
+      @trigger_error('Calling ' . __METHOD__ . '() with a $module_handler argument as \Drupal\Core\Extension\ModuleHandlerInterface instead of \Drupal\Core\Extension\ModuleExtensionList is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
+      $module_handler = \Drupal::service('extension.list.module');
+    }
     $this->moduleHandler = $module_handler;
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManager = $plugin_manager;
@@ -64,7 +69,7 @@ class GroupTypeController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('module_handler'),
+      $container->get('extension.list.module'),
       $container->get('entity_type.manager'),
       $container->get('group_relation_type.manager')
     );
@@ -164,10 +169,10 @@ class GroupTypeController extends ControllerBase {
         ],
       ],
       'provider' => [
-        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider())
+        '#markup' => $this->moduleHandler->getName($group_relation_type->getProvider()),
       ],
       'entity_type_id' => [
-        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel()
+        '#markup' => $this->entityTypeManager->getDefinition($group_relation_type->getEntityTypeId())->getLabel(),
       ],
       'status' => ['#markup' => $status],
       'install_type' => ['#markup' => $install_type],

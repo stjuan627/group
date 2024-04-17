@@ -37,6 +37,20 @@ class QueryAlterTangibleTest extends GroupKernelTestBase {
   protected $groupTypeB;
 
   /**
+   * The node storage.
+   *
+   * @var \Drupal\node\NodeStorage
+   */
+  protected $storage;
+
+  /**
+   * The node access control handler.
+   *
+   * @var \Drupal\node\NodeAccessControlHandler
+   */
+  protected $accessControlHandler;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

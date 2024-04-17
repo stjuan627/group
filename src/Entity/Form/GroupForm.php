@@ -4,7 +4,6 @@ namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\GroupInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -13,6 +12,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup group
  */
 class GroupForm extends ContentEntityForm {
+
+  /**
+   * The entity being used by this form.
+   *
+   * @var \Drupal\group\Entity\GroupInterface
+   */
+  protected $entity;
 
   /**
    * The private store factory.
@@ -36,9 +42,7 @@ class GroupForm extends ContentEntityForm {
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
 
-    $group = $this->getEntity();
-    assert($group instanceof GroupInterface);
-    $group_type = $group->getGroupType();
+    $group_type = $this->entity->getGroupType();
     $replace = ['@group_type' => $group_type->label()];
 
     // We need to adjust the actions when using the group creator wizard.
@@ -49,12 +53,12 @@ class GroupForm extends ContentEntityForm {
         // until the end of the wizard to save.
         $actions['submit']['#submit'] = ['::submitForm', '::store'];
 
-        // Update the label to be more user friendly by indicating that the user
+        // Update the label to be more user-friendly by indicating that the user
         // needs to go through an extra step to finish the group creation.
         $actions['submit']['#value'] = $this->t('Create @group_type and complete your membership', $replace);
 
         // Add a cancel button to clear the private temp store. This exits the
-        // wizard without saving,
+        // wizard without saving.
         $actions['cancel'] = [
           '#type' => 'submit',
           '#value' => $this->t('Cancel'),
