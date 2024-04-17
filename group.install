@@ -106,6 +106,7 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
+  // Update all views using any of our plugins.
   if (\Drupal::moduleHandler()->moduleExists('views')) {
     foreach ($config_factory->listAll('views.view.') as $view_name) {
       $view = $config_factory->getEditable($view_name);
@@ -117,6 +118,13 @@ function group_update_10300(&$sandbox) {
             if (isset($relationship['group_content_plugins'])) {
               $relationship['group_relation_plugins'] = $relationship['group_content_plugins'];
               unset($relationship['group_content_plugins']);
+
+              $plugin_map = [
+                'group_content_to_entity' => 'group_relationship_to_entity',
+                'group_content_to_entity_reverse' => 'group_relationship_to_entity_reverse',
+              ];
+              $relationship['plugin_id'] = str_replace(array_keys($plugin_map), array_values($plugin_map), $relationship['plugin_id']);
+
               $relationship_key = "display.$display_name.display_options.relationships.$relationship_name";
               $view->set($relationship_key, $relationship);
             }
