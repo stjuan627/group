@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**

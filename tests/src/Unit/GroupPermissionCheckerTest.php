@@ -23,14 +23,14 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * The group permission calculator.
    *
-   * @var \Drupal\group\Access\GroupPermissionCalculatorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\group\Access\GroupPermissionCalculatorInterface>
    */
   protected $permissionCalculator;
 
   /**
    * The group membership loader.
    *
-   * @var \Drupal\group\GroupMembershipLoaderInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\group\GroupMembershipLoaderInterface>
    */
   protected $membershipLoader;
 
@@ -124,7 +124,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An outsider with the group admin permission can view the group.',
+      'message' => 'An outsider with the group admin permission can view the group.',
     ];
 
     $scenarios['insiderWithAdmin'] = [
@@ -137,7 +137,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An insider with the group admin permission can view the group.',
+      'message' => 'An insider with the group admin permission can view the group.',
     ];
 
     $scenarios['individualOutsiderWithAdmin'] = [
@@ -150,7 +150,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => TRUE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An individual outsider with the group admin permission can view the group.',
+      'message' => 'An individual outsider with the group admin permission can view the group.',
     ];
 
     $scenarios['individualInsiderWithAdmin'] = [
@@ -163,7 +163,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => TRUE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An individual insider with the group admin permission can view the group.',
+      'message' => 'An individual insider with the group admin permission can view the group.',
     ];
 
     $scenarios['outsiderWithPermission'] = [
@@ -176,7 +176,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An outsider with the right permission can view the group.',
+      'message' => 'An outsider with the right permission can view the group.',
     ];
 
     $scenarios['insiderWithPermission'] = [
@@ -189,7 +189,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An insider with the right permission can view the group.',
+      'message' => 'An insider with the right permission can view the group.',
     ];
 
     $scenarios['individualOutsiderWithPermission'] = [
@@ -202,7 +202,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An individual outsider with the right permission can view the group.',
+      'message' => 'An individual outsider with the right permission can view the group.',
     ];
 
     $scenarios['individualInsiderWithPermission'] = [
@@ -215,7 +215,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => TRUE,
-      'An individual insider with the right permission can view the group.',
+      'message' => 'An individual insider with the right permission can view the group.',
     ];
 
     $scenarios['outsiderWithoutPermission'] = [
@@ -228,7 +228,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => FALSE,
-      'An outsider without the right permission cannot view the group.',
+      'message' => 'An outsider without the right permission cannot view the group.',
     ];
 
     $scenarios['insiderWithoutPermission'] = [
@@ -241,7 +241,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => FALSE,
-      'An insider without the right permission cannot view the group.',
+      'message' => 'An insider without the right permission cannot view the group.',
     ];
 
     $scenarios['individualOutsiderWithoutPermission'] = [
@@ -254,7 +254,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => FALSE,
-      'An individual outsider without the right permission can not view the group.',
+      'message' => 'An individual outsider without the right permission can not view the group.',
     ];
 
     $scenarios['individualInsiderWithoutPermission'] = [
@@ -267,7 +267,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       'individual_admin' => FALSE,
       'permission' => 'view group',
       'has_permission' => FALSE,
-      'An individual insider without the right permission can not view the group.',
+      'message' => 'An individual insider without the right permission can not view the group.',
     ];
 
     return $scenarios;

@@ -28,7 +28,7 @@ class GroupRelationshipListBuilder extends EntityListBuilder {
   /**
    * The entity type manager.
    *
-   * @var \Drupal\Core\Routing\RedirectDestinationInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 

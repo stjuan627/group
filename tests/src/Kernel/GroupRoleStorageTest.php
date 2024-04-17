@@ -91,10 +91,9 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
       'group_type' => $this->group->bundle(),
       'scope' => PermissionScopeInterface::INDIVIDUAL_ID,
     ]);
-    // @todo This displays a desperate need for addRole() and removeRole().
-    $membership = $this->group->getMember($this->account)->getGroupRelationship();
-    $membership->group_roles[] = $individual_role->id();
-    $membership->save();
+
+    $membership = $this->group->getMember($this->account);
+    $membership->addRole($individual_role->id());
     $this->compareMemberRoles([$individual_role->id()], FALSE, 'User has the individual group role.');
     $this->compareMemberRoles([$individual_role->id(), $insider_role->id()], TRUE, 'User also has synchronized insider role.');
   }

@@ -91,7 +91,7 @@ services:
     arguments: ['@entity_type.manager', '@current_user']
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
-    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@group_relation_type.manager']
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@group_relation_type.manager', '@extension.list.module']
 
   group_permission.hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'

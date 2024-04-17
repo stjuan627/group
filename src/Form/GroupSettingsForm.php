@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class GroupSettingsForm.
+ * Settings form for the Group module.
  */
 class GroupSettingsForm extends ConfigFormBase {
 

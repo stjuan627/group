@@ -3,7 +3,6 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -11,11 +10,12 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Plugin\Attribute\GroupRelationType;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
- * Manages group relation type type plugin definitions.
+ * Manages group relation type plugin definitions.
  *
  * Each entity type definition array is set in the entity type's annotation and
  * altered by hook_group_relation_type_alter().
@@ -86,7 +86,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   protected $pluginGroupRelationshipTypeMapCacheKey;
 
   /**
-   * An static cache of plugin IDs per group type ID.
+   * A static cache of plugin IDs per group type ID.
    *
    * @var array[]
    */
@@ -113,7 +113,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   The entity type manager.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', 'Drupal\group\Annotation\GroupRelationType');
+    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', GroupRelationType::class, 'Drupal\group\Annotation\GroupRelationType');
     $this->alterInfo('group_relation_type');
     $this->setCacheBackend($cache_backend, 'group_relations');
     $this->entityTypeManager = $entity_type_manager;
@@ -280,7 +280,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function getInstalledIds(GroupTypeInterface $group_type) {
     $map = $this->getGroupTypePluginMap();
-    return isset($map[$group_type->id()]) ? $map[$group_type->id()] : [];
+    return $map[$group_type->id()] ?? [];
   }
 
   /**
@@ -354,7 +354,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    */
   public function getRelationshipTypeIds($plugin_id) {
     $map = $this->getPluginGroupRelationshipTypeMap();
-    return isset($map[$plugin_id]) ? $map[$plugin_id] : [];
+    return $map[$plugin_id] ?? [];
   }
 
   /**
@@ -400,7 +400,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   The relationship type ID map to store in cache.
    */
   protected function setCachedPluginGroupRelationshipTypeMap(array $map) {
-    $this->cacheSet($this->pluginGroupRelationshipTypeMapCacheKey, $map, Cache::PERMANENT);
+    $this->cacheSet($this->pluginGroupRelationshipTypeMapCacheKey, $map);
     $this->pluginGroupRelationshipTypeMap = $map;
   }
 
@@ -447,7 +447,7 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   The group type plugin map to store in cache.
    */
   protected function setCachedGroupTypePluginMap(array $map) {
-    $this->cacheSet($this->groupTypePluginMapCacheKey, $map, Cache::PERMANENT);
+    $this->cacheSet($this->groupTypePluginMapCacheKey, $map);
     $this->groupTypePluginMap = $map;
   }
 

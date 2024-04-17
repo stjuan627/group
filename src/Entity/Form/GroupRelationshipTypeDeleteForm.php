@@ -71,7 +71,7 @@ class GroupRelationshipTypeDeleteForm extends EntityDeleteForm {
     if (!empty($entity_count)) {
       $form['#title'] = $this->getQuestion();
       $form['description'] = [
-        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>'
+        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>',
       ];
 
       return $form;

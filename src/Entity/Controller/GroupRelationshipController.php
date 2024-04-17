@@ -9,9 +9,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\group\Entity\Storage\GroupRelationshipTypeStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -301,6 +301,7 @@ class GroupRelationshipController extends ControllerBase {
     if ($entity = $route_match->getParameter('group_relationship')) {
       return $this->t('Edit %label', ['%label' => $entity->label()]);
     }
+    return NULL;
   }
 
   /**

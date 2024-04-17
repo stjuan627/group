@@ -18,7 +18,7 @@ interface OperationProviderInterface extends RelationHandlerInterface {
    *
    * @return array
    *   An associative array of operation links for the group type's content
-   *   plugin, keyed by operation name, containing the following key-value pairs:
+   *   plugin, keyed by operation name, containing these key-value pairs:
    *   - title: The localized title of the operation.
    *   - url: An instance of \Drupal\Core\Url for the operation URL.
    *   - weight: The weight of this operation.

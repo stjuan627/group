@@ -4,6 +4,7 @@ namespace Drupal\group\Plugin\views\access;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\Context\ContextProviderInterface;
@@ -39,9 +40,9 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
   protected $permissionHandler;
 
   /**
-   * The module handler.
+   * The module extension list.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var \Drupal\Core\Extension\ModuleExtensionList
    */
   protected $moduleHandler;
 
@@ -70,13 +71,17 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    *   The plugin implementation definition.
    * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
    *   The group permission handler.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
+   * @param \Drupal\Core\Extension\ModuleExtensionList|\Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module extension list.
    * @param \Drupal\Core\Plugin\Context\ContextProviderInterface $context_provider
    *   The group route context.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface $module_handler, ContextProviderInterface $context_provider) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface|ModuleExtensionList $module_handler, ContextProviderInterface $context_provider) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    if ($module_handler instanceof ModuleHandlerInterface) {
+      @trigger_error('Calling ' . __METHOD__ . '() with a $module_handler argument as \Drupal\Core\Extension\ModuleHandlerInterface instead of \Drupal\Core\Extension\ModuleExtensionList is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
+      $module_handler = \Drupal::service('extension.list.module');
+    }
     $this->permissionHandler = $permission_handler;
     $this->moduleHandler = $module_handler;
 
@@ -94,7 +99,7 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
       $plugin_id,
       $plugin_definition,
       $container->get('group.permissions'),
-      $container->get('module_handler'),
+      $container->get('extension.list.module'),
       $container->get('group.group_route_context')
     );
   }

@@ -70,10 +70,10 @@ class EntityQueryAlter extends PluginBasedQueryAlterBase {
     }
     $this->cacheableMetadata->addCacheTags($cache_tags);
 
-    // If there are no relationships using the plugins, there's no point in going
-    // any further. The cache tags above will invalidate our result if new group
-    // content is created using the plugins that define access. Retrieve the
-    // plugin IDs in use to optimize a loop further below.
+    // If there are no relationships using the plugins, there's no point in
+    // going any further. The cache tags above will invalidate our result if new
+    // group content is created using the plugins that define access. Retrieve
+    // the plugin IDs in use to optimize a loop further below.
     $group_relationship_data_table = $this->entityTypeManager->getDefinition('group_relationship')->getDataTable();
     $plugin_ids_in_use = $this->database
       ->select($group_relationship_data_table, 'gc')
@@ -141,11 +141,11 @@ class EntityQueryAlter extends PluginBasedQueryAlterBase {
         if ($admin_permission !== FALSE && $item->hasPermission($admin_permission)) {
           $allowed_any_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
         }
-        elseif(!$check_published) {
+        elseif (!$check_published) {
           if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
             $allowed_any_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
-          elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+          elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
             $allowed_own_ids[$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
         }
@@ -153,13 +153,13 @@ class EntityQueryAlter extends PluginBasedQueryAlterBase {
           if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
             $allowed_any_by_status_ids[1][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
-          elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+          elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
             $allowed_own_by_status_ids[1][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
           if ($any_unpublished_permission !== FALSE && $item->hasPermission($any_unpublished_permission)) {
             $allowed_any_by_status_ids[0][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
-          elseif($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
+          elseif ($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
             $allowed_own_by_status_ids[0][$item->getScope()][$plugin_id][] = $item->getIdentifier();
           }
         }

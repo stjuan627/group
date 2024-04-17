@@ -3,23 +3,24 @@
 namespace Drupal\group\Plugin\Group\Relation;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\group\Plugin\Attribute\GroupRelationType;
 
 /**
  * Provides a group relation for users as members.
- *
- * @GroupRelationType(
- *   id = "group_membership",
- *   label = @Translation("Group membership"),
- *   description = @Translation("Adds users to groups as members."),
- *   entity_type_id = "user",
- *   shared_bundle_class = "Drupal\group\Entity\GroupMembership",
- *   pretty_path_key = "member",
- *   reference_label = @Translation("User"),
- *   reference_description = @Translation("The user you want to make a member"),
- *   enforced = TRUE,
- *   admin_permission = "administer members"
- * )
  */
+#[GroupRelationType(
+  id: 'group_membership',
+  entity_type_id: 'user',
+  label: new TranslatableMarkup('Group membership'),
+  description: new TranslatableMarkup('Adds users to groups as members.'),
+  reference_label: new TranslatableMarkup('User'),
+  reference_description: new TranslatableMarkup('The user you want to make a member'),
+  shared_bundle_class: 'Drupal\group\Entity\GroupMembership',
+  admin_permission: 'administer members',
+  pretty_path_key: 'member',
+  enforced: TRUE
+)]
 class GroupMembership extends GroupRelationBase {
 
   /**

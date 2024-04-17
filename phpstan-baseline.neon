@@ -1,0 +1,50 @@
+parameters:
+	ignoreErrors:
+		# These errors are a bug in phpstan, see https://github.com/phpstan/phpstan/issues/6830.
+		-
+			message: "#^Variable \\$any_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$data_table might not be defined\\.$#"
+			count: 3
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$own_unpublished_permission might not be defined\\.$#"
+			count: 1
+			path: src/QueryAccess/EntityQueryAlter.php
+
+		-
+			message: "#^Variable \\$owner_conditions might not be defined\\.$#"
+			count: 3
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		-
+			message: "#^Variable \\$unpublished_permissions might not be defined\\.$#"
+			count: 8
+			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		# This is a bug in mglaman/phpstan-drupal where the parent constructor is ignored.
+		-
+			message: "#^Plugin definitions cannot be altered\\.$#"
+			count: 1
+			path: tests/src/Unit/GroupRelationTypeManagerTest.php
+
+		# Need to use a service collector to get rid of these warnings.
+		-
+			message: """
+				#^Class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager implements deprecated interface Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareInterface\\:
+				since Symfony 6\\.4, use dependency injection instead$#
+			"""
+			count: 1
+			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php
+
+		-
+			message: """
+				#^Usage of deprecated trait Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareTrait in class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager\\:
+				since Symfony 6\\.4, use dependency injection instead$#
+			"""
+			count: 1
+			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php

@@ -2,9 +2,9 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
 
 /**
  * Extends the AccessResult class with group permission checks.

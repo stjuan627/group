@@ -5,7 +5,6 @@ namespace Drupal\group\Entity\Storage;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\User\RoleInterface;
 
 /**
  * Defines an interface for group role entity storage classes.
@@ -19,7 +18,7 @@ interface GroupRoleStorageInterface extends ConfigEntityStorageInterface {
    *   The account to load the group role entities for.
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group entity to find the user's role entities in.
-   * @param boolean $include_synchronized
+   * @param bool $include_synchronized
    *   (optional) Whether to include the synchronized roles from the outsider or
    *   insider scope. Defaults to TRUE.
    *

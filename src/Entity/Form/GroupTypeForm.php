@@ -140,7 +140,7 @@ class GroupTypeForm extends BundleEntityFormBase {
         <li>Allow certain global roles to get some permissions via Outsider or Insider group roles.</li>
         <li>Optionally set an admin role, either for the group creator or for global roles (via Outsider or Insider group roles).</li>
       </ul>
-      <p>If your use case does not require the group creator to be an admin of the group, then it is <strong>strongly advised</strong> to at least create an Outsider and/or Insider group role that synchronize with whatever adminstrator global role you have configured.</p>
+      <p>If your use case does not require the group creator to be an admin of the group, then it is <strong>strongly advised</strong> to at least create an Outsider and/or Insider group role that synchronize with whatever administrator global role you have configured.</p>
     ');
 
     $form['access_settings'] = [
@@ -386,6 +386,7 @@ class GroupTypeForm extends BundleEntityFormBase {
     }
 
     $form_state->setRedirectUrl($group_type->toUrl('collection'));
+    return $status;
   }
 
 }

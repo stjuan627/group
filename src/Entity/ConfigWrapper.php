@@ -69,6 +69,7 @@ class ConfigWrapper extends ContentEntityBase implements ConfigWrapperInterface 
    * {@inheritdoc}
    */
   public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+    assert($base_field_definitions['entity_id'] instanceof BaseFieldDefinition);
     $fields['entity_id'] = clone $base_field_definitions['entity_id'];
     $fields['entity_id']->setSetting('target_type', $bundle);
     return $fields;

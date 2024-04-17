@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Entity\Access;
 
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -19,10 +20,14 @@ class GroupRelationshipTypeAccessControlHandler extends EntityAccessControlHandl
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     assert($entity instanceof GroupRelationshipTypeInterface);
+    $access = parent::checkAccess($entity, $operation, $account);
+    assert($access instanceof RefinableCacheableDependencyInterface);
+
     if ($operation == 'delete') {
-      return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
+      return $access->addCacheableDependency($entity);
     }
-    return parent::checkAccess($entity, $operation, $account);
+
+    return $access;
   }
 
 }

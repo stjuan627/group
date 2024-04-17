@@ -53,10 +53,10 @@ class GroupQueryAlter extends QueryAlterBase {
         if ($item->hasPermission($permission)) {
           $allowed_any_by_status_ids[1][$item->getScope()][] = $item->getIdentifier();
         }
-        if (($view_any_unpub = $this->getPermission('view', 'any', TRUE)) && $item->hasPermission($view_any_unpub)) {
+        if (($view_any_unpublished = $this->getPermission('view', 'any', TRUE)) && $item->hasPermission($view_any_unpublished)) {
           $allowed_any_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
         }
-        elseif (($view_own_unpub = $this->getPermission('view', 'own', TRUE)) && $item->hasPermission($view_own_unpub)) {
+        elseif (($view_own_unpublished = $this->getPermission('view', 'own', TRUE)) && $item->hasPermission($view_own_unpublished)) {
           $allowed_own_by_status_ids[0][$item->getScope()][] = $item->getIdentifier();
         }
       }
@@ -180,7 +180,7 @@ class GroupQueryAlter extends QueryAlterBase {
    */
   protected function addIndividualConditions(array $allowed_ids, ConditionInterface $scope_conditions) {
     $base_table = $this->ensureBaseTable();
-    $scope_conditions->condition("$base_table.id", array_unique($allowed_ids) , 'IN');
+    $scope_conditions->condition("$base_table.id", array_unique($allowed_ids), 'IN');
   }
 
   /**

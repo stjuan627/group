@@ -108,7 +108,7 @@ class GroupRoleFormTest extends GroupBrowserTestBase {
    * Test role creation via code.
    */
   public function testCodeRoleCreation() {
-    $role_id = 'myrole';
+    $role_id = 'my_role';
     $role_name = 'My role';
     $group_role = $this->groupRoleStorage->create([
       'id' => $role_id,
