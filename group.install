@@ -28,11 +28,16 @@ function group_update_10300(&$sandbox) {
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
 
+  $installed_storage_schema = \Drupal::keyValue('entity.storage_schema.sql');
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
   // Updates field storages and DB tables that were created for group_content.
   $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
   foreach ($field_storage_definitions as $fsd) {
     if ($fsd instanceof BaseFieldDefinition) {
       $fsd->setTargetEntityTypeId('group_relationship');
+      $schema = $installed_storage_schema->get('group_content.field_schema_data.' . $fsd->getName());
+      $installed_storage_schema->set('group_relationship.field_schema_data.' . $fsd->getName(), $schema);
     }
     elseif ($fsd instanceof FieldStorageConfigInterface) {
       if ($requires_storage = $table_mapping->requiresDedicatedTableStorage($fsd)) {
@@ -106,7 +111,44 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
-  // Update all views using any of our plugins.
+  // Update the entity type definitions directly so the DB is left untouched.
+  $definition = $last_installed_schema_repository->getLastInstalledDefinition('group_content_type');
+  $definition->set('id', 'group_relationship_type');
+  $definition->set('config_prefix', 'relationship_type');
+  $definition->set('bundle_of', 'group_content');
+  $last_installed_schema_repository->setLastInstalledDefinition($definition);
+  $definition_update_manager->updateEntityType($definition);
+
+  $definition = $last_installed_schema_repository->getLastInstalledDefinition('group_content');
+  $definition->set('id', 'group_relationship');
+  $definition->set('bundle_entity_type', 'group_relationship_type');
+  $definition->set('field_ui_base_route', 'entity.group_relationship_type.edit_form');
+  $last_installed_schema_repository->setLastInstalledDefinition($definition);
+  $definition_update_manager->updateEntityType($definition);
+
+  $last_installed_schema_repository->deleteLastInstalledDefinition('group_content');
+  $last_installed_schema_repository->deleteLastInstalledDefinition('group_content_type');
+}
+
+/**
+ * Updates indexes from Group 2 to Group 3.
+ */
+function group_update_10301(&$sandbox) {
+  $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+  assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+//
+//  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_relationship');
+//  $entity_type = $last_installed_schema_repository->getLastInstalledDefinition('group_relationship');
+//  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
+}
+
+/**
+ * Updates views from Group 2 to Group 3.
+ */
+function group_update_10302(&$sandbox) {
+  $config_factory = \Drupal::configFactory();
+
   if (\Drupal::moduleHandler()->moduleExists('views')) {
     foreach ($config_factory->listAll('views.view.') as $view_name) {
       $view = $config_factory->getEditable($view_name);
