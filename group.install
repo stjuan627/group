@@ -58,10 +58,9 @@ function group_update_10300(&$sandbox) {
       $fsd->set('entity_type', 'group_relationship');
       $fsd->set('id', $new_id);
 
-      // We do not call renameTable as that happened automatically in the save
-      // above, but for some reason the old table does not get deleted.
       if ($requires_storage) {
-        \Drupal::database()->schema()->dropTable($old_table);
+        $new_table = $table_mapping->getDedicatedDataTableName($fsd);
+        \Drupal::database()->schema()->renameTable($old_table, $new_table);
       }
     }
     else {
@@ -70,6 +69,9 @@ function group_update_10300(&$sandbox) {
 
     $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
   }
+
+  // Updates field instances.
+  // @todo Pick up here.
 
   // Updates entity references that were pointing to group_content.
   foreach ($last_installed_schema_repository->getLastInstalledDefinitions() as $entity_type) {
@@ -102,7 +104,7 @@ function group_update_10300(&$sandbox) {
 
   // Update all group_content_type entities to become group_relationship_type.
   foreach ($config_factory->listAll('group.content_type.') as $old_id) {
-    $new_id = str_replace('group_content.', 'group_relationship.', $old_id);
+    $new_id = str_replace('group.content_type.', 'group.relationship_type.', $old_id);
 
     $old_config = $config_factory->getEditable($old_id);
     $new_config = $config_factory->getEditable($new_id);
@@ -137,10 +139,13 @@ function group_update_10301(&$sandbox) {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
-//
-//  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_relationship');
-//  $entity_type = $last_installed_schema_repository->getLastInstalledDefinition('group_relationship');
-//  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
+
+  // @todo Can be deleted it seems.
+  //\Drupal::entityTypeManager()->clearCachedDefinitions();
+
+  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_relationship');
+  $entity_type = $last_installed_schema_repository->getLastInstalledDefinition('group_relationship');
+  $definition_update_manager->updateFieldableEntityType($entity_type, $field_storage_definitions, $sandbox);
 }
 
 /**
