@@ -21,6 +21,7 @@ function group_update_last_removed() {
  * Updates database and fields from Group 2 to Group 3.
  */
 function group_update_10300(&$sandbox) {
+  $config_factory = \Drupal::configFactory();
   $table_mapping = \Drupal::entityTypeManager()->getStorage('group_relationship')->getTableMapping();
   assert($table_mapping instanceof DefaultTableMapping);
 
@@ -41,8 +42,8 @@ function group_update_10300(&$sandbox) {
       $old_id = $fsd->id();
       $new_id = str_replace('group_content.', 'group_relationship.', $fsd->id());
 
-      $old_config = \Drupal::configFactory()->getEditable('field.storage.' . $old_id);
-      $new_config = \Drupal::configFactory()->getEditable('field.storage.' . $new_id);
+      $old_config = $config_factory->getEditable('field.storage.' . $old_id);
+      $new_config = $config_factory->getEditable('field.storage.' . $new_id);
       $new_config->setData($old_config->getRawData());
       $new_config->set('entity_type', 'group_relationship');
       $new_config->set('id', $new_id);
@@ -75,15 +76,55 @@ function group_update_10300(&$sandbox) {
       if ($fsd->getSetting('target_type') !== 'group_content') {
         continue;
       }
-      if (!$fsd instanceof FieldStorageConfigInterface && !$fsd instanceof BaseFieldDefinition) {
-        throw new \Exception('Found an entity_reference field storage definition we could not alter the settings for.');
-      }
-      $fsd->setSetting('target_type', 'group_relationship');
-      $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
-
       if ($fsd instanceof BaseFieldDefinition) {
         // @todo Throw a warning saying a base or bundle field has changed and needs updating in code.
       }
+      elseif ($fsd instanceof FieldStorageConfigInterface) {
+        $config = $config_factory->getEditable('field.storage.' . $fsd->id());
+        $settings = $config->get('settings');
+        $settings['target_type'] = 'group_relationship';
+        $config->set('settings', $settings);
+        $config->save(TRUE);
+      }
+      else {
+        throw new \Exception('Found an entity_reference field storage definition we could not alter the settings for.');
+      }
+
+      $fsd->setSetting('target_type', 'group_relationship');
+      $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
+    }
+  }
+
+  // Update all group_content_type entities to become group_relationship_type.
+  foreach ($config_factory->listAll('group.content_type.') as $old_id) {
+    $new_id = str_replace('group_content.', 'group_relationship.', $old_id);
+
+    $old_config = $config_factory->getEditable($old_id);
+    $new_config = $config_factory->getEditable($new_id);
+    $new_config->setData($old_config->getRawData());
+    $new_config->save(TRUE);
+    $old_config->delete();
+  }
+
+  if (\Drupal::moduleHandler()->moduleExists('views')) {
+    foreach ($config_factory->listAll('views.view.') as $view_name) {
+      $view = $config_factory->getEditable($view_name);
+
+      $displays = $view->get('display');
+      foreach ($displays as $display_name => $display) {
+        if (!empty($display['display_options']['relationships'])) {
+          foreach ($display['display_options']['relationships'] as $relationship_name => $relationship) {
+            if (isset($relationship['group_content_plugins'])) {
+              $relationship['group_relation_plugins'] = $relationship['group_content_plugins'];
+              unset($relationship['group_content_plugins']);
+              $relationship_key = "display.$display_name.display_options.relationships.$relationship_name";
+              $view->set($relationship_key, $relationship);
+            }
+          }
+        }
+      }
+
+      $view->save(TRUE);
     }
   }
 }

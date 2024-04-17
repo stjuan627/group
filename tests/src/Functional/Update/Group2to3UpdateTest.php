@@ -40,7 +40,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that the field table mapping is updated correctly.
+   * Tests that the field tables are updated correctly.
    */
   public function testFieldTableMapping(): void {
     $database = \Drupal::database();
@@ -76,6 +76,25 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
       $this->assertTrue($database_schema->tableExists($field_info['table_new']));
       $this->assertSame($field_data[$field_name], $database->select($field_info['table_new'], 't')->fields('t')->execute()->fetchAll(\PDO::FETCH_ASSOC));
     }
+  }
+
+  /**
+   * Tests that group_content_type is converted to group_relationship_type.
+   */
+  public function testGroupRelationshipTypes() {
+    $this->assertEquals([
+      'group.content_type.class-group_membership',
+      'group.content_type.class-group_node-page',
+    ], \Drupal::configFactory()->listAll('group.content_type.'));
+    $this->assertEquals([], \Drupal::configFactory()->listAll('group.relationship_type.'));
+
+    $this->runUpdates();
+
+    $this->assertEquals([], \Drupal::configFactory()->listAll('group.content_type.'));
+    $this->assertEquals([
+      'group.relationship_type.class-group_membership',
+      'group.relationship_type.class-group_node-page',
+    ], \Drupal::configFactory()->listAll('group.relationship_type.'));
   }
 
 }
