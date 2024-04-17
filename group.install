@@ -1,7 +1,8 @@
 <?php
 
 use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
-use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Entity\Sql\DefaultTableMapping;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
@@ -20,9 +21,51 @@ function group_update_last_removed() {
  * Updates database and fields from Group 2 to Group 3.
  */
 function group_update_10300(&$sandbox) {
+  $table_mapping = \Drupal::entityTypeManager()->getStorage('group_relationship')->getTableMapping();
+  assert($table_mapping instanceof DefaultTableMapping);
+
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
 
+  // Updates field storages and DB tables that were created for group_content.
+  $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
+  foreach ($field_storage_definitions as $fsd) {
+    if ($fsd instanceof BaseFieldDefinition) {
+      $fsd->setTargetEntityTypeId('group_relationship');
+    }
+    elseif ($fsd instanceof FieldStorageConfigInterface) {
+      if ($requires_storage = $table_mapping->requiresDedicatedTableStorage($fsd)) {
+        $old_table = $table_mapping->getDedicatedDataTableName($fsd);
+      }
+
+      $old_id = $fsd->id();
+      $new_id = str_replace('group_content.', 'group_relationship.', $fsd->id());
+
+      $old_config = \Drupal::configFactory()->getEditable('field.storage.' . $old_id);
+      $new_config = \Drupal::configFactory()->getEditable('field.storage.' . $new_id);
+      $new_config->setData($old_config->getRawData());
+      $new_config->set('entity_type', 'group_relationship');
+      $new_config->set('id', $new_id);
+      $new_config->save(TRUE);
+      $old_config->delete();
+
+      $fsd->set('entity_type', 'group_relationship');
+      $fsd->set('id', $new_id);
+
+      // We do not call renameTable as that happened automatically in the save
+      // above, but for some reason the old table does not get deleted.
+      if ($requires_storage) {
+        \Drupal::database()->schema()->dropTable($old_table);
+      }
+    }
+    else {
+      throw new \Exception('Found a group_content field we could not move to group_relationship.');
+    }
+
+    $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
+  }
+
+  // Updates entity references that were pointing to group_content.
   foreach ($last_installed_schema_repository->getLastInstalledDefinitions() as $entity_type) {
     $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions($entity_type->id());
     foreach ($field_storage_definitions as $fsd) {
@@ -32,13 +75,13 @@ function group_update_10300(&$sandbox) {
       if ($fsd->getSetting('target_type') !== 'group_content') {
         continue;
       }
-      if (!$fsd instanceof FieldStorageConfigInterface && !$fsd instanceof DataDefinition) {
+      if (!$fsd instanceof FieldStorageConfigInterface && !$fsd instanceof BaseFieldDefinition) {
         throw new \Exception('Found an entity_reference field storage definition we could not alter the settings for.');
       }
       $fsd->setSetting('target_type', 'group_relationship');
       $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
 
-      if ($fsd instanceof DataDefinition) {
+      if ($fsd instanceof BaseFieldDefinition) {
         // @todo Throw a warning saying a base or bundle field has changed and needs updating in code.
       }
     }

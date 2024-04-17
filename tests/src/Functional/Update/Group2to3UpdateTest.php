@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Tests\Functional\Update;
 
+use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
 
 /**
@@ -21,16 +22,35 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
+   * Tests that fields referring to group_content are updated correctly.
+   */
+  public function testEntityReferenceFields(): void {
+    $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
+    assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
+
+    $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('node');
+    $this->assertSame('entity_reference', $field_storage_definitions['field_member_highlight']->getType());
+    $this->assertSame('group_content', $field_storage_definitions['field_member_highlight']->getSetting('target_type'));
+
+    $this->runUpdates();
+
+    $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('node');
+    $this->assertSame('entity_reference', $field_storage_definitions['field_member_highlight']->getType());
+    $this->assertSame('group_relationship', $field_storage_definitions['field_member_highlight']->getSetting('target_type'));
+  }
+
+  /**
    * Tests that the field table mapping is updated correctly.
    */
-  public function testFieldTableMapping() {
+  public function testFieldTableMapping(): void {
     $database = \Drupal::database();
     $database_schema = $database->schema();
 
+    // Results gotten from DefaultTableMapping::getDedicatedDataTableName().
     $fields = [
       'field_really_long_field_title_00' => [
         'table_old' => 'group_content__field_really_long_field_title_00',
-        'table_new' => 'group_relationship__field_really_long_field_title_00',
+        'table_new' => 'group_relationship__5eb81ace03;',
       ],
       'field_short_field' => [
         'table_old' => 'group_content__field_short_field',
