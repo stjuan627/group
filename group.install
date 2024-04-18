@@ -31,7 +31,7 @@ function group_update_10300(&$sandbox) {
   $installed_storage_schema = \Drupal::keyValue('entity.storage_schema.sql');
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
 
-  // Updates field storages and DB tables that were created for group_content.
+  // Update field storages and DB tables that were created for group_content.
   $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_content');
   foreach ($field_storage_definitions as $fsd) {
     if ($fsd instanceof BaseFieldDefinition) {
@@ -70,10 +70,7 @@ function group_update_10300(&$sandbox) {
     $last_installed_schema_repository->setLastInstalledFieldStorageDefinition($fsd);
   }
 
-  // Updates field instances.
-  // @todo Pick up here.
-
-  // Updates entity references that were pointing to group_content.
+  // Update entity references that were pointing to group_content.
   foreach ($last_installed_schema_repository->getLastInstalledDefinitions() as $entity_type) {
     $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions($entity_type->id());
     foreach ($field_storage_definitions as $fsd) {
@@ -113,6 +110,76 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
+  // @todo Test this.
+  // Update field instances on group_content entities.
+  foreach ($config_factory->listAll('field.field.group_content.') as $old_name) {
+    $old_config = $config_factory->getEditable($old_name);
+
+    $new_name = str_replace('group_content.', 'group_relationship.', $old_name);
+    $new_id = str_replace('group_content.', 'group_relationship.', $old_config->get('id'));
+
+    $new_config = $config_factory->getEditable($new_name);
+    $new_config->setData($old_config->getRawData());
+    $new_config->set('entity_type', 'group_relationship');
+    $new_config->set('id', $new_id);
+
+    if ($dependencies = $new_config->get('dependencies')) {
+      if (!empty($dependencies['config'])) {
+        $dependencies['config'] = array_map(function ($dependency_name) {
+          $search = [
+            'group.content_type.',
+            'field.storage.group_content.',
+          ];
+          $replace = [
+            'group.relationship_type.',
+            'field.storage.group_relationship.',
+          ];
+          return str_replace($search, $replace, $dependency_name);
+        }, $dependencies['config']);
+        $new_config->set('dependencies', $dependencies);
+      }
+    }
+
+    $new_config->save(TRUE);
+    $old_config->delete();
+  }
+
+  // @todo test this.
+  // Update form and view modes for changed instances.
+  foreach (['entity_form_display', 'entity_view_display'] as $display_key) {
+    foreach ($config_factory->listAll("core.$display_key.group_content.") as $old_name) {
+      $old_config = $config_factory->getEditable($old_name);
+
+      $new_name = str_replace('group_content.', 'group_relationship.', $old_name);
+      $new_id = str_replace('group_content.', 'group_relationship.', $old_config->get('id'));
+
+      $new_config = $config_factory->getEditable($new_name);
+      $new_config->setData($old_config->getRawData());
+      $new_config->set('targetEntityType', 'group_relationship');
+      $new_config->set('id', $new_id);
+
+      if ($dependencies = $new_config->get('dependencies')) {
+        if (!empty($dependencies['config'])) {
+          $dependencies['config'] = array_map(function ($dependency_name) {
+            $search = [
+              'group.content_type.',
+              'field.storage.group_content.',
+            ];
+            $replace = [
+              'group.relationship_type.',
+              'field.storage.group_relationship.',
+            ];
+            return str_replace($search, $replace, $dependency_name);
+          }, $dependencies['config']);
+          $new_config->set('dependencies', $dependencies);
+        }
+      }
+
+      $new_config->save(TRUE);
+      $old_config->delete();
+    }
+  }
+
   // Update the entity type definitions directly so the DB is left untouched.
   $definition = $last_installed_schema_repository->getLastInstalledDefinition('group_content_type');
   $definition->set('id', 'group_relationship_type');
@@ -139,9 +206,6 @@ function group_update_10301(&$sandbox) {
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
-
-  // @todo Can be deleted it seems.
-  //\Drupal::entityTypeManager()->clearCachedDefinitions();
 
   $field_storage_definitions = $last_installed_schema_repository->getLastInstalledFieldStorageDefinitions('group_relationship');
   $entity_type = $last_installed_schema_repository->getLastInstalledDefinition('group_relationship');
