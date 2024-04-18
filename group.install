@@ -144,6 +144,12 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
+  // @todo Test this with EntityFieldManager::getFieldMap().
+  $bundle_field_map_store = \Drupal::keyValue('entity.definitions.bundle_field_map');
+  $bundle_field_map = $bundle_field_map_store->get('group_content');
+  $bundle_field_map_store->set('group_relationship', $bundle_field_map);
+  $bundle_field_map_store->delete('group_content');
+
   // @todo test this.
   // Update form and view modes for changed instances.
   foreach (['entity_form_display', 'entity_view_display'] as $display_key) {
