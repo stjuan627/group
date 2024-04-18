@@ -164,10 +164,12 @@ function group_update_10300(&$sandbox) {
             $search = [
               'group.content_type.',
               'field.storage.group_content.',
+              'field.field.group_content.',
             ];
             $replace = [
               'group.relationship_type.',
               'field.storage.group_relationship.',
+              'field.field.group_relationship.',
             ];
             return str_replace($search, $replace, $dependency_name);
           }, $dependencies['config']);
@@ -221,29 +223,33 @@ function group_update_10302(&$sandbox) {
   if (\Drupal::moduleHandler()->moduleExists('views')) {
     foreach ($config_factory->listAll('views.view.') as $view_name) {
       $view = $config_factory->getEditable($view_name);
-
-      $displays = $view->get('display');
-      foreach ($displays as $display_name => $display) {
-        if (!empty($display['display_options']['relationships'])) {
-          foreach ($display['display_options']['relationships'] as $relationship_name => $relationship) {
-            if (isset($relationship['group_content_plugins'])) {
-              $relationship['group_relation_plugins'] = $relationship['group_content_plugins'];
-              unset($relationship['group_content_plugins']);
-
-              $plugin_map = [
-                'group_content_to_entity' => 'group_relationship_to_entity',
-                'group_content_to_entity_reverse' => 'group_relationship_to_entity_reverse',
-              ];
-              $relationship['plugin_id'] = str_replace(array_keys($plugin_map), array_values($plugin_map), $relationship['plugin_id']);
-
-              $relationship_key = "display.$display_name.display_options.relationships.$relationship_name";
-              $view->set($relationship_key, $relationship);
-            }
-          }
-        }
-      }
-
+      $view->setData(_group_update_view_with_a_bazooka($view->getRawData()))->save(TRUE);
       $view->save(TRUE);
     }
   }
+}
+
+function _group_update_view_with_a_bazooka(array $data): array {
+  $search = ['group_content_plugins', 'group_content'];
+  $replace = ['group_relation_plugins', 'group_relationship'];
+
+  // As we loop over every item in the array, we fill a new one so that order
+  // of keys is preserved even if we change the key name.
+  $new_data = [];
+
+  foreach ($data as $key => $value) {
+    $new_key = str_replace($search, $replace, $key);
+
+    if (is_string($value)) {
+      $new_data[$new_key] = str_replace($search, $replace, $value);
+    }
+    elseif (is_array($value)) {
+      $new_data[$new_key] = _group_update_view_with_a_bazooka($value);
+    }
+    else {
+      $new_data[$new_key] = $value;
+    }
+  }
+
+  return $new_data;
 }
