@@ -110,7 +110,6 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
-  // @todo Test this.
   // Update field instances on group_content entities.
   foreach ($config_factory->listAll('field.field.group_content.') as $old_name) {
     $old_config = $config_factory->getEditable($old_name);
@@ -144,7 +143,9 @@ function group_update_10300(&$sandbox) {
     $old_config->delete();
   }
 
-  // @todo Test this with EntityFieldManager::getFieldMap().
+  // The bundle field map is only updated when using the update manager.
+  // See \Drupal\Core\Entity\EntityFieldManager::getFieldMap() for more info on
+  // how the key value collection is used for this purpose.
   $bundle_field_map_store = \Drupal::keyValue('entity.definitions.bundle_field_map');
   $bundle_field_map = $bundle_field_map_store->get('group_content');
   $bundle_field_map_store->set('group_relationship', $bundle_field_map);

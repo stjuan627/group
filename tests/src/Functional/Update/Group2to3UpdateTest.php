@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Tests\Functional\Update;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\field\FieldStorageConfigInterface;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
@@ -23,7 +24,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that fields referring to group_content are updated correctly.
+   * Tests fields referring to relationships.
    */
   public function testEntityReferenceFields(): void {
     $last_installed_schema_repository = $this->getLastInstalledSchemaRepository();
@@ -40,7 +41,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that field storages are updated correctly.
+   * Tests field storages on relationships.
    */
   public function testFieldStorages(): void {
     $last_installed_schema_repository = $this->getLastInstalledSchemaRepository();
@@ -67,7 +68,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that the field tables are updated correctly.
+   * Tests field storage tables for relationships.
    */
   public function testFieldStorageTableMapping(): void {
     $database = \Drupal::database();
@@ -106,7 +107,90 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that group_content_type is converted to group_relationship_type.
+   * Tests field instances on relationships.
+   */
+  public function testFieldInstance(): void {
+    // We can't test this with the field_config storage as it would try to load
+    // the group_content entity type, which no longer exists in code when you
+    // are about to run the update.
+    $config_factory = \Drupal::configFactory();
+
+    // Make sure no field instances exist already.
+    $this->assertEmpty($config_factory->listAll('field.field.group_relationship.'));
+
+    // Check the control values.
+    $old_field = $config_factory->get('field.field.group_content.class-group_membership.field_short_field');
+    $this->assertSame('group_content.class-group_membership.field_short_field', $old_field->get('id'));
+    $this->assertSame('group_content', $old_field->get('entity_type'));
+
+    $this->runUpdates();
+
+    // Make sure no field instances linger around.
+    $this->assertEmpty($config_factory->listAll('field.field.group_content.'));
+
+    // Check the new field instance properties.
+    $new_field = $config_factory->get('field.field.group_relationship.class-group_membership.field_short_field');
+    $this->assertSame('group_relationship.class-group_membership.field_short_field', $new_field->get('id'));
+    $this->assertSame('group_relationship', $new_field->get('entity_type'));
+  }
+
+  /**
+   * Tests the bundle field map.
+   */
+  public function testBundleFieldMap(): void {
+    // We check both the field manager's map and the key value collection that
+    // is used to store the field_config part of said map.
+    $bundle_field_map_store = \Drupal::keyValue('entity.definitions.bundle_field_map');
+    $entity_field_manager = $this->getEntityFieldManager();
+
+    $base_fields = [
+      'id',
+      'uuid',
+      'langcode',
+      'type',
+      'uid',
+      'gid',
+      'entity_id',
+      'label',
+      'created',
+      'changed',
+      'plugin_id',
+      'group_type',
+      'path',
+      'default_langcode',
+    ];
+
+    $expected_map = [
+      'group_roles' => [
+        'type' => 'entity_reference',
+        'bundles' => ['class-group_membership' => 'class-group_membership'],
+      ],
+      'field_short_field' => [
+        'type' => 'string',
+        'bundles' => ['class-group_membership' => 'class-group_membership'],
+      ],
+      'field_really_long_field_title_00' => [
+        'type' => 'string',
+        'bundles' => ['class-group_membership' => 'class-group_membership'],
+      ],
+    ];
+
+    $this->assertEmpty($bundle_field_map_store->get('group_relationship'));
+    $this->assertSame($expected_map, $bundle_field_map_store->get('group_content'));
+    $this->assertSame($expected_map, $entity_field_manager->getFieldMap()['group_content'], 'Base fields are already gone from group_content map');
+    $this->assertSame($base_fields, array_keys($entity_field_manager->getFieldMap()['group_relationship']), 'Base fields are already present in group_relationship map');
+
+    $this->runUpdates();
+    $entity_field_manager->clearCachedFieldDefinitions();
+
+    $this->assertEmpty($bundle_field_map_store->get('group_content'));
+    $this->assertSame($expected_map, $bundle_field_map_store->get('group_relationship'));
+    $this->assertArrayNotHasKey('group_content', $entity_field_manager->getFieldMap(), 'Nothing left in group_content map');
+    $this->assertSame(array_merge($base_fields, array_keys($expected_map)), array_keys($entity_field_manager->getFieldMap()['group_relationship']));
+  }
+
+  /**
+   * Tests that relationship types are converted.
    */
   public function testGroupRelationshipTypes() {
     $this->assertEquals([
@@ -122,6 +206,15 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
       'group.relationship_type.class-group_membership',
       'group.relationship_type.class-group_node-page',
     ], \Drupal::configFactory()->listAll('group.relationship_type.'));
+  }
+
+  /**
+   * Gets the entity field manager.
+   *
+   * @return \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected function getEntityFieldManager(): EntityFieldManagerInterface {
+    return \Drupal::service('entity_field.manager');
   }
 
   /**
