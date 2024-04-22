@@ -107,6 +107,25 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
+   * Tests that relationship types are converted.
+   */
+  public function testGroupRelationshipTypes() {
+    $this->assertEquals([
+      'group.content_type.class-group_membership',
+      'group.content_type.class-group_node-page',
+    ], \Drupal::configFactory()->listAll('group.content_type.'));
+    $this->assertEquals([], \Drupal::configFactory()->listAll('group.relationship_type.'));
+
+    $this->runUpdates();
+
+    $this->assertEquals([], \Drupal::configFactory()->listAll('group.content_type.'));
+    $this->assertEquals([
+      'group.relationship_type.class-group_membership',
+      'group.relationship_type.class-group_node-page',
+    ], \Drupal::configFactory()->listAll('group.relationship_type.'));
+  }
+
+  /**
    * Tests field instances on relationships.
    */
   public function testFieldInstance(): void {
@@ -122,6 +141,10 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
     $old_field = $config_factory->get('field.field.group_content.class-group_membership.field_short_field');
     $this->assertSame('group_content.class-group_membership.field_short_field', $old_field->get('id'));
     $this->assertSame('group_content', $old_field->get('entity_type'));
+    foreach ($old_field->get('dependencies')['config'] as $dependency_name) {
+      $this->assertFalse(strpos($dependency_name, 'group.relationship_type'));
+      $this->assertFalse(strpos($dependency_name, 'group_relationship'));
+    }
 
     $this->runUpdates();
 
@@ -132,6 +155,10 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
     $new_field = $config_factory->get('field.field.group_relationship.class-group_membership.field_short_field');
     $this->assertSame('group_relationship.class-group_membership.field_short_field', $new_field->get('id'));
     $this->assertSame('group_relationship', $new_field->get('entity_type'));
+    foreach ($new_field->get('dependencies')['config'] as $dependency_name) {
+      $this->assertFalse(strpos($dependency_name, 'group.content_type'));
+      $this->assertFalse(strpos($dependency_name, 'group_content'));
+    }
   }
 
   /**
@@ -190,22 +217,42 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
   }
 
   /**
-   * Tests that relationship types are converted.
+   * Tests view and form modes for relationships.
    */
-  public function testGroupRelationshipTypes() {
-    $this->assertEquals([
-      'group.content_type.class-group_membership',
-      'group.content_type.class-group_node-page',
-    ], \Drupal::configFactory()->listAll('group.content_type.'));
-    $this->assertEquals([], \Drupal::configFactory()->listAll('group.relationship_type.'));
+  public function testViewAndFormModes(): void {
+    $config_factory = \Drupal::configFactory();
+
+    foreach (['entity_form_display', 'entity_view_display'] as $mode_key) {
+      // Make sure no mode exists already.
+      $this->assertEmpty($config_factory->listAll("core.$mode_key.group_relationship."));
+
+      // Check the control values.
+      $old_mode = $config_factory->get("core.$mode_key.group_content.class-group_membership.default");
+      $this->assertSame('group_content.class-group_membership.default', $old_mode->get('id'));
+      $this->assertSame('group_content', $old_mode->get('targetEntityType'));
+      $this->assertSame('class-group_membership', $old_mode->get('bundle'));
+      foreach ($old_mode->get('dependencies')['config'] as $dependency_name) {
+        $this->assertFalse(strpos($dependency_name, 'group.relationship_type'));
+        $this->assertFalse(strpos($dependency_name, 'group_relationship'));
+      }
+    }
 
     $this->runUpdates();
 
-    $this->assertEquals([], \Drupal::configFactory()->listAll('group.content_type.'));
-    $this->assertEquals([
-      'group.relationship_type.class-group_membership',
-      'group.relationship_type.class-group_node-page',
-    ], \Drupal::configFactory()->listAll('group.relationship_type.'));
+    foreach (['entity_form_display', 'entity_view_display'] as $mode_key) {
+      // Make sure no mode lingers around.
+      $this->assertEmpty($config_factory->listAll("core.$mode_key.group_content."));
+
+      // Check the new mode properties.
+      $new_mode = $config_factory->get("core.$mode_key.group_relationship.class-group_membership.default");
+      $this->assertSame('group_relationship.class-group_membership.default', $new_mode->get('id'));
+      $this->assertSame('group_relationship', $new_mode->get('targetEntityType'));
+      $this->assertSame('class-group_membership', $new_mode->get('bundle'));
+      foreach ($new_mode->get('dependencies')['config'] as $dependency_name) {
+        $this->assertFalse(strpos($dependency_name, 'group.content_type'));
+        $this->assertFalse(strpos($dependency_name, 'group_content'));
+      }
+    }
   }
 
   /**

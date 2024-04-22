@@ -151,7 +151,6 @@ function group_update_10300(&$sandbox) {
   $bundle_field_map_store->set('group_relationship', $bundle_field_map);
   $bundle_field_map_store->delete('group_content');
 
-  // @todo test this.
   // Update form and view modes for changed instances.
   foreach (['entity_form_display', 'entity_view_display'] as $display_key) {
     foreach ($config_factory->listAll("core.$display_key.group_content.") as $old_name) {
