@@ -1,14 +1,14 @@
 <?php
 
-use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
-use Drupal\Core\Entity\Sql\DefaultTableMapping;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\field\FieldStorageConfigInterface;
-
 /**
  * @file
  * Install, update and uninstall functions for the group module.
  */
+
+use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
+use Drupal\Core\Entity\Sql\DefaultTableMapping;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\field\FieldStorageConfigInterface;
 
 /**
  * Implements hook_update_last_removed().
@@ -235,6 +235,19 @@ function group_update_10302(&$sandbox) {
   }
 }
 
+/**
+ * Replaces ALL mention of group_content in a Views view's data.
+ *
+ * This is a radical approach in that it makes no assumptions other than any
+ * mention of group_content on Group v3 or up being wrong and needing
+ * replacement with group_relationship. Which explains the function name.
+ *
+ * @param array $data
+ *   The view data to fire the bazooka at.
+ *
+ * @return array
+ *   The data with all replacements made.
+ */
 function _group_update_view_with_a_bazooka(array $data): array {
   $search = ['group_content_plugins', 'group.content_type.', 'group_content'];
   $replace = ['group_relation_plugins', 'group.relationship_type.', 'group_relationship'];

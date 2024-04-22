@@ -259,6 +259,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
    * Gets the entity field manager.
    *
    * @return \Drupal\Core\Entity\EntityFieldManagerInterface
+   *   The entity field manager.
    */
   protected function getEntityFieldManager(): EntityFieldManagerInterface {
     return \Drupal::service('entity_field.manager');
@@ -268,6 +269,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
    * Gets the last installed schema repository.
    *
    * @return \Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface
+   *   The last installed schema repository.
    */
   protected function getLastInstalledSchemaRepository(): EntityLastInstalledSchemaRepositoryInterface {
     return \Drupal::service('entity.last_installed_schema.repository');
