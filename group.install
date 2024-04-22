@@ -236,8 +236,8 @@ function group_update_10302(&$sandbox) {
 }
 
 function _group_update_view_with_a_bazooka(array $data): array {
-  $search = ['group_content_plugins', 'group_content'];
-  $replace = ['group_relation_plugins', 'group_relationship'];
+  $search = ['group_content_plugins', 'group.content_type.', 'group_content'];
+  $replace = ['group_relation_plugins', 'group.relationship_type.', 'group_relationship'];
 
   // As we loop over every item in the array, we fill a new one so that order
   // of keys is preserved even if we change the key name.
