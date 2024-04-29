@@ -176,10 +176,10 @@ services:
   # See https://www.drupal.org/project/drupal/issues/2551419
   # @todo Rename to variation_cache.group_permission in 8.2.0.
   variation_cache.group_default:
-    class: Drupal\variationcache\Cache\VariationCacheInterface
+    class: Drupal\Core\Cache\VariationCacheInterface
     factory: variation_cache_factory:get
     arguments: [group_permission]
   variation_cache.corefix_static_no_serialize:
-    class: Drupal\variationcache\Cache\VariationCacheInterface
+    class: Drupal\Core\Cache\VariationCacheInterface
     factory: variation_cache_factory:get
     arguments: [corefix_static_no_serialize]
