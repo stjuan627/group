@@ -480,16 +480,6 @@ function group_update_8019() {
 }
 
 /**
- * Make sure VariationCache is installed.
- */
-function group_update_8020() {
-  if (!\Drupal::moduleHandler()->moduleExists('variationcache')) {
-    \Drupal::service('module_installer')->install(['variationcache']);
-    return t('The "VariationCache" module has been installed.');
-  }
-}
-
-/**
  * Updates base field definitions that use the old default value callback.
  */
 function group_update_8021() {

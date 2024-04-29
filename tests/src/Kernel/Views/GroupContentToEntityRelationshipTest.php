@@ -22,7 +22,6 @@ class GroupContentToEntityRelationshipTest extends ViewsKernelTestBase {
     'group',
     'options',
     'entity',
-    'variationcache',
     'field',
     'text',
     'group_test_config',
