@@ -46,7 +46,7 @@ class RouteGroupCacheContext implements CacheContextInterface {
    * {@inheritdoc}
    */
   public function getContext() {
-    if ($group = $this->getGroupFromRoute()) {
+    if ($group = $this->getBestCandidate()) {
       // If a group was found on the route, we return its ID as the context.
       if ($gid = $group->id()) {
         return $gid;

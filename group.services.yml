@@ -1,6 +1,7 @@
 services:
   access_check.group.permission:
     class: 'Drupal\group\Access\GroupPermissionAccessCheck'
+    arguments: ['@group.group_route_context']
     tags:
       - { name: 'access_check', applies_to: '_group_permission' }
   access_check.group.member:
