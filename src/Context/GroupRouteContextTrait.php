@@ -106,7 +106,7 @@ trait GroupRouteContextTrait {
       return NULL;
     }
     foreach ($entities as $entity) {
-      foreach ($this->getEntityTypeManager()->getStorage('group_relationship')->loadByEntity($entity) as $group_relationship) {
+      foreach ($this->getEntityTypeManager()->getStorage('group_content')->loadByEntity($entity) as $group_relationship) {
         return $group_relationship->getGroup();
       }
     }

@@ -95,7 +95,7 @@ class RouteGroupCacheContextTest extends UnitTestCase {
 
     $storage = $this->prophesize(GroupRelationshipStorageInterface::class);
     $storage->loadByEntity($user)->willReturn([$group_relationship->reveal()]);
-    $this->entityTypeManager->getStorage('group_relationship')->willReturn($storage->reveal());
+    $this->entityTypeManager->getStorage('group_content')->willReturn($storage->reveal());
 
     $parameters = new ParameterBag(['user' => $user]);
     $this->currentRouteMatch->getParameters()->willReturn($parameters);
