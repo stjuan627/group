@@ -2,9 +2,7 @@
 
 namespace Drupal\group\Context;
 
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\group\Entity\GroupRelationship;
-use Drupal\node\NodeInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -102,7 +100,7 @@ trait GroupRouteContextTrait {
       return NULL;
     }
     $entities = array_filter(iterator_to_array($this->getCurrentRouteMatch()->getParameters()), static function ($parameter) {
-      return $parameter instanceof NodeInterface;
+      return $parameter instanceof EntityInterface;
     });
     if (empty($entities)) {
       return NULL;
