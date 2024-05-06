@@ -2,6 +2,9 @@
 
 namespace Drupal\group\Context;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\group\Entity\GroupRelationship;
+use Drupal\node\NodeInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -76,6 +79,38 @@ trait GroupRouteContextTrait {
     elseif ($route_match->getRouteName() == 'entity.group.add_form') {
       $group_type = $route_match->getParameter('group_type');
       return $this->getEntityTypeManager()->getStorage('group')->create(['type' => $group_type->id()]);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Retrieves the group entity from the current route.
+   *
+   * Expands $this->getGroupFromRoute() to also return a Group based if
+   * interacting with Group Content such as nodes assigned to a Group.
+   *
+   * @return \Drupal\group\Entity\GroupInterface|null
+   *   A group entity if one could be found or created, NULL otherwise.
+   */
+  public function getBestCandidate() {
+    if ($group = $this->getGroupFromRoute()) {
+      return $group;
+    }
+
+    if (empty($this->getCurrentRouteMatch()->getParameters())) {
+      return NULL;
+    }
+    $entities = array_filter(iterator_to_array($this->getCurrentRouteMatch()->getParameters()), static function ($parameter) {
+      return $parameter instanceof NodeInterface;
+    });
+    if (empty($entities)) {
+      return NULL;
+    }
+    foreach ($entities as $entity) {
+      foreach ($this->getEntityTypeManager()->getStorage('group_relationship')->loadByEntity($entity) as $group_relationship) {
+        return $group_relationship->getGroup();
+      }
     }
 
     return NULL;

@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Access;
 
+use Drupal\group\Context\GroupRouteContext;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
@@ -14,6 +15,21 @@ use Symfony\Component\Routing\Route;
  * $module.group_permissions.yml files.
  */
 class GroupPermissionAccessCheck implements AccessInterface {
+
+  /**
+   * @var \Drupal\group\Context\GroupRouteContext
+   */
+ protected $groupRouteContext;
+
+  /**
+   * Constructs a new GroupPermissionAccessCheck.
+   *
+   * @param \Drupal\group\Context\GroupRouteContext $group_route_context
+   *   Group context provider.
+   */
+  public function __construct(GroupRouteContext $group_route_context) {
+    $this->groupRouteContext = $group_route_context;
+  }
 
   /**
    * Checks access.
@@ -31,20 +47,9 @@ class GroupPermissionAccessCheck implements AccessInterface {
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
     $permission = $route->getRequirement('_group_permission');
 
-    // Don't interfere if no permission was specified.
-    if ($permission === NULL) {
-      return AccessResult::neutral();
-    }
-
-    // Don't interfere if no group was specified.
-    $parameters = $route_match->getParameters();
-    if (!$parameters->has('group')) {
-      return AccessResult::neutral();
-    }
-
-    // Don't interfere if the group isn't a real group.
-    $group = $parameters->get('group');
-    if (!$group instanceof GroupInterface) {
+    // Don't interfere if no group available.
+    $group = $this->groupRouteContext->getBestCandidate();
+    if (!$group) {
       return AccessResult::neutral();
     }
 
