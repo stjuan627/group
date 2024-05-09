@@ -16,7 +16,16 @@ trait GroupMembershipTrait {
   public function getRoles($include_synchronized = TRUE) {
     $group_role_storage = $this->entityTypeManager()->getStorage('group_role');
     assert($group_role_storage instanceof GroupRoleStorageInterface);
-    return $group_role_storage->loadByUserAndGroup($this->getEntity(), $this->getGroup(), $include_synchronized);
+    // Get the current user account.
+    $currentUser = \Drupal::currentUser();
+    // Ensure that the current user account is not null and is an instance of AccountInterface.
+    if ($currentUser && $currentUser instanceof AccountInterface) {
+        // Load roles by user and group with the current user account.
+        return $group_role_storage->loadByUserAndGroup($currentUser, $this->getEntity(), $this->getGroup(), $include_synchronized);
+    } else {
+        // Return an empty array if the current user account is null or invalid.
+        return [];
+    }
   }
 
   /**
