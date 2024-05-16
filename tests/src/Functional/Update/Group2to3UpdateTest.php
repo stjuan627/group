@@ -78,7 +78,7 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
     $fields = [
       'field_really_long_field_title_00' => [
         'table_old' => 'group_content__field_really_long_field_title_00',
-        'table_new' => 'group_relationship__5eb81ace03;',
+        'table_new' => 'group_relationship__5eb81ace03',
       ],
       'field_short_field' => [
         'table_old' => 'group_content__field_short_field',
