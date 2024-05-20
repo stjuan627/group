@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Plugin\Condition;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Condition\ConditionPluginBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -185,6 +186,14 @@ class GroupRole extends ConditionPluginBase implements ContainerFactoryPluginInt
     }
 
     return $options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheContexts() {
+    $contexts = parent::getCacheContexts();
+    return Cache::mergeContexts(['user.group_permissions'], $contexts);
   }
 
 }
