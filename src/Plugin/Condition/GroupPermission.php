@@ -108,7 +108,7 @@ class GroupPermission extends ConditionPluginBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['group_permission' => null] + parent::defaultConfiguration();
+    return ['group_permission' => 'none'] + parent::defaultConfiguration();
   }
 
   /**
@@ -116,7 +116,9 @@ class GroupPermission extends ConditionPluginBase implements ContainerFactoryPlu
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     // Get list of permissions.
-    $permissions = [];
+    $permissions = [
+      'none' => "- Not Restricted -"
+    ];
     foreach ($this->permissionHandler->getPermissions(TRUE) as $permission_name => $permission) {
       $display_name = $this->moduleHandler->getName($permission['provider']);
       $permissions[$display_name . ' : ' . $permission['section']][$permission_name] = strip_tags($permission['title']);
@@ -147,7 +149,7 @@ class GroupPermission extends ConditionPluginBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function summary() {
-    if ($this->configuration['group_permission']) {
+    if ($this->configuration['group_permission'] != 'none') {
       // Check if the 'negate condition' checkbox was checked.
       if ($this->isNegated()) {
         // The condition is enabled and negated.
@@ -167,6 +169,9 @@ class GroupPermission extends ConditionPluginBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function evaluate() {
+    if($this->configuration['group_permission'] == 'none') {
+      return TRUE;
+    }
     if (!empty($this->group)) {
       return $this->group->hasPermission($this->configuration['group_permission'], $this->currentUser);
     }
