@@ -147,7 +147,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
     bool $insider_published_simple_check,
     bool $insider_published_owner_check,
     bool $insider_unpublished_simple_check,
-    bool $insider_unpublished_owner_check
+    bool $insider_unpublished_owner_check,
   ) {
     // Run some sanity checks on the passed in data and aggregate info.
     $checks_status = $checks_owner = $checks_member = FALSE;
