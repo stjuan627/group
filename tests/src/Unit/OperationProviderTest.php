@@ -230,7 +230,7 @@ namespace Drupal\Tests\group\Unit {
       ModuleHandlerInterface $module_handler = NULL,
       AccountProxyInterface $current_user = NULL,
       EntityTypeManagerInterface $entity_type_manager = NULL,
-      GroupRelationTypeManagerInterface $relation_type_manager = NULL
+      GroupRelationTypeManagerInterface $relation_type_manager = NULL,
     ) {
       if (!isset($module_handler)) {
         $module_handler = $this->prophesize(ModuleHandlerInterface::class)->reveal();
