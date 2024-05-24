@@ -5,6 +5,7 @@ namespace Drupal\Tests\group\Kernel;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupPermissionCheckerInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupMembership;
 use Drupal\group\Entity\GroupMembershipInterface;
 use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\group\Entity\GroupTypeInterface;
@@ -68,7 +69,7 @@ class GroupMembershipTest extends GroupKernelTestBase {
     parent::setUp();
 
     $this->account = $this->createUser();
-    $this->groupType = $this->createGroupType();
+    $this->groupType = $this->createGroupType(['creator_membership' => FALSE]);
     $this->groupRoleInsider = $this->createGroupRole([
       'group_type' => $this->groupType->id(),
       'scope' => PermissionScopeInterface::INSIDER_ID,
@@ -161,6 +162,69 @@ class GroupMembershipTest extends GroupKernelTestBase {
 
     $expected = $permission_checker->hasPermissionInGroup('edit group', $this->account, $this->group);
     $this->assertSame($expected, $this->groupMembership->hasPermission('edit group'));
+  }
+
+  /**
+   * Tests the loading of a single membership.
+   *
+   * @covers ::loadSingle
+   */
+  public function testLoadSingle() {
+    $membership = GroupMembership::loadSingle($this->group, $this->account);
+    $this->assertSame($this->groupMembership->id(), $membership->id());
+
+    // Check non-matching retrievals.
+    $this->assertFalse(GroupMembership::loadSingle($this->group, $this->createUser()));
+    $this->assertFalse(GroupMembership::loadSingle($this->createGroup(['type' => $this->groupType->id()]), $this->account));
+    $this->assertFalse(GroupMembership::loadSingle($this->createGroup(['type' => $this->groupType->id()]), $this->createUser()));
+  }
+
+  /**
+   * Tests the loading of all memberships of a group.
+   *
+   * @covers ::loadByGroup
+   */
+  public function testLoadByGroup() {
+    $expected = [$this->account->id()];
+
+    // Add a new member to the group twice to check that caches don't break.
+    for ($i = 0; $i < 2; $i++) {
+      $account = $this->createUser();
+      $expected[] = $account->id();
+
+      $this->group->addMember($account);
+
+      $account_ids = [];
+      foreach (GroupMembership::loadByGroup($this->group) as $membership) {
+        assert($membership instanceof GroupMembershipInterface);
+        $account_ids[] = $membership->getEntityId();
+      }
+      $this->assertSame($expected, $account_ids);
+    }
+  }
+
+  /**
+   * Tests the loading of all memberships of a user.
+   *
+   * @covers ::loadByUser
+   */
+  public function testLoadByUser() {
+    $expected = [$this->group->id()];
+
+    // Add a membership for the user twice to check that caches don't break.
+    for ($i = 0; $i < 2; $i++) {
+      $group = $this->createGroup(['type' => $this->groupType->id()]);
+      $expected[] = $group->id();
+
+      $group->addMember($this->account);
+
+      $group_ids = [];
+      foreach (GroupMembership::loadByUser($this->account) as $membership) {
+        assert($membership instanceof GroupMembershipInterface);
+        $group_ids[] = $membership->getGroupId();
+      }
+      $this->assertSame($expected, $group_ids);
+    }
   }
 
 }
