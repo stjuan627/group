@@ -319,7 +319,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
   public function getListCacheTagsToInvalidate() {
     $tags = parent::getListCacheTagsToInvalidate();
 
-    $group_id = $this->get('gid')->target_id;
+    $group_id = $this->getGroupId();
     $plugin_id = $this->getRelationshipType()->getPluginId();
     $entity_id = $this->getEntityId();
 
