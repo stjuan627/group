@@ -428,6 +428,10 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     ->execute()
     ->fetchCol();
 
+  if (!$plugin_ids_used) {
+    return $access;
+  }
+
   // Loop over the plugin handlers and add their access check to the result.
   foreach ($plugin_ids_used as $plugin_id) {
     $handler = $plugin_manager->getAccessControlHandler($plugin_id);
