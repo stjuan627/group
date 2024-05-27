@@ -128,7 +128,7 @@ class LatestRevisionAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessManager->checkRequest($request, $admin), 'An admin has no access if there is no pending revision.');
 
     // Create a pending revision of the original group.
-    $group->moderation_state = 'draft';
+    $group->set('moderation_state', 'draft');
     $group->setNewRevision(TRUE);
     $group->isDefaultRevision(FALSE);
     $group->save();
