@@ -62,10 +62,7 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
 
     // Check that the roles assigned to the created member are the same as what
     // we configured in the group defaults.
-    $ids = [];
-    foreach ($group->getMember($this->groupCreator)->getGroupRelationship()->group_roles as $group_role_ref) {
-      $ids[] = $group_role_ref->target_id;
-    }
+    $ids = array_column($group->getMember($this->groupCreator)->getGroupRelationship()->get('group_roles')->getValue(), 'target_id');
     $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Wizard set the correct creator roles.');
   }
 
@@ -98,10 +95,7 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
 
     // Check that the roles assigned to the created member are the same as what
     // we configured in the group defaults.
-    $ids = [];
-    foreach ($group->getMember($this->groupCreator)->getGroupRelationship()->group_roles as $group_role_ref) {
-      $ids[] = $group_role_ref->target_id;
-    }
+    $ids = array_column($group->getMember($this->groupCreator)->getGroupRelationship()->get('group_roles')->getValue(), 'target_id');
     $this->assertEquals($group_type->getCreatorRoleIds(), $ids, 'Group::postCreate() correctly set the creator roles.');
   }
 
