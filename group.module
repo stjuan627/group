@@ -428,15 +428,23 @@ function group_entity_access(EntityInterface $entity, $operation, AccountInterfa
     ->execute()
     ->fetchCol();
 
+  if (!$plugin_ids_used) {
+    return $access;
+  }
+
   // Loop over the plugin handlers and add their access check to the result.
   foreach ($plugin_ids_used as $plugin_id) {
     $handler = $plugin_manager->getAccessControlHandler($plugin_id);
-    $access = $access->orIf($handler->entityAccess($entity, $operation, $account, TRUE));
+    $handlerAccess = $handler->entityAccess($entity, $operation, $account, TRUE);
+    // Transform access from NotForbidden to Allowed so to OR it.
+    $access = $access->orIf(AccessResult::allowedIf(!$handlerAccess->isForbidden())->addCacheableDependency($handlerAccess));
+  }
 
-    // No need to continue if access is denied.
-    if ($access->isForbidden()) {
-      break;
-    }
+  // If we did not allow access, we need to explicitly forbid access to avoid
+  // other modules from granting access where Group promised the entity would
+  // be inaccessible.
+  if (!$access->isAllowed()) {
+    $access = AccessResult::forbidden()->addCacheableDependency($access);
   }
 
   return $access;
