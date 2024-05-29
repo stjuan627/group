@@ -120,6 +120,9 @@ function group_theme() {
     'group' => [
       'render element' => 'elements',
     ],
+    'group_edit' => [
+      'render element' => 'form',
+    ],
     'group_relationship' => [
       'render element' => 'elements',
     ],
