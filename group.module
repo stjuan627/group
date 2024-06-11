@@ -728,7 +728,12 @@ function group_relationship_entity_submit($form, FormStateInterface $form_state)
 
   $group = $form_state->get('group');
   assert($group instanceof GroupInterface);
-  $group->addRelationship($entity, $form_state->get('group_relation'));
+  $group_relationship = $group->addRelationship($entity, $form_state->get('group_relation'));
+
+  \Drupal::logger('group_relationship')->notice('@type: added %title.', [
+    '@type' => $group_relationship->bundle(),
+    '%title' => $group_relationship->label(),
+  ]);
 
   // This submit handler is only called when creating new content within a group
   // without using the 2-step wizard. We can therefore safely assume the user
