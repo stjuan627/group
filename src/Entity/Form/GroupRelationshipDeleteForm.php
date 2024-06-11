@@ -28,7 +28,10 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
+    /** @var \Drupal\group\Entity\GroupRelationship $group_relationship */
+    $group_relationship = $this->getEntity();
+    $group = $group_relationship->getGroup();
+    return $this->t('Are you sure you want to remove %name from %group?', ['%name' => $this->entity->label(), '%group' => $group->label()]);
   }
 
   /**
@@ -50,7 +53,7 @@ class GroupRelationshipDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getConfirmText() {
-    return $this->t('Delete');
+    return $this->t('Remove');
   }
 
   /**
