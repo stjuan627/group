@@ -140,7 +140,7 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
    * @return array
    *   Test data.
    */
-  public function providerTestHasHandler() {
+  public static function providerTestHasHandler() {
     return [
       ['apple', TRUE],
       ['banana', FALSE],

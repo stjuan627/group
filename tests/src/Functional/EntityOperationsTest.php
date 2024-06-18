@@ -54,7 +54,7 @@ class EntityOperationsTest extends GroupBrowserTestBase {
   /**
    * Data provider for testEntityOperations().
    */
-  public function provideEntityOperationScenarios() {
+  public static function provideEntityOperationScenarios() {
     $scenarios['withoutAccess'] = [
       [],
       [

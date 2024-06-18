@@ -73,7 +73,7 @@ class GroupAccessControlHandlerTest extends GroupKernelTestBase {
    * @return array
    *   A list of testUpdateOrDeleteAccess method arguments.
    */
-  public function updateOrDeleteAccessProvider() {
+  public static function updateOrDeleteAccessProvider() {
     return [
       'update-access' => [
         'update',
