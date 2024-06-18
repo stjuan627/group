@@ -14,6 +14,11 @@ class GroupRevisionableUpdateTest extends UpdatePathTestBase {
   /**
    * {@inheritdoc}
    */
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
   protected function setDatabaseDumpFiles() {
     $this->databaseDumpFiles = [
       __DIR__ . '/../../../fixtures/update/group-8.x-1.3-pre-revision.php.gz',

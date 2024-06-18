@@ -115,7 +115,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
    * @return array
    *   A list of testPageAccess method arguments.
    */
-  public function pageAccessProvider() {
+  public static function pageAccessProvider() {
     $cases = [];
 
     $cases['create-page-access-one'] = [
@@ -215,7 +215,7 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
    * @return array
    *   A list of testFormAccess method arguments.
    */
-  public function formAccessProvider() {
+  public static function formAccessProvider() {
     $cases = [];
 
     $cases['create-form-access'] = [

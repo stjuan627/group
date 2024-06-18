@@ -95,7 +95,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
    *
    * All scenarios assume group ID 1 and type 'foo'.
    */
-  public function provideHasPermissionInGroupScenarios() {
+  public static function provideHasPermissionInGroupScenarios() {
     $scenarios['anonymousWithBypass'] = [
       TRUE,
       TRUE,

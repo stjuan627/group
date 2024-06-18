@@ -110,7 +110,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    * @return array
    *   A list of testOverviewAccess method arguments.
    */
-  public function overviewAccessProvider() {
+  public static function overviewAccessProvider() {
     $cases = [];
 
     $cases['view-one-rev-no-new-rev'] = [
@@ -237,7 +237,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    * @return array
    *   A list of testViewAccess method arguments.
    */
-  public function viewAccessProvider() {
+  public static function viewAccessProvider() {
     $cases = [];
 
     $cases['view-one-rev-no-new-rev'] = [
@@ -653,7 +653,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    * @return array
    *   A list of testUpdateDeleteAccess method arguments.
    */
-  public function updateDeleteAccessProvider() {
+  public static function updateDeleteAccessProvider() {
     $cases = [];
 
     $cases['edit-rev-default'] = [
