@@ -70,7 +70,14 @@ trait GroupRouteContextTrait {
     $route_match = $this->getCurrentRouteMatch();
 
     // See if the route has a group parameter and try to retrieve it.
-    if (($group = $route_match->getParameter('group')) && $group instanceof GroupInterface) {
+    $group = $this->getCurrentRouteMatch()->getParameter('group');
+
+    // Regular permissions will have an integer set.
+    if ($group && is_numeric($group)) {
+      return $this->getEntityTypeManager()->getStorage('group')->load($group);
+    }
+    // Group permissions will have an object set.
+    elseif ($group instanceof GroupInterface) {
       return $group;
     }
     // Create a new group to use as context if on the group add form.
@@ -96,18 +103,16 @@ trait GroupRouteContextTrait {
       return $group;
     }
 
-    if (empty($this->getCurrentRouteMatch()->getParameters())) {
-      return NULL;
-    }
-    $entities = array_filter(iterator_to_array($this->getCurrentRouteMatch()->getParameters()), static function ($parameter) {
-      return $parameter instanceof EntityInterface;
-    });
-    if (empty($entities)) {
-      return NULL;
-    }
-    foreach ($entities as $entity) {
-      foreach ($this->getEntityTypeManager()->getStorage('group_content')->loadByEntity($entity) as $group_relationship) {
-        return $group_relationship->getGroup();
+    if (!empty($this->getCurrentRouteMatch()->getParameters())) {
+      $entities = array_filter(iterator_to_array($this->getCurrentRouteMatch()->getParameters()), static function ($parameter) {
+        return $parameter instanceof EntityInterface;
+      });
+      if (!empty($entities)) {
+        foreach ($entities as $entity) {
+          foreach ($this->getEntityTypeManager()->getStorage('group_content')->loadByEntity($entity) as $group_relationship) {
+            return $group_relationship->getGroup();
+          }
+        }
       }
     }
 
