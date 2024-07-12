@@ -7,9 +7,13 @@ use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\group\Cache\Context\RouteGroupCacheContext;
+use Drupal\group\Entity\GroupRelationship;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\Tests\UnitTestCase;
+use Drupal\user\Entity\User;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * Tests the route.group cache context.
@@ -49,6 +53,7 @@ class RouteGroupCacheContextTest extends UnitTestCase {
    */
   public function testGetContextNoGroup() {
     $this->currentRouteMatch->getParameter('group')->willReturn(NULL);
+    $this->currentRouteMatch->getParameters()->willReturn(new ParameterBag());
     $this->currentRouteMatch->getRouteName()->willReturn('foo');
 
     $cache_context = new RouteGroupCacheContext($this->currentRouteMatch->reveal(), $this->entityTypeManager->reveal());
@@ -65,6 +70,35 @@ class RouteGroupCacheContextTest extends UnitTestCase {
     $group->id()->willReturn(1);
 
     $this->currentRouteMatch->getParameter('group')->willReturn($group->reveal());
+
+    $cache_context = new RouteGroupCacheContext($this->currentRouteMatch->reveal(), $this->entityTypeManager->reveal());
+    $this->assertSame(1, $cache_context->getContext());
+  }
+
+  /**
+   * Tests getting the context value when there is a group_relationship on the route.
+   *
+   * @covers ::getContext
+   */
+  public function testGetContextWithGroupRelationship() {
+    $this->currentRouteMatch->getParameter('group')->willReturn(NULL);
+    $this->currentRouteMatch->getRouteName()->willReturn('foo');
+
+    $group = $this->prophesize(GroupInterface::class);
+    $group->id()->willReturn(1);
+
+    $user = $this->prophesize(User::class)->reveal();
+
+    $group_relationship = $this->prophesize(GroupRelationship::class);
+    $group_relationship->getGroup()->willReturn($group->reveal());
+    $group_relationship->getEntity()->willReturn($user);
+
+    $storage = $this->prophesize(GroupRelationshipStorageInterface::class);
+    $storage->loadByEntity($user)->willReturn([$group_relationship->reveal()]);
+    $this->entityTypeManager->getStorage('group_content')->willReturn($storage->reveal());
+
+    $parameters = new ParameterBag(['user' => $user]);
+    $this->currentRouteMatch->getParameters()->willReturn($parameters);
 
     $cache_context = new RouteGroupCacheContext($this->currentRouteMatch->reveal(), $this->entityTypeManager->reveal());
     $this->assertSame(1, $cache_context->getContext());

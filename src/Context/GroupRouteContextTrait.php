@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Context;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\group\Entity\GroupInterface;
 
 /**
@@ -69,13 +70,50 @@ trait GroupRouteContextTrait {
     $route_match = $this->getCurrentRouteMatch();
 
     // See if the route has a group parameter and try to retrieve it.
-    if (($group = $route_match->getParameter('group')) && $group instanceof GroupInterface) {
+    $group = $this->getCurrentRouteMatch()->getParameter('group');
+
+    // Regular permissions will have an integer set.
+    if ($group && is_numeric($group)) {
+      return $this->getEntityTypeManager()->getStorage('group')->load($group);
+    }
+    // Group permissions will have an object set.
+    elseif ($group instanceof GroupInterface) {
       return $group;
     }
     // Create a new group to use as context if on the group add form.
     elseif ($route_match->getRouteName() == 'entity.group.add_form') {
       $group_type = $route_match->getParameter('group_type');
       return $this->getEntityTypeManager()->getStorage('group')->create(['type' => $group_type->id()]);
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Retrieves the group entity from the current route.
+   *
+   * Expands $this->getGroupFromRoute() to also return a Group based if
+   * interacting with Group Content such as nodes assigned to a Group.
+   *
+   * @return \Drupal\group\Entity\GroupInterface|null
+   *   A group entity if one could be found or created, NULL otherwise.
+   */
+  public function getBestCandidate() {
+    if ($group = $this->getGroupFromRoute()) {
+      return $group;
+    }
+
+    if (!empty($this->getCurrentRouteMatch()->getParameters())) {
+      $entities = array_filter(iterator_to_array($this->getCurrentRouteMatch()->getParameters()), static function ($parameter) {
+        return $parameter instanceof EntityInterface;
+      });
+      if (!empty($entities)) {
+        foreach ($entities as $entity) {
+          foreach ($this->getEntityTypeManager()->getStorage('group_content')->loadByEntity($entity) as $group_relationship) {
+            return $group_relationship->getGroup();
+          }
+        }
+      }
     }
 
     return NULL;
