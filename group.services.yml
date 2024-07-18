@@ -42,11 +42,8 @@ services:
       - { name: 'access_check', applies_to: '_group_latest_revision' }
 
   cache.group_memberships_memory:
-    class: 'Drupal\Core\Cache\MemoryCache\MemoryCacheInterface'
-    tags:
-      - { name: 'cache.bin.memory', default_backend: 'cache.backend.memory.memory' }
-    factory: ['@cache_factory', 'get']
-    arguments: ['group_memberships_memory']
+    class: Drupal\Core\Cache\MemoryCache\MemoryCache
+    public: false
   cache.group_memberships:
     class: 'Drupal\Core\Cache\CacheBackendInterface'
     tags:
@@ -59,7 +56,7 @@ services:
       - ['appendBackend', ['@cache.group_memberships_memory']]
       - ['appendBackend', ['@cache.group_memberships']]
     tags:
-      - { name: 'cache.bin.memory' }
+      - { name: 'cache.bin' }
 
   cache_context.route.group:
     class: 'Drupal\group\Cache\Context\RouteGroupCacheContext'
