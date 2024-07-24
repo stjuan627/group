@@ -3,9 +3,9 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -762,7 +762,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    */
   protected function createRequest($route_name, GroupInterface $group, GroupInterface $group_revision = NULL) {
     $params = ['group' => $group->id()];
-    $attributes = ['group' => $group,];
+    $attributes = ['group' => $group];
     if ($group_revision) {
       $params['group_revision'] = $group_revision->getRevisionId();
       $attributes['group_revision'] = $group_revision;

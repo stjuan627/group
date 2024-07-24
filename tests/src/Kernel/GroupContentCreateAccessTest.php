@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
-use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -327,9 +327,9 @@ class GroupContentCreateAccessTest extends GroupKernelTestBase {
   protected function createNodeType(array $values = []) {
     $storage = $this->entityTypeManager->getStorage('node_type');
     $node_type = $storage->create($values + [
-        'type' => $this->randomMachineName(),
-        'label' => $this->randomString(),
-      ]);
+      'type' => $this->randomMachineName(),
+      'label' => $this->randomString(),
+    ]);
     $storage->save($node_type);
     return $node_type;
   }

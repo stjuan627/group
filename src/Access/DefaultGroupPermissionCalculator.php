@@ -12,6 +12,8 @@ use Drupal\group\GroupMembershipLoaderInterface;
 class DefaultGroupPermissionCalculator extends GroupPermissionCalculatorBase {
 
   /**
+   * Defines cache contexts for member roles.
+   *
    * The member roles depend on which memberships you have, for which we do not
    * currently have a dedicated cache context as it has a very high granularity.
    * We therefore cache the calculated permissions per user.

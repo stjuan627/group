@@ -49,11 +49,11 @@ class GroupQueryAccessHandler extends QueryAccessHandlerBase {
    * @param \Drupal\Core\Session\AccountInterface $account
    *   The user for which to restrict access.
    *
-   * Please note: Just like the AccessResult::cachePerPermissions problem
-   * outlined in https://www.drupal.org/project/drupal/issues/2628870, we also
-   * add current user dependent cache contexts here even though the passed in
-   * account might be different. This is a problem for core to fix but I wanted
-   * to give the heads up regardless.
+   *   Please note: Just like the AccessResult::cachePerPermissions problem
+   *   outlined in https://www.drupal.org/project/drupal/issues/2628870, we also
+   *   add current user dependent cache contexts here even though the passed in
+   *   account might be different. This is a problem for core to fix but
+   *   I wanted to give the heads up regardless.
    *
    * @return \Drupal\entity\QueryAccess\ConditionGroup
    *   The conditions.
@@ -200,7 +200,7 @@ class GroupQueryAccessHandler extends QueryAccessHandlerBase {
 
         // Add the owner memberships with access to the query (if any).
         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status])) {
-          $status_owner_conditions_inner->addCondition('id', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]) , 'IN');
+          $status_owner_conditions_inner->addCondition('id', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]), 'IN');
         }
 
         $status_owner_conditions->addCondition($status_owner_conditions_inner);

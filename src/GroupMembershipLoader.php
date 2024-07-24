@@ -52,6 +52,7 @@ class GroupMembershipLoader implements GroupMembershipLoaderInterface {
    * Gets the group content storage.
    *
    * @return \Drupal\group\Entity\Storage\GroupContentStorageInterface
+   *   The group content storage interface.
    */
   protected function groupContentStorage() {
     return $this->entityTypeManager->getStorage('group_content');

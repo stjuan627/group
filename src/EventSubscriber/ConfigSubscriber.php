@@ -2,8 +2,8 @@
 
 namespace Drupal\group\EventSubscriber;
 
-use Drupal\Core\Config\ConfigImporterEvent;
 use Drupal\Core\Config\ConfigEvents;
+use Drupal\Core\Config\ConfigImporterEvent;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

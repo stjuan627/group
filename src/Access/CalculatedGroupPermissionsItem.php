@@ -56,9 +56,7 @@ class CalculatedGroupPermissionsItem implements CalculatedGroupPermissionsItemIn
 
     // @todo Rework for group 8.2.x to no longer use the admin permission.
     // @todo Do make flag default to FALSE and pass role's isAdmin flag instead.
-    $this->isAdmin = isset($is_admin)
-      ? $is_admin
-      : in_array('administer group', $permissions, TRUE);
+    $this->isAdmin = $is_admin ?? in_array('administer group', $permissions, TRUE);
   }
 
   /**

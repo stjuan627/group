@@ -5,7 +5,6 @@ namespace Drupal\group\Entity\Form;
 use Drupal\Core\Entity\EntityDeleteForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a form for group content type deletion.
@@ -69,7 +68,7 @@ class GroupContentTypeDeleteForm extends EntityDeleteForm {
     if (!empty($entity_count)) {
       $form['#title'] = $this->getQuestion();
       $form['description'] = [
-        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>'
+        '#markup' => '<p>' . $this->t('You can not uninstall this content plugin until you have removed all of the content that uses it.') . '</p>',
       ];
 
       return $form;

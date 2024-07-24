@@ -20,7 +20,16 @@ class GroupIdArgumentTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['group', 'options', 'entity', 'variationcache', 'field', 'text', 'group_test_config', 'group_test_views'];
+  protected static $modules = [
+    'group',
+    'options',
+    'entity',
+    'variationcache',
+    'field',
+    'text',
+    'group_test_config',
+    'group_test_views',
+  ];
 
   /**
    * Views used by this test.
@@ -57,14 +66,14 @@ class GroupIdArgumentTest extends ViewsKernelTestBase {
     $view = Views::getView('test_group_id_argument');
     $view->setDisplay();
 
-    /* @var \Drupal\group\Entity\GroupInterface $group1 */
+    /** @var \Drupal\group\Entity\GroupInterface $group1 */
     $group1 = Group::create([
       'type' => 'default',
       'label' => $this->randomMachineName(),
     ]);
     $group1->save();
 
-    /* @var \Drupal\group\Entity\GroupInterface $group2 */
+    /** @var \Drupal\group\Entity\GroupInterface $group2 */
     $group2 = Group::create([
       'type' => 'default',
       'label' => $this->randomMachineName(),

@@ -129,7 +129,7 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
       return $permissions[$this->options['group_permission']]['title'];
     }
 
-    return $this->t($this->options['group_permission']);
+    return $this->options['group_permission'];
   }
 
   /**

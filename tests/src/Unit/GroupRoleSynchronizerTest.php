@@ -6,9 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\group\GroupRoleSynchronizer;
-use Drupal\group\Entity\GroupRoleInterface;
 use Drupal\Tests\UnitTestCase;
-use Drupal\user\RoleInterface;
 
 /**
  * Tests the outsider group role synchronizer service.

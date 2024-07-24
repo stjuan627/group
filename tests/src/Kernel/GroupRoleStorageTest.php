@@ -2,9 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupInterface;
-
 /**
  * Tests the behavior of group role storage handler.
  *
@@ -112,7 +109,7 @@ class GroupRoleStorageTest extends GroupKernelTestBase {
     $actual = array_keys($this->storage->loadSynchronizedByUserRoles(['test']));
     $expected = [
       $this->groupRoleSynchronizer->getGroupRoleId('default', 'test'),
-      $this->groupRoleSynchronizer->getGroupRoleId('other', 'test')
+      $this->groupRoleSynchronizer->getGroupRoleId('other', 'test'),
     ];
     $this->assertEqualsCanonicalizing($expected, $actual, 'Can load synchronized group roles by user roles.');
   }

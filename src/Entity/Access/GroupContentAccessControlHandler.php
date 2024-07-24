@@ -2,10 +2,10 @@
 
 namespace Drupal\group\Entity\Access;
 
-use Drupal\group\Entity\GroupContentType;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupContentType;
 
 /**
  * Access controller for the Group entity.

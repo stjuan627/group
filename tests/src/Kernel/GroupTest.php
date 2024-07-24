@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Entity\Entity\EntityViewMode;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Core\Entity\Entity\EntityViewMode;
 
 /**
  * Tests the general behavior of group entities.

@@ -2,11 +2,11 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
 use Symfony\Component\Routing\Route;
 
 /**
@@ -64,7 +64,7 @@ class GroupContentCreateAccessCheck implements AccessInterface {
     $access = $access_control_handler->createAccess($group_content_type_id, $account, ['group' => $group]);
 
     // Only allow access if the user can create group content using the
-    // provided plugin or if he doesn't need access to do so.
+    // provided plugin or if access is not required.
     return AccessResult::allowedIf($access xor !$needs_access);
   }
 

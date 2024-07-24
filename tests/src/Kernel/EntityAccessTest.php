@@ -420,7 +420,7 @@ class EntityAccessTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($entity_2, 'update'), 'Members cannot update grouped test entities.');
     $this->assertTrue($this->accessControlHandler->access($entity_3, 'update'), 'The ungrouped test entity can be updated.');
   }
-  
+
   /**
    * Tests the deleting of any grouped entities for members.
    */

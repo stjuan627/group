@@ -48,8 +48,7 @@ class GroupContentQueryAccessHandlerTest extends GroupKernelTestBase {
     parent::setUp();
 
     // Create uid: 1 here so that it's skipped in test cases.
-    $admin_user = $this->createUser();
-
+    // $admin_user = $this->createUser();
     $entity_type = $this->entityTypeManager->getDefinition('group');
     $this->handler = GroupContentQueryAccessHandler::createInstance($this->container, $entity_type);
 

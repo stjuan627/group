@@ -36,7 +36,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp(): void{
+  public function setUp(): void {
     parent::setUp();
     $this->permissionCalculator = $this->prophesize(ChainGroupPermissionCalculatorInterface::class);
     $this->permissionChecker = new GroupPermissionChecker($this->permissionCalculator->reveal());
@@ -103,7 +103,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An anonymous user with the bypass permission can view the group.'
+      'An anonymous user with the bypass permission can view the group.',
     ];
 
     $scenarios['authenticatedWithBypass'] = [
@@ -113,7 +113,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An authenticated user with the bypass permission can view the group.'
+      'An authenticated user with the bypass permission can view the group.',
     ];
 
     $scenarios['anonymousWithAdmin'] = [
@@ -123,7 +123,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An anonymous user with the group admin permission can view the group.'
+      'An anonymous user with the group admin permission can view the group.',
     ];
 
     $scenarios['outsiderWithAdmin'] = [
@@ -133,7 +133,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An outsider with the group admin permission can view the group.'
+      'An outsider with the group admin permission can view the group.',
     ];
 
     $scenarios['memberWithAdmin'] = [
@@ -143,7 +143,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [1 => ['administer group']],
       'view group',
       TRUE,
-      'A member with the group admin permission can view the group.'
+      'A member with the group admin permission can view the group.',
     ];
 
     $scenarios['anonymousWithPermission'] = [
@@ -153,7 +153,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An anonymous user with the right permission can view the group.'
+      'An anonymous user with the right permission can view the group.',
     ];
 
     $scenarios['outsiderWithPermission'] = [
@@ -163,7 +163,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       TRUE,
-      'An outsider with the right permission can view the group.'
+      'An outsider with the right permission can view the group.',
     ];
 
     $scenarios['memberWithPermission'] = [
@@ -173,7 +173,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [1 => ['view group']],
       'view group',
       TRUE,
-      'A member with the right permission can view the group.'
+      'A member with the right permission can view the group.',
     ];
 
     $scenarios['anonymousWithoutPermission'] = [
@@ -183,7 +183,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       FALSE,
-      'An anonymous user without the right permission can not view the group.'
+      'An anonymous user without the right permission can not view the group.',
     ];
 
     $scenarios['outsiderWithoutPermission'] = [
@@ -193,7 +193,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [],
       'view group',
       FALSE,
-      'An outsider without the right permission can not view the group.'
+      'An outsider without the right permission can not view the group.',
     ];
 
     $scenarios['memberWithoutPermission'] = [
@@ -203,7 +203,7 @@ class GroupPermissionCheckerTest extends UnitTestCase {
       [1 => []],
       'view group',
       FALSE,
-      'A member without the right permission can not view the group.'
+      'A member without the right permission can not view the group.',
     ];
 
     return $scenarios;

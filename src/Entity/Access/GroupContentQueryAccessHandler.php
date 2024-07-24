@@ -79,7 +79,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
 
       // For each iteration, we can check all group items because it's still
       // faster than checking the DB for which Group ID belongs to which group
-      // content type. We will add in the group-type scope per group content type.
+      // content type. We will add in group-type scope per group content type.
       $applicable_permissions = array_merge(
         $group_permissions,
         [$calculated_permissions->getItem(CGPII::SCOPE_GROUP_TYPE, $group_content_type->getGroupTypeId())]
@@ -100,7 +100,7 @@ class GroupContentQueryAccessHandler extends QueryAccessHandlerBase {
         elseif ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
           $allowed_any_ids[$item->getScope()][] = $identifier;
         }
-        elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+        elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
           $allowed_own_ids[$item->getScope()][] = $identifier;
         }
       }

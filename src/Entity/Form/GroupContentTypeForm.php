@@ -71,26 +71,26 @@ class GroupContentTypeForm extends EntityForm {
     $group_type = $group_content_type->getGroupType();
     $plugin = $this->getContentPlugin();
 
-    // @todo These messages may need some love.
+    // Define the message templates with placeholders.
     if ($this->operation == 'add') {
       $form['#title'] = $this->t('Install content plugin');
-      $message = 'By installing the %plugin plugin, you will allow %entity_type entities to be added to groups of type %group_type';
+      $message = $this->t('By installing the %plugin plugin, you will allow %entity_type entities to be added to groups of type %group_type.', [
+        '%plugin' => $plugin->getLabel(),
+        '%entity_type' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
+        '%group_type' => $group_type->label(),
+      ]);
     }
     else {
       $form['#title'] = $this->t('Configure content plugin');
-      $message = 'This form allows you to configure the %plugin plugin for the %group_type group type.';
+      $message = $this->t('This form allows you to configure the %plugin plugin for the %group_type group type.', [
+        '%plugin' => $plugin->getLabel(),
+        '%group_type' => $group_type->label(),
+      ]);
     }
-
-    // Add in the replacements for the $message variable set above.
-    $replace = [
-      '%plugin' => $plugin->getLabel(),
-      '%entity_type' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
-      '%group_type' => $group_type->label(),
-    ];
 
     // Display a description to explain the purpose of the form.
     $form['description'] = [
-      '#markup' => $this->t($message, $replace),
+      '#markup' => $message,
     ];
 
     // Add in the plugin configuration form.

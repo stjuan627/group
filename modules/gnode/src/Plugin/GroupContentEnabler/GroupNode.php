@@ -2,11 +2,11 @@
 
 namespace Drupal\gnode\Plugin\GroupContentEnabler;
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\GroupContentEnablerBase;
 use Drupal\node\Entity\NodeType;
-use Drupal\Core\Url;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a content enabler for nodes.

@@ -5,12 +5,9 @@
  * Enables Group functionality for the Node module.
  */
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\node\NodeInterface;
-use Drupal\node\NodeTypeInterface;
 use Drupal\Core\Url;
+use Drupal\node\NodeTypeInterface;
 
 /**
  * Implements hook_ENTITY_TYPE_insert().

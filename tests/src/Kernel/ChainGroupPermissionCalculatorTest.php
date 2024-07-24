@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\group\Kernel;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\group\Access\CalculatedGroupPermissions;
 use Drupal\group\Access\CalculatedGroupPermissionsInterface;
@@ -13,7 +12,7 @@ use Drupal\group\Access\RefinableCalculatedGroupPermissions;
  *
  * This also inherently tests the following calculators:
  * - \Drupal\group\Access\DefaultGroupPermissionCalculator
- * - \Drupal\group\Access\SynchronizedGroupPermissionCalculator
+ * - \Drupal\group\Access\SynchronizedGroupPermissionCalculator.
  *
  * @todo Individually test the above calculators?
  *

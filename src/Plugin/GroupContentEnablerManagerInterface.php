@@ -4,7 +4,6 @@ namespace Drupal\group\Plugin;
 
 use Drupal\Component\Plugin\Discovery\CachedDiscoveryInterface;
 use Drupal\Component\Plugin\PluginManagerInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 
 /**

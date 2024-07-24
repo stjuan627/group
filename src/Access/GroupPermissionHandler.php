@@ -127,7 +127,7 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
   /**
    * Gets all defined group permissions along with those from certain plugins.
    *
-   * @param \Drupal\group\Plugin\GroupContentEnablerInterface[]
+   * @param \Drupal\group\Plugin\GroupContentEnablerInterface[] $plugins
    *   The list of plugins to get permissions from, keyed by plugin ID.
    *
    * @return array
@@ -176,16 +176,16 @@ class GroupPermissionHandler implements GroupPermissionHandlerInterface {
       'allowed for' => ['anonymous', 'outsider', 'member'],
     ];
 
-    // Translate the title and section.
-    $permission['title'] = $this->t($permission['title'], $permission['title_args']);
-    $permission['section'] = $this->t($permission['section'], $permission['section_args']);
+    // Translate the title and section with placeholders.
+    $permission['title'] = $this->t('Title: @title', ['@title' => $permission['title']]);
+    $permission['section'] = $this->t('Section: @section', ['@section' => $permission['section']]);
 
-    // Optionally translate the description and warning.
+    // Optionally translate the description and warning with placeholders.
     if (!empty($permission['description'])) {
-      $permission['description'] = $this->t($permission['description'], $permission['description_args']);
+      $permission['description'] = $this->t('Description: @description', ['@description' => $permission['description']]);
     }
     if (!empty($permission['warning'])) {
-      $permission['warning'] = $this->t($permission['warning'], $permission['warning_args']);
+      $permission['warning'] = $this->t('Warning: @warning', ['@warning' => $permission['warning']]);
     }
 
     return $permission;

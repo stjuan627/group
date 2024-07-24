@@ -42,6 +42,12 @@ class GroupToGroupContent extends RelationshipPluginBase {
   /**
    * Constructs a GroupToGroupContent object.
    *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
    * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager

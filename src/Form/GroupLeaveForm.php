@@ -13,9 +13,9 @@ class GroupLeaveForm extends GroupContentDeleteForm {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    $message = 'Are you sure you want to leave %group?';
-    $replace = ['%group' => $this->getEntity()->getGroup()->label()];
-    return $this->t($message, $replace);
+    // Define the message with a placeholder.
+    $message = $this->t('Are you sure you want to leave @group?', ['@group' => $this->getEntity()->getGroup()->label()]);
+    return $message;
   }
 
   /**

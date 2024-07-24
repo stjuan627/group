@@ -9,7 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Returns responses for GroupRole routes.
  */
-class GroupRoleController extends EntityController  {
+class GroupRoleController extends EntityController {
 
   /**
    * {@inheritdoc}

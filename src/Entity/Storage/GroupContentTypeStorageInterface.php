@@ -54,7 +54,7 @@ interface GroupContentTypeStorageInterface extends ConfigEntityStorageInterface 
    *   The ID of the content enabler plugin to use.
    * @param array $configuration
    *   (optional) An array of content enabler plugin configuration.
-   * 
+   *
    * @return \Drupal\group\Entity\GroupContentTypeInterface
    *   A new, unsaved GroupContentType entity.
    */

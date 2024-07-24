@@ -13,6 +13,7 @@ class GroupContentEnablerCollection extends DefaultLazyPluginCollection {
    * {@inheritdoc}
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   *   The group content enabler interface instance.
    */
   public function &get($instance_id) {
     return parent::get($instance_id);

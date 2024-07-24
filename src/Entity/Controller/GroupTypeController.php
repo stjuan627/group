@@ -2,14 +2,14 @@
 
 namespace Drupal\group\Entity\Controller;
 
-use Drupal\group\Entity\GroupTypeInterface;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Url;
 use Drupal\group\Entity\GroupContentType;
+use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\GroupContentEnablerInterface;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
-use Drupal\Core\Url;
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -171,10 +171,10 @@ class GroupTypeController extends ControllerBase {
         ],
       ],
       'provider' => [
-        '#markup' => $this->moduleHandler->getName($plugin->getProvider())
+        '#markup' => $this->moduleHandler->getName($plugin->getProvider()),
       ],
       'entity_type_id' => [
-        '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel()
+        '#markup' => $this->entityTypeManager->getDefinition($plugin->getEntityTypeId())->getLabel(),
       ],
       'status' => ['#markup' => $status],
       'install_type' => ['#markup' => $install_type],
@@ -199,7 +199,7 @@ class GroupTypeController extends ControllerBase {
    *
    * @return array
    *   An associative array of operation links for the group type's content
-   *   plugin, keyed by operation name, containing the following key-value pairs:
+   *   plugin, keyed by operation name, containing following key-value pairs:
    *   - title: The localized title of the operation.
    *   - url: An instance of \Drupal\Core\Url for the operation URL.
    *   - weight: The weight of this operation.
@@ -255,7 +255,13 @@ class GroupTypeController extends ControllerBase {
     elseif ($ui_allowed) {
       $operations['install'] = [
         'title' => $this->t('Install'),
-        'url' => new Url('entity.group_content_type.add_form', ['group_type' => $this->groupType->id(), 'plugin_id' => $plugin_id]),
+        'url' => new Url(
+          'entity.group_content_type.add_form',
+          [
+            'group_type' => $this->groupType->id(),
+            'plugin_id' => $plugin_id,
+          ]
+        ),
       ];
     }
 

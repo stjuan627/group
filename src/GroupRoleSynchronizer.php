@@ -5,7 +5,6 @@ namespace Drupal\group;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\group\Entity\GroupTypeInterface;
-use Drupal\User\RoleInterface;
 
 /**
  * Synchronizes user roles to group roles.

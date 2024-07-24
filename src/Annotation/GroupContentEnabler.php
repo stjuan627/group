@@ -7,7 +7,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Defines a GroupContentEnabler annotation object.
  *
- * Plugin Namespace: Plugin\GroupContentEnabler
+ * Plugin Namespace: Plugin\GroupContentEnabler.
  *
  * For a working example, see
  * \Drupal\group\Plugin\GroupContentEnabler\GroupMembership
@@ -53,16 +53,18 @@ class GroupContentEnabler extends Plugin {
   public $entity_type_id;
 
   /**
-   * (optional) The bundle of the entity type you want to enable as group content.
+   * The bundle of the entity type you want to enable as group content.
    *
-   * Do not specify if your plugin manages all bundles.
+   * This property is optional.
+   * Do not specify it if your plugin manages all bundles.
    *
    * @var string|false
+   *   The entity bundle or FALSE if the plugin manages all bundles.
    */
   public $entity_bundle = FALSE;
 
   /**
-   * (optional) Whether the plugin defines entity access.
+   * Whether the plugin defines entity access.
    *
    * This controls whether you can create entities within the group (TRUE) or
    * only add existing ones (FALSE). It also generates the necessary group
@@ -77,7 +79,7 @@ class GroupContentEnabler extends Plugin {
   public $entity_access = FALSE;
 
   /**
-   * (optional) The key to use in automatically generated paths.
+   * The key to use in automatically generated paths.
    *
    * This is exposed through tokens so modules like Pathauto may use it. Only
    * use this if your plugin has something meaningful to show on the actual
@@ -89,28 +91,28 @@ class GroupContentEnabler extends Plugin {
   public $pretty_path_key = 'content';
 
   /**
-   * (optional) The label for the entity reference field.
+   * The label for the entity reference field.
    *
    * @var string
    */
   public $reference_label;
 
   /**
-   * (optional) The description for the entity reference field.
+   * The description for the entity reference field.
    *
    * @var string
    */
   public $reference_description;
 
   /**
-   * (optional) Whether this plugin is always on.
+   * Whether this plugin is always on.
    *
    * @var bool
    */
   public $enforced = FALSE;
 
   /**
-   * (optional) Whether this plugin can only be (un)installed through code.
+   * Whether this plugin can only be (un)installed through code.
    *
    * This is useful for plugins that should not be enabled by choice, but rather
    * when certain conditions are met throughout the site. When that happens, you
@@ -122,14 +124,14 @@ class GroupContentEnabler extends Plugin {
   public $code_only = FALSE;
 
   /**
-   * (optional) A list of handlers this plugin implements.
+   * A list of handlers this plugin implements.
    *
    * @var string[]
    */
   public $handlers = [];
 
   /**
-   * (optional) The admin permission for this plugin.
+   * The admin permission for this plugin.
    *
    * @var string|false
    */

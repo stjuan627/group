@@ -239,6 +239,12 @@ class GroupContentEnablerManagerTest extends UnitTestCase {
 
 }
 
+/**
+ * Provides a test implementation of the GroupContentEnablerManager.
+ *
+ * This class extends the GroupContentEnablerManager to facilitate testing
+ * by overriding or extending its methods as necessary for test scenarios.
+ */
 class TestGroupContentEnablerManager extends GroupContentEnablerManager {
 
   /**
@@ -253,6 +259,12 @@ class TestGroupContentEnablerManager extends GroupContentEnablerManager {
 
 }
 
+/**
+ * Provides a test implementation of the GroupContentHandlerBase.
+ *
+ * This class is used to test the functionality of the GroupContentHandlerBase
+ * class by overriding or extending its methods as necessary for test scenarios.
+ */
 class TestGroupContentHandler extends GroupContentHandlerBase {
 
   /**
@@ -264,6 +276,13 @@ class TestGroupContentHandler extends GroupContentHandlerBase {
 
 }
 
+/**
+ * Test implementation of a group content handler without an interface.
+ *
+ * This class is used for testing purposes and does not implement any specific
+ * interfaces. It allows testing of group content handling functionality without
+ * the constraints of interface-based implementation.
+ */
 class TestGroupContentHandlerWithoutInterface {
 
 }

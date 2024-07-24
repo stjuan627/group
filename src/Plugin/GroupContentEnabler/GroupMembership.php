@@ -3,17 +3,14 @@
 namespace Drupal\group\Plugin\GroupContentEnabler;
 
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupContentInterface;
-use Drupal\group\Plugin\GroupContentEnablerBase;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Core\Url;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Plugin\GroupContentEnablerBase;
 
 /**
  * Provides a content enabler for users.

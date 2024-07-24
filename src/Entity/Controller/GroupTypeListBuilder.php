@@ -3,8 +3,8 @@
 namespace Drupal\group\Entity\Controller;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
-use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of group type entities.
@@ -82,7 +82,7 @@ class GroupTypeListBuilder extends ConfigEntityListBuilder {
   public function render() {
     $build = parent::render();
     $build['table']['#empty'] = $this->t('No group types available. <a href="@link">Add group type</a>.', [
-      '@link' => Url::fromRoute('entity.group_type.add_form')->toString()
+      '@link' => Url::fromRoute('entity.group_type.add_form')->toString(),
     ]);
     return $build;
   }

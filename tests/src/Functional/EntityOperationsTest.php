@@ -14,9 +14,9 @@ class EntityOperationsTest extends GroupBrowserTestBase {
   /**
    * Checks for entity operations under given circumstances.
    *
-   * @parem array $visible
+   * @param array $visible
    *   A list of visible link labels, keyed by path.
-   * @parem array $invisible
+   * @param array $invisible
    *   A list of invisible link labels, keyed by path.
    * @param string[] $permissions
    *   A list of group permissions to assign to the user.

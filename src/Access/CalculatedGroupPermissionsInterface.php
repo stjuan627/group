@@ -12,9 +12,9 @@ interface CalculatedGroupPermissionsInterface extends CacheableDependencyInterfa
   /**
    * Retrieves a single calculated permission item from a given scope.
    *
-   * @param $scope
+   * @param string $scope
    *   The scope name to retrieve the item for.
-   * @param $identifier
+   * @param string $identifier
    *   The scope identifier to retrieve the item for.
    *
    * @return \Drupal\group\Access\CalculatedGroupPermissionsItemInterface|false

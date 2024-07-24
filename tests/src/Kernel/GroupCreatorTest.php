@@ -49,7 +49,7 @@ class GroupCreatorTest extends GroupKernelTestBase {
    * @depends testCreatorGetsMembership
    */
   public function testCreatorRoles() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
     $group_type->set('creator_roles', ['default-custom']);
     $group_type->save();
@@ -63,7 +63,7 @@ class GroupCreatorTest extends GroupKernelTestBase {
    * Tests that a group creator is not automatically made a member.
    */
   public function testCreatorDoesNotGetMembership() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
     $group_type->set('creator_membership', FALSE);
     $group_type->save();

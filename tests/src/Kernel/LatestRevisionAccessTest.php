@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\group\Kernel;
 
+use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
-use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

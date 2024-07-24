@@ -19,7 +19,7 @@ interface GroupRoleStorageInterface extends ConfigEntityStorageInterface {
    *   The account to load the group role entities for.
    * @param \Drupal\group\Entity\GroupInterface $group
    *   The group entity to find the user's role entities in.
-   * @param boolean $include_implied
+   * @param bool $include_implied
    *   (optional) Whether to include the implied roles 'anonymous', 'outsider'
    *   and 'member'. Defaults to TRUE.
    *

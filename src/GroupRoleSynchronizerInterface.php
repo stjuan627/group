@@ -2,8 +2,6 @@
 
 namespace Drupal\group;
 
-use Drupal\User\RoleInterface;
-
 /**
  * Provides information about how site roles are synchronized to group roles.
  */
@@ -12,9 +10,9 @@ interface GroupRoleSynchronizerInterface {
   /**
    * Generates an ID for a synchronized group role.
    *
-   * @param $group_type_id
+   * @param string $group_type_id
    *   The ID of the group type the group role ID should be generated for.
-   * @param $role_id
+   * @param string $role_id
    *   The ID of the user role the group role ID should be generated for.
    *
    * @return string

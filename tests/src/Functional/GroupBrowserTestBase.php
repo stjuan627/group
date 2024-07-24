@@ -70,9 +70,9 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
    */
   protected function createGroup($values = []) {
     $group = $this->entityTypeManager->getStorage('group')->create($values + [
-        'type' => 'default',
-        'label' => $this->randomMachineName(),
-      ]);
+      'type' => 'default',
+      'label' => $this->randomMachineName(),
+    ]);
     $group->enforceIsNew();
     $group->save();
     return $group;

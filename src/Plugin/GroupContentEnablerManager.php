@@ -301,7 +301,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
 
     // Otherwise, we can find the entry in the plugin IDs per group type ID map.
     $map = $this->getGroupTypePluginMap();
-    return isset($map[$group_type->id()]) ? $map[$group_type->id()] : [];
+    return $map[$group_type->id()] ?? [];
   }
 
   /**
@@ -351,7 +351,7 @@ class GroupContentEnablerManager extends DefaultPluginManager implements GroupCo
    */
   public function getGroupContentTypeIds($plugin_id) {
     $map = $this->getPluginGroupContentTypeMap();
-    return isset($map[$plugin_id]) ? $map[$plugin_id] : [];
+    return $map[$plugin_id] ?? [];
   }
 
   /**

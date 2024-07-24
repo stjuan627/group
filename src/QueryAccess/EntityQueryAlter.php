@@ -303,11 +303,11 @@ class EntityQueryAlter implements ContainerInjectionInterface {
           if ($admin_permission !== FALSE && $item->hasPermission($admin_permission)) {
             $allowed_any_ids[$item->getScope()][] = $identifier;
           }
-          elseif(!$check_published) {
+          elseif (!$check_published) {
             if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
               $allowed_any_ids[$item->getScope()][] = $identifier;
             }
-            elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+            elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
               $allowed_own_ids[$item->getScope()][] = $identifier;
             }
           }
@@ -315,13 +315,13 @@ class EntityQueryAlter implements ContainerInjectionInterface {
             if ($any_permission !== FALSE && $item->hasPermission($any_permission)) {
               $allowed_any_by_status_ids[$item->getScope()][1][] = $identifier;
             }
-            elseif($own_permission !== FALSE && $item->hasPermission($own_permission)) {
+            elseif ($own_permission !== FALSE && $item->hasPermission($own_permission)) {
               $allowed_own_by_status_ids[$item->getScope()][1][] = $identifier;
             }
             if ($any_unpublished_permission !== FALSE && $item->hasPermission($any_unpublished_permission)) {
               $allowed_any_by_status_ids[$item->getScope()][0][] = $identifier;
             }
-            elseif($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
+            elseif ($own_unpublished_permission !== FALSE && $item->hasPermission($own_unpublished_permission)) {
               $allowed_own_by_status_ids[$item->getScope()][0][] = $identifier;
             }
           }
@@ -493,7 +493,7 @@ class EntityQueryAlter implements ContainerInjectionInterface {
 
         // Add the owner memberships with access to the query (if any).
         if (!empty($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status])) {
-          $status_owner_group_conditions->condition('gcfd.gid', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]) , 'IN');
+          $status_owner_group_conditions->condition('gcfd.gid', array_unique($allowed_own_by_status_ids[CGPII::SCOPE_GROUP][$status]), 'IN');
         }
       }
     }

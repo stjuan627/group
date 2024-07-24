@@ -32,7 +32,7 @@ class GroupCreatorWizardTest extends GroupBrowserTestBase {
    * Tests that a group creator gets a membership without using the wizard.
    */
   public function testCreatorMembershipNoWizard() {
-    /* @var \Drupal\group\Entity\GroupTypeInterface $group_type */
+    /** @var \Drupal\group\Entity\GroupTypeInterface $group_type */
     $group_type = $this->entityTypeManager->getStorage('group_type')->load('default');
     $group_type->set('creator_wizard', FALSE);
     $group_type->save();

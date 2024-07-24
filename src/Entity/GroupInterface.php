@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -29,6 +29,7 @@ interface GroupInterface extends ContentEntityInterface, EntityOwnerInterface, E
    * Returns the group type entity the group uses.
    *
    * @return \Drupal\group\Entity\GroupTypeInterface
+   *   The group type entity.
    */
   public function getGroupType();
 

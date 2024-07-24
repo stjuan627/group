@@ -103,12 +103,12 @@ class GroupListBuilder extends EntityListBuilder {
       ],
       'type' => [
         'data' => $this->t('Type'),
-        'specifier' =>'type',
+        'specifier' => 'type',
         'field' => 'type',
       ],
       'status' => [
         'data' => $this->t('Status'),
-        'specifier' =>'status',
+        'specifier' => 'status',
         'field' => 'status',
       ],
       'uid' => [

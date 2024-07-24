@@ -59,7 +59,7 @@ class GroupRoleForm extends EntityForm {
     // Since machine names with periods in it are technically not allowed, we
     // strip the group type ID prefix when editing a group role.
     if ($group_role->id()) {
-      list(, $group_role_id) = explode('-', $group_role->id(), 2);
+      [, $group_role_id] = explode('-', $group_role->id(), 2);
     }
 
     $form['id'] = [
@@ -135,6 +135,7 @@ class GroupRoleForm extends EntityForm {
    * Checks whether a group role ID exists already.
    *
    * @param string $id
+   *   The group role ID to check.
    *
    * @return bool
    *   Whether the ID is taken.
@@ -142,7 +143,7 @@ class GroupRoleForm extends EntityForm {
   public function exists($id) {
     /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
     $group_role = $this->entity;
-    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' .$id);
+    return (boolean) GroupRole::load($group_role->getGroupTypeId() . '-' . $id);
   }
 
   /**

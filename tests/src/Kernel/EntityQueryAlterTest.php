@@ -272,8 +272,8 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    *
    * This is actually tested in the permission calculator, but added here also
    * for additional hardening. It does not really clear the cached conditions,
-   * but rather return a different set as your test entity.group_permissions cache
-   * context value changes.
+   * but rather return a different set as your test entity.
+   * group_permissions cache context value changes.
    *
    * We will not test any further scenarios that trigger a change in your group
    * permissions as those are -as mentioned above- tested elsewhere. It just
@@ -299,7 +299,7 @@ class EntityQueryAlterTest extends GroupKernelTestBase {
    *
    * @param int[] $expected
    *   The expected test entity IDs.
-   * @param $message
+   * @param string $message
    *   The message for the assertion.
    */
   protected function assertQueryAccessResult($expected, $message) {

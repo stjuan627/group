@@ -158,7 +158,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
               $case = $scenario;
 
               // Default is neutral result if no permissions are defined.
-              $case['expected'] = function() {
+              $case['expected'] = function () {
                 return AccessResult::neutral();
               };
 
@@ -169,7 +169,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
                 $has_own = $is_owner && $own_permission && $has_own_permission;
 
                 $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission);
-                $case['expected'] = function() use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
+                $case['expected'] = function () use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
                   $result = AccessResult::allowedIf($has_admin || $has_any || $has_own);
 
                   // Only add the permissions context if they were checked.
@@ -269,7 +269,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
         // Default is neutral result if no permissions are defined or entity
         // access control is turned off for the plugin.
-        $case['expected'] = function() {
+        $case['expected'] = function () {
           return AccessResult::neutral();
         };
 
@@ -277,7 +277,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
         if ($permission_exists) {
           $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
           $has_regular = $permission && $case['has_permission'];
-          $case['expected'] = function() use ($has_admin, $has_regular) {
+          $case['expected'] = function () use ($has_admin, $has_regular) {
             return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
           };
         }
@@ -442,7 +442,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
                         $check_published = $operation === 'view' && $is_publishable;
 
                         // Default varies on whether the entity is grouped.
-                        $case['expected'] = function() use ($is_grouped, $own_permission, $check_published) {
+                        $case['expected'] = function () use ($is_grouped, $own_permission, $check_published) {
                           $result = AccessResult::forbiddenIf($is_grouped);
                           if ($is_grouped) {
                             $result->addCacheContexts(['user.group_permissions']);
@@ -476,7 +476,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
                             $own_access = FALSE;
                           }
 
-                          $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published) {
+                          $case['expected'] = function () use ($admin_access, $any_access, $own_access, $own_permission, $check_published) {
                             $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
 
                             if (!$result->isAllowed()) {
@@ -585,7 +585,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
-          $case['expected'] = function() {
+          $case['expected'] = function () {
             return AccessResult::neutral();
           };
 
@@ -593,7 +593,7 @@ class GroupContentAccessControlHandlerTest extends UnitTestCase {
           if ($permission_exists && $entity_access) {
             $has_admin = $case['definition']['admin_permission'] && $case['has_admin_permission'];
             $has_regular = $permission && $case['has_permission'];
-            $case['expected'] = function() use ($has_admin, $has_regular) {
+            $case['expected'] = function () use ($has_admin, $has_regular) {
               return AccessResult::allowedIf($has_admin || $has_regular)->addCacheContexts(['user.group_permissions']);
             };
           }

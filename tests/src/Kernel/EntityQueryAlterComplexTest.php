@@ -515,7 +515,7 @@ class EntityQueryAlterComplexTest extends GroupKernelTestBase {
    *
    * @param int[] $expected
    *   The expected node IDs.
-   * @param $message
+   * @param string $message
    *   The message for the assertion.
    */
   protected function assertQueryAccessResult($expected, $message) {

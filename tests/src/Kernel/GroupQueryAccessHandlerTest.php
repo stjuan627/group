@@ -288,7 +288,7 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
                 ->addCondition('id', [$group->id()], 'NOT IN')
             )
             ->addCondition('id', [$group->id()])
-        ),
+      ),
     ];
     $this->assertEquals(1, $conditions->count());
     $this->assertEquals('OR', $conditions->getConjunction());
@@ -441,7 +441,7 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
                     ->addCondition('id', [$own_group->id()])
                 )
             )
-        ),
+      ),
       (new ConditionGroup('AND'))
         ->addCondition('status', 1)
         ->addCondition(
@@ -452,7 +452,7 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
                 ->addCondition('id', $memberships, 'NOT IN')
             )
             ->addCondition('id', [$group->id()])
-        ),
+      ),
     ];
     $this->assertEquals(2, $conditions->count());
     $this->assertEquals('OR', $conditions->getConjunction());
@@ -486,7 +486,7 @@ class GroupQueryAccessHandlerTest extends GroupKernelTestBase {
                 ->addCondition('id', $memberships, 'NOT IN')
             )
             ->addCondition('id', [$group->id()])
-        ),
+      ),
     ];
     $this->assertEquals(3, $conditions->count());
     $this->assertEquals('OR', $conditions->getConjunction());

@@ -4,6 +4,7 @@ namespace Drupal\group\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Provides a block with operations the user can perform on a group.
@@ -17,6 +18,32 @@ use Drupal\Core\Cache\CacheableMetadata;
  * )
  */
 class GroupOperationsBlock extends BlockBase {
+
+  /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Constructs a new YourClassName object.
+   *
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler service.
+   */
+  public function __construct(ModuleHandlerInterface $module_handler) {
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('module_handler')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -46,7 +73,7 @@ class GroupOperationsBlock extends BlockBase {
 
       if ($links) {
         // Allow modules to alter the collection of gathered links.
-        \Drupal::moduleHandler()->alter('group_operations', $links, $group);
+        $this->moduleHandler->alter('group_operations', $links, $group);
 
         // Sort the operations by weight.
         uasort($links, '\Drupal\Component\Utility\SortArray::sortByWeightElement');

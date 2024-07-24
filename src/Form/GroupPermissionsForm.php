@@ -67,7 +67,7 @@ abstract class GroupPermissionsForm extends FormBase {
   protected function getInfo() {
     // Format a message explaining the cells with a red x inside them.
     $replace = ['@red_dash' => new FormattableMarkup('<span style="color: #ff0000;">-</span>', [])];
-    $message =  $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
+    $message = $this->t('Cells with a @red_dash indicate that the permission is not available for that role.', $replace);
 
     // We use FormattableMarkup so the 'style' attribute doesn't get escaped.
     return ['red_dash_info' => ['#markup' => new FormattableMarkup("<p>$message</p>", [])]];
@@ -179,7 +179,7 @@ abstract class GroupPermissionsForm extends FormBase {
             'id' => 'module-' . $provider,
           ],
           '#markup' => $this->moduleHandler->getName($provider),
-        ]
+        ],
       ];
 
       foreach ($sections as $section_id => $permissions) {
@@ -192,12 +192,12 @@ abstract class GroupPermissionsForm extends FormBase {
               'id' => 'section-' . $section_id,
             ],
             '#markup' => reset($permissions)['section'],
-          ]
+          ],
         ];
 
         // Then list all of the permissions for that provider and section.
         foreach ($permissions as $perm => $perm_item) {
-          // Create a row for the permission, starting with the description cell.
+          // Create a row for the permission, starting with description cell.
           $form['permissions'][$perm]['description'] = [
             '#type' => 'inline_template',
             '#template' => '<span class="title">{{ title }}</span>{% if description or warning %}<div class="description">{% if warning %}<em class="permission-warning">{{ warning }}</em><br />{% endif %}{{ description }}</div>{% endif %}',
@@ -247,8 +247,8 @@ abstract class GroupPermissionsForm extends FormBase {
                 '#attributes' => [
                   'class' => [
                     'rid-' . $role_name,
-                    'js-rid-' . $role_name
-                  ]
+                    'js-rid-' . $role_name,
+                  ],
                 ],
                 '#parents' => [$role_name, $perm],
               ];
@@ -275,7 +275,7 @@ abstract class GroupPermissionsForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     foreach ($this->getGroupRoles() as $role_name => $group_role) {
       /** @var \Drupal\group\Entity\GroupRoleInterface $group_role */
       $permissions = $form_state->getValue($role_name);

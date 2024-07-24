@@ -2,12 +2,12 @@
 
 namespace Drupal\group\Breadcrumb;
 
-use Drupal\group\Entity\GroupContentTypeInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\group\Entity\GroupContentTypeInterface;
 
 /**
  * Provides a custom breadcrumb builder for group content type paths.
@@ -16,7 +16,7 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   use StringTranslationTrait;
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
     // Only apply to paths containing a group content type.
@@ -26,7 +26,7 @@ class GroupContentTypeBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function build(RouteMatchInterface $route_match) {
     /** @var \Drupal\group\Entity\GroupContentTypeInterface $group_content_type */

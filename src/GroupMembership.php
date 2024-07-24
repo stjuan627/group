@@ -7,7 +7,7 @@ use Drupal\group\Entity\GroupContentInterface;
 
 /**
  * Wrapper class for a GroupContent entity representing a membership.
- * 
+ *
  * Should be loaded through the 'group.membership_loader' service.
  */
 class GroupMembership implements CacheableDependencyInterface {
@@ -43,6 +43,10 @@ class GroupMembership implements CacheableDependencyInterface {
    * Returns the fieldable GroupContent entity for the membership.
    *
    * @return \Drupal\group\Entity\GroupContentInterface
+   *   The GroupContent entity associated with membership.
+   *   This entity represents the content within a group and
+   *   provides access to the fields and data related
+   *   to that content.
    */
   public function getGroupContent() {
     return $this->groupContent;
@@ -52,6 +56,9 @@ class GroupMembership implements CacheableDependencyInterface {
    * Returns the group for the membership.
    *
    * @return \Drupal\group\Entity\GroupInterface
+   *   The Group entity related to membership. This entity represents group
+   *   that the membership belongs to and
+   *   provides access to the group's data and fields.
    */
   public function getGroup() {
     return $this->groupContent->getGroup();
@@ -61,6 +68,9 @@ class GroupMembership implements CacheableDependencyInterface {
    * Returns the user for the membership.
    *
    * @return \Drupal\user\UserInterface
+   *   The User entity related to membership. This entity represents user
+   *   who is part of the membership and
+   *   provides access to the user's data and fields.
    */
   public function getUser() {
     return $this->groupContent->getEntity();
@@ -116,6 +126,9 @@ class GroupMembership implements CacheableDependencyInterface {
    * Gets the group permission checker.
    *
    * @return \Drupal\group\Access\GroupPermissionCheckerInterface
+   *   The group permission checker service,
+   *   which is used to evaluate permissions
+   *   for group content and determine access based on defined rules.
    */
   protected function groupPermissionChecker() {
     return \Drupal::service('group_permission.checker');

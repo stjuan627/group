@@ -120,7 +120,7 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
     // VariationCache for accounts other than the current user.
     $switch_account = FALSE;
     foreach ($persistent_cache_contexts as $cache_context) {
-      list($cache_context_root) = explode('.', $cache_context, 2);
+      [$cache_context_root] = explode('.', $cache_context, 2);
       if ($cache_context_root === 'user') {
         $switch_account = TRUE;
         $this->accountSwitcher->switchTo($args[0]);
@@ -240,6 +240,9 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
    * Gets the cache contexts that always apply to the anonymous permissions.
    *
    * @return string[]
+   *   An array of cache context strings that are used for persistent anonymous
+   *   permissions. These contexts ensure that permissions are correctly cached
+   *   based on the specified contexts.
    */
   protected function getPersistentAnonymousCacheContexts() {
     return $this->getPersistentCacheContexts('ANONYMOUS_CACHE_CONTEXTS');
@@ -249,6 +252,9 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
    * Gets the cache contexts that always apply to the outsider permissions.
    *
    * @return string[]
+   *   An array of cache context strings that are used for persistent outsider
+   *   permissions. These contexts ensure that permissions are correctly cached
+   *   based on the specified contexts.
    */
   protected function getPersistentOutsiderCacheContexts() {
     return $this->getPersistentCacheContexts('OUTSIDER_CACHE_CONTEXTS');
@@ -258,6 +264,9 @@ class ChainGroupPermissionCalculator implements ChainGroupPermissionCalculatorIn
    * Gets the cache contexts that always apply to the member permissions.
    *
    * @return string[]
+   *   An array of cache context strings that are used for persistent member
+   *   permissions. These contexts ensure that permissions are correctly cached
+   *   based on the specified contexts for members.
    */
   protected function getPersistentMemberCacheContexts() {
     return $this->getPersistentCacheContexts('MEMBER_CACHE_CONTEXTS');

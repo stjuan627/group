@@ -7,6 +7,8 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\BubbleableMetadata;
 
 /**
+ * Tests token replacement in group content.
+ *
  * Generates text using placeholders for dummy content to check group content
  * token replacement.
  *
@@ -17,7 +19,7 @@ class GroupContentTokenReplaceTest extends GroupTokenReplaceKernelTestBase {
   /**
    * Tests the tokens replacement for group content.
    */
-  function testGroupContentTokenReplacement() {
+  public function testGroupContentTokenReplacement() {
     $url_options = [
       'absolute' => TRUE,
       'language' => $this->interfaceLanguage,

@@ -11,7 +11,6 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -108,7 +107,7 @@ function group_theme_suggestions_group_content(array $variables) {
 /**
  * Prepares variables for the group template.
  *
- * Default template: group.html.twig
+ * Default template: group.html.twig.
  *
  * @param array $variables
  *   - elements: An array of elements to display in view mode.
@@ -146,7 +145,7 @@ function template_preprocess_group(&$variables) {
 /**
  * Prepares variables for the group content template.
  *
- * Default template: group-content.html.twig
+ * Default template: group-content.html.twig.
  *
  * @param array $variables
  *   - elements: An array of elements to display in view mode.
@@ -209,10 +208,6 @@ function group_modules_installed($modules) {
 
 /**
  * Implements hook_form_FORM_ID_alter().
- *
- * @param array $form
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- * @param string $form_id
  */
 function group_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (isset($form['visibility']['group_type'])) {
@@ -701,7 +696,6 @@ function group_content_entity_submit($form, FormStateInterface $form_state) {
  */
 
 // Nothing to see here yet, our own access hook implementations will go here.
-
 /**
  * @} End of "defgroup group_access".
  */
@@ -741,7 +735,7 @@ function group_view_presave(EntityInterface $view) {
 
   // Loop over all displays and replace the group_membership.roles.permissions
   // cache context with its safe user.group_permissions counterpart.
-  foreach ($displays as $display_name => &$display) {
+  foreach ($displays as &$display) {
     $cache_metadata = &$display['cache_metadata'];
     if (isset($cache_metadata['contexts'])) {
       // Remove the deleted cache context and add the updated metadata.

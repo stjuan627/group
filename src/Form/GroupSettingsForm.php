@@ -4,11 +4,39 @@ namespace Drupal\group\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteBuilderInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class GroupSettingsForm.
+ * Provides the configuration form for group settings.
  */
 class GroupSettingsForm extends ConfigFormBase {
+
+  /**
+   * The route builder.
+   *
+   * @var \Drupal\Core\Routing\RouteBuilderInterface
+   */
+  protected $routeBuilder;
+
+  /**
+   * Constructs a new GroupSettingsForm.
+   *
+   * @param \Drupal\Core\Routing\RouteBuilderInterface $route_builder
+   *   The route builder.
+   */
+  public function __construct(RouteBuilderInterface $route_builder) {
+    $this->routeBuilder = $route_builder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('router.builder')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -52,7 +80,7 @@ class GroupSettingsForm extends ConfigFormBase {
     // Only rebuild the routes if the admin theme switch has changed.
     if ($conf_admin_theme != $form_admin_theme) {
       $config->set('use_admin_theme', $form_admin_theme)->save();
-      \Drupal::service('router.builder')->setRebuildNeeded();
+      $this->routeBuilder->setRebuildNeeded();
     }
 
     parent::submitForm($form, $form_state);

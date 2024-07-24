@@ -2,17 +2,17 @@
 
 namespace Drupal\group\Plugin;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\group\Access\GroupAccessResult;
-use Drupal\group\Entity\GroupType;
-use Drupal\group\Entity\GroupInterface;
-use Drupal\group\Entity\GroupContentInterface;
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Access\GroupAccessResult;
+use Drupal\group\Entity\GroupContentInterface;
+use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupType;
 
 /**
  * Provides a base class for GroupContentEnabler plugins.
@@ -36,7 +36,7 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *
    * @var array
    */
-  private $_permissions;
+  private $permissions;
 
   /**
    * {@inheritdoc}
@@ -220,11 +220,9 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   An array of group permissions, see ::getPermissions for more info.
    *
    * @see GroupContentEnablerInterface::getPermissions()
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0.
    */
   protected function getGroupContentPermissions() {
-    return $this->_permissions;
+    return $this->permissions;
   }
 
   /**
@@ -234,11 +232,9 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    *   An array of group permissions, see ::getPermissions for more info.
    *
    * @see GroupContentEnablerInterface::getPermissions()
-   *
-   * @deprecated in Group 1.0, will be removed before Group 2.0.
    */
   protected function getTargetEntityPermissions() {
-    return $this->_permissions;
+    return $this->permissions;
   }
 
   /**
@@ -259,12 +255,12 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
     // - Still call the protected methods so old code can alter the permissions.
     /** @var \Drupal\group\plugin\GroupContentPermissionProviderInterface $permission_provider */
     $permission_provider = $manager->createHandlerInstance('Drupal\group\Plugin\GroupContentPermissionProvider', $this->pluginId, $this->pluginDefinition);
-    $this->_permissions = $permission_provider->buildPermissions();
-    $this->_permissions = $this->getGroupContentPermissions();
+    $this->permissions = $permission_provider->buildPermissions();
+    $this->permissions = $this->getGroupContentPermissions();
     if ($this->definesEntityAccess()) {
-      $this->_permissions = $this->getTargetEntityPermissions();
+      $this->permissions = $this->getTargetEntityPermissions();
     }
-    return $this->_permissions;
+    return $this->permissions;
   }
 
   /**
@@ -421,18 +417,14 @@ abstract class GroupContentEnablerBase extends PluginBase implements GroupConten
    * {@inheritdoc}
    */
   public function getEntityReferenceLabel() {
-    return isset($this->pluginDefinition['reference_label'])
-      ? $this->pluginDefinition['reference_label']
-      : NULL;
+    return $this->pluginDefinition['reference_label'] ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEntityReferenceDescription() {
-    return isset($this->pluginDefinition['reference_description'])
-      ? $this->pluginDefinition['reference_description']
-      : NULL;
+    return $this->pluginDefinition['reference_description'] ?? NULL;
   }
 
   /**

@@ -29,8 +29,14 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
   protected $pluginManager;
 
   /**
-   * Constructs an GroupContentToEntityBase object.
+   * Constructs a GroupContentToEntityBase object.
    *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
    *   The views plugin join manager.
    * @param \Drupal\group\Plugin\GroupContentEnablerManagerInterface $plugin_manager
@@ -64,7 +70,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    * @return string
    *   The target entity type ID.
    */
-  protected abstract function getTargetEntityType();
+  abstract protected function getTargetEntityType();
 
   /**
    * Retrieves type of join field to use.
@@ -74,7 +80,7 @@ abstract class GroupContentToEntityBase extends RelationshipPluginBase {
    * @return string
    *   The type of join field to use.
    */
-  protected abstract function getJoinFieldType();
+  abstract protected function getJoinFieldType();
 
   /**
    * {@inheritdoc}

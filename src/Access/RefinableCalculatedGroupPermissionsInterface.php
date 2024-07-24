@@ -26,9 +26,9 @@ interface RefinableCalculatedGroupPermissionsInterface extends RefinableCacheabl
   /**
    * Removes a single calculated permission item from a given scope.
    *
-   * @param $scope
+   * @param string $scope
    *   The scope name to remove the item from.
-   * @param $identifier
+   * @param string $identifier
    *   The scope identifier to remove the item from.
    *
    * @return $this

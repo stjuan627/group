@@ -2,9 +2,9 @@
 
 namespace Drupal\group\Entity;
 
-use Drupal\user\EntityOwnerInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface defining a Group content entity.
@@ -17,6 +17,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the group content type entity the group content uses.
    *
    * @return \Drupal\group\Entity\GroupContentTypeInterface
+   *   The group content type entity used by the group content.
    */
   public function getGroupContentType();
 
@@ -24,6 +25,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the group the group content belongs to.
    *
    * @return \Drupal\group\Entity\GroupInterface
+   *   The group entity that the group content belongs to.
    */
   public function getGroup();
 
@@ -31,6 +33,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the entity that was added as group content.
    *
    * @return \Drupal\Core\Entity\EntityInterface
+   *   The entity that was added as group content.
    */
   public function getEntity();
 
@@ -38,6 +41,7 @@ interface GroupContentInterface extends ContentEntityInterface, EntityOwnerInter
    * Returns the content enabler plugin that handles the group content.
    *
    * @return \Drupal\group\Plugin\GroupContentEnablerInterface
+   *   The content enabler plugin that manages the group content.
    */
   public function getContentPlugin();
 

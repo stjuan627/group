@@ -19,6 +19,9 @@ interface ChainGroupPermissionCalculatorInterface extends GroupPermissionCalcula
    *   The calculator.
    *
    * @return mixed
+   *   The result of adding the calculator, which could vary depending on the
+   *   implementation details. This might be the instance itself or a status
+   *   indicator.
    */
   public function addCalculator(GroupPermissionCalculatorInterface $calculator);
 

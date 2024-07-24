@@ -3,7 +3,6 @@
 namespace Drupal\group\Plugin;
 
 use Drupal\Core\Entity\EntityPublishedInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\user\EntityOwnerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -44,7 +43,7 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, $plugin_id, array $definition) {
-    /** @var EntityTypeManagerInterface $entity_type_manager */
+    /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = $container->get('entity_type.manager');
     $entity_type = $entity_type_manager->getDefinition($definition['entity_type_id']);
 
@@ -172,10 +171,13 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
       switch ($operation) {
         case 'view':
           return $this->getRelationViewPermission($scope);
+
         case 'update':
           return $this->getRelationUpdatePermission($scope);
+
         case 'delete':
           return $this->getRelationDeletePermission($scope);
+
         case 'create':
           return $this->getRelationCreatePermission();
       }
@@ -184,12 +186,16 @@ class GroupContentPermissionProvider extends GroupContentHandlerBase implements 
       switch ($operation) {
         case 'view':
           return $this->getEntityViewPermission($scope);
+
         case 'view unpublished':
           return $this->getEntityViewUnpublishedPermission($scope);
+
         case 'update':
           return $this->getEntityUpdatePermission($scope);
+
         case 'delete':
           return $this->getEntityDeletePermission($scope);
+
         case 'create':
           return $this->getEntityCreatePermission();
       }

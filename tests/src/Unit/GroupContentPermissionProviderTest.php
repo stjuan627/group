@@ -49,9 +49,9 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
   public function adminPermissionProvider() {
     $cases = [];
     foreach ($this->getPermissionProviderScenarios() as $scenario) {
-        $case = $scenario;
-        $case['expected'] = $case['definition']['admin_permission'];
-        $cases[] = $case;
+      $case = $scenario;
+      $case['expected'] = $case['definition']['admin_permission'];
+      $cases[] = $case;
     }
     return $cases;
   }
@@ -530,7 +530,7 @@ class GroupContentPermissionProviderTest extends UnitTestCase {
           break;
       }
     }
-    
+
     $this->assertEquals($expected, $permission_provider->getPermission($operation, $target, $scope));
   }
 

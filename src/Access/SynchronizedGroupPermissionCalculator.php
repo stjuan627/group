@@ -12,6 +12,8 @@ use Drupal\group\GroupRoleSynchronizerInterface;
 class SynchronizedGroupPermissionCalculator extends GroupPermissionCalculatorBase {
 
   /**
+   * Defines cache contexts for synchronized roles.
+   *
    * The synchronized roles depend on which user roles you have, so we need to
    * vary the calculated permissions by the user.roles cache context.
    */

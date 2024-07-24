@@ -9,6 +9,9 @@ use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\group\Entity\GroupContentType;
 use Drupal\group\Plugin\GroupContentEnablerManagerInterface;
 
+/**
+ * Validates the uninstallation of the Group content module.
+ */
 class GroupContentUninstallValidator implements ModuleUninstallValidatorInterface {
 
   use StringTranslationTrait;
