@@ -54,12 +54,12 @@ services:
     factory: ['@cache_factory', 'get']
     arguments: ['group_memberships']
   cache.group_memberships_chained:
+    # We deliberately do not tag this service as a backend because both inner
+    # services are properly declared (memory) cache backends.
     class: 'Drupal\Core\Cache\BackendChain'
     calls:
       - ['appendBackend', ['@cache.group_memberships_memory']]
       - ['appendBackend', ['@cache.group_memberships']]
-    tags:
-      - { name: 'cache.bin.memory' }
 
   cache_context.route.group:
     class: 'Drupal\group\Cache\Context\RouteGroupCacheContext'
