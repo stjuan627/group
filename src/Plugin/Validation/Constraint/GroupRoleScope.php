@@ -16,14 +16,14 @@ use Symfony\Component\Validator\Constraint;
 class GroupRoleScope extends Constraint {
 
   /**
-   * The message to show when an entity has reached the group cardinality.
+   * When someone attempts to create an anonymous insider group role.
    *
    * @var string
    */
   public $anonymousMemberMessage = 'Anonymous users cannot be members so you may not create an insider role for the %role global role.';
 
   /**
-   * The message to show when an entity has reached the entity cardinality.
+   * When a duplicate group role - global role pair is detected.
    *
    * @var string
    */

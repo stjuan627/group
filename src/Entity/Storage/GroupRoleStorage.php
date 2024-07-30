@@ -6,6 +6,7 @@ use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -32,42 +33,17 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
    */
   protected $userGroupRoleIds = [];
 
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * The group membership loader.
-   *
-   * @var \Drupal\group\GroupMembershipLoaderInterface
-   */
-  protected $groupMembershipLoader;
-
-  /**
-   * Constructs a GroupRoleStorage object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\group\GroupMembershipLoaderInterface $group_membership_loader
-   *   The group membership loader.
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory service.
-   * @param \Drupal\Component\Uuid\UuidInterface $uuid_service
-   *   The UUID service.
-   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
-   *   The language manager.
-   * @param \Drupal\Core\Cache\MemoryCache\MemoryCacheInterface $memory_cache
-   *   The memory cache backend.
-   */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupMembershipLoaderInterface $group_membership_loader, EntityTypeInterface $entity_type, ConfigFactoryInterface $config_factory, UuidInterface $uuid_service, LanguageManagerInterface $language_manager, MemoryCacheInterface $memory_cache) {
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected GroupMembershipLoaderInterface $groupMembershipLoader,
+    EntityTypeInterface $entity_type,
+    ConfigFactoryInterface $config_factory,
+    UuidInterface $uuid_service,
+    LanguageManagerInterface $language_manager,
+    MemoryCacheInterface $memory_cache,
+    protected Connection $database,
+  ) {
     parent::__construct($entity_type, $config_factory, $uuid_service, $language_manager, $memory_cache);
-    $this->entityTypeManager = $entity_type_manager;
-    $this->groupMembershipLoader = $group_membership_loader;
   }
 
   /**
@@ -81,7 +57,8 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       $container->get('config.factory'),
       $container->get('uuid'),
       $container->get('language_manager'),
-      $container->get('entity.memory_cache')
+      $container->get('entity.memory_cache'),
+      $container->get('database')
     );
   }
 
@@ -140,6 +117,35 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
     else {
       unset($this->userGroupRoleIds[$uid]);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function hasMembershipReferences(array $group_role_ids): bool {
+    return (bool) $this->database->select('group_relationship__group_roles', 'gr')
+      ->condition('gr.group_roles_target_id', $group_role_ids, 'IN')
+      ->countQuery()
+      ->execute();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteMembershipReferences(array $group_role_ids) {
+    $this->database->delete('group_relationship__group_roles')
+      ->condition('group_roles_target_id', $group_role_ids, 'IN')
+      ->execute();
+
+    $this->resetCache();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function resetCache(array $ids = NULL) {
+    parent::resetCache($ids);
+    $this->userGroupRoleIds = [];
   }
 
 }

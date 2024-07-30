@@ -38,4 +38,24 @@ interface GroupRoleStorageInterface extends ConfigEntityStorageInterface {
    */
   public function resetUserGroupRoleCache(AccountInterface $account, GroupInterface $group = NULL);
 
+  /**
+   * Checks if group roles have membership references.
+   *
+   * @param string[] $group_role_ids
+   *   The list of group role IDs being checked.
+   *
+   * @return bool
+   *   Whether any of the group roles are being referenced by a membership.
+   */
+  public function hasMembershipReferences(array $group_role_ids): bool;
+
+  /**
+   * Deletes group role membership references.
+   *
+   * @param string[] $group_role_ids
+   *   The list of group role IDs being deleted. The storage should
+   *   remove member references to this role.
+   */
+  public function deleteMembershipReferences(array $group_role_ids);
+
 }
