@@ -137,7 +137,8 @@ class GroupRoleStorage extends ConfigEntityStorage implements GroupRoleStorageIn
       ->condition('group_roles_target_id', $group_role_ids, 'IN')
       ->execute();
 
-    $this->resetCache();
+    $this->userGroupRoleIds = [];
+    $this->entityTypeManager->getStorage('group_relationship')->resetCache();
   }
 
   /**
