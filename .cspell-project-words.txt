@@ -1,6 +1,5 @@
 # Group-specific terminology.
 gnode
-variationcache
 grfd
 gcfd
 gids

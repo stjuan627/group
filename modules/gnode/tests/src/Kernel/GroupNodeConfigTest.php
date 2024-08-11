@@ -23,7 +23,6 @@ class GroupNodeConfigTest extends EntityKernelTestBase {
     'group',
     'node',
     'options',
-    'variationcache',
     'views',
   ];
 
