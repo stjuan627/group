@@ -312,7 +312,7 @@ class GroupRole extends ConfigEntityBase implements GroupRoleInterface {
     parent::postLoad($storage, $entities);
     // Sort the queried roles by their weight.
     // See \Drupal\Core\Config\Entity\ConfigEntityBase::sort().
-    uasort($entities, 'static::sort');
+    uasort($entities, [ConfigEntityBase::class, 'sort']);
   }
 
   /**
