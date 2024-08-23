@@ -3,9 +3,9 @@
 namespace Drupal\group_test_plugin\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\EntityOwnerTrait;
 
@@ -88,6 +88,7 @@ class EntityTestWithOwner extends ContentEntityBase implements EntityOwnerInterf
    * Returns the name.
    *
    * @return string
+   *   The name.
    */
   public function getName() {
     return $this->get('name')->value;

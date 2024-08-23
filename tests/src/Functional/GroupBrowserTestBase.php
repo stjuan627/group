@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\group\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\group\Traits\GroupTestTrait;
 
 /**
  * Provides a base class for Group functional tests.
  */
 abstract class GroupBrowserTestBase extends BrowserTestBase {
+
+  use GroupTestTrait;
 
   /**
    * {@inheritdoc}
@@ -15,11 +20,9 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
   protected static $modules = ['group'];
 
   /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * {@inheritdoc}
    */
-  protected $entityTypeManager;
+  protected $defaultTheme = 'stark';
 
   /**
    * A test user with group creation rights.
@@ -27,11 +30,6 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
    * @var \Drupal\user\UserInterface
    */
   protected $groupCreator;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -65,63 +63,6 @@ abstract class GroupBrowserTestBase extends BrowserTestBase {
       'access administration pages',
       'access group overview',
     ];
-  }
-
-  /**
-   * Creates a group.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\Group
-   *   The created group entity.
-   */
-  protected function createGroup($values = []) {
-    $group = $this->entityTypeManager->getStorage('group')->create($values + [
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->enforceIsNew();
-    $group->save();
-    return $group;
-  }
-
-  /**
-   * Creates a group type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupType
-   *   The created group type entity.
-   */
-  protected function createGroupType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_type');
-    $group_type = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-      'creator_wizard' => FALSE,
-    ]);
-    $storage->save($group_type);
-    return $group_type;
-  }
-
-  /**
-   * Creates a group role.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupRole
-   *   The created group role entity.
-   */
-  protected function createGroupRole(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_role');
-    $group_role = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($group_role);
-    return $group_role;
   }
 
 }

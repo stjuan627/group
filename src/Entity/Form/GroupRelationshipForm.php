@@ -4,7 +4,6 @@ namespace Drupal\group\Entity\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\Storage\ConfigWrapperStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,6 +13,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup group
  */
 class GroupRelationshipForm extends ContentEntityForm {
+
+  /**
+   * The entity being used by this form.
+   *
+   * @var \Drupal\group\Entity\GroupRelationshipInterface
+   */
+  protected $entity;
 
   /**
    * The private store factory.
@@ -38,9 +44,7 @@ class GroupRelationshipForm extends ContentEntityForm {
    *   The responsible group relation.
    */
   protected function getPlugin() {
-    $group_relationship = $this->getEntity();
-    assert($group_relationship instanceof GroupRelationshipInterface);
-    return $group_relationship->getPlugin();
+    return $this->entity->getPlugin();
   }
 
   /**
@@ -88,7 +92,7 @@ class GroupRelationshipForm extends ContentEntityForm {
           $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
           $replace = [
             '@entity_type' => $entity_type->getSingularLabel(),
-            '@group' => $this->getEntity()->getGroup()->label(),
+            '@group' => $this->entity->getGroup()->label(),
           ];
           $actions['submit']['#value'] = $this->t('Add new @entity_type to @group', $replace);
         }
@@ -108,21 +112,18 @@ class GroupRelationshipForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $return = parent::save($form, $form_state);
 
-    $group_relationship = $this->getEntity();
-    assert($group_relationship instanceof GroupRelationshipInterface);
-
     // The below redirect ensures the user will be redirected to something they
     // can view in the following order: The relationship, the target entity
     // itself, the group and finally the front page. This only applies if there
     // was no destination GET parameter set in the URL.
-    if ($group_relationship->access('view')) {
-      $form_state->setRedirectUrl($group_relationship->toUrl());
+    if ($this->entity->access('view')) {
+      $form_state->setRedirectUrl($this->entity->toUrl());
     }
-    elseif ($group_relationship->getEntity()->access('view')) {
-      $form_state->setRedirectUrl($group_relationship->getEntity()->toUrl());
+    elseif ($this->entity->getEntity()->access('view')) {
+      $form_state->setRedirectUrl($this->entity->getEntity()->toUrl());
     }
-    elseif ($group_relationship->getGroup()->access('view')) {
-      $form_state->setRedirectUrl($group_relationship->getGroup()->toUrl());
+    elseif ($this->entity->getGroup()->access('view')) {
+      $form_state->setRedirectUrl($this->entity->getGroup()->toUrl());
     }
     else {
       $form_state->setRedirect('<front>');

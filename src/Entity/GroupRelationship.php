@@ -120,6 +120,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
   public function getEntity() {
     if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
       if ($entity = $this->get('entity_id')->entity) {
+        assert($entity instanceof ConfigWrapperInterface);
         return $entity->getConfigEntity();
       }
     }
@@ -131,7 +132,10 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
    */
   public function getEntityId() {
     if ($this->getPlugin()->getRelationType()->handlesConfigEntityType()) {
-      return $this->get('entity_id')->entity->getConfigEntityId();
+      if ($entity = $this->get('entity_id')->entity) {
+        assert($entity instanceof ConfigWrapperInterface);
+        return $entity->getConfigEntityId();
+      }
     }
     return $this->get('entity_id')->target_id;
   }
@@ -261,9 +265,11 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
 
     // If a membership gets updated, but the member's roles haven't changed, we
     // do not need to rebuild the group role cache for the member's account.
-    elseif ($rebuild_group_role_cache) {
-      $new = array_column($this->group_roles->getValue(), 'target_id');
-      $old = array_column($this->original->group_roles->getValue(), 'target_id');
+    elseif ($rebuild_group_role_cache && isset($this->original)) {
+      assert($this->original instanceof GroupRelationshipInterface);
+
+      $new = array_column($this->get('group_roles')->getValue(), 'target_id');
+      $old = array_column($this->original->get('group_roles')->getValue(), 'target_id');
       sort($new);
       sort($old);
       $rebuild_group_role_cache = ($new != $old);
@@ -311,7 +317,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
   public function getListCacheTagsToInvalidate() {
     $tags = parent::getListCacheTagsToInvalidate();
 
-    $group_id = $this->get('gid')->target_id;
+    $group_id = $this->getGroupId();
     $plugin_id = $this->getRelationshipType()->getPluginId();
     $entity_id = $this->getEntityId();
 
@@ -380,6 +386,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
         'weight' => -5,
       ]);
 
+    assert($fields['uid'] instanceof BaseFieldDefinition);
     $fields['uid']
       ->setLabel(t('Group relationship creator'))
       ->setDescription(t('The username of the group relationship creator.'))

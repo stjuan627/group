@@ -3,6 +3,7 @@
 namespace Drupal\group\Entity\Access;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -20,9 +21,6 @@ class GroupRoleAccessControlHandler extends EntityAccessControlHandler {
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
     assert($entity instanceof GroupRoleInterface);
-    if ($operation == 'delete') {
-      return parent::checkAccess($entity, $operation, $account)->addCacheableDependency($entity);
-    }
 
     // Group roles have no 'view' route but may be used in views to show what
     // roles a member has. We therefore allow 'view' access so field formatters
@@ -31,7 +29,14 @@ class GroupRoleAccessControlHandler extends EntityAccessControlHandler {
       return AccessResult::allowed()->addCacheableDependency($entity);
     }
 
-    return parent::checkAccess($entity, $operation, $account);
+    $access = parent::checkAccess($entity, $operation, $account);
+    assert($access instanceof RefinableCacheableDependencyInterface);
+
+    if ($operation == 'delete') {
+      return $access->addCacheableDependency($entity);
+    }
+
+    return $access;
   }
 
 }

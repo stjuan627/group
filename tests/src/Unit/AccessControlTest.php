@@ -9,16 +9,16 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\GroupInterface;
+use Drupal\group\Entity\GroupRelationshipInterface;
 use Drupal\group\Entity\Storage\GroupRelationshipStorageInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
+use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlInterface;
 use Drupal\group\Plugin\Group\RelationHandler\AccessControlTrait;
 use Drupal\group\Plugin\Group\RelationHandler\PermissionProviderInterface;
 use Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl;
-use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Drupal\Tests\UnitTestCase;
 use Drupal\user\EntityOwnerInterface;
 use Prophecy\Argument;
@@ -103,19 +103,19 @@ class AccessControlTest extends UnitTestCase {
       $keys[0] = $target;
 
       foreach (['administer foo', FALSE] as $admin_permission) {
-        $keys[1] = $admin_permission ? 'admin' : 'noadmin';
+        $keys[1] = $admin_permission ? 'admin_permission' : 'no_admin_permission';
 
         foreach (['any some permission name', FALSE] as $any_permission) {
-          $keys[2] = $any_permission ? 'anyperm' : 'noanyperm';
+          $keys[2] = $any_permission ? 'any_permission' : 'no_any_permission';
 
           foreach (['own some permission name', FALSE] as $own_permission) {
-            $keys[3] = $own_permission ? 'ownperm' : 'noownperm';
+            $keys[3] = $own_permission ? 'own_permission' : 'no_own_permission';
 
             foreach ([TRUE, FALSE] as $is_ownable) {
-              $keys[4] = $is_ownable ? 'ownable' : 'noownable';
+              $keys[4] = $is_ownable ? 'is_ownable' : 'no_is_ownable';
 
               foreach ([TRUE, FALSE] as $is_publishable) {
-                $keys[5] = $is_publishable ? 'pub' : 'nopub';
+                $keys[5] = $is_publishable ? 'is_publishable' : 'no_is_publishable';
 
                 if ($target === 'relationship') {
                   $expected = $any_permission || $own_permission;
@@ -200,7 +200,7 @@ class AccessControlTest extends UnitTestCase {
     $group_relationship->getGroup()->willReturn($group->reveal());
     $group_relationship->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
     $group_relationship->getCacheContexts()->willReturn([]);
-    $group_relationship->getCachetags()->willReturn(['group_relationship:foo']);
+    $group_relationship->getCacheTags()->willReturn(['group_relationship:foo']);
     $group_relationship->getCacheMaxAge()->willReturn(9999);
 
     $is_supported = $permission || $own_permission || $check_chain;
@@ -242,25 +242,25 @@ class AccessControlTest extends UnitTestCase {
       $keys[0] = $key;
 
       foreach (['any some permission name', FALSE] as $any_permission) {
-        $keys[1] = $any_permission ? 'anyperm' : 'noanyperm';
+        $keys[1] = $any_permission ? 'any_permission' : 'no_any_permission';
 
         foreach (['own some permission name', FALSE] as $own_permission) {
-          $keys[2] = $own_permission ? 'ownperm' : 'noownperm';
+          $keys[2] = $own_permission ? 'own_permission' : 'no_own_permission';
 
           foreach ([TRUE, FALSE] as $has_own_permission) {
-            $keys[3] = $has_own_permission ? 'hasown' : 'nohasown';
+            $keys[3] = $has_own_permission ? 'has_own' : 'no_has_own';
 
             foreach ([TRUE, FALSE] as $is_owner) {
-              $keys[4] = $is_owner ? 'isowner' : 'noisowner';
+              $keys[4] = $is_owner ? 'is_owner' : 'no_is_owner';
 
               foreach ([TRUE, FALSE] as $check_chain) {
-                $keys[5] = $check_chain ? 'chain' : 'nochain';
+                $keys[5] = $check_chain ? 'chain' : 'no_chain';
 
                 $case = $scenario;
                 $case['definition'] = clone $scenario['definition'];
 
                 // Default is neutral result if no permissions are defined.
-                $case['expected'] = function() {
+                $case['expected'] = function () {
                   return AccessResult::neutral();
                 };
 
@@ -271,7 +271,7 @@ class AccessControlTest extends UnitTestCase {
                   $has_own = $is_owner && $own_permission && $has_own_permission;
 
                   $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission);
-                  $case['expected'] = function() use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
+                  $case['expected'] = function () use ($has_admin, $has_any, $has_own, $permissions_were_checked, $own_permission) {
                     $result = AccessResult::allowedIf($has_admin || $has_any || $has_own);
 
                     // Only add the permissions context if they were checked.
@@ -284,13 +284,13 @@ class AccessControlTest extends UnitTestCase {
                     if ($own_permission) {
                       $result->addCacheContexts(['user']);
 
-                    // Tags and max-age as defined in ::testRelationAccess().
-                    $result->addCacheTags(['group_relationship:foo']);
-                    $result->mergeCacheMaxAge(9999);
-                  }
-                  return $result;
-                };
-              }
+                      // Tags and max-age as defined in ::testRelationAccess().
+                      $result->addCacheTags(['group_relationship:foo']);
+                      $result->mergeCacheMaxAge(9999);
+                    }
+                    return $result;
+                  };
+                }
 
                 $case['has_own_permission'] = $has_own_permission;
                 $case['any_permission'] = $any_permission;
@@ -370,17 +370,17 @@ class AccessControlTest extends UnitTestCase {
       $keys[0] = $key;
 
       foreach (['some permission name', FALSE] as $permission) {
-        $keys[1] = $permission ? 'perm' : 'noperm';
+        $keys[1] = $permission ? 'permission' : 'no_permission';
 
         foreach ([TRUE, FALSE] as $check_chain) {
-          $keys[2] = $check_chain ? 'chain' : 'nochain';
+          $keys[2] = $check_chain ? 'chain' : 'no_chain';
 
           $case = $scenario;
           $case['definition'] = clone $scenario['definition'];
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
-          $case['expected'] = function() {
+          $case['expected'] = function () {
             return AccessResult::neutral();
           };
 
@@ -389,7 +389,7 @@ class AccessControlTest extends UnitTestCase {
             $has_regular = $permission && $case['has_permission'];
 
             $permissions_were_checked = $case['definition']->getAdminPermission() || $permission;
-            $case['expected'] = function() use ($has_admin, $has_regular, $permissions_were_checked) {
+            $case['expected'] = function () use ($has_admin, $has_regular, $permissions_were_checked) {
               $result = AccessResult::allowedIf($has_admin || $has_regular);
               if ($permissions_were_checked) {
                 $result->addCacheContexts(['user.group_permissions']);
@@ -482,7 +482,7 @@ class AccessControlTest extends UnitTestCase {
     }
     $entity->getOwnerId()->willReturn($is_owner ? $account_id : $account_id + 1);
     $entity->getCacheContexts()->willReturn([]);
-    $entity->getCachetags()->willReturn(['some_entity:foo']);
+    $entity->getCacheTags()->willReturn(['some_entity:foo']);
     $entity->getCacheMaxAge()->willReturn(9999);
     $entity = $entity->reveal();
 
@@ -543,34 +543,34 @@ class AccessControlTest extends UnitTestCase {
       $keys[0] = $key;
 
       foreach (['any some permission name', FALSE] as $any_permission) {
-        $keys[1] = $any_permission ? 'anyperm' : 'noanyperm';
+        $keys[1] = $any_permission ? 'any_permission' : 'no_any_permission';
 
         foreach (['own some permission name', FALSE] as $own_permission) {
-          $keys[2] = $own_permission ? 'ownperm' : 'noownperm';
+          $keys[2] = $own_permission ? 'own_permission' : 'no_own_permission';
 
           foreach ([TRUE, FALSE] as $has_own_permission) {
-            $keys[3] = $has_own_permission ? 'hasown' : 'nohasown';
+            $keys[3] = $has_own_permission ? 'has_own' : 'no_has_own';
 
             foreach ([TRUE, FALSE] as $is_grouped) {
-              $keys[4] = $is_grouped ? 'grouped' : 'nogrouped';
+              $keys[4] = $is_grouped ? 'grouped' : 'no_grouped';
 
               foreach ([TRUE, FALSE] as $is_ownable) {
-                $keys[5] = $is_ownable ? 'ownable' : 'noownable';
+                $keys[5] = $is_ownable ? 'ownable' : 'no_ownable';
 
                 foreach ([TRUE, FALSE] as $is_owner) {
-                  $keys[6] = $is_owner ? 'isowner' : 'noisowner';
+                  $keys[6] = $is_owner ? 'is_owner' : 'no_is_owner';
 
                   foreach ([TRUE, FALSE] as $is_publishable) {
-                    $keys[7] = $is_publishable ? 'pub' : 'nopub';
+                    $keys[7] = $is_publishable ? 'publishable' : 'no_publishable';
 
                     foreach ([TRUE, FALSE] as $is_published) {
-                      $keys[8] = $is_published ? 'ispub' : 'noispub';
+                      $keys[8] = $is_published ? 'is_published' : 'no_is_published';
 
                       foreach (['view', $this->randomMachineName()] as $operation) {
-                        $keys[9] = $operation === 'view' ? 'opview' : 'noopview';
+                        $keys[9] = $operation === 'view' ? 'op_view' : 'no_op_view';
 
                         foreach ([TRUE, FALSE] as $check_chain) {
-                          $keys[10] = $check_chain ? 'chain' : 'nochain';
+                          $keys[10] = $check_chain ? 'chain' : 'no_chain';
 
                           $case = $scenario;
                           $case['definition'] = clone $scenario['definition'];
@@ -581,7 +581,7 @@ class AccessControlTest extends UnitTestCase {
                           }
 
                           if (!$is_supported) {
-                            $case['expected'] = function() {
+                            $case['expected'] = function () {
                               return AccessResult::neutral();
                             };
                           }
@@ -592,7 +592,7 @@ class AccessControlTest extends UnitTestCase {
                             $permissions_were_checked = $admin_permission || $any_permission || ($is_owner && $own_permission && $is_ownable);
 
                             // Default varies on whether the entity is grouped.
-                            $case['expected'] = function() use ($is_grouped, $own_permission, $check_published, $permissions_were_checked) {
+                            $case['expected'] = function () use ($is_grouped, $own_permission, $check_published, $permissions_were_checked) {
                               $result = AccessResult::forbiddenIf($is_grouped);
                               if ($is_grouped) {
                                 if ($permissions_were_checked) {
@@ -627,7 +627,7 @@ class AccessControlTest extends UnitTestCase {
                                 $own_access = FALSE;
                               }
 
-                              $case['expected'] = function() use ($admin_access, $any_access, $own_access, $own_permission, $check_published, $permissions_were_checked) {
+                              $case['expected'] = function () use ($admin_access, $any_access, $own_access, $own_permission, $check_published, $permissions_were_checked) {
                                 $result = AccessResult::allowedIf($admin_access || $any_access || $own_access);
 
                                 if (!$result->isAllowed()) {
@@ -738,17 +738,17 @@ class AccessControlTest extends UnitTestCase {
       $keys[0] = $key;
 
       foreach (['some permission name', FALSE] as $permission) {
-        $keys[1] = $permission ? 'perm' : 'noperm';
+        $keys[1] = $permission ? 'permission' : 'no_permission';
 
         foreach ([TRUE, FALSE] as $check_chain) {
-          $keys[2] = $check_chain ? 'chain' : 'nochain';
+          $keys[2] = $check_chain ? 'chain' : 'no_chain';
 
           $case = $scenario;
           $case['definition'] = clone $scenario['definition'];
 
           // Default is neutral result if no permissions are defined or entity
           // access control is turned off for the plugin.
-          $case['expected'] = function() {
+          $case['expected'] = function () {
             return AccessResult::neutral();
           };
 
@@ -757,7 +757,7 @@ class AccessControlTest extends UnitTestCase {
             $has_regular = $permission && $case['has_permission'];
 
             $permissions_were_checked = $case['definition']->getAdminPermission() || $permission;
-            $case['expected'] = function() use ($has_admin, $has_regular, $permissions_were_checked) {
+            $case['expected'] = function () use ($has_admin, $has_regular, $permissions_were_checked) {
               $result = AccessResult::allowedIf($has_admin || $has_regular);
               if ($permissions_were_checked) {
                 $result->addCacheContexts(['user.group_permissions']);
@@ -786,13 +786,13 @@ class AccessControlTest extends UnitTestCase {
     $scenarios = [];
 
     foreach (['administer foo', FALSE] as $admin_permission) {
-      $keys[0] = $admin_permission ? 'admin' : 'noadmin';
+      $keys[0] = $admin_permission ? 'admin' : 'no_admin';
 
       foreach ([TRUE, FALSE] as $has_admin_permission) {
-        $keys[1] = $has_admin_permission ? 'hasadmin' : 'nohasadmin';
+        $keys[1] = $has_admin_permission ? 'has_admin_permission' : 'no_has_admin_permission';
 
         foreach ([TRUE, FALSE] as $has_permission) {
-          $keys[2] = $has_permission ? 'hasperm' : 'nohasperm';
+          $keys[2] = $has_permission ? 'has_permission' : 'no_has_permission';
 
           $scenarios[implode('-', $keys)] = [
             'expected' => NULL,
@@ -825,7 +825,7 @@ class AccessControlTest extends UnitTestCase {
     $definition,
     PermissionProviderInterface $permission_provider,
     EntityTypeManagerInterface $entity_type_manager = NULL,
-    $set_up_chain = FALSE
+    $set_up_chain = FALSE,
   ) {
     $this->assertNotEmpty($definition->getEntityTypeId());
 
@@ -855,6 +855,7 @@ class AccessControlTest extends UnitTestCase {
 
 }
 
+// phpcs:disable
 class TestAccessControlWithFullOperationSupport implements AccessControlInterface {
 
   use AccessControlTrait;
@@ -870,3 +871,4 @@ class TestAccessControlWithFullOperationSupport implements AccessControlInterfac
   }
 
 }
+// phpcs:enable

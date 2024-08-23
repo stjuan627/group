@@ -3,6 +3,7 @@
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
 use Drupal\Core\Url;
 use Drupal\group\Entity\GroupInterface;
@@ -14,10 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Tests the revision UI access for groups.
  *
- * There used to be a time where it mattered how many revisions there were for
- * an entity. Those days have passed, but it doesn't hurt to leave the test
- * cases in for extra hardening. This is why you'll notice some test cases
- * being specific about there being one revision.
+ * There used to be a time when it mattered how many revisions there were for an
+ * entity. Those days have passed, but it doesn't hurt to leave the test cases
+ * in for extra hardening. This is why you'll notice some test cases being
+ * specific about there being one revision.
  *
  * @covers \Drupal\group\Entity\Access\GroupRevisionCheck
  * @group group
@@ -124,7 +125,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   public function overviewAccessProvider() {
     $cases = [];
 
-    $cases['view-one-rev-no-new-rev'] = [
+    $cases['view-one-revision-no-new-rev'] = [
       ['view group'],
       ['view group', 'view all group revisions'],
       FALSE,
@@ -135,7 +136,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to revision overview when there is one revision and new revisions are not created automatically',
     ];
 
-    $cases['view-one-rev-new-rev'] = [
+    $cases['view-one-revision-new-rev'] = [
       ['view group'],
       ['view group', 'view all group revisions'],
       FALSE,
@@ -146,7 +147,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to revision overview when there is one revision and new revisions are created automatically',
     ];
 
-    $cases['view-multi-rev-no-new-rev'] = [
+    $cases['view-multi-revision-no-new-rev'] = [
       ['view group'],
       ['view group', 'view all group revisions'],
       FALSE,
@@ -157,7 +158,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to revision overview when there are multiple revisions and new revisions are not created automatically',
     ];
 
-    $cases['view-multi-rev-new-rev'] = [
+    $cases['view-multi-revision-new-rev'] = [
       ['view group'],
       ['view group', 'view all group revisions'],
       FALSE,
@@ -168,7 +169,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to revision overview when there are multiple revisions and new revisions are created automatically',
     ];
 
-    $cases['no-view-one-rev-new-rev'] = [
+    $cases['no-view-one-revision-new-rev'] = [
       [],
       ['view all group revisions'],
       FALSE,
@@ -179,7 +180,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to revision overview when there is one revision and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-multi-rev-new-rev'] = [
+    $cases['no-view-multi-revision-new-rev'] = [
       [],
       ['view all group revisions'],
       FALSE,
@@ -256,7 +257,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   public function viewAccessProvider() {
     $cases = [];
 
-    $cases['view-one-rev-no-new-rev'] = [
+    $cases['view-one-revision-no-new-rev'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -270,7 +271,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to published revision viewing when there is one revision and new revisions are not created automatically',
     ];
 
-    $cases['view-one-rev-new-rev'] = [
+    $cases['view-one-revision-new-rev'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -284,7 +285,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to published revision viewing when there is one revision and new revisions are created automatically',
     ];
 
-    $cases['view-multi-rev-no-new-rev-default'] = [
+    $cases['view-multi-revision-no-new-revision-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -298,7 +299,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default published revision viewing when there are multiple revisions and new revisions are not created automatically',
     ];
 
-    $cases['view-multi-rev-new-rev-default'] = [
+    $cases['view-multi-revision-new-revision-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -312,7 +313,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default published revision viewing when there are multiple revisions and new revisions are created automatically',
     ];
 
-    $cases['view-multi-rev-no-new-rev-non-default'] = [
+    $cases['view-multi-revision-no-new-revision-non-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -326,7 +327,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default published revision viewing when there are multiple revisions and new revisions are not created automatically',
     ];
 
-    $cases['view-multi-rev-new-rev-non-default'] = [
+    $cases['view-multi-revision-new-revision-non-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -340,7 +341,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default published revision viewing when there are multiple revisions and new revisions are created automatically',
     ];
 
-    $cases['no-view-one-rev-new-rev-default'] = [
+    $cases['no-view-one-revision-new-revision-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -354,7 +355,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default published revision viewing when there is one revision and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-multi-rev-new-rev-default'] = [
+    $cases['no-view-multi-revision-new-revision-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -368,7 +369,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default published revision viewing when there are multiple revisions and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-one-rev-new-rev-non-default'] = [
+    $cases['no-view-one-revision-new-revision-non-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -382,7 +383,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default published revision viewing when there is one revision and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-multi-rev-new-rev-non-default'] = [
+    $cases['no-view-multi-revision-new-revision-non-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -396,7 +397,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default published revision viewing when there are multiple revisions and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['view-unpub-one-rev-no-new-rev'] = [
+    $cases['view-unpublished-one-revision-no-new-rev'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -410,7 +411,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to unpublished revision viewing when there is one revision and new revisions are not created automatically',
     ];
 
-    $cases['view-unpub-one-rev-new-rev'] = [
+    $cases['view-unpublished-one-revision-new-rev'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -424,7 +425,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to unpublished revision viewing when there is one revision and new revisions are created automatically',
     ];
 
-    $cases['view-unpub-multi-rev-no-new-rev-default'] = [
+    $cases['view-unpublished-multi-revision-no-new-revision-default'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -438,7 +439,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default unpublished revision viewing when there are multiple revisions and new revisions are not created automatically',
     ];
 
-    $cases['view-unpub-multi-rev-new-rev-default'] = [
+    $cases['view-unpublished-multi-revision-new-revision-default'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -452,7 +453,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default unpublished revision viewing when there are multiple revisions and new revisions are created automatically',
     ];
 
-    $cases['view-unpub-multi-rev-no-new-rev-non-default'] = [
+    $cases['view-unpublished-multi-revision-no-new-revision-non-default'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -466,7 +467,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default unpublished revision viewing when there are multiple revisions and new revisions are not created automatically',
     ];
 
-    $cases['view-unpub-multi-rev-new-rev-non-default'] = [
+    $cases['view-unpublished-multi-revision-new-revision-non-default'] = [
       ['view any unpublished group'],
       ['view any unpublished group', 'view group revisions'],
       FALSE,
@@ -480,7 +481,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default unpublished revision viewing when there are multiple revisions and new revisions are created automatically',
     ];
 
-    $cases['no-view-unpub-one-rev-new-rev-default'] = [
+    $cases['no-view-unpublished-one-revision-new-revision-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -494,7 +495,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default unpublished revision viewing when there is one revision and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-unpub-multi-rev-new-rev-default'] = [
+    $cases['no-view-unpublished-multi-revision-new-revision-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -508,7 +509,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default unpublished revision viewing when there are multiple revisions and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-unpub-one-rev-new-rev-non-default'] = [
+    $cases['no-view-unpublished-one-revision-new-revision-non-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -522,7 +523,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default unpublished revision viewing when there is one revision and new revisions are created automatically, but the user has no view access',
     ];
 
-    $cases['no-view-unpub-multi-rev-new-rev-non-default'] = [
+    $cases['no-view-unpublished-multi-revision-new-revision-non-default'] = [
       [],
       ['view group revisions'],
       FALSE,
@@ -595,7 +596,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default mixed revision viewing when the user has no view access',
     ];
 
-    $cases['no-view-unpub-mixed-default'] = [
+    $cases['no-view-unpublished-mixed-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -609,7 +610,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default mixed revision viewing when the user has no view unpublished access',
     ];
 
-    $cases['no-view-unpub-mixed-non-default'] = [
+    $cases['no-view-unpublished-mixed-non-default'] = [
       ['view group'],
       ['view group', 'view group revisions'],
       FALSE,
@@ -677,7 +678,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
   public function updateDeleteAccessProvider() {
     $cases = [];
 
-    $cases['edit-rev-default'] = [
+    $cases['edit-revision-default'] = [
       'entity.group.revision_revert_form',
       ['edit group'],
       ['edit group', 'revert group revisions'],
@@ -688,7 +689,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default revision reverting',
     ];
 
-    $cases['edit-rev-non-default'] = [
+    $cases['edit-revision-non-default'] = [
       'entity.group.revision_revert_form',
       ['edit group'],
       ['edit group', 'revert group revisions'],
@@ -699,7 +700,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default revision reverting',
     ];
 
-    $cases['no-edit-rev-default'] = [
+    $cases['no-edit-revision-default'] = [
       'entity.group.revision_revert_form',
       [],
       ['revert group revisions'],
@@ -710,7 +711,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default revision reverting, but the user has no update access',
     ];
 
-    $cases['no-edit-rev-non-default'] = [
+    $cases['no-edit-revision-non-default'] = [
       'entity.group.revision_revert_form',
       [],
       ['revert group revisions'],
@@ -721,7 +722,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default revision reverting, but the user has no update access',
     ];
 
-    $cases['delete-rev-default'] = [
+    $cases['delete-revision-default'] = [
       'entity.group.revision_delete_form',
       ['delete group'],
       ['delete group', 'delete group revisions'],
@@ -732,7 +733,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default revision deleting',
     ];
 
-    $cases['delete-rev-non-default'] = [
+    $cases['delete-revision-non-default'] = [
       'entity.group.revision_delete_form',
       ['delete group'],
       ['delete group', 'delete group revisions'],
@@ -743,7 +744,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to non-default revision deleting',
     ];
 
-    $cases['no-delete-rev-default'] = [
+    $cases['no-delete-revision-default'] = [
       'entity.group.revision_delete_form',
       [],
       ['delete group revisions'],
@@ -754,7 +755,7 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
       'Checking access to default revision deleting, but the user has no delete access',
     ];
 
-    $cases['no-delete-rev-non-default'] = [
+    $cases['no-delete-revision-non-default'] = [
       'entity.group.revision_delete_form',
       [],
       ['delete group revisions'],
@@ -832,9 +833,10 @@ class RevisionUiAccessTest extends GroupKernelTestBase {
    *   The reloaded entity revision.
    */
   protected function reloadRevision(ContentEntityInterface $entity) {
-    $controller = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
-    $controller->resetCache([$entity->id()]);
-    return $controller->loadRevision($entity->getRevisionId());
+    $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
+    assert($storage instanceof ContentEntityStorageInterface);
+    $storage->resetCache([$entity->id()]);
+    return $storage->loadRevision($entity->getRevisionId());
   }
 
 }

@@ -24,6 +24,22 @@ interface GroupMembershipInterface extends GroupRelationshipInterface {
   public function getRoles($include_synchronized = TRUE);
 
   /**
+   * Adds a group role to the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to add.
+   */
+  public function addRole(string $role_id): void;
+
+  /**
+   * Removes a group role from the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to remove.
+   */
+  public function removeRole(string $role_id): void;
+
+  /**
    * Checks whether the member has a permission.
    *
    * @param string $permission

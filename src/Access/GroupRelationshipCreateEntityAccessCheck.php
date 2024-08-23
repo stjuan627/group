@@ -2,10 +2,10 @@
 
 namespace Drupal\group\Access;
 
-use Drupal\group\Entity\GroupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeManagerInterface;
 use Symfony\Component\Routing\Route;
 
@@ -18,8 +18,8 @@ class GroupRelationshipCreateEntityAccessCheck implements AccessInterface {
    * Checks access for relationship target entity creation routes.
    *
    * All routes using this access check should have a group and plugin_id
-   * parameter and have the _group_relationship_create_entity_access requirement set
-   * to either 'TRUE' or 'FALSE'.
+   * parameter and have the _group_relationship_create_entity_access requirement
+   * set to either 'TRUE' or 'FALSE'.
    *
    * @param \Symfony\Component\Routing\Route $route
    *   The route to check against.
@@ -47,7 +47,7 @@ class GroupRelationshipCreateEntityAccessCheck implements AccessInterface {
     $access = $access_handler->entityCreateAccess($group, $account, TRUE);
 
     // Only allow access if the user can create relationship target entities
-    // using the provided plugin or if he doesn't need access to do so.
+    // using the provided plugin or if they don't need access to do so.
     return AccessResult::allowedIf($access->isAllowed() xor !$needs_access)->inheritCacheability($access);
   }
 

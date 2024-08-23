@@ -4,7 +4,8 @@ namespace Drupal\group;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
-use Drupal\Core\Plugin\Discovery\AnnotatedClassDiscovery;
+use Drupal\Core\Plugin\Discovery\AttributeDiscoveryWithAnnotations;
+use Drupal\group\Plugin\Attribute\GroupRelationType;
 use Drupal\group\Plugin\Group\Relation\GroupRelationTypeInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -28,9 +29,10 @@ class GroupServiceProvider extends ServiceProviderBase {
 
     // Automatically create missing handler services for group relations.
     $modules = $container->getParameter('container.modules');
-    $discovery = new AnnotatedClassDiscovery(
+    $discovery = new AttributeDiscoveryWithAnnotations(
       'Plugin/Group/Relation',
       $container->get('container.namespaces'),
+      GroupRelationType::class,
       'Drupal\group\Annotation\GroupRelationType',
       []
     );

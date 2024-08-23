@@ -17,8 +17,11 @@
   "license": "GPL-2.0-or-later",
   "minimum-stability": "dev",
   "require": {
-    "drupal/core": "^9.5 || ^10",
+    "drupal/core": "^10.3",
     "drupal/entity": "^1.2",
     "drupal/flexible_permissions": "^1.0"
+  },
+  "require-dev": {
+    "jangregor/phpstan-prophecy": "^1.0"
   }
 }

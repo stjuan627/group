@@ -19,14 +19,14 @@ class GroupPermissionsCacheContextTest extends UnitTestCase {
   /**
    * The current user.
    *
-   * @var \Drupal\Core\Session\AccountProxyInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\Core\Session\AccountProxyInterface>
    */
   protected $currentUser;
 
   /**
    * The permissions hash generator.
    *
-   * @var \Drupal\group\Access\GroupPermissionsHashGeneratorInterface|\Prophecy\Prophecy\ProphecyInterface
+   * @var \Prophecy\Prophecy\ObjectProphecy<\Drupal\group\Access\GroupPermissionsHashGeneratorInterface>
    */
   protected $permissionsHashGenerator;
 

@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\group\Kernel;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+use Drupal\Tests\group\Traits\GroupTestTrait;
 
 /**
  * Defines an abstract test base for group kernel tests.
  */
 abstract class GroupKernelTestBase extends EntityKernelTestBase {
+
+  use GroupTestTrait;
 
   /**
    * {@inheritdoc}
@@ -46,66 +51,8 @@ abstract class GroupKernelTestBase extends EntityKernelTestBase {
    * @return \Drupal\Core\Session\AccountInterface
    *   The current user.
    */
-  protected function getCurrentUser() {
+  protected function getCurrentUser(): AccountInterface {
     return $this->container->get('current_user')->getAccount();
-  }
-
-  /**
-   * Creates a group.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\Group
-   *   The created group entity.
-   */
-  protected function createGroup(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group');
-    $group = $storage->create($values + [
-      'label' => $this->randomString(),
-    ]);
-    $group->enforceIsNew();
-    $storage->save($group);
-    return $group;
-  }
-
-  /**
-   * Creates a group type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupType
-   *   The created group type entity.
-   */
-  protected function createGroupType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_type');
-    $group_type = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-      'creator_wizard' => FALSE,
-    ]);
-    $storage->save($group_type);
-    return $group_type;
-  }
-
-  /**
-   * Creates a group role.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupRole
-   *   The created group role entity.
-   */
-  protected function createGroupRole(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_role');
-    $group_role = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($group_role);
-    return $group_role;
   }
 
 }

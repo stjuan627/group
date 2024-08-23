@@ -12,6 +12,13 @@ trait EntityReferenceTrait {
   use RelationHandlerTrait;
 
   /**
+   * The parent entity reference handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\EntityReferenceInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * {@inheritdoc}
    */
   public function configureField(BaseFieldDefinition $entity_reference) {

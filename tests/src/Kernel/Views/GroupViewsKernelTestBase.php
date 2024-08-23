@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\group\Kernel\Views;
 
+use Drupal\group\Entity\GroupInterface;
 use Drupal\group\PermissionScopeInterface;
+use Drupal\Tests\group\Traits\GroupTestTrait;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\user\RoleInterface;
+use Drupal\user\UserInterface;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\views\Views;
 
@@ -12,6 +17,10 @@ use Drupal\views\Views;
  * Defines an abstract test base for group kernel tests for Views.
  */
 abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
+
+  use GroupTestTrait {
+    createGroup as traitCreateGroup;
+  }
 
   /**
    * {@inheritdoc}
@@ -26,13 +35,6 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
     'text',
     'variationcache',
   ];
-
-  /**
-   * The entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
 
   /**
    * The group type to use in testing.
@@ -81,7 +83,7 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
    * @return \Drupal\views\ResultRow[]
    *   A list of view results.
    */
-  protected function getViewResults() {
+  protected function getViewResults(): array {
     $view = Views::getView(reset($this::$testViews));
     $view->setDisplay();
 
@@ -93,61 +95,11 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
   }
 
   /**
-   * Creates a group.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\Group
-   *   The created group entity.
+   * {@inheritdoc}
    */
-  protected function createGroup($values = []) {
-    $group = $this->entityTypeManager->getStorage('group')->create($values + [
-      'type' => $this->groupType->id(),
-      'label' => $this->randomMachineName(),
-    ]);
-    $group->enforceIsNew();
-    $group->save();
-    return $group;
-  }
-
-  /**
-   * Creates a group type.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupType
-   *   The created group type entity.
-   */
-  protected function createGroupType(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_type');
-    $group_type = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-      'creator_wizard' => FALSE,
-    ]);
-    $storage->save($group_type);
-    return $group_type;
-  }
-
-  /**
-   * Creates a group role.
-   *
-   * @param array $values
-   *   (optional) The values used to create the entity.
-   *
-   * @return \Drupal\group\Entity\GroupRole
-   *   The created group role entity.
-   */
-  protected function createGroupRole(array $values = []) {
-    $storage = $this->entityTypeManager->getStorage('group_role');
-    $group_role = $storage->create($values + [
-      'id' => $this->randomMachineName(),
-      'label' => $this->randomString(),
-    ]);
-    $storage->save($group_role);
-    return $group_role;
+  protected function createGroup(array $values = []): GroupInterface {
+    $values += ['type' => $this->groupType->id()];
+    return $this->traitCreateGroup($values);
   }
 
   /**
@@ -156,10 +108,10 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
    * @param array $values
    *   (optional) The values used to create the entity.
    *
-   * @return \Drupal\user\Entity\User
+   * @return \Drupal\user\UserInterface
    *   The created user entity.
    */
-  protected function createUser($values = []) {
+  protected function createUser($values = []): UserInterface {
     $account = $this->entityTypeManager->getStorage('user')->create($values + [
       'name' => $this->randomMachineName(),
       'status' => 1,

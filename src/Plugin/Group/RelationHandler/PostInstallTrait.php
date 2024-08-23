@@ -10,6 +10,13 @@ trait PostInstallTrait {
   use RelationHandlerTrait;
 
   /**
+   * The parent post install handler in the decorator chain.
+   *
+   * @var \Drupal\group\Plugin\Group\RelationHandler\PostInstallInterface|null
+   */
+  protected $parent = NULL;
+
+  /**
    * {@inheritdoc}
    */
   public function getInstallTasks() {

@@ -42,6 +42,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -60,6 +61,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -83,6 +85,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -107,6 +110,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
   /**
@@ -134,6 +138,7 @@ class GroupRelationshipRouteProvider extends DefaultHtmlRouteProvider {
 
       return $route;
     }
+    return NULL;
   }
 
   /**

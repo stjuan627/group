@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *     "group" = @ContextDefinition("entity:group", label = @Translation("Group"))
  *   }
  * )
- *
  */
 class GroupType extends ConditionPluginBase implements ContainerFactoryPluginInterface {
 
