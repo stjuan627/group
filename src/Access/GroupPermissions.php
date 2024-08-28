@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Access;
 
+use Drupal\Core\Entity\BundlePermissionHandlerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\group\Entity\GroupType;
 
@@ -10,6 +11,7 @@ use Drupal\group\Entity\GroupType;
  */
 class GroupPermissions {
 
+  use BundlePermissionHandlerTrait;
   use StringTranslationTrait;
 
   /**
@@ -20,14 +22,7 @@ class GroupPermissions {
    *   @see \Drupal\user\PermissionHandlerInterface::getPermissions()
    */
   public function groupTypePermissions() {
-    $perms = [];
-
-    // Generate group permissions for all group types.
-    foreach (GroupType::loadMultiple() as $type) {
-      $perms += $this->buildPermissions($type);
-    }
-
-    return $perms;
+    return $this->generatePermissions(GroupType::loadMultiple(), [$this, 'buildPermissions']);
   }
 
   /**
