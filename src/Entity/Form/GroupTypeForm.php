@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
 use Drupal\group\PermissionScopeInterface;
+use Drupal\language\Entity\ContentLanguageSettings;
 use Drupal\user\RoleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -240,6 +241,24 @@ class GroupTypeForm extends BundleEntityFormBase {
         $description = $this->t('You do not have any custom group roles yet, <a href="@url">create one here</a>.', $t_args);
         $form['access_settings']['creator_roles']['#description'] .= "<br /><em>$description</em>";
       }
+    }
+
+    if ($this->moduleHandler->moduleExists('language')) {
+      $form['language'] = [
+        '#type' => 'details',
+        '#title' => t('Language settings'),
+        '#group' => 'additional_settings',
+      ];
+
+      $language_configuration = ContentLanguageSettings::loadByEntityTypeBundle('group', $type->id());
+      $form['language']['language_configuration'] = [
+        '#type' => 'language_configuration',
+        '#entity_information' => [
+          'entity_type' => 'group',
+          'bundle' => $type->id(),
+        ],
+        '#default_value' => $language_configuration,
+      ];
     }
 
     return $this->protectBundleIdElement($form);
