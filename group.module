@@ -29,7 +29,6 @@ use Drupal\group\QueryAccess\GroupRelationshipQueryAlter;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\Plugin\views\query\Sql;
 use Drupal\views\ViewExecutable;
-use Drupal\workspaces\Entity\Handler\IgnoredWorkspaceHandler;
 
 /**
  * Implements hook_help().
@@ -80,15 +79,6 @@ function group_entity_bundle_info() {
   }
 
   return $bundles;
-}
-
-/**
- * Implements hook_entity_type_build().
- */
-function group_entity_type_build(array &$entity_types): void {
-  if (!$entity_types['group_relationship']->hasHandlerClass('workspace')) {
-    $entity_types['group_relationship']->setHandlerClass('workspace', IgnoredWorkspaceHandler::class);
-  }
 }
 
 /**

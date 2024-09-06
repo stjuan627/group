@@ -44,6 +44,7 @@ use Drupal\user\EntityOwnerTrait;
  *       "group-leave" = "Drupal\group\Form\GroupLeaveForm",
  *     },
  *     "access" = "Drupal\group\Entity\Access\GroupRelationshipAccessControlHandler",
+ *     "workspace" = "Drupal\workspaces\Entity\Handler\IgnoredWorkspaceHandler",
  *   },
  *   base_table = "group_relationship",
  *   data_table = "group_relationship_field_data",
