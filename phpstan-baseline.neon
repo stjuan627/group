@@ -26,6 +26,11 @@ parameters:
 			count: 8
 			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
 
+		-
+			message: "#^Variable \\$old_table might not be defined\\.$#"
+			count: 1
+			path: group.install
+
 		# This is a bug in mglaman/phpstan-drupal where the parent constructor is ignored.
 		-
 			message: "#^Plugin definitions cannot be altered\\.$#"
