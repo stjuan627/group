@@ -36,20 +36,3 @@ parameters:
 			message: "#^Plugin definitions cannot be altered\\.$#"
 			count: 1
 			path: tests/src/Unit/GroupRelationTypeManagerTest.php
-
-		# Need to use a service collector to get rid of these warnings.
-		-
-			message: """
-				#^Class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager implements deprecated interface Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareInterface\\:
-				since Symfony 6\\.4, use dependency injection instead$#
-			"""
-			count: 1
-			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php
-
-		-
-			message: """
-				#^Usage of deprecated trait Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareTrait in class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager\\:
-				since Symfony 6\\.4, use dependency injection instead$#
-			"""
-			count: 1
-			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php

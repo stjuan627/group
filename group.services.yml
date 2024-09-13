@@ -152,7 +152,6 @@ services:
   group_relation_type.manager:
     class: 'Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager'
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
-    parent: container.trait
     tags:
       - { name: plugin_manager_cache_clear }
 
@@ -184,20 +183,15 @@ services:
   group.relation_handler.access_control.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipAccessControl'
     arguments: ['@group.relation_handler.access_control']
-    shared: false
   group.relation_handler.entity_reference.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipEntityReference'
     arguments: ['@group.relation_handler.entity_reference']
-    shared: false
   group.relation_handler.operation_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipOperationProvider'
     arguments: ['@group.relation_handler.operation_provider', '@current_user', '@string_translation']
-    shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
-    shared: false
   group.relation_handler.post_install.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPostInstall'
     arguments: ['@group.relation_handler.post_install', '@entity_type.manager', '@string_translation']
-    shared: false

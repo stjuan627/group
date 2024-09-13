@@ -5,7 +5,6 @@ services:
     decorates: 'group.relation_handler.permission_provider'
     decoration_priority: 100
     arguments: ['@group.relation_handler_decorator.permission_provider.bar.inner']
-    shared: false
 
   # Adds foo admin permission to all plugins.
   group.relation_handler_decorator.permission_provider.foo:
@@ -13,7 +12,6 @@ services:
     decorates: 'group.relation_handler.permission_provider'
     decoration_priority: 200
     arguments: ['@group.relation_handler_decorator.permission_provider.foo.inner']
-    shared: false
 
   # Adds baz admin permission to the node_relation plugin.
   group.relation_handler_decorator.permission_provider.baz.node_relation:
@@ -21,7 +19,6 @@ services:
     decorates: 'group.relation_handler.permission_provider.node_relation'
     decoration_priority: 300
     arguments: ['@group.relation_handler_decorator.permission_provider.baz.node_relation.inner']
-    shared: false
 
   # Adds baz admin permission to the entity_relation plugin.
   group.relation_handler_decorator.permission_provider.baz.entity_relation:
@@ -29,7 +26,6 @@ services:
     decorates: 'group.relation_handler.permission_provider.entity_test_relation'
     decoration_priority: 200
     arguments: ['@group.relation_handler_decorator.permission_provider.baz.entity_relation.inner']
-    shared: false
 
   # Adds foo admin permission to the entity_relation plugin.
   group.relation_handler_decorator.permission_provider.foo.entity_relation:
@@ -37,4 +33,3 @@ services:
     decorates: 'group.relation_handler.permission_provider.entity_test_relation'
     decoration_priority: 100
     arguments: ['@group.relation_handler_decorator.permission_provider.foo.entity_relation.inner']
-    shared: false
