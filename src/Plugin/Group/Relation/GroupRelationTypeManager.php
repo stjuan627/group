@@ -11,7 +11,7 @@ use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\group\Entity\GroupRelationshipTypeInterface;
 use Drupal\group\Entity\GroupTypeInterface;
 use Drupal\group\Plugin\Attribute\GroupRelationType;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Manages group relation type plugin definitions.
