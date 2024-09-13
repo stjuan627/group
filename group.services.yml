@@ -151,7 +151,7 @@ services:
 
   group_relation_type.manager:
     class: 'Drupal\group\Plugin\Group\Relation\GroupRelationTypeManager'
-    arguments: ['@service_container', '@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@entity_type.manager']
     tags:
       - { name: plugin_manager_cache_clear }
 
@@ -159,44 +159,33 @@ services:
   group.relation_handler.access_control:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
     arguments: ['@entity_type.manager', '@group_relation_type.manager']
-    shared: false
   group.relation_handler.entity_reference:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\EntityReference'
-    shared: false
   group.relation_handler.operation_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider'
     arguments: ['@module_handler', '@current_user', '@entity_type.manager', '@group_relation_type.manager', '@string_translation']
-    shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
     arguments: ['@entity_type.manager', '@group_relation_type.manager']
-    shared: false
   group.relation_handler.post_install:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall'
-    shared: false
   group.relation_handler.ui_text_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\UiTextProvider'
     arguments: ['@entity_type.manager', '@string_translation']
-    shared: false
 
   # Specific group relation handlers.
   group.relation_handler.access_control.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipAccessControl'
     arguments: ['@group.relation_handler.access_control']
-    shared: false
   group.relation_handler.entity_reference.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipEntityReference'
     arguments: ['@group.relation_handler.entity_reference']
-    shared: false
   group.relation_handler.operation_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipOperationProvider'
     arguments: ['@group.relation_handler.operation_provider', '@current_user', '@string_translation']
-    shared: false
   group.relation_handler.permission_provider.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPermissionProvider'
     arguments: ['@group.relation_handler.permission_provider']
-    shared: false
   group.relation_handler.post_install.group_membership:
     class: 'Drupal\group\Plugin\Group\RelationHandler\GroupMembershipPostInstall'
     arguments: ['@group.relation_handler.post_install', '@entity_type.manager', '@string_translation']
-    shared: false

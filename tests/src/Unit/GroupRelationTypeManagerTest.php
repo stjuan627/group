@@ -89,7 +89,7 @@ class GroupRelationTypeManagerTest extends UnitTestCase {
     $this->entityTypeManager->getStorage('group_type')->willReturn($storage->reveal());
 
     $this->container = $this->prophesize(ContainerInterface::class);
-    $this->groupRelationTypeManager = new TestGroupRelationTypeManager($this->container->reveal(), new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal());
+    $this->groupRelationTypeManager = new TestGroupRelationTypeManager(new \ArrayObject(), $this->cacheBackend->reveal(), $this->moduleHandler->reveal(), $this->entityTypeManager->reveal(), $this->container->reveal());
 
     $this->discovery = $this->prophesize(DiscoveryInterface::class);
     $this->groupRelationTypeManager->setDiscovery($this->discovery->reveal());

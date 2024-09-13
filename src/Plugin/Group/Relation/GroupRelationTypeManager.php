@@ -34,20 +34,6 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   protected $handlers = [];
 
   /**
-   * The service container.
-   *
-   * @var \Symfony\Component\DependencyInjection\ContainerInterface
-   */
-  protected $container;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The group type storage handler.
    *
    * @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface
@@ -106,8 +92,6 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
   /**
    * Constructs a GroupRelationTypeManager object.
    *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   *   The service container.
    * @param \Traversable $namespaces
    *   An object that implements \Traversable which contains the root paths
    *   keyed by the corresponding namespace to look for plugin implementations.
@@ -115,15 +99,25 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
    *   Cache backend instance to use.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler to invoke the alter hook with.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
    */
-  public function __construct(ContainerInterface $container, \Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, EntityTypeManagerInterface $entity_type_manager) {
-    parent::__construct('Plugin/Group/Relation', $namespaces, $module_handler, 'Drupal\group\Plugin\Group\Relation\GroupRelationInterface', GroupRelationType::class, 'Drupal\group\Annotation\GroupRelationType');
+  public function __construct(
+    \Traversable $namespaces,
+    CacheBackendInterface $cache_backend,
+    ModuleHandlerInterface $module_handler,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected ContainerInterface $locator,
+  ) {
+    parent::__construct(
+      'Plugin/Group/Relation',
+      $namespaces,
+      $module_handler,
+      'Drupal\group\Plugin\Group\Relation\GroupRelationInterface',
+      GroupRelationType::class,
+      'Drupal\group\Annotation\GroupRelationType'
+    );
+
     $this->alterInfo('group_relation_type');
     $this->setCacheBackend($cache_backend, 'group_relations');
-    $this->container = $container;
-    $this->entityTypeManager = $entity_type_manager;
     $this->pluginGroupRelationshipTypeMapCacheKey = $this->cacheKey . '_GCT_map';
     $this->groupTypePluginMapCacheKey = $this->cacheKey . '_GT_map';
   }
@@ -169,10 +163,10 @@ class GroupRelationTypeManager extends DefaultPluginManager implements GroupRela
     assert($group_relation_type instanceof GroupRelationTypeInterface);
     $service_name = "group.relation_handler.$handler_type.{$group_relation_type->id()}";
 
-    if (!$this->container->has($service_name)) {
+    if (!$this->locator->has($service_name)) {
       throw new InvalidPluginDefinitionException($plugin_id, sprintf('The "%s" plugin did not specify a %s handler service (%s).', $plugin_id, $handler_type, $service_name));
     }
-    $handler = $this->container->get($service_name);
+    $handler = $this->locator->get($service_name);
 
     if (!is_subclass_of($handler, 'Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface')) {
       throw new InvalidPluginDefinitionException($plugin_id, 'Trying to instantiate a handler that does not implement \Drupal\group\Plugin\Group\RelationHandler\RelationHandlerInterface.');
