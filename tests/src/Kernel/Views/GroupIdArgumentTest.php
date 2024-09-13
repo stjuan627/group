@@ -28,7 +28,9 @@ class GroupIdArgumentTest extends GroupViewsKernelTestBase {
     $view->setDisplay();
 
     $this->createGroup();
-    $group2 = $this->createGroup();
+    // Use a machine name instead of string for the label because the view
+    // title escapes HTML and that may lead to random test fails.
+    $group2 = $this->createGroup(['label' => $this->randomMachineName()]);
 
     $view->preview();
     $this->assertEquals(2, count($view->result), 'Found the expected number of results.');

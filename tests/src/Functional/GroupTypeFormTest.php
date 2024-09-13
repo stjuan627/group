@@ -176,11 +176,7 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
     $this->submitForm($edit, $this->setUpAddFormAndGetSubmitButton());
 
     $membership = $this->createGroup(['type' => $this->groupTypeId])->getMember(\Drupal::currentUser());
-
-    $ids = [];
-    foreach ($membership->getGroupRelationship()->group_roles as $group_role_ref) {
-      $ids[] = $group_role_ref->target_id;
-    }
+    $ids = array_column($membership->getGroupRelationship()->get('group_roles')->getValue(), 'target_id');
     $this->assertNotContains($this->groupTypeId . '-admin', $ids);
   }
 
@@ -200,11 +196,7 @@ class GroupTypeFormTest extends GroupBrowserTestBase {
     $this->submitForm($edit, $this->setUpAddFormAndGetSubmitButton());
 
     $membership = $this->createGroup(['type' => $this->groupTypeId])->getMember(\Drupal::currentUser());
-
-    $ids = [];
-    foreach ($membership->getGroupRelationship()->group_roles as $group_role_ref) {
-      $ids[] = $group_role_ref->target_id;
-    }
+    $ids = array_column($membership->getGroupRelationship()->get('group_roles')->getValue(), 'target_id');
     $this->assertContains($this->groupTypeId . '-admin', $ids);
   }
 

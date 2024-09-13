@@ -268,8 +268,8 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
     elseif ($rebuild_group_role_cache && isset($this->original)) {
       assert($this->original instanceof GroupRelationshipInterface);
 
-      $new = array_column($this->group_roles->getValue(), 'target_id');
-      $old = array_column($this->original->group_roles->getValue(), 'target_id');
+      $new = array_column($this->get('group_roles')->getValue(), 'target_id');
+      $old = array_column($this->original->get('group_roles')->getValue(), 'target_id');
       sort($new);
       sort($old);
       $rebuild_group_role_cache = ($new != $old);
@@ -317,7 +317,7 @@ class GroupRelationship extends ContentEntityBase implements GroupRelationshipIn
   public function getListCacheTagsToInvalidate() {
     $tags = parent::getListCacheTagsToInvalidate();
 
-    $group_id = $this->get('gid')->target_id;
+    $group_id = $this->getGroupId();
     $plugin_id = $this->getRelationshipType()->getPluginId();
     $entity_id = $this->getEntityId();
 

@@ -825,7 +825,7 @@ class AccessControlTest extends UnitTestCase {
     $definition,
     PermissionProviderInterface $permission_provider,
     EntityTypeManagerInterface $entity_type_manager = NULL,
-    $set_up_chain = FALSE
+    $set_up_chain = FALSE,
   ) {
     $this->assertNotEmpty($definition->getEntityTypeId());
 
