@@ -92,7 +92,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'node_as_content:page'));
     $storage->save($storage->createFromPlugin($this->groupTypeB, 'node_as_content:article'));
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
   }
 
   /**
@@ -111,10 +111,10 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $group = $this->createGroup(['type' => $this->groupTypeA->id()]);
     $group->addRelationship($node, 'node_as_content:page');
 
-    $result = $this->accessControlHandler->access($node, 'take me to the moon', $this->createUser([], ['access content']), TRUE);
+    $result = $this->accessControlHandler->access($node, 'take me to the moon', $this->createUser(['access content']), TRUE);
     $this->assertTrue($result->isNeutral(), 'Unsupported operations are not checked.');
 
-    $result = $this->accessControlHandler->access($node, 'view', $this->createUser([], ['access content']), TRUE);
+    $result = $this->accessControlHandler->access($node, 'view', $this->createUser(['access content']), TRUE);
     $this->assertTrue($result->isForbidden(), 'Supported operations are checked.');
   }
 
@@ -195,7 +195,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of any published grouped entities for members.
    */
   public function testMemberViewAnyPublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -239,7 +239,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
@@ -250,7 +250,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of any published grouped entities for non-members.
    */
   public function testNonMemberViewAnyPublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page']);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -286,7 +286,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
@@ -344,7 +344,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of own published grouped entities for members.
    */
   public function testMemberViewOwnPublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -388,7 +388,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
@@ -399,7 +399,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of own published grouped entities for non-members.
    */
   public function testNonMemberViewOwnPublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -435,7 +435,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The unpublished grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see published grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The published node can be viewed.');
@@ -452,7 +452,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of any unpublished grouped entities for members.
    */
   public function testMemberViewAnyUnpublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
@@ -496,7 +496,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
@@ -507,7 +507,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of any unpublished grouped entities for non-members.
    */
   public function testNonMemberViewAnyUnpublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
@@ -543,7 +543,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'view'), 'Non-members can see any unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
@@ -601,7 +601,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of own unpublished grouped entities for members.
    */
   public function testMemberViewOwnUnpublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
@@ -645,7 +645,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Members cannot see unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
@@ -656,7 +656,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the viewing of own unpublished grouped entities for non-members.
    */
   public function testNonMemberViewOwnUnpublishedAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0, 'uid' => $account->id()]);
     $node_3 = $this->createNode(['type' => 'page', 'status' => 0]);
@@ -692,7 +692,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node can be viewed by the owner.');
     $this->assertFalse($this->accessControlHandler->access($node_4, 'view'), 'The published grouped node cannot be viewed.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'view'), 'Non-members cannot see unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'view'), 'The unpublished node cannot be viewed.');
@@ -709,7 +709,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the updating of any grouped entities for members.
    */
   public function testMemberUpdateAnyAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -741,7 +741,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_2, 'update'), 'Members can update any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'update'), 'The ungrouped node can be updated.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'update'), 'Non-members cannot update published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'update'), 'Non-members cannot update unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'update'), 'The ungrouped node can be updated.');
@@ -751,7 +751,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the updating of any grouped entities for non-members.
    */
   public function testNonMemberUpdateAnyAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -776,7 +776,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_2, 'update'), 'Non-members can update any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'update'), 'The ungrouped node can be updated.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'update'), 'Non-members can update any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'update'), 'Non-members can update any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'update'), 'The ungrouped node can be updated.');
@@ -791,7 +791,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the updating of own grouped entities for members.
    */
   public function testMemberUpdateOwnAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
@@ -831,7 +831,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_4, 'update'), 'Members can update their own unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'update'), 'The ungrouped node can be updated.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'update'), 'Members cannot update published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'update'), 'Members cannot update unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'update'), 'Members cannot update published grouped nodes.');
@@ -843,7 +843,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the updating of own grouped entities for non-members.
    */
   public function testNonMemberUpdateOwnAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
@@ -874,7 +874,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'update'), 'Non-members cannot update unpublished grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'update'), 'The ungrouped node can be updated.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'update'), 'Non-members cannot update published grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'update'), 'Non-members cannot update unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'update'), 'Non-members cannot update published grouped nodes they do not own.');
@@ -893,7 +893,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the deleting of any grouped entities for members.
    */
   public function testMemberDeleteAnyAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 1]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -925,7 +925,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_2, 'delete'), 'Members can delete any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'delete'), 'The ungrouped node can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'delete'), 'Non-members cannot delete published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'delete'), 'Non-members cannot delete unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'delete'), 'The ungrouped node can be deleted.');
@@ -935,7 +935,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the deleting of any grouped entities for non-members.
    */
   public function testNonMemberDeleteAnyAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page']);
@@ -960,7 +960,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_2, 'delete'), 'Non-members can delete any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'delete'), 'The ungrouped node can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertTrue($this->accessControlHandler->access($node_1, 'delete'), 'Non-members can delete any published grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_2, 'delete'), 'Non-members can delete any unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_3, 'delete'), 'The ungrouped node can be deleted.');
@@ -975,7 +975,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the deleting of own grouped entities for members.
    */
   public function testMemberDeleteOwnAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
@@ -1015,7 +1015,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertTrue($this->accessControlHandler->access($node_4, 'delete'), 'Members can delete their own unpublished grouped nodes.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'delete'), 'The ungrouped node can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'delete'), 'Members cannot delete published grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'delete'), 'Members cannot delete unpublished grouped nodes.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'delete'), 'Members cannot delete published grouped nodes.');
@@ -1027,7 +1027,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
    * Tests the deleting of own grouped entities for non-members.
    */
   public function testNonMemberDeleteOwnAccess() {
-    $account = $this->createUser([], $this->permissions);
+    $account = $this->createUser($this->permissions);
     $node_1 = $this->createNode(['type' => 'page']);
     $node_2 = $this->createNode(['type' => 'page', 'status' => 0]);
     $node_3 = $this->createNode(['type' => 'page', 'uid' => $account->id()]);
@@ -1058,7 +1058,7 @@ class ContentEntityAccessComplexTest extends GroupKernelTestBase {
     $this->assertFalse($this->accessControlHandler->access($node_4, 'delete'), 'Non-members cannot delete unpublished grouped nodes they do not own.');
     $this->assertTrue($this->accessControlHandler->access($node_5, 'delete'), 'The ungrouped node can be deleted.');
 
-    $this->setCurrentUser($this->createUser([], $this->permissions));
+    $this->setCurrentUser($this->createUser($this->permissions));
     $this->assertFalse($this->accessControlHandler->access($node_1, 'delete'), 'Non-members cannot delete published grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_2, 'delete'), 'Non-members cannot delete unpublished grouped nodes they do not own.');
     $this->assertFalse($this->accessControlHandler->access($node_3, 'delete'), 'Non-members cannot delete published grouped nodes they do not own.');

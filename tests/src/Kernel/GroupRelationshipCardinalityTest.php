@@ -72,7 +72,7 @@ class GroupRelationshipCardinalityTest extends GroupKernelTestBase {
     $this->createGroupRole(['group_type' => $this->groupTypeB->id()] + $base);
 
     // Make sure the user can view the entities to be grouped.
-    $this->setCurrentUser($this->createUser([], ['administer entity_test_with_owner content']));
+    $this->setCurrentUser($this->createUser(['administer entity_test_with_owner content']));
   }
 
   /**
