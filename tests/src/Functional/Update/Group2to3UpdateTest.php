@@ -2,6 +2,7 @@
 
 namespace Drupal\group\Tests\Functional\Update;
 
+use Drupal\Core\Config\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\field\FieldStorageConfigInterface;
@@ -123,6 +124,25 @@ class Group2to3UpdateTest extends UpdatePathTestBase {
       'group.relationship_type.class-group_membership',
       'group.relationship_type.class-group_node-page',
     ], \Drupal::configFactory()->listAll('group.relationship_type.'));
+  }
+
+  /**
+   * Tests that the config key store no longer refers to old types.
+   */
+  public function testConfigKeyStore() {
+    $this->assertEquals([
+      'uuid:000b9028-9efe-4a4f-9552-4ed2343481d5' => ['group.content_type.class-group_node-page'],
+      'uuid:1891ac47-eae0-4075-b85d-38c7ca8b5122' => ['group.content_type.class-group_membership'],
+    ], \Drupal::keyValue(QueryFactory::CONFIG_LOOKUP_PREFIX . 'group_content_type')->getAll());
+    $this->assertEquals([], \Drupal::keyValue(QueryFactory::CONFIG_LOOKUP_PREFIX . 'group_relationship_type')->getAll());
+
+    $this->runUpdates();
+
+    $this->assertEquals([], \Drupal::keyValue(QueryFactory::CONFIG_LOOKUP_PREFIX . 'group_content_type')->getAll());
+    $this->assertEquals([
+      'uuid:000b9028-9efe-4a4f-9552-4ed2343481d5' => ['group.relationship_type.class-group_node-page'],
+      'uuid:1891ac47-eae0-4075-b85d-38c7ca8b5122' => ['group.relationship_type.class-group_membership'],
+    ], \Drupal::keyValue(QueryFactory::CONFIG_LOOKUP_PREFIX . 'group_relationship_type')->getAll());
   }
 
   /**

@@ -5,6 +5,7 @@
  * Install, update and uninstall functions for the group module.
  */
 
+use Drupal\Core\Config\Entity\Query\QueryFactory;
 use Drupal\Core\Entity\EntityLastInstalledSchemaRepositoryInterface;
 use Drupal\Core\Entity\Sql\DefaultTableMapping;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -109,6 +110,9 @@ function group_update_10300(&$sandbox) {
     $new_config->save(TRUE);
     $old_config->delete();
   }
+
+  // Delete the old config key store for QueryFactory.
+  \Drupal::keyValue(QueryFactory::CONFIG_LOOKUP_PREFIX . 'group_content_type')->deleteAll();
 
   // Update field instances on group_content entities.
   foreach ($config_factory->listAll('field.field.group_content.') as $old_name) {
