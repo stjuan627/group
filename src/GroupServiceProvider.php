@@ -63,8 +63,8 @@ class GroupServiceProvider extends ServiceProviderBase {
           // Define the service and pass it the default one to decorate.
           : new Definition($handler_class, [new Reference("group.relation_handler.$handler")]);
 
-        // All handlers cannot be shared and must be private.
-        $definition->setPublic(FALSE);
+        // All handlers cannot be shared services.
+        $definition->setPublic(TRUE);
         $definition->setShared(FALSE);
         $container->setDefinition($service_name, $definition);
 
