@@ -22,7 +22,6 @@ class GroupConfigTest extends EntityKernelTestBase {
     'flexible_permissions',
     'group',
     'options',
-    'variationcache',
     'views',
   ];
 

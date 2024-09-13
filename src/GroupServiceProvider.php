@@ -19,14 +19,6 @@ class GroupServiceProvider extends ServiceProviderBase {
    * {@inheritdoc}
    */
   public function alter(ContainerBuilder $container) {
-    // Ensures you can update to enable VariationCache without the container
-    // choking on the variation_cache_factory service no longer being there.
-    if (!$container->hasDefinition('variation_cache_factory')) {
-      $definition = new Definition('\Drupal\group\VariationCacheFactoryUpdateFix');
-      $definition->setPublic(TRUE);
-      $container->setDefinition('variation_cache_factory', $definition);
-    }
-
     // Automatically create missing handler services for group relations.
     $modules = $container->getParameter('container.modules');
     $discovery = new AttributeDiscoveryWithAnnotations(

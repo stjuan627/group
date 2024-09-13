@@ -33,7 +33,6 @@ abstract class GroupViewsKernelTestBase extends ViewsKernelTestBase {
     'group_test_views',
     'options',
     'text',
-    'variationcache',
   ];
 
   /**
