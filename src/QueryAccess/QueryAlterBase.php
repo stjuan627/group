@@ -45,13 +45,6 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   protected $renderer;
 
   /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
-
-  /**
    * The current user.
    *
    * @var \Drupal\Core\Session\AccountInterface
@@ -109,17 +102,18 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    *   The group permission calculator.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack.
-   * @param \Drupal\Core\Session\AccountInterface $current_user
+   * @param \Drupal\Core\Session\AccountInterface|\Symfony\Component\HttpFoundation\RequestStack $current_user
    *   The current user.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, RequestStack $request_stack, AccountInterface $current_user) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, GroupPermissionCalculatorInterface $permission_calculator, RendererInterface $renderer, AccountInterface|RequestStack $current_user) {
     $this->entityTypeManager = $entity_type_manager;
     $this->permissionCalculator = $permission_calculator;
     $this->renderer = $renderer;
-    $this->requestStack = $request_stack;
     $this->currentUser = $current_user;
+    if ($this->currentUser instanceof RequestStack) {
+      $this->currentUser = func_get_arg(4);
+      @trigger_error('Calling ' . __CLASS__ . '::_construct() with the $request_stack argument is deprecated in group:3.3.0 and is removed from group:4.0.0. See https://www.drupal.org/node/3427339', E_USER_DEPRECATED);
+    }
     $this->cacheableMetadata = new CacheableMetadata();
   }
 
@@ -131,7 +125,6 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
       $container->get('entity_type.manager'),
       $container->get('group_permission.calculator'),
       $container->get('renderer'),
-      $container->get('request_stack'),
       $container->get('current_user')
     );
   }
@@ -208,7 +201,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * Adds conditions for a synchronized scope.
    *
    * @param array $allowed_ids
-   *   The IDs to grant access to, as ddefined by the implementing class.
+   *   The IDs to grant access to, as defined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
    *   The condition group to add the access checks to.
    * @param string $scope
@@ -220,7 +213,7 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
    * Adds conditions for the individual scope.
    *
    * @param array $allowed_ids
-   *   The IDs to grant access to, as ddefined by the implementing class.
+   *   The IDs to grant access to, as defined by the implementing class.
    * @param \Drupal\Core\Database\Query\ConditionInterface $scope_conditions
    *   The condition group to add the access checks to.
    */
@@ -327,11 +320,10 @@ abstract class QueryAlterBase implements ContainerInjectionInterface {
   }
 
   /**
-   * Applies the cacheablity metadata to the current request.
+   * Applies the cacheability metadata to the current request.
    */
   protected function applyCacheability() {
-    $request = $this->requestStack->getCurrentRequest();
-    if ($request->isMethodCacheable() && $this->renderer->hasRenderContext() && $this->hasCacheableMetadata()) {
+    if ($this->renderer->hasRenderContext() && $this->hasCacheableMetadata()) {
       $build = [];
       $this->cacheableMetadata->applyTo($build);
       $this->renderer->render($build);

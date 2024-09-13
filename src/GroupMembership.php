@@ -12,7 +12,7 @@ use Drupal\group\Entity\Storage\GroupRoleStorageInterface;
  *
  * @deprecated in group:3.2.0 and is removed from group:4.0.0. Use the static
  *   methods on \Drupal\group\Entity\GroupMembership instead.
- * @see https://www.drupal.org/project/group/issues/3383363
+ * @see https://www.drupal.org/node/3383363
  */
 class GroupMembership implements CacheableDependencyInterface {
 
@@ -93,6 +93,30 @@ class GroupMembership implements CacheableDependencyInterface {
     $group_role_storage = \Drupal::entityTypeManager()->getStorage('group_role');
     assert($group_role_storage instanceof GroupRoleStorageInterface);
     return $group_role_storage->loadByUserAndGroup($this->getUser(), $this->getGroup(), $include_synchronized);
+  }
+
+  /**
+   * Adds a group role to the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to add.
+   */
+  public function addRole(string $role_id): void {
+    if ($this->groupRelationship instanceof GroupMembershipInterface) {
+      $this->groupRelationship->addRole($role_id);
+    }
+  }
+
+  /**
+   * Removes a group role from the membership.
+   *
+   * @param string $role_id
+   *   The ID of the group role to remove.
+   */
+  public function removeRole(string $role_id): void {
+    if ($this->groupRelationship instanceof GroupMembershipInterface) {
+      $this->groupRelationship->removeRole($role_id);
+    }
   }
 
   /**

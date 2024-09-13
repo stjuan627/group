@@ -22,9 +22,14 @@ parameters:
 			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
 
 		-
-			message: "#^Variable \\$unpub_permissions might not be defined\\.$#"
+			message: "#^Variable \\$unpublished_permissions might not be defined\\.$#"
 			count: 8
 			path: tests/src/Kernel/QueryAlter/QueryAlterTestBase.php
+
+		-
+			message: "#^Variable \\$old_table might not be defined\\.$#"
+			count: 1
+			path: group.install
 
 		# This is a bug in mglaman/phpstan-drupal where the parent constructor is ignored.
 		-
@@ -32,21 +37,19 @@ parameters:
 			count: 1
 			path: tests/src/Unit/GroupRelationTypeManagerTest.php
 
-		# This will go away with Drupal 11.0.0.
+		# Need to use a service collector to get rid of these warnings.
 		-
 			message: """
-				#^Call to deprecated method deleteRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
-				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
-				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:deleteRevision instead\\.$#
+				#^Class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager implements deprecated interface Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareInterface\\:
+				since Symfony 6\\.4, use dependency injection instead$#
 			"""
 			count: 1
-			path: src/Entity/Form/GroupRevisionDeleteForm.php
+			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php
 
 		-
 			message: """
-				#^Call to deprecated method loadRevision\\(\\) of class Drupal\\\\Core\\\\Entity\\\\EntityStorageInterface\\:
-				in drupal\\:10\\.1\\.0 and is removed from drupal\\:11\\.0\\.0\\. Use
-				\\\\Drupal\\\\Core\\\\Entity\\\\RevisionableStorageInterface\\:\\:loadRevision instead\\.$#
+				#^Usage of deprecated trait Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareTrait in class Drupal\\\\group\\\\Plugin\\\\Group\\\\Relation\\\\GroupRelationTypeManager\\:
+				since Symfony 6\\.4, use dependency injection instead$#
 			"""
 			count: 1
-			path: tests/src/Kernel/RevisionUiAccessTest.php
+			path: src/Plugin/Group/Relation/GroupRelationTypeManager.php

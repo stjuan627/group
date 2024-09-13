@@ -41,6 +41,26 @@ services:
     tags:
       - { name: 'access_check', applies_to: '_group_latest_revision' }
 
+  cache.group_memberships_memory:
+    class: 'Drupal\Core\Cache\MemoryCache\MemoryCacheInterface'
+    tags:
+      - { name: 'cache.bin.memory', default_backend: 'cache.backend.memory.memory' }
+    factory: ['@cache_factory', 'get']
+    arguments: ['group_memberships_memory']
+  cache.group_memberships:
+    class: 'Drupal\Core\Cache\CacheBackendInterface'
+    tags:
+      - { name: 'cache.bin' }
+    factory: ['@cache_factory', 'get']
+    arguments: ['group_memberships']
+  cache.group_memberships_chained:
+    class: 'Drupal\Core\Cache\BackendChain'
+    calls:
+      - ['appendBackend', ['@cache.group_memberships_memory']]
+      - ['appendBackend', ['@cache.group_memberships']]
+    tags:
+      - { name: 'cache.bin.memory' }
+
   cache_context.route.group:
     class: 'Drupal\group\Cache\Context\RouteGroupCacheContext'
     arguments: ['@current_route_match', '@entity_type.manager']
@@ -91,7 +111,7 @@ services:
     arguments: ['@entity_type.manager', '@current_user']
   group.permissions:
     class: 'Drupal\group\Access\GroupPermissionHandler'
-    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@group_relation_type.manager']
+    arguments: ['@module_handler', '@string_translation', '@controller_resolver', '@group_relation_type.manager', '@extension.list.module']
 
   group_permission.hash_generator:
     class: 'Drupal\group\Access\GroupPermissionsHashGenerator'

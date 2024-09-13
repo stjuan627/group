@@ -72,13 +72,13 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    *   Whether the individual simple permissions should be checked.
    * @param bool $individual_owner_check
    *   Whether the individual owner permissions should be checked.
-   * @param bool $individual_pub_simple_check
+   * @param bool $individual_published_simple_check
    *   Whether the individual simple published permissions should be checked.
-   * @param bool $individual_pub_owner_check
+   * @param bool $individual_published_owner_check
    *   Whether the individual owner published permissions should be checked.
-   * @param bool $individual_unpub_simple_check
+   * @param bool $individual_unpublished_simple_check
    *   Whether the individual simple unpublished permissions should be checked.
-   * @param bool $individual_unpub_owner_check
+   * @param bool $individual_unpublished_owner_check
    *   Whether the individual owner unpublished permissions should be checked.
    * @param string[] $outsider_permissions
    *   The user's group permissions in the outsider scope.
@@ -88,13 +88,13 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    *   Whether the outsider simple permissions should be checked.
    * @param bool $outsider_owner_check
    *   Whether the outsider owner permissions should be checked.
-   * @param bool $outsider_pub_simple_check
+   * @param bool $outsider_published_simple_check
    *   Whether the outsider simple published permissions should be checked.
-   * @param bool $outsider_pub_owner_check
+   * @param bool $outsider_published_owner_check
    *   Whether the outsider owner published permissions should be checked.
-   * @param bool $outsider_unpub_simple_check
+   * @param bool $outsider_unpublished_simple_check
    *   Whether the outsider simple unpublished permissions should be checked.
-   * @param bool $outsider_unpub_owner_check
+   * @param bool $outsider_unpublished_owner_check
    *   Whether the outsider owner unpublished permissions should be checked.
    * @param string[] $insider_permissions
    *   The user's group permissions in the insider scope.
@@ -104,13 +104,13 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    *   Whether the insider simple permissions should be checked.
    * @param bool $insider_owner_check
    *   Whether the insider owner permissions should be checked.
-   * @param bool $insider_pub_simple_check
+   * @param bool $insider_published_simple_check
    *   Whether the insider simple published permissions should be checked.
-   * @param bool $insider_pub_owner_check
+   * @param bool $insider_published_owner_check
    *   Whether the insider owner published permissions should be checked.
-   * @param bool $insider_unpub_simple_check
+   * @param bool $insider_unpublished_simple_check
    *   Whether the insider simple unpublished permissions should be checked.
-   * @param bool $insider_unpub_owner_check
+   * @param bool $insider_unpublished_owner_check
    *   Whether the insider owner unpublished permissions should be checked.
    *
    * @covers ::getConditions
@@ -128,26 +128,26 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
     bool $individual_is_admin,
     bool $individual_simple_check,
     bool $individual_owner_check,
-    bool $individual_pub_simple_check,
-    bool $individual_pub_owner_check,
-    bool $individual_unpub_simple_check,
-    bool $individual_unpub_owner_check,
+    bool $individual_published_simple_check,
+    bool $individual_published_owner_check,
+    bool $individual_unpublished_simple_check,
+    bool $individual_unpublished_owner_check,
     array $outsider_permissions,
     bool $outsider_is_admin,
     bool $outsider_simple_check,
     bool $outsider_owner_check,
-    bool $outsider_pub_simple_check,
-    bool $outsider_pub_owner_check,
-    bool $outsider_unpub_simple_check,
-    bool $outsider_unpub_owner_check,
+    bool $outsider_published_simple_check,
+    bool $outsider_published_owner_check,
+    bool $outsider_unpublished_simple_check,
+    bool $outsider_unpublished_owner_check,
     array $insider_permissions,
     bool $insider_is_admin,
     bool $insider_simple_check,
     bool $insider_owner_check,
-    bool $insider_pub_simple_check,
-    bool $insider_pub_owner_check,
-    bool $insider_unpub_simple_check,
-    bool $insider_unpub_owner_check
+    bool $insider_published_simple_check,
+    bool $insider_published_owner_check,
+    bool $insider_unpublished_simple_check,
+    bool $insider_unpublished_owner_check,
   ) {
     // Run some sanity checks on the passed in data and aggregate info.
     $checks_status = $checks_owner = $checks_member = FALSE;
@@ -158,31 +158,31 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
       }
 
       if (!$operation_supports_status) {
-        $this->assertFalse(${$key . '_pub_simple_check'}, 'Cannot check published status if publishing is not supported.');
-        $this->assertFalse(${$key . '_pub_owner_check'}, 'Cannot check published owner status if publishing is not supported.');
-        $this->assertFalse(${$key . '_unpub_simple_check'}, 'Cannot check unpublished status if publishing is not supported.');
-        $this->assertFalse(${$key . '_unpub_owner_check'}, 'Cannot check unpublished owner status if publishing is not supported.');
+        $this->assertFalse(${$key . '_published_simple_check'}, 'Cannot check published status if publishing is not supported.');
+        $this->assertFalse(${$key . '_published_owner_check'}, 'Cannot check published owner status if publishing is not supported.');
+        $this->assertFalse(${$key . '_unpublished_simple_check'}, 'Cannot check unpublished status if publishing is not supported.');
+        $this->assertFalse(${$key . '_unpublished_owner_check'}, 'Cannot check unpublished owner status if publishing is not supported.');
       }
 
       if (${$key . '_is_admin'}) {
         $this->assertTrue(${$key . '_simple_check'}, 'Admin access always leads to simple checks.');
         $this->assertFalse(${$key . '_owner_check'}, 'Admin access always leads to simple checks.');
-        $this->assertFalse(${$key . '_pub_simple_check'}, 'Admin access always leads to simple checks.');
-        $this->assertFalse(${$key . '_pub_owner_check'}, 'Admin access always leads to simple checks.');
-        $this->assertFalse(${$key . '_unpub_simple_check'}, 'Admin access always leads to simple checks.');
-        $this->assertFalse(${$key . '_unpub_owner_check'}, 'Admin access always leads to simple checks.');
+        $this->assertFalse(${$key . '_published_simple_check'}, 'Admin access always leads to simple checks.');
+        $this->assertFalse(${$key . '_published_owner_check'}, 'Admin access always leads to simple checks.');
+        $this->assertFalse(${$key . '_unpublished_simple_check'}, 'Admin access always leads to simple checks.');
+        $this->assertFalse(${$key . '_unpublished_owner_check'}, 'Admin access always leads to simple checks.');
       }
 
       $checks_owner = $checks_owner || ${$key . '_owner_check'};
       $checks_status = $checks_status
-      || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-      || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+      || ${$key . '_published_simple_check'} || ${$key . '_published_owner_check'}
+      || ${$key . '_unpublished_simple_check'} || ${$key . '_unpublished_owner_check'};
 
       if ($key !== 'individual') {
         $checks_member = $checks_member
         || ${$key . '_simple_check'} || ${$key . '_owner_check'}
-        || ${$key . '_pub_simple_check'} || ${$key . '_pub_owner_check'}
-        || ${$key . '_unpub_simple_check'} || ${$key . '_unpub_owner_check'};
+        || ${$key . '_published_simple_check'} || ${$key . '_published_owner_check'}
+        || ${$key . '_unpublished_simple_check'} || ${$key . '_unpublished_owner_check'};
       }
     }
 
@@ -288,7 +288,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         elseif ($operation_supports_status) {
           $statuses_to_check = [];
 
-          foreach (['unpub', 'pub'] as $status => $pub_key) {
+          foreach (['unpublished', 'published'] as $status => $pub_key) {
             foreach (['individual', 'outsider', 'insider'] as $key) {
               if (${$key . '_' . $pub_key . '_simple_check'} || ${$key . '_' . $pub_key . '_owner_check'}) {
                 $statuses_to_check[] = $status;
@@ -303,7 +303,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
           $status_key = $definition->getKey('published');
           foreach ($statuses_to_check as $status) {
-            $variable_key = $status ? 'pub' : 'unpub';
+            $variable_key = $status ? 'published' : 'unpublished';
 
             $scope_conditions->condition($status_group = $control->andConditionGroup());
             $status_group->condition("$data_table.$status_key", $status);
@@ -372,26 +372,26 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
           'individual_is_admin' => FALSE,
           'individual_simple_check' => FALSE,
           'individual_owner_check' => FALSE,
-          'individual_pub_simple_check' => FALSE,
-          'individual_pub_owner_check' => FALSE,
-          'individual_unpub_simple_check' => FALSE,
-          'individual_unpub_owner_check' => FALSE,
+          'individual_published_simple_check' => FALSE,
+          'individual_published_owner_check' => FALSE,
+          'individual_unpublished_simple_check' => FALSE,
+          'individual_unpublished_owner_check' => FALSE,
           'outsider_permissions' => [],
           'outsider_is_admin' => FALSE,
           'outsider_simple_check' => FALSE,
           'outsider_owner_check' => FALSE,
-          'outsider_pub_simple_check' => FALSE,
-          'outsider_pub_owner_check' => FALSE,
-          'outsider_unpub_simple_check' => FALSE,
-          'outsider_unpub_owner_check' => FALSE,
+          'outsider_published_simple_check' => FALSE,
+          'outsider_published_owner_check' => FALSE,
+          'outsider_unpublished_simple_check' => FALSE,
+          'outsider_unpublished_owner_check' => FALSE,
           'insider_permissions' => [],
           'insider_is_admin' => FALSE,
           'insider_simple_check' => FALSE,
           'insider_owner_check' => FALSE,
-          'insider_pub_simple_check' => FALSE,
-          'insider_pub_owner_check' => FALSE,
-          'insider_unpub_simple_check' => FALSE,
-          'insider_unpub_owner_check' => FALSE,
+          'insider_published_simple_check' => FALSE,
+          'insider_published_owner_check' => FALSE,
+          'insider_unpublished_simple_check' => FALSE,
+          'insider_unpublished_owner_check' => FALSE,
         ];
       }
 
@@ -408,26 +408,26 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         'individual_is_admin' => FALSE,
         'individual_simple_check' => FALSE,
         'individual_owner_check' => FALSE,
-        'individual_pub_simple_check' => FALSE,
-        'individual_pub_owner_check' => FALSE,
-        'individual_unpub_simple_check' => FALSE,
-        'individual_unpub_owner_check' => FALSE,
+        'individual_published_simple_check' => FALSE,
+        'individual_published_owner_check' => FALSE,
+        'individual_unpublished_simple_check' => FALSE,
+        'individual_unpublished_owner_check' => FALSE,
         'outsider_permissions' => [],
         'outsider_is_admin' => FALSE,
         'outsider_simple_check' => FALSE,
         'outsider_owner_check' => FALSE,
-        'outsider_pub_simple_check' => FALSE,
-        'outsider_pub_owner_check' => FALSE,
-        'outsider_unpub_simple_check' => FALSE,
-        'outsider_unpub_owner_check' => FALSE,
+        'outsider_published_simple_check' => FALSE,
+        'outsider_published_owner_check' => FALSE,
+        'outsider_unpublished_simple_check' => FALSE,
+        'outsider_unpublished_owner_check' => FALSE,
         'insider_permissions' => [],
         'insider_is_admin' => FALSE,
         'insider_simple_check' => FALSE,
         'insider_owner_check' => FALSE,
-        'insider_pub_simple_check' => FALSE,
-        'insider_pub_owner_check' => FALSE,
-        'insider_unpub_simple_check' => FALSE,
-        'insider_unpub_owner_check' => FALSE,
+        'insider_published_simple_check' => FALSE,
+        'insider_published_owner_check' => FALSE,
+        'insider_unpublished_simple_check' => FALSE,
+        'insider_unpublished_owner_check' => FALSE,
       ];
 
       // Single any vs own access for outsider, insider and individual.
@@ -443,26 +443,26 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         'individual_is_admin' => FALSE,
         'individual_simple_check' => FALSE,
         'individual_owner_check' => FALSE,
-        'individual_pub_simple_check' => FALSE,
-        'individual_pub_owner_check' => FALSE,
-        'individual_unpub_simple_check' => FALSE,
-        'individual_unpub_owner_check' => FALSE,
+        'individual_published_simple_check' => FALSE,
+        'individual_published_owner_check' => FALSE,
+        'individual_unpublished_simple_check' => FALSE,
+        'individual_unpublished_owner_check' => FALSE,
         'outsider_permissions' => [],
         'outsider_is_admin' => FALSE,
         'outsider_simple_check' => FALSE,
         'outsider_owner_check' => FALSE,
-        'outsider_pub_simple_check' => FALSE,
-        'outsider_pub_owner_check' => FALSE,
-        'outsider_unpub_simple_check' => FALSE,
-        'outsider_unpub_owner_check' => FALSE,
+        'outsider_published_simple_check' => FALSE,
+        'outsider_published_owner_check' => FALSE,
+        'outsider_unpublished_simple_check' => FALSE,
+        'outsider_unpublished_owner_check' => FALSE,
         'insider_permissions' => [],
         'insider_is_admin' => FALSE,
         'insider_simple_check' => FALSE,
         'insider_owner_check' => FALSE,
-        'insider_pub_simple_check' => FALSE,
-        'insider_pub_owner_check' => FALSE,
-        'insider_unpub_simple_check' => FALSE,
-        'insider_unpub_owner_check' => FALSE,
+        'insider_published_simple_check' => FALSE,
+        'insider_published_owner_check' => FALSE,
+        'insider_unpublished_simple_check' => FALSE,
+        'insider_unpublished_owner_check' => FALSE,
       ];
 
       // Add the own permission (if applicable) to prove it's never checked.
@@ -474,11 +474,11 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
       // Do the same for unpublished, if applicable.
       if ($operation_supports_status) {
-        $unpub_permissions = [$this->getPermission($operation, 'any', TRUE)];
+        $unpublished_permissions = [$this->getPermission($operation, 'any', TRUE)];
         if ($this->isOwnable) {
-          $unpub_permissions[] = $this->getPermission($operation, 'own', TRUE);
+          $unpublished_permissions[] = $this->getPermission($operation, 'own', TRUE);
         }
-        $unpub_permissions = array_filter($unpub_permissions);
+        $unpublished_permissions = array_filter($unpublished_permissions);
       }
 
       // Check if there is an admin permission.
@@ -509,41 +509,41 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
 
           $cases["single-$copy_key-any-published-$operation"] = $status_base;
           $cases["single-$copy_key-any-published-$operation"]["{$copy_key}_permissions"] = $single_permissions;
-          $cases["single-$copy_key-any-published-$operation"]["{$copy_key}_pub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-published-$operation"]["{$copy_key}_published_simple_check"] = TRUE;
 
           $cases["single-$copy_key-any-unpublished-$operation"] = $status_base;
-          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_permissions"] = $unpub_permissions;
-          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_unpub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_permissions"] = $unpublished_permissions;
+          $cases["single-$copy_key-any-unpublished-$operation"]["{$copy_key}_unpublished_simple_check"] = TRUE;
 
-          $cases["single-$copy_key-any-mixpub-$operation"] = $status_base;
-          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_permissions"] = array_merge($single_permissions, $unpub_permissions);
-          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_pub_simple_check"] = TRUE;
-          $cases["single-$copy_key-any-mixpub-$operation"]["{$copy_key}_unpub_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-mixed_published-$operation"] = $status_base;
+          $cases["single-$copy_key-any-mixed_published-$operation"]["{$copy_key}_permissions"] = array_merge($single_permissions, $unpublished_permissions);
+          $cases["single-$copy_key-any-mixed_published-$operation"]["{$copy_key}_published_simple_check"] = TRUE;
+          $cases["single-$copy_key-any-mixed_published-$operation"]["{$copy_key}_unpublished_simple_check"] = TRUE;
 
           if ($this->isOwnable) {
             $pub_permission = $this->getPermission($operation, 'own');
-            $unpub_permission = $this->getPermission($operation, 'own', TRUE);
+            $unpublished_permission = $this->getPermission($operation, 'own', TRUE);
 
             if ($pub_permission) {
               $cases["single-$copy_key-own-published-$operation"] = $status_base;
               $cases["single-$copy_key-own-published-$operation"]["{$copy_key}_permissions"] = [$pub_permission];
-              $cases["single-$copy_key-own-published-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-published-$operation"]["{$copy_key}_published_owner_check"] = TRUE;
             }
 
-            if ($unpub_permission) {
+            if ($unpublished_permission) {
               $cases["single-$copy_key-own-unpublished-$operation"] = $status_base;
-              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_permissions"] = [$unpub_permission];
-              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_permissions"] = [$unpublished_permission];
+              $cases["single-$copy_key-own-unpublished-$operation"]["{$copy_key}_unpublished_owner_check"] = TRUE;
             }
 
-            if ($pub_permission && $unpub_permission) {
-              $cases["single-$copy_key-own-mixpub-$operation"] = $status_base;
-              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_permissions"] = [
+            if ($pub_permission && $unpublished_permission) {
+              $cases["single-$copy_key-own-mixed_published-$operation"] = $status_base;
+              $cases["single-$copy_key-own-mixed_published-$operation"]["{$copy_key}_permissions"] = [
                 $pub_permission,
-                $unpub_permission,
+                $unpublished_permission,
               ];
-              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_pub_owner_check"] = TRUE;
-              $cases["single-$copy_key-own-mixpub-$operation"]["{$copy_key}_unpub_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-mixed_published-$operation"]["{$copy_key}_published_owner_check"] = TRUE;
+              $cases["single-$copy_key-own-mixed_published-$operation"]["{$copy_key}_unpublished_owner_check"] = TRUE;
             }
           }
         }
@@ -558,9 +558,9 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         // Admin permission access for outsider, insider and individual. Behaves
         // the same as the admin flag, but only when permission is supported.
         if ($admin_permission) {
-          $cases["single-adminpermission-$copy_key-$operation"] = $cases["single-admin-$copy_key-$operation"];
-          $cases["single-adminpermission-$copy_key-$operation"]["{$copy_key}_is_admin"] = FALSE;
-          $cases["single-adminpermission-$copy_key-$operation"]["{$copy_key}_permissions"] = array_merge([$admin_permission], $single_permissions);
+          $cases["single-admin_permission-$copy_key-$operation"] = $cases["single-admin-$copy_key-$operation"];
+          $cases["single-admin_permission-$copy_key-$operation"]["{$copy_key}_is_admin"] = FALSE;
+          $cases["single-admin_permission-$copy_key-$operation"]["{$copy_key}_permissions"] = array_merge([$admin_permission], $single_permissions);
         }
       }
 
@@ -576,29 +576,29 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
         $cases["mixed-insider-individual-any-" . $operation]['individual_permissions'] = $single_permissions;
         $cases["mixed-insider-individual-any-" . $operation]['individual_simple_check'] = TRUE;
 
-        $cases["mixed-outsider-insideradmin-any-" . $operation] = $cases["single-outsider-any-$operation"];
-        $cases["mixed-outsider-insideradmin-any-" . $operation]['insider_is_admin'] = TRUE;
-        $cases["mixed-outsider-insideradmin-any-" . $operation]['insider_simple_check'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-" . $operation] = $cases["single-outsider-any-$operation"];
-        $cases["mixed-outsider-individualadmin-any-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-" . $operation]['individual_simple_check'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-" . $operation] = $cases["single-insider-any-$operation"];
-        $cases["mixed-insider-individualadmin-any-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-" . $operation] = $cases["single-outsider-any-$operation"];
+        $cases["mixed-outsider-insider_admin-any-" . $operation]['insider_is_admin'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-" . $operation]['insider_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-" . $operation] = $cases["single-outsider-any-$operation"];
+        $cases["mixed-outsider-individual_admin-any-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-" . $operation] = $cases["single-insider-any-$operation"];
+        $cases["mixed-insider-individual_admin-any-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-" . $operation]['individual_simple_check'] = TRUE;
 
         if ($admin_permission) {
           // Add in regular permissions to prove they aren't checked.
           $admin_permissions = array_merge([$admin_permission], $single_permissions);
 
-          $cases["mixed-outsider-insideradminpermission-any-" . $operation] = $cases["mixed-outsider-insideradmin-any-" . $operation];
-          $cases["mixed-outsider-insideradminpermission-any-" . $operation]['insider_is_admin'] = FALSE;
-          $cases["mixed-outsider-insideradminpermission-any-" . $operation]['insider_permissions'] = $admin_permissions;
-          $cases["mixed-outsider-individualadminpermission-any-" . $operation] = $cases["mixed-outsider-individualadmin-any-" . $operation];
-          $cases["mixed-outsider-individualadminpermission-any-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-outsider-individualadminpermission-any-" . $operation]['individual_permissions'] = $admin_permissions;
-          $cases["mixed-insider-individualadminpermission-any-" . $operation] = $cases["mixed-insider-individualadmin-any-" . $operation];
-          $cases["mixed-insider-individualadminpermission-any-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-insider-individualadminpermission-any-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-insider_admin_permission-any-" . $operation] = $cases["mixed-outsider-insider_admin-any-" . $operation];
+          $cases["mixed-outsider-insider_admin_permission-any-" . $operation]['insider_is_admin'] = FALSE;
+          $cases["mixed-outsider-insider_admin_permission-any-" . $operation]['insider_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-individual_admin_permission-any-" . $operation] = $cases["mixed-outsider-individual_admin-any-" . $operation];
+          $cases["mixed-outsider-individual_admin_permission-any-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-outsider-individual_admin_permission-any-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-insider-individual_admin_permission-any-" . $operation] = $cases["mixed-insider-individual_admin-any-" . $operation];
+          $cases["mixed-insider-individual_admin_permission-any-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-insider-individual_admin_permission-any-" . $operation]['individual_permissions'] = $admin_permissions;
         }
 
         if ($this->isOwnable && ($own_permission = $this->getPermission($operation, 'own'))) {
@@ -612,252 +612,253 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
           $cases["mixed-insider-individual-own-" . $operation]['individual_permissions'] = [$own_permission];
           $cases["mixed-insider-individual-own-" . $operation]['individual_owner_check'] = TRUE;
 
-          $cases["mixed-outsider-insideradmin-own-" . $operation] = $cases["single-outsider-own-$operation"];
-          $cases["mixed-outsider-insideradmin-own-" . $operation]['insider_is_admin'] = TRUE;
-          $cases["mixed-outsider-insideradmin-own-" . $operation]['insider_simple_check'] = TRUE;
-          $cases["mixed-outsider-individualadmin-own-" . $operation] = $cases["single-outsider-own-$operation"];
-          $cases["mixed-outsider-individualadmin-own-" . $operation]['individual_is_admin'] = TRUE;
-          $cases["mixed-outsider-individualadmin-own-" . $operation]['individual_simple_check'] = TRUE;
-          $cases["mixed-insider-individualadmin-own-" . $operation] = $cases["single-insider-own-$operation"];
-          $cases["mixed-insider-individualadmin-own-" . $operation]['individual_is_admin'] = TRUE;
-          $cases["mixed-insider-individualadmin-own-" . $operation]['individual_simple_check'] = TRUE;
+          $cases["mixed-outsider-insider_admin-own-" . $operation] = $cases["single-outsider-own-$operation"];
+          $cases["mixed-outsider-insider_admin-own-" . $operation]['insider_is_admin'] = TRUE;
+          $cases["mixed-outsider-insider_admin-own-" . $operation]['insider_simple_check'] = TRUE;
+          $cases["mixed-outsider-individual_admin-own-" . $operation] = $cases["single-outsider-own-$operation"];
+          $cases["mixed-outsider-individual_admin-own-" . $operation]['individual_is_admin'] = TRUE;
+          $cases["mixed-outsider-individual_admin-own-" . $operation]['individual_simple_check'] = TRUE;
+          $cases["mixed-insider-individual_admin-own-" . $operation] = $cases["single-insider-own-$operation"];
+          $cases["mixed-insider-individual_admin-own-" . $operation]['individual_is_admin'] = TRUE;
+          $cases["mixed-insider-individual_admin-own-" . $operation]['individual_simple_check'] = TRUE;
 
           if ($admin_permission) {
             // Add in regular permissions to prove they aren't checked.
             $admin_permissions = array_merge([$admin_permission], $single_permissions);
 
-            $cases["mixed-outsider-insideradminpermission-own-" . $operation] = $cases["mixed-outsider-insideradmin-own-" . $operation];
-            $cases["mixed-outsider-insideradminpermission-own-" . $operation]['insider_is_admin'] = FALSE;
-            $cases["mixed-outsider-insideradminpermission-own-" . $operation]['insider_permissions'] = $admin_permissions;
-            $cases["mixed-outsider-individualadminpermission-own-" . $operation] = $cases["mixed-outsider-individualadmin-own-" . $operation];
-            $cases["mixed-outsider-individualadminpermission-own-" . $operation]['individual_is_admin'] = FALSE;
-            $cases["mixed-outsider-individualadminpermission-own-" . $operation]['individual_permissions'] = $admin_permissions;
-            $cases["mixed-insider-individualadminpermission-own-" . $operation] = $cases["mixed-insider-individualadmin-own-" . $operation];
-            $cases["mixed-insider-individualadminpermission-own-" . $operation]['individual_is_admin'] = FALSE;
-            $cases["mixed-insider-individualadminpermission-own-" . $operation]['individual_permissions'] = $admin_permissions;
+            $cases["mixed-outsider-insider_admin_permission-own-" . $operation] = $cases["mixed-outsider-insider_admin-own-" . $operation];
+            $cases["mixed-outsider-insider_admin_permission-own-" . $operation]['insider_is_admin'] = FALSE;
+            $cases["mixed-outsider-insider_admin_permission-own-" . $operation]['insider_permissions'] = $admin_permissions;
+            $cases["mixed-outsider-individual_admin_permission-own-" . $operation] = $cases["mixed-outsider-individual_admin-own-" . $operation];
+            $cases["mixed-outsider-individual_admin_permission-own-" . $operation]['individual_is_admin'] = FALSE;
+            $cases["mixed-outsider-individual_admin_permission-own-" . $operation]['individual_permissions'] = $admin_permissions;
+            $cases["mixed-insider-individual_admin_permission-own-" . $operation] = $cases["mixed-insider-individual_admin-own-" . $operation];
+            $cases["mixed-insider-individual_admin_permission-own-" . $operation]['individual_is_admin'] = FALSE;
+            $cases["mixed-insider-individual_admin_permission-own-" . $operation]['individual_permissions'] = $admin_permissions;
           }
         }
       }
       else {
         $cases["mixed-outsider-insider-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
         $cases["mixed-outsider-insider-any-published-" . $operation]['insider_permissions'] = $single_permissions;
-        $cases["mixed-outsider-insider-any-published-" . $operation]['insider_pub_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider-any-published-" . $operation]['insider_published_simple_check'] = TRUE;
         $cases["mixed-outsider-individual-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
         $cases["mixed-outsider-individual-any-published-" . $operation]['individual_permissions'] = $single_permissions;
-        $cases["mixed-outsider-individual-any-published-" . $operation]['individual_pub_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual-any-published-" . $operation]['individual_published_simple_check'] = TRUE;
         $cases["mixed-insider-individual-any-published-" . $operation] = $cases["single-insider-any-published-$operation"];
         $cases["mixed-insider-individual-any-published-" . $operation]['individual_permissions'] = $single_permissions;
-        $cases["mixed-insider-individual-any-published-" . $operation]['individual_pub_simple_check'] = TRUE;
+        $cases["mixed-insider-individual-any-published-" . $operation]['individual_published_simple_check'] = TRUE;
 
         $cases["mixed-outsider-insider-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
-        $cases["mixed-outsider-insider-any-unpublished-" . $operation]['insider_permissions'] = $unpub_permissions;
-        $cases["mixed-outsider-insider-any-unpublished-" . $operation]['insider_unpub_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider-any-unpublished-" . $operation]['insider_permissions'] = $unpublished_permissions;
+        $cases["mixed-outsider-insider-any-unpublished-" . $operation]['insider_unpublished_simple_check'] = TRUE;
         $cases["mixed-outsider-individual-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
-        $cases["mixed-outsider-individual-any-unpublished-" . $operation]['individual_permissions'] = $unpub_permissions;
-        $cases["mixed-outsider-individual-any-unpublished-" . $operation]['individual_unpub_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual-any-unpublished-" . $operation]['individual_permissions'] = $unpublished_permissions;
+        $cases["mixed-outsider-individual-any-unpublished-" . $operation]['individual_unpublished_simple_check'] = TRUE;
         $cases["mixed-insider-individual-any-unpublished-" . $operation] = $cases["single-insider-any-unpublished-$operation"];
-        $cases["mixed-insider-individual-any-unpublished-" . $operation]['individual_permissions'] = $unpub_permissions;
-        $cases["mixed-insider-individual-any-unpublished-" . $operation]['individual_unpub_simple_check'] = TRUE;
+        $cases["mixed-insider-individual-any-unpublished-" . $operation]['individual_permissions'] = $unpublished_permissions;
+        $cases["mixed-insider-individual-any-unpublished-" . $operation]['individual_unpublished_simple_check'] = TRUE;
 
-        $cases["mixed-outsider-insider-any-mixpub-" . $operation] = $cases["single-outsider-any-mixpub-$operation"];
-        $cases["mixed-outsider-insider-any-mixpub-" . $operation]['insider_permissions'] = array_merge($single_permissions, $unpub_permissions);
-        $cases["mixed-outsider-insider-any-mixpub-" . $operation]['insider_pub_simple_check'] = TRUE;
-        $cases["mixed-outsider-insider-any-mixpub-" . $operation]['insider_unpub_simple_check'] = TRUE;
-        $cases["mixed-outsider-individual-any-mixpub-" . $operation] = $cases["single-outsider-any-mixpub-$operation"];
-        $cases["mixed-outsider-individual-any-mixpub-" . $operation]['individual_permissions'] = array_merge($single_permissions, $unpub_permissions);
-        $cases["mixed-outsider-individual-any-mixpub-" . $operation]['individual_pub_simple_check'] = TRUE;
-        $cases["mixed-outsider-individual-any-mixpub-" . $operation]['individual_unpub_simple_check'] = TRUE;
-        $cases["mixed-insider-individual-any-mixpub-" . $operation] = $cases["single-insider-any-mixpub-$operation"];
-        $cases["mixed-insider-individual-any-mixpub-" . $operation]['individual_permissions'] = array_merge($single_permissions, $unpub_permissions);
-        $cases["mixed-insider-individual-any-mixpub-" . $operation]['individual_pub_simple_check'] = TRUE;
-        $cases["mixed-insider-individual-any-mixpub-" . $operation]['individual_unpub_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider-any-mixed_published-" . $operation] = $cases["single-outsider-any-mixed_published-$operation"];
+        $cases["mixed-outsider-insider-any-mixed_published-" . $operation]['insider_permissions'] = array_merge($single_permissions, $unpublished_permissions);
+        $cases["mixed-outsider-insider-any-mixed_published-" . $operation]['insider_published_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider-any-mixed_published-" . $operation]['insider_unpublished_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual-any-mixed_published-" . $operation] = $cases["single-outsider-any-mixed_published-$operation"];
+        $cases["mixed-outsider-individual-any-mixed_published-" . $operation]['individual_permissions'] = array_merge($single_permissions, $unpublished_permissions);
+        $cases["mixed-outsider-individual-any-mixed_published-" . $operation]['individual_published_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual-any-mixed_published-" . $operation]['individual_unpublished_simple_check'] = TRUE;
+        $cases["mixed-insider-individual-any-mixed_published-" . $operation] = $cases["single-insider-any-mixed_published-$operation"];
+        $cases["mixed-insider-individual-any-mixed_published-" . $operation]['individual_permissions'] = array_merge($single_permissions, $unpublished_permissions);
+        $cases["mixed-insider-individual-any-mixed_published-" . $operation]['individual_published_simple_check'] = TRUE;
+        $cases["mixed-insider-individual-any-mixed_published-" . $operation]['individual_unpublished_simple_check'] = TRUE;
 
-        $cases["mixed-outsider-insideradmin-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
-        $cases["mixed-outsider-insideradmin-any-published-" . $operation]['insider_is_admin'] = TRUE;
-        $cases["mixed-outsider-insideradmin-any-published-" . $operation]['insider_simple_check'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
-        $cases["mixed-outsider-individualadmin-any-published-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-published-" . $operation]['individual_simple_check'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-published-" . $operation] = $cases["single-insider-any-published-$operation"];
-        $cases["mixed-insider-individualadmin-any-published-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-published-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
+        $cases["mixed-outsider-insider_admin-any-published-" . $operation]['insider_is_admin'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-published-" . $operation]['insider_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-published-" . $operation] = $cases["single-outsider-any-published-$operation"];
+        $cases["mixed-outsider-individual_admin-any-published-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-published-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-published-" . $operation] = $cases["single-insider-any-published-$operation"];
+        $cases["mixed-insider-individual_admin-any-published-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-published-" . $operation]['individual_simple_check'] = TRUE;
 
-        $cases["mixed-outsider-insideradmin-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
-        $cases["mixed-outsider-insideradmin-any-unpublished-" . $operation]['insider_is_admin'] = TRUE;
-        $cases["mixed-outsider-insideradmin-any-unpublished-" . $operation]['insider_simple_check'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
-        $cases["mixed-outsider-individualadmin-any-unpublished-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-unpublished-" . $operation]['individual_simple_check'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-unpublished-" . $operation] = $cases["single-insider-any-unpublished-$operation"];
-        $cases["mixed-insider-individualadmin-any-unpublished-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-unpublished-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
+        $cases["mixed-outsider-insider_admin-any-unpublished-" . $operation]['insider_is_admin'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-unpublished-" . $operation]['insider_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-unpublished-" . $operation] = $cases["single-outsider-any-unpublished-$operation"];
+        $cases["mixed-outsider-individual_admin-any-unpublished-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-unpublished-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-unpublished-" . $operation] = $cases["single-insider-any-unpublished-$operation"];
+        $cases["mixed-insider-individual_admin-any-unpublished-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-unpublished-" . $operation]['individual_simple_check'] = TRUE;
 
-        $cases["mixed-outsider-insideradmin-any-mixpub-" . $operation] = $cases["single-outsider-any-mixpub-$operation"];
-        $cases["mixed-outsider-insideradmin-any-mixpub-" . $operation]['insider_is_admin'] = TRUE;
-        $cases["mixed-outsider-insideradmin-any-mixpub-" . $operation]['insider_simple_check'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-mixpub-" . $operation] = $cases["single-outsider-any-mixpub-$operation"];
-        $cases["mixed-outsider-individualadmin-any-mixpub-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-outsider-individualadmin-any-mixpub-" . $operation]['individual_simple_check'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-mixpub-" . $operation] = $cases["single-insider-any-mixpub-$operation"];
-        $cases["mixed-insider-individualadmin-any-mixpub-" . $operation]['individual_is_admin'] = TRUE;
-        $cases["mixed-insider-individualadmin-any-mixpub-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-mixed_published-" . $operation] = $cases["single-outsider-any-mixed_published-$operation"];
+        $cases["mixed-outsider-insider_admin-any-mixed_published-" . $operation]['insider_is_admin'] = TRUE;
+        $cases["mixed-outsider-insider_admin-any-mixed_published-" . $operation]['insider_simple_check'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-mixed_published-" . $operation] = $cases["single-outsider-any-mixed_published-$operation"];
+        $cases["mixed-outsider-individual_admin-any-mixed_published-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-outsider-individual_admin-any-mixed_published-" . $operation]['individual_simple_check'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-mixed_published-" . $operation] = $cases["single-insider-any-mixed_published-$operation"];
+        $cases["mixed-insider-individual_admin-any-mixed_published-" . $operation]['individual_is_admin'] = TRUE;
+        $cases["mixed-insider-individual_admin-any-mixed_published-" . $operation]['individual_simple_check'] = TRUE;
 
         if ($admin_permission) {
           // Add in regular permissions to prove they aren't checked.
           $admin_permissions = array_merge([$admin_permission], $single_permissions);
 
-          $cases["mixed-outsider-insideradminpermission-any-published-" . $operation] = $cases["mixed-outsider-insideradmin-any-published-" . $operation];
-          $cases["mixed-outsider-insideradminpermission-any-published-" . $operation]['insider_is_admin'] = FALSE;
-          $cases["mixed-outsider-insideradminpermission-any-published-" . $operation]['insider_permissions'] = $admin_permissions;
-          $cases["mixed-outsider-individualadminpermission-any-published-" . $operation] = $cases["mixed-outsider-individualadmin-any-published-" . $operation];
-          $cases["mixed-outsider-individualadminpermission-any-published-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-outsider-individualadminpermission-any-published-" . $operation]['individual_permissions'] = $admin_permissions;
-          $cases["mixed-insider-individualadminpermission-any-published-" . $operation] = $cases["mixed-insider-individualadmin-any-published-" . $operation];
-          $cases["mixed-insider-individualadminpermission-any-published-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-insider-individualadminpermission-any-published-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-insider_admin_permission-any-published-" . $operation] = $cases["mixed-outsider-insider_admin-any-published-" . $operation];
+          $cases["mixed-outsider-insider_admin_permission-any-published-" . $operation]['insider_is_admin'] = FALSE;
+          $cases["mixed-outsider-insider_admin_permission-any-published-" . $operation]['insider_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-individual_admin_permission-any-published-" . $operation] = $cases["mixed-outsider-individual_admin-any-published-" . $operation];
+          $cases["mixed-outsider-individual_admin_permission-any-published-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-outsider-individual_admin_permission-any-published-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-insider-individual_admin_permission-any-published-" . $operation] = $cases["mixed-insider-individual_admin-any-published-" . $operation];
+          $cases["mixed-insider-individual_admin_permission-any-published-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-insider-individual_admin_permission-any-published-" . $operation]['individual_permissions'] = $admin_permissions;
 
-          $cases["mixed-outsider-insideradminpermission-any-unpublished-" . $operation] = $cases["mixed-outsider-insideradmin-any-unpublished-" . $operation];
-          $cases["mixed-outsider-insideradminpermission-any-unpublished-" . $operation]['insider_is_admin'] = FALSE;
-          $cases["mixed-outsider-insideradminpermission-any-unpublished-" . $operation]['insider_permissions'] = $admin_permissions;
-          $cases["mixed-outsider-individualadminpermission-any-unpublished-" . $operation] = $cases["mixed-outsider-individualadmin-any-unpublished-" . $operation];
-          $cases["mixed-outsider-individualadminpermission-any-unpublished-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-outsider-individualadminpermission-any-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
-          $cases["mixed-insider-individualadminpermission-any-unpublished-" . $operation] = $cases["mixed-insider-individualadmin-any-unpublished-" . $operation];
-          $cases["mixed-insider-individualadminpermission-any-unpublished-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-insider-individualadminpermission-any-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-insider_admin_permission-any-unpublished-" . $operation] = $cases["mixed-outsider-insider_admin-any-unpublished-" . $operation];
+          $cases["mixed-outsider-insider_admin_permission-any-unpublished-" . $operation]['insider_is_admin'] = FALSE;
+          $cases["mixed-outsider-insider_admin_permission-any-unpublished-" . $operation]['insider_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-individual_admin_permission-any-unpublished-" . $operation] = $cases["mixed-outsider-individual_admin-any-unpublished-" . $operation];
+          $cases["mixed-outsider-individual_admin_permission-any-unpublished-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-outsider-individual_admin_permission-any-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-insider-individual_admin_permission-any-unpublished-" . $operation] = $cases["mixed-insider-individual_admin-any-unpublished-" . $operation];
+          $cases["mixed-insider-individual_admin_permission-any-unpublished-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-insider-individual_admin_permission-any-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
 
-          $cases["mixed-outsider-insideradminpermission-any-mixpub-" . $operation] = $cases["mixed-outsider-insideradmin-any-mixpub-" . $operation];
-          $cases["mixed-outsider-insideradminpermission-any-mixpub-" . $operation]['insider_is_admin'] = FALSE;
-          $cases["mixed-outsider-insideradminpermission-any-mixpub-" . $operation]['insider_permissions'] = $admin_permissions;
-          $cases["mixed-outsider-individualadminpermission-any-mixpub-" . $operation] = $cases["mixed-outsider-individualadmin-any-mixpub-" . $operation];
-          $cases["mixed-outsider-individualadminpermission-any-mixpub-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-outsider-individualadminpermission-any-mixpub-" . $operation]['individual_permissions'] = $admin_permissions;
-          $cases["mixed-insider-individualadminpermission-any-mixpub-" . $operation] = $cases["mixed-insider-individualadmin-any-mixpub-" . $operation];
-          $cases["mixed-insider-individualadminpermission-any-mixpub-" . $operation]['individual_is_admin'] = FALSE;
-          $cases["mixed-insider-individualadminpermission-any-mixpub-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-insider_admin_permission-any-mixed_published-" . $operation] = $cases["mixed-outsider-insider_admin-any-mixed_published-" . $operation];
+          $cases["mixed-outsider-insider_admin_permission-any-mixed_published-" . $operation]['insider_is_admin'] = FALSE;
+          $cases["mixed-outsider-insider_admin_permission-any-mixed_published-" . $operation]['insider_permissions'] = $admin_permissions;
+          $cases["mixed-outsider-individual_admin_permission-any-mixed_published-" . $operation] = $cases["mixed-outsider-individual_admin-any-mixed_published-" . $operation];
+          $cases["mixed-outsider-individual_admin_permission-any-mixed_published-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-outsider-individual_admin_permission-any-mixed_published-" . $operation]['individual_permissions'] = $admin_permissions;
+          $cases["mixed-insider-individual_admin_permission-any-mixed_published-" . $operation] = $cases["mixed-insider-individual_admin-any-mixed_published-" . $operation];
+          $cases["mixed-insider-individual_admin_permission-any-mixed_published-" . $operation]['individual_is_admin'] = FALSE;
+          $cases["mixed-insider-individual_admin_permission-any-mixed_published-" . $operation]['individual_permissions'] = $admin_permissions;
         }
 
         if ($this->isOwnable) {
-          $own_pub_permission = $this->getPermission($operation, 'own');
-          $own_unpub_permission = $this->getPermission($operation, 'own', TRUE);
+          $own_published_permission = $this->getPermission($operation, 'own');
+          $own_unpublished_permission = $this->getPermission($operation, 'own', TRUE);
 
-          if ($own_pub_permission) {
+          if ($own_published_permission) {
             $cases["mixed-outsider-insider-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
-            $cases["mixed-outsider-insider-own-published-" . $operation]['insider_permissions'] = [$own_pub_permission];
-            $cases["mixed-outsider-insider-own-published-" . $operation]['insider_pub_owner_check'] = TRUE;
+            $cases["mixed-outsider-insider-own-published-" . $operation]['insider_permissions'] = [$own_published_permission];
+            $cases["mixed-outsider-insider-own-published-" . $operation]['insider_published_owner_check'] = TRUE;
             $cases["mixed-outsider-individual-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
-            $cases["mixed-outsider-individual-own-published-" . $operation]['individual_permissions'] = [$own_pub_permission];
-            $cases["mixed-outsider-individual-own-published-" . $operation]['individual_pub_owner_check'] = TRUE;
+            $cases["mixed-outsider-individual-own-published-" . $operation]['individual_permissions'] = [$own_published_permission];
+            $cases["mixed-outsider-individual-own-published-" . $operation]['individual_published_owner_check'] = TRUE;
             $cases["mixed-insider-individual-own-published-" . $operation] = $cases["single-insider-own-published-$operation"];
-            $cases["mixed-insider-individual-own-published-" . $operation]['individual_permissions'] = [$own_pub_permission];
-            $cases["mixed-insider-individual-own-published-" . $operation]['individual_pub_owner_check'] = TRUE;
+            $cases["mixed-insider-individual-own-published-" . $operation]['individual_permissions'] = [$own_published_permission];
+            $cases["mixed-insider-individual-own-published-" . $operation]['individual_published_owner_check'] = TRUE;
 
-            $cases["mixed-outsider-insideradmin-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
-            $cases["mixed-outsider-insideradmin-own-published-" . $operation]['insider_is_admin'] = TRUE;
-            $cases["mixed-outsider-insideradmin-own-published-" . $operation]['insider_simple_check'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
-            $cases["mixed-outsider-individualadmin-own-published-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-published-" . $operation]['individual_simple_check'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-published-" . $operation] = $cases["single-insider-own-published-$operation"];
-            $cases["mixed-insider-individualadmin-own-published-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-published-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
+            $cases["mixed-outsider-insider_admin-own-published-" . $operation]['insider_is_admin'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-published-" . $operation]['insider_simple_check'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-published-" . $operation] = $cases["single-outsider-own-published-$operation"];
+            $cases["mixed-outsider-individual_admin-own-published-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-published-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-published-" . $operation] = $cases["single-insider-own-published-$operation"];
+            $cases["mixed-insider-individual_admin-own-published-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-published-" . $operation]['individual_simple_check'] = TRUE;
 
             if ($admin_permission) {
               // Add in regular permissions to prove they aren't checked.
-              $admin_permissions = [$admin_permission, $own_pub_permission];
+              $admin_permissions = [$admin_permission, $own_published_permission];
 
-              $cases["mixed-outsider-insideradminpermission-own-published-" . $operation] = $cases["mixed-outsider-insideradmin-own-published-" . $operation];
-              $cases["mixed-outsider-insideradminpermission-own-published-" . $operation]['insider_is_admin'] = FALSE;
-              $cases["mixed-outsider-insideradminpermission-own-published-" . $operation]['insider_permissions'] = $admin_permissions;
-              $cases["mixed-outsider-individualadminpermission-own-published-" . $operation] = $cases["mixed-outsider-individualadmin-own-published-" . $operation];
-              $cases["mixed-outsider-individualadminpermission-own-published-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-outsider-individualadminpermission-own-published-" . $operation]['individual_permissions'] = $admin_permissions;
-              $cases["mixed-insider-individualadminpermission-own-published-" . $operation] = $cases["mixed-insider-individualadmin-own-published-" . $operation];
-              $cases["mixed-insider-individualadminpermission-own-published-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-insider-individualadminpermission-own-published-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-insider_admin_permission-own-published-" . $operation] = $cases["mixed-outsider-insider_admin-own-published-" . $operation];
+              $cases["mixed-outsider-insider_admin_permission-own-published-" . $operation]['insider_is_admin'] = FALSE;
+              $cases["mixed-outsider-insider_admin_permission-own-published-" . $operation]['insider_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-individual_admin_permission-own-published-" . $operation] = $cases["mixed-outsider-individual_admin-own-published-" . $operation];
+              $cases["mixed-outsider-individual_admin_permission-own-published-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-outsider-individual_admin_permission-own-published-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-insider-individual_admin_permission-own-published-" . $operation] = $cases["mixed-insider-individual_admin-own-published-" . $operation];
+              $cases["mixed-insider-individual_admin_permission-own-published-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-insider-individual_admin_permission-own-published-" . $operation]['individual_permissions'] = $admin_permissions;
             }
           }
 
-          if ($own_unpub_permission) {
+          if ($own_unpublished_permission) {
             $cases["mixed-outsider-insider-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
-            $cases["mixed-outsider-insider-own-unpublished-" . $operation]['insider_permissions'] = [$own_unpub_permission];
-            $cases["mixed-outsider-insider-own-unpublished-" . $operation]['insider_unpub_owner_check'] = TRUE;
+            $cases["mixed-outsider-insider-own-unpublished-" . $operation]['insider_permissions'] = [$own_unpublished_permission];
+            $cases["mixed-outsider-insider-own-unpublished-" . $operation]['insider_unpublished_owner_check'] = TRUE;
             $cases["mixed-outsider-individual-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
-            $cases["mixed-outsider-individual-own-unpublished-" . $operation]['individual_permissions'] = [$own_unpub_permission];
-            $cases["mixed-outsider-individual-own-unpublished-" . $operation]['individual_unpub_owner_check'] = TRUE;
+            $cases["mixed-outsider-individual-own-unpublished-" . $operation]['individual_permissions'] = [$own_unpublished_permission];
+            $cases["mixed-outsider-individual-own-unpublished-" . $operation]['individual_unpublished_owner_check'] = TRUE;
             $cases["mixed-insider-individual-own-unpublished-" . $operation] = $cases["single-insider-own-unpublished-$operation"];
-            $cases["mixed-insider-individual-own-unpublished-" . $operation]['individual_permissions'] = [$own_unpub_permission];
-            $cases["mixed-insider-individual-own-unpublished-" . $operation]['individual_unpub_owner_check'] = TRUE;
+            $cases["mixed-insider-individual-own-unpublished-" . $operation]['individual_permissions'] = [$own_unpublished_permission];
+            $cases["mixed-insider-individual-own-unpublished-" . $operation]['individual_unpublished_owner_check'] = TRUE;
 
-            $cases["mixed-outsider-insideradmin-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
-            $cases["mixed-outsider-insideradmin-own-unpublished-" . $operation]['insider_is_admin'] = TRUE;
-            $cases["mixed-outsider-insideradmin-own-unpublished-" . $operation]['insider_simple_check'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
-            $cases["mixed-outsider-individualadmin-own-unpublished-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-unpublished-" . $operation]['individual_simple_check'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-unpublished-" . $operation] = $cases["single-insider-own-unpublished-$operation"];
-            $cases["mixed-insider-individualadmin-own-unpublished-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-unpublished-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
+            $cases["mixed-outsider-insider_admin-own-unpublished-" . $operation]['insider_is_admin'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-unpublished-" . $operation]['insider_simple_check'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-unpublished-" . $operation] = $cases["single-outsider-own-unpublished-$operation"];
+            $cases["mixed-outsider-individual_admin-own-unpublished-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-unpublished-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-unpublished-" . $operation] = $cases["single-insider-own-unpublished-$operation"];
+            $cases["mixed-insider-individual_admin-own-unpublished-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-unpublished-" . $operation]['individual_simple_check'] = TRUE;
 
             if ($admin_permission) {
               // Add in regular permissions to prove they aren't checked.
-              $admin_permissions = [$admin_permission, $own_unpub_permission];
+              $admin_permissions = [$admin_permission, $own_unpublished_permission];
 
-              $cases["mixed-outsider-insideradminpermission-own-unpublished-" . $operation] = $cases["mixed-outsider-insideradmin-own-unpublished-" . $operation];
-              $cases["mixed-outsider-insideradminpermission-own-unpublished-" . $operation]['insider_is_admin'] = FALSE;
-              $cases["mixed-outsider-insideradminpermission-own-unpublished-" . $operation]['insider_permissions'] = $admin_permissions;
-              $cases["mixed-outsider-individualadminpermission-own-unpublished-" . $operation] = $cases["mixed-outsider-individualadmin-own-unpublished-" . $operation];
-              $cases["mixed-outsider-individualadminpermission-own-unpublished-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-outsider-individualadminpermission-own-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
-              $cases["mixed-insider-individualadminpermission-own-unpublished-" . $operation] = $cases["mixed-insider-individualadmin-own-unpublished-" . $operation];
-              $cases["mixed-insider-individualadminpermission-own-unpublished-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-insider-individualadminpermission-own-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-insider_admin_permission-own-unpublished-" . $operation] = $cases["mixed-outsider-insider_admin-own-unpublished-" . $operation];
+              $cases["mixed-outsider-insider_admin_permission-own-unpublished-" . $operation]['insider_is_admin'] = FALSE;
+              $cases["mixed-outsider-insider_admin_permission-own-unpublished-" . $operation]['insider_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-individual_admin_permission-own-unpublished-" . $operation] = $cases["mixed-outsider-individual_admin-own-unpublished-" . $operation];
+              $cases["mixed-outsider-individual_admin_permission-own-unpublished-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-outsider-individual_admin_permission-own-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-insider-individual_admin_permission-own-unpublished-" . $operation] = $cases["mixed-insider-individual_admin-own-unpublished-" . $operation];
+              $cases["mixed-insider-individual_admin_permission-own-unpublished-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-insider-individual_admin_permission-own-unpublished-" . $operation]['individual_permissions'] = $admin_permissions;
             }
           }
 
-          if ($own_pub_permission && $own_unpub_permission) {
-            $own_mixpub_permissions = [$own_pub_permission, $own_unpub_permission];
-            $cases["mixed-outsider-insider-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
-            $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_permissions'] = $own_mixpub_permissions;
-            $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_pub_owner_check'] = TRUE;
-            $cases["mixed-outsider-insider-own-mixpub-" . $operation]['insider_unpub_owner_check'] = TRUE;
-            $cases["mixed-outsider-individual-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
-            $cases["mixed-outsider-individual-own-mixpub-" . $operation]['individual_permissions'] = $own_mixpub_permissions;
-            $cases["mixed-outsider-individual-own-mixpub-" . $operation]['individual_pub_owner_check'] = TRUE;
-            $cases["mixed-outsider-individual-own-mixpub-" . $operation]['individual_unpub_owner_check'] = TRUE;
-            $cases["mixed-insider-individual-own-mixpub-" . $operation] = $cases["single-insider-own-mixpub-$operation"];
-            $cases["mixed-insider-individual-own-mixpub-" . $operation]['individual_permissions'] = $own_mixpub_permissions;
-            $cases["mixed-insider-individual-own-mixpub-" . $operation]['individual_pub_owner_check'] = TRUE;
-            $cases["mixed-insider-individual-own-mixpub-" . $operation]['individual_unpub_owner_check'] = TRUE;
+          if ($own_published_permission && $own_unpublished_permission) {
+            $own_mixed_published_permissions = [$own_published_permission, $own_unpublished_permission];
+            $cases["mixed-outsider-insider-own-mixed_published-" . $operation] = $cases["single-outsider-own-mixed_published-$operation"];
+            $cases["mixed-outsider-insider-own-mixed_published-" . $operation]['insider_permissions'] = $own_mixed_published_permissions;
+            $cases["mixed-outsider-insider-own-mixed_published-" . $operation]['insider_published_owner_check'] = TRUE;
+            $cases["mixed-outsider-insider-own-mixed_published-" . $operation]['insider_unpublished_owner_check'] = TRUE;
+            $cases["mixed-outsider-individual-own-mixed_published-" . $operation] = $cases["single-outsider-own-mixed_published-$operation"];
+            $cases["mixed-outsider-individual-own-mixed_published-" . $operation]['individual_permissions'] = $own_mixed_published_permissions;
+            $cases["mixed-outsider-individual-own-mixed_published-" . $operation]['individual_published_owner_check'] = TRUE;
+            $cases["mixed-outsider-individual-own-mixed_published-" . $operation]['individual_unpublished_owner_check'] = TRUE;
+            $cases["mixed-insider-individual-own-mixed_published-" . $operation] = $cases["single-insider-own-mixed_published-$operation"];
+            $cases["mixed-insider-individual-own-mixed_published-" . $operation]['individual_permissions'] = $own_mixed_published_permissions;
+            $cases["mixed-insider-individual-own-mixed_published-" . $operation]['individual_published_owner_check'] = TRUE;
+            $cases["mixed-insider-individual-own-mixed_published-" . $operation]['individual_unpublished_owner_check'] = TRUE;
 
-            $cases["mixed-outsider-insideradmin-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
-            $cases["mixed-outsider-insideradmin-own-mixpub-" . $operation]['insider_is_admin'] = TRUE;
-            $cases["mixed-outsider-insideradmin-own-mixpub-" . $operation]['insider_simple_check'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-mixpub-" . $operation] = $cases["single-outsider-own-mixpub-$operation"];
-            $cases["mixed-outsider-individualadmin-own-mixpub-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-outsider-individualadmin-own-mixpub-" . $operation]['individual_simple_check'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-mixpub-" . $operation] = $cases["single-insider-own-mixpub-$operation"];
-            $cases["mixed-insider-individualadmin-own-mixpub-" . $operation]['individual_is_admin'] = TRUE;
-            $cases["mixed-insider-individualadmin-own-mixpub-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-mixed_published-" . $operation] = $cases["single-outsider-own-mixed_published-$operation"];
+            $cases["mixed-outsider-insider_admin-own-mixed_published-" . $operation]['insider_is_admin'] = TRUE;
+            $cases["mixed-outsider-insider_admin-own-mixed_published-" . $operation]['insider_simple_check'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-mixed_published-" . $operation] = $cases["single-outsider-own-mixed_published-$operation"];
+            $cases["mixed-outsider-individual_admin-own-mixed_published-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-outsider-individual_admin-own-mixed_published-" . $operation]['individual_simple_check'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-mixed_published-" . $operation] = $cases["single-insider-own-mixed_published-$operation"];
+            $cases["mixed-insider-individual_admin-own-mixed_published-" . $operation]['individual_is_admin'] = TRUE;
+            $cases["mixed-insider-individual_admin-own-mixed_published-" . $operation]['individual_simple_check'] = TRUE;
 
             if ($admin_permission) {
               // Add in regular permissions to prove they aren't checked.
-              $admin_permissions = array_merge([$admin_permission], $own_mixpub_permissions);
+              $admin_permissions = array_merge([$admin_permission], $own_mixed_published_permissions);
 
-              $cases["mixed-outsider-insideradminpermission-own-mixpub-" . $operation] = $cases["mixed-outsider-insideradmin-own-mixpub-" . $operation];
-              $cases["mixed-outsider-insideradminpermission-own-mixpub-" . $operation]['insider_is_admin'] = FALSE;
-              $cases["mixed-outsider-insideradminpermission-own-mixpub-" . $operation]['insider_permissions'] = $admin_permissions;
-              $cases["mixed-outsider-individualadminpermission-own-mixpub-" . $operation] = $cases["mixed-outsider-individualadmin-own-mixpub-" . $operation];
-              $cases["mixed-outsider-individualadminpermission-own-mixpub-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-outsider-individualadminpermission-own-mixpub-" . $operation]['individual_permissions'] = $admin_permissions;
-              $cases["mixed-insider-individualadminpermission-own-mixpub-" . $operation] = $cases["mixed-insider-individualadmin-own-mixpub-" . $operation];
-              $cases["mixed-insider-individualadminpermission-own-mixpub-" . $operation]['individual_is_admin'] = FALSE;
-              $cases["mixed-insider-individualadminpermission-own-mixpub-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-insider_admin_permission-own-mixed_published-" . $operation] = $cases["mixed-outsider-insider_admin-own-mixed_published-" . $operation];
+              $cases["mixed-outsider-insider_admin_permission-own-mixed_published-" . $operation]['insider_is_admin'] = FALSE;
+              $cases["mixed-outsider-insider_admin_permission-own-mixed_published-" . $operation]['insider_permissions'] = $admin_permissions;
+              $cases["mixed-outsider-individual_admin_permission-own-mixed_published-" . $operation] = $cases["mixed-outsider-individual_admin-own-mixed_published-" . $operation];
+              $cases["mixed-outsider-individual_admin_permission-own-mixed_published-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-outsider-individual_admin_permission-own-mixed_published-" . $operation]['individual_permissions'] = $admin_permissions;
+              $cases["mixed-insider-individual_admin_permission-own-mixed_published-" . $operation] = $cases["mixed-insider-individual_admin-own-mixed_published-" . $operation];
+              $cases["mixed-insider-individual_admin_permission-own-mixed_published-" . $operation]['individual_is_admin'] = FALSE;
+              $cases["mixed-insider-individual_admin_permission-own-mixed_published-" . $operation]['individual_permissions'] = $admin_permissions;
             }
           }
         }
       }
-      // @todo Mixed any-own pub-unpub, e.g. view group + view own unpub group.
+      // @todo Mixed any-own published-unpublished.
+      //   E.g.: view group + view own unpublished group.
     }
 
     return $cases;
@@ -1049,7 +1050,7 @@ abstract class QueryAlterTestBase extends GroupKernelTestBase {
    * @param \Drupal\Core\Database\Query\ConditionInterface $conditions
    *   The condition group to add the access checks to.
    * @param bool $outsider
-   *   Whether the synchronzed scope is outsider (TRUE) or insider (FALSE).
+   *   Whether the synchronized scope is outsider (TRUE) or insider (FALSE).
    */
   abstract protected function addSynchronizedConditions(array $allowed_ids, ConditionInterface $conditions, $outsider);
 
