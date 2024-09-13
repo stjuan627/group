@@ -159,19 +159,25 @@ services:
   group.relation_handler.access_control:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\AccessControl'
     arguments: ['@entity_type.manager', '@group_relation_type.manager']
+    shared: false
   group.relation_handler.entity_reference:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\EntityReference'
+    shared: false
   group.relation_handler.operation_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\OperationProvider'
     arguments: ['@module_handler', '@current_user', '@entity_type.manager', '@group_relation_type.manager', '@string_translation']
+    shared: false
   group.relation_handler.permission_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PermissionProvider'
     arguments: ['@entity_type.manager', '@group_relation_type.manager']
+    shared: false
   group.relation_handler.post_install:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\PostInstall'
+    shared: false
   group.relation_handler.ui_text_provider:
     class: 'Drupal\group\Plugin\Group\RelationHandlerDefault\UiTextProvider'
     arguments: ['@entity_type.manager', '@string_translation']
+    shared: false
 
   # Specific group relation handlers.
   group.relation_handler.access_control.group_membership:
