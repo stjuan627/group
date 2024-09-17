@@ -7,7 +7,10 @@ use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\Context\ContextProviderInterface;
+use Drupal\Core\Plugin\Context\ContextHandlerInterface;
+use Drupal\Core\Plugin\Context\ContextInterface;
+use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
+use Drupal\Core\Plugin\Context\EntityContextDefinition;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Drupal\views\Plugin\views\access\AccessPluginBase;
@@ -33,32 +36,9 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
   protected $usesOptions = TRUE;
 
   /**
-   * The group permission handler.
-   *
-   * @var \Drupal\group\Access\GroupPermissionHandlerInterface
+   * Current group context.
    */
-  protected $permissionHandler;
-
-  /**
-   * The module extension list.
-   *
-   * @var \Drupal\Core\Extension\ModuleExtensionList
-   */
-  protected $moduleHandler;
-
-  /**
-   * The group entity from the route.
-   *
-   * @var \Drupal\group\Entity\GroupInterface
-   */
-  protected $group;
-
-  /**
-   * The group context from the route.
-   *
-   * @var \Drupal\Core\Plugin\Context\ContextInterface
-   */
-  protected $context;
+  protected ?ContextInterface $context = NULL;
 
   /**
    * Constructs a Permission object.
@@ -69,25 +49,29 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permission_handler
+   * @param \Drupal\group\Access\GroupPermissionHandlerInterface $permissionHandler
    *   The group permission handler.
-   * @param \Drupal\Core\Extension\ModuleExtensionList|\Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleExtensionList|\Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module extension list.
-   * @param \Drupal\Core\Plugin\Context\ContextProviderInterface $context_provider
-   *   The group route context.
+   * @param \Drupal\Core\Plugin\Context\ContextRepositoryInterface $contextRepository
+   *   The context repository.
+   * @param \Drupal\Core\Plugin\Context\ContextHandlerInterface $contextHandler
+   *   The context handler service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GroupPermissionHandlerInterface $permission_handler, ModuleHandlerInterface|ModuleExtensionList $module_handler, ContextProviderInterface $context_provider) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected readonly GroupPermissionHandlerInterface $permissionHandler,
+    protected readonly ModuleHandlerInterface|ModuleExtensionList $moduleHandler,
+    protected readonly ContextRepositoryInterface $contextRepository,
+    protected readonly ContextHandlerInterface $contextHandler,
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    if ($module_handler instanceof ModuleHandlerInterface) {
-      @trigger_error('Calling ' . __METHOD__ . '() with a $module_handler argument as \Drupal\Core\Extension\ModuleHandlerInterface instead of \Drupal\Core\Extension\ModuleExtensionList is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
-      $module_handler = \Drupal::service('extension.list.module');
+    if ($moduleHandler instanceof ModuleHandlerInterface) {
+      @trigger_error('Calling ' . __METHOD__ . '() with a $moduleHandler argument as \Drupal\Core\Extension\ModuleHandlerInterface instead of \Drupal\Core\Extension\ModuleExtensionList is deprecated in group:3.3.0 and will be required in group:4.0.0. See https://www.drupal.org/node/3431243', E_USER_DEPRECATED);
+      $moduleHandler = \Drupal::service('extension.list.module');
     }
-    $this->permissionHandler = $permission_handler;
-    $this->moduleHandler = $module_handler;
-
-    $contexts = $context_provider->getRuntimeContexts(['group']);
-    $this->context = $contexts['group'];
-    $this->group = $this->context->getContextValue();
   }
 
   /**
@@ -100,18 +84,35 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
       $plugin_definition,
       $container->get('group.permissions'),
       $container->get('extension.list.module'),
+      $container->get('context.repository'),
+      $container->get('context.handler'),
       $container->get('group.group_route_context')
     );
+  }
+
+  /**
+   * Group context getter.
+   */
+  protected function getGroupContext(): ?ContextInterface {
+    if ($this->context !== NULL) {
+      return $this->context;
+    }
+    $contexts = $this->contextRepository->getRuntimeContexts([$this->options['context_provider']]);
+    if (\array_key_exists($this->options['context_provider'], $contexts)) {
+      $this->context = $contexts[$this->options['context_provider']];
+    }
+    return $this->context;
   }
 
   /**
    * {@inheritdoc}
    */
   public function access(AccountInterface $account) {
-    if (!empty($this->group)) {
-      return $this->group->hasPermission($this->options['group_permission'], $account);
+    $group = $this->getGroupContext()->getContextValue();
+    if ($group === NULL) {
+      return FALSE;
     }
-    return FALSE;
+    return $group->hasPermission($this->options['group_permission'], $account);
   }
 
   /**
@@ -143,6 +144,7 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
   protected function defineOptions() {
     $options = parent::defineOptions();
     $options['group_permission'] = ['default' => 'view group'];
+    $options['context_provider'] = ['default' => '@group.group_route_context:group'];
     return $options;
   }
 
@@ -166,27 +168,56 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
       '#default_value' => $this->options['group_permission'],
       '#description' => $this->t('Only users with the selected group permission will be able to access this display.<br /><strong>Warning:</strong> This will only work if there is a {group} parameter in the route. If not, it will always deny access.'),
     ];
+
+    // Context provider selector.
+    $form['context_provider'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Context provider'),
+      '#description' => $this->t("The context provider will return a group that represents the active site.<br /><em>Warning</em>: Using context providers that don't always return a group context is ill-advised.<br />The \"Group from Views argument\" context that ships with the Group module is the most obvious choice."),
+      '#default_value' => $this->options['context_provider'],
+      '#required' => TRUE,
+      '#options' => [],
+    ];
+
+    $definition = EntityContextDefinition::fromEntityTypeId('group');
+    $contexts = $this->contextRepository->getAvailableContexts();
+    $contexts = $this->contextHandler->getMatchingContexts($contexts, $definition);
+    foreach ($contexts as $context_id => $context) {
+      $context_definition = $context->getContextDefinition();
+      $form['context_provider']['#options'][$context_id] = $context_definition->getLabel();
+      $description = $context_definition->getDescription();
+      if ($description !== NULL) {
+        $form['context_provider'][$context_id]['#description'] = $description;
+      }
+    }
+    if (\count($form['context_provider']['#options']) === 1) {
+      $form['context_provider'] = [
+        '#type' => 'value',
+        '#value' => $context_id,
+      ];
+    }
+
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheMaxAge() {
-    return Cache::mergeMaxAges(Cache::PERMANENT, $this->context->getCacheMaxAge());
+    return Cache::mergeMaxAges(Cache::PERMANENT, $this->getGroupContext()->getCacheMaxAge());
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheContexts() {
-    return Cache::mergeContexts(['user.group_permissions'], $this->context->getCacheContexts());
+    return Cache::mergeContexts(['user.group_permissions'], $this->getGroupContext()->getCacheContexts());
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCacheTags() {
-    return $this->context->getCacheTags();
+    return $this->getGroupContext()->getCacheTags();
   }
 
 }
