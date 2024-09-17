@@ -3,12 +3,24 @@
 namespace Drupal\group\Entity\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
+use Drupal\Core\Routing\RoutingEvents;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Swaps out the revision UI access callbacks.
  */
 class GroupRevisionRouteSubscriber extends RouteSubscriberBase {
+
+  /**
+   * {@inheritdoc }
+   */
+  public static function getSubscribedEvents(): array {
+    return [
+      // Ensure invocation before GroupAdminRouteSubscriber as it relies on the
+      // '_group_operation_route' option.
+      RoutingEvents::ALTER => ['onAlterRoutes', 100]
+    ];
+  }
 
   /**
    * {@inheritdoc}
