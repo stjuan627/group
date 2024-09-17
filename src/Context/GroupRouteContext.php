@@ -49,7 +49,7 @@ class GroupRouteContext implements ContextProviderInterface {
     $cacheability->setCacheContexts(['route.group']);
 
     // Create a context from the definition and retrieved or created group.
-    $context = new Context($context_definition, $this->getGroupFromRoute());
+    $context = new Context($context_definition, $this->getBestCandidate());
     $context->addCacheableDependency($cacheability);
 
     return ['group' => $context];
