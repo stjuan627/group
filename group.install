@@ -23,6 +23,14 @@ function group_update_last_removed() {
  */
 function group_update_10300(&$sandbox) {
   $config_factory = \Drupal::configFactory();
+  $group_content_type_configs = $config_factory->listAll('group.content_type.');
+
+  // Short-circuit the following updates if we are already on version 3.
+  if (empty($group_content_type_configs)) {
+    \Drupal::state()->set('group_update_10300_detected_version', 3);
+    return;
+  }
+
   $table_mapping = \Drupal::entityTypeManager()->getStorage('group_relationship')->getTableMapping();
   assert($table_mapping instanceof DefaultTableMapping);
 
@@ -101,7 +109,7 @@ function group_update_10300(&$sandbox) {
   }
 
   // Update all group_content_type entities to become group_relationship_type.
-  foreach ($config_factory->listAll('group.content_type.') as $old_id) {
+  foreach ($group_content_type_configs as $old_id) {
     $new_id = str_replace('group.content_type.', 'group.relationship_type.', $old_id);
 
     $old_config = $config_factory->getEditable($old_id);
@@ -215,6 +223,11 @@ function group_update_10300(&$sandbox) {
  * Updates indexes from Group 2 to Group 3.
  */
 function group_update_10301(&$sandbox) {
+  // Short-circuit the update if we are already on version 3.
+  if (\Drupal::state()->get('group_update_10300_detected_version', FALSE)) {
+    return;
+  }
+
   $definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $last_installed_schema_repository = \Drupal::service('entity.last_installed_schema.repository');
   assert($last_installed_schema_repository instanceof EntityLastInstalledSchemaRepositoryInterface);
@@ -228,6 +241,11 @@ function group_update_10301(&$sandbox) {
  * Updates views from Group 2 to Group 3.
  */
 function group_update_10302(&$sandbox) {
+  // Short-circuit the update if we are already on version 3.
+  if (\Drupal::state()->get('group_update_10300_detected_version', FALSE)) {
+    return;
+  }
+
   $config_factory = \Drupal::configFactory();
 
   if (\Drupal::moduleHandler()->moduleExists('views')) {
