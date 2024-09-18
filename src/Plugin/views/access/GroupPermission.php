@@ -9,6 +9,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\Context\ContextProviderInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\group\Access\GroupAccessResult;
 use Drupal\group\Access\GroupPermissionHandlerInterface;
 use Drupal\views\Plugin\views\access\AccessPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -108,8 +109,11 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    * {@inheritdoc}
    */
   public function access(AccountInterface $account) {
+    if (!$this->options['group_permission']) {
+      return TRUE;
+    }
     if (!empty($this->group)) {
-      return $this->group->hasPermission($this->options['group_permission'], $account);
+      return GroupAccessResult::allowedIfHasGroupPermissions($this->group, $account, $this->options['group_permission'], $this->options['operator'])->isAllowed();
     }
     return FALSE;
   }
@@ -118,7 +122,10 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    * {@inheritdoc}
    */
   public function alterRouteDefinition(Route $route) {
-    $route->setRequirement('_group_permission', $this->options['group_permission']);
+    if ($this->options['group_permission']) {
+      $separator = $this->options['operator'] == 'AND' ? ',' : '+';
+      $route->setRequirement('_group_permission', implode($separator, $this->options['group_permission']));
+    }
 
     // Upcast any %group path key the user may have configured so the
     // '_group_permission' access check will receive a properly loaded group.
@@ -129,12 +136,18 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    * {@inheritdoc}
    */
   public function summaryTitle() {
-    $permissions = $this->permissionHandler->getPermissions(TRUE);
-    if (isset($permissions[$this->options['group_permission']])) {
-      return $permissions[$this->options['group_permission']]['title'];
+    $count = count($this->options['group_permission']);
+    if ($count < 1) {
+      return $this->t('No permissions selected');
     }
-
-    return $this->t($this->options['group_permission']);
+    elseif ($count > 1) {
+      return $this->t('Multiple permissions');
+    }
+    else {
+      $permissions = $this->permissionHandler->getPermissions(TRUE);
+      $permission = reset($this->options['group_permission']);
+      return $permissions[$permission]['title'] ?? $permission;
+    }
   }
 
   /**
@@ -142,7 +155,8 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
    */
   protected function defineOptions() {
     $options = parent::defineOptions();
-    $options['group_permission'] = ['default' => 'view group'];
+    $options['group_permission'] = ['default' => []];
+    $options['operator'] = ['default' => 'AND'];
     return $options;
   }
 
@@ -164,7 +178,19 @@ class GroupPermission extends AccessPluginBase implements CacheableDependencyInt
       '#options' => $permissions,
       '#title' => $this->t('Group permission'),
       '#default_value' => $this->options['group_permission'],
+      '#multiple' => TRUE,
+      '#required' => TRUE,
       '#description' => $this->t('Only users with the selected group permission will be able to access this display.<br /><strong>Warning:</strong> This will only work if there is a {group} parameter in the route. If not, it will always deny access.'),
+    ];
+    $form['operator'] = [
+      '#type' => 'select',
+      '#options' => [
+        'AND' => $this->t('And'),
+        'OR' => $this->t('Or'),
+      ],
+      '#title' => $this->t('Operator'),
+      '#required' => TRUE,
+      '#default_value' => $this->options['operator'],
     ];
   }
 
